@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "Welcome to Babb!"
+title:  "Business Pioneers"
 date:   2025-03-10 15:35:58 -0400
 categories: company about
 ---
