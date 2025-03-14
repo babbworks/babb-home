@@ -1,7 +1,7 @@
 ---
 layout: default
 nav_exclude: true
-title: Projects
+title: Posts in "projects"
 category: projects
 ---
 
