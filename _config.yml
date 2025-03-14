@@ -18,14 +18,19 @@
 # You can create any custom variable you would like, and they will be accessible
 # in the templates via {{ site.myvariable }}.
 
-title: Babb
-email: start@babb.tel
+title: Babb.
+email: hello@babb.tel
 description: >- # this means to ignore newlines until "baseurl:"
-  We create long-lasting tools for working and learning.
+  Tools for Work
 baseurl: "" # the subpath of your site, e.g. /blog
 url: "https://babb.tel" # the base hostname & protocol for your site, e.g. http://example.com
 twitter_username: babbltd
 github_username:  babbltd
+instagram_username: babbltd
+facebook_username: babblimited
+linkedin_username: babbltd
+youtube_username: babbltd
+pinterest_username: babblimited
 
 # Build settings
 theme: minima
