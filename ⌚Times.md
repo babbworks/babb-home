@@ -5,3 +5,5 @@ permalink: /times/
 ---
 
 Simple Protocols for Business Records
+
+Complete.
