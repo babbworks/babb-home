@@ -113,6 +113,7 @@
 .footer-heading {
   @include relative-font-size(1.125);
   margin-bottom: $spacing-unit / 2;
+  font-weight: 600
 }
 
 .contact-list,
@@ -175,6 +176,20 @@
   }
 }
 
+.code-container {
+  display: table;
+  margin: 0 auto;
+  width: 80%; /* Adjust width */
+}
+
+.code-block {
+  display: table-cell;
+  text-align: justify;
+  padding: 20px;
+  background-color: #f4f4f4;
+  border-radius: 5px;
+  white-space: pre-wrap;
+}
 
 
 /**

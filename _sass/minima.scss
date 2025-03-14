@@ -10,13 +10,13 @@ $base-line-height: 1.5 !default;
 
 $spacing-unit:     30px !default;
 
-$text-color:       #111 !default;
+$text-color:       #131212 !default;
 $background-color: #fdfdfd !default;
 $brand-color:      #2a7ae2 !default;
 
-$grey-color:       #828282 !default;
+$grey-color:       #3b3939 !default;
 $grey-color-light: lighten($grey-color, 40%) !default;
-$grey-color-dark:  darken($grey-color, 25%) !default;
+$grey-color-dark:  darken($grey-color, 85%) !default;
 
 $table-text-align: left !default;
 
@@ -42,6 +42,37 @@ $on-laptop:        1100px !default;
 @mixin relative-font-size($ratio) {
   font-size: $base-font-size * $ratio;
 }
+
+.site-footer {
+  background-color: #d2d6d0; /* Change this to any color */
+  color: rgb(78, 77, 77); /* Ensures text is readable */
+  padding: 20px;
+}
+
+.home-columns {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 20px; /* Adds spacing between columns */
+}
+
+.column-left,
+.column-right {
+  width: 48%; /* Adjust width for spacing */
+}
+
+/* Responsive: Stack columns on smaller screens */
+@media (max-width: 768px) {
+  .home-columns {
+      flex-direction: column;
+  }
+  
+  .column-left,
+  .column-right {
+      width: 100%;
+  }
+}
+
 
 // Import partials.
 @import

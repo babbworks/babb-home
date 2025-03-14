@@ -2,33 +2,27 @@
 layout: default
 ---
 
+<div class="home-columns">
+  <div class="column-left">
 <div class="home">
-  {%- if page.title -%}
-    <h1 class="page-heading">{{ page.title }}</h1>
-  {%- endif -%}
+  <h2>Taking business into orbit.</h2>
+  <p>We help people create and build businesses by pioneering digital and physical tools that last a long time. From the <a href="/rust-belt">Rust Belt</a>, to the Kalahari to the Cosmos, we are leading a return to business fundamentals.</p>
+  <p>Our team is currently focused on <a href="/times">Times</a>, a mobile and API service for logging business events. Read <a href="/projects/times/about">about the project</a> or <a href="https://pitch.babb.tel">view the pitch</a>.</p>
 
-  {{ content }}
+</div>
+</div>
 
-  {%- if site.posts.size > 0 -%}
-    <h2 class="post-list-heading">{{ page.list_title | default: "Posts" }}</h2>
-    <ul class="post-list">
-      {%- for post in site.posts -%}
-      <li>
-        {%- assign date_format = site.minima.date_format | default: "%b %-d, %Y" -%}
-        <span class="post-meta">{{ post.date | date: date_format }}</span>
-        <h3>
-          <a class="post-link" href="{{ post.url | relative_url }}">
-            {{ post.title | escape }}
-          </a>
-        </h3>
-        {%- if site.show_excerpts -%}
-          {{ post.excerpt }}
-        {%- endif -%}
+ <div class="column-right">
+  <h2><a href="/updates">Updates</a></h2>
+  <ul>
+    {% for post in site.posts limit:5 %}      <li>
+        <a href="{{ post.url | relative_url }}">{{ post.title }}</a>
+        <span>{{ post.date | date: "%B %d, %Y" }}</span>
       </li>
-      {%- endfor -%}
-    </ul>
-
+    {% endfor %}
     <p class="rss-subscribe">subscribe <a href="{{ "/feed.xml" | relative_url }}">via RSS</a></p>
-  {%- endif -%}
 
+  </ul>
+
+  </div>
 </div>
