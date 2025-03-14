@@ -1,6 +1,6 @@
 ---
 layout: page
-title: /⌚Times
+title: ⌚Times
 permalink: /times/
 ---
 
