@@ -15,8 +15,8 @@ $background-color: #fdfdfd !default;
 $brand-color:      #2a7ae2 !default;
 
 $grey-color:       #3b3939 !default;
-$grey-color-light: lighten($grey-color, 40%) !default;
-$grey-color-dark:  darken($grey-color, 85%) !default;
+$grey-color-light: lighten($grey-color, 70%) !default;
+$grey-color-dark:  darken($grey-color, 95%) !default;
 
 $table-text-align: left !default;
 
@@ -44,8 +44,8 @@ $on-laptop:        1100px !default;
 }
 
 .site-footer {
-  background-color: #d2d6d0; /* Change this to any color */
-  color: rgb(78, 77, 77); /* Ensures text is readable */
+  background-color: #0f8d96; /* Change this to any color */
+  color:  rgb(24, 23, 23); /* Ensures text is readable */
   padding: 20px;
 }
 
@@ -71,6 +71,20 @@ $on-laptop:        1100px !default;
   .column-right {
       width: 100%;
   }
+}
+
+.site-footer a {
+  color: #ffffff; /* Normal link color */
+  text-decoration: none; /* Optional: Remove underline */
+}
+
+.site-footer a:hover {
+  color: #0021dd; /* Hover color */
+  text-decoration: underline; /* Optional: Add underline on hover */
+}
+
+.site-footer a:visited {
+  color: #ffffff; /* Visited link color */
 }
 
 

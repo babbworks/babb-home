@@ -31,7 +31,7 @@ permalink: /updates/
 </div>
 
  <div class="column-right">
-<h1>Categories</h1>
+<h2>Categories</h2>
 <ul>
   {% for category in site.categories %}
     <li>
