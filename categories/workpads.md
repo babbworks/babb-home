@@ -1,11 +1,11 @@
 ---
 layout: default
 nav_exclude: true
-title: News
-category: news
+title: Posts in "workpads"
+category: workpads
 ---
 
-<h1>News</h1>
+<h1>Workpads</h1>
 <ul>
   {% for post in site.categories[page.category] %}
     <li>

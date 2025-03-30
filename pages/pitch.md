@@ -1,7 +1,7 @@
 ---
 layout: page
-title: Workpads
-permalink: /workpads/
+title: Pitch
+permalink: /pitch/
 ---
 
 

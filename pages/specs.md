@@ -1,7 +1,7 @@
 ---
 layout: page
-title: Workpads
-permalink: /workpads/
+title: Specs
+permalink: /specs
 ---
 
 
@@ -15,21 +15,21 @@ permalink: /workpads/
 
 
  <div class="column-right">
-<h3>Sites</h3>
+<h3>BASICS</h3>
 <ul>
     <li>
       <a href="https://en.wikipedia.org/wiki/Brotli">Complete</a></li>
     <li>
       <a href="https://base64.guru/standards/base64url">Complete</a></li>
 </ul>
-<h3>Supports</h3>
+<h3>Times</h3>
 <ul>
     <li>
       <a href="https://en.wikipedia.org/wiki/Brotli">Complete</a></li>
     <li>
       <a href="https://base64.guru/standards/base64url">Complete</a></li>
 </ul>
-<h3>References</h3>
+<h3>Workpads</h3>
 <ul>
     <li>
       <a href="https://en.wikipedia.org/wiki/Brotli">Complete</a></li>

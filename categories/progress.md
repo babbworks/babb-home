@@ -5,7 +5,7 @@ title: Posts in "progress"
 category: progress
 ---
 
-<h1>Posts in "{{ page.category }}"</h1>
+<h1>Progress</h1>
 <ul>
   {% for post in site.categories[page.category] %}
     <li>

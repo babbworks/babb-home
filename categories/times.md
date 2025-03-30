@@ -5,7 +5,7 @@ title: Posts in "times"
 category: times
 ---
 
-<h1>Posts in "{{ page.category }}"</h1>
+<h1>Times</h1>
 <ul>
   {% for post in site.categories[page.category] %}
     <li>

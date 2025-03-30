@@ -21,7 +21,7 @@
 title: Babb.
 email: hello@babb.tel
 description: >- # this means to ignore newlines until "baseurl:"
-  Tools for Work
+  Tools for life.
 baseurl: "" # the subpath of your site, e.g. /blog
 url: "https://babb.tel" # the base hostname & protocol for your site, e.g. http://example.com
 twitter_username: babbltd
@@ -39,8 +39,13 @@ plugins:
   - jekyll-paginate
 
 header_pages:
-  - about.md
-  - contact.md
+  - categories/news.md
+  - pages/tools-for-life.md
+  - pages/specs.md
+  - pages/releases.md
+  - pages/standards.md
+  - pages/company.md
+
 
 paginate: 20
 paginate_path: "/page:num/"
