@@ -14,7 +14,7 @@ permalink: /company/
 
 
  <div class="column-right">
-<h3>About</h3>
+<h3>Company</h3>
 <ul>
     <li>
       <a href="https://en.wikipedia.org/wiki/Brotli">pitch.workpads.org</a></li>
