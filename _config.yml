@@ -40,7 +40,8 @@ plugins:
 
 header_pages:
   - categories/news.md
-  - pages/tools-for-life.md
+  - pages/tools.md
+  - pages/tests.md
   - pages/specs.md
   - pages/releases.md
   - pages/standards.md
