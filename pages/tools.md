@@ -20,7 +20,25 @@ Babbs aka "babb-s" is short for "Babb System". It's a command line program for m
 
 
  <div class="column-right">
+ <h3>WORKWARRIOR</h3>
+<ul>
+    <li>
+      <a href="https://workpads.org">workpads.org</a></li>
+    <li>
+          <a href="https://github.com/babbltd/workpads.app">Github Repo</a></li>
+    <li>
+      <a href="https://www.babb.tel/why-workpads">Why Workpads?</a></li>
+</ul>
 <h3>WORKPADS</h3>
+<ul>
+    <li>
+      <a href="https://workpads.org">workpads.org</a></li>
+    <li>
+          <a href="https://github.com/babbltd/workpads.app">Github Repo</a></li>
+    <li>
+      <a href="https://www.babb.tel/why-workpads">Why Workpads?</a></li>
+</ul>
+<h3>WARRIOR</h3>
 <ul>
     <li>
       <a href="https://workpads.org">workpads.org</a></li>

@@ -1,6 +1,6 @@
 ---
 layout: page
-title: Tools for life.
+title: Tools for the frontier.
 permalink: /company/
 ---
 
