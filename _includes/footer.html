@@ -3,14 +3,14 @@
 
   <div class="wrapper">
 
-    <h2 class="footer-heading"></b>Tools for life.</b></h2>
+    <h2 class="footer-heading"></b>Tools for the frontier.</b></h2>
 
     <div class="footer-col-wrapper">
       <div class="footer-col footer-col-1">
         <h2 class="footer-heading">Company</h2>
         <ul class="contact-list">
           <li class="p-name">
-            Babb Ltd.
+            Babb Works Inc. 
             </li>
             {%- if site.email -%}
             <li><a class="u-email" href="mailto:{{ site.email }}">{{ site.email }}</a></li>
@@ -33,16 +33,50 @@
 
       <div class="footer-col footer-col-3">
         <h2 class="footer-heading">Tools</h2>
-        <a href="/workpads">📝 Workpads</a><br>
-        <a href="/times">⌚ Times by Babb</a><br>
-        <a href="/times-cli">⌚ Times CLI</a>
+        <a href="https://workwarrior.org">Workwarrior</a><br>
+        <a href="https://protocol.workpads.org/">Workpads</a><br>
+        <a href="https://warriorbybabb.com">Warrior</a><br>
+        <a href="https://babbs.app">BABBS</a><br><br>  
+        <h2 class="footer-heading">Standards</h2>
+        <a href="https://basics.babb.tel">BASICS</a><br>
+        <a href="https://basics.babb.tel">Workpads</a><br>
+        <a href="https://basics.babb.tel">Warrior</a><br>
+        <a href="https://basics.babb.tel">BABBS</a><br>
+
+
       </div>
 
       <div class="footer-col footer-col-4">
         <h2 class="footer-heading">Guides</h2>
-        <a href="https://basics.babb.tel">⚙️ BASICS</a><br>
-        <a href="https://protocol.workpads.org/">📝 Workpads</a><br>
-        <a href="https://times.babb.tel">⌚ Times</a><br>
+        <a href="https://basics.babb.tel">BASICS</a><br>
+        <a href="https://workwarrior.org/buide">Workwarrior</a><br>
+        <a href="https://protocol.workpads.org/">Workpads</a><br>
+        <a href="https://warrior.babb.tel">Warrior</a><br>
+        <a href="https://babbs.babb.tel">BABBS</a><br>
+
+
+
+
+        
+
+      </div>
+
+      <div class="footer-col footer-col-5 ">
+        <h2 class="footer-heading">Updates</h2>
+
+        <ul>
+          {% for post in site.posts limit:5 %}      <li>
+              <a href="{{ post.url | relative_url }}">{{ post.title }}</a>
+            </li>
+          {% endfor %}
+          <p class="rss-subscribe">subscribe <a href="{{ "/feed.xml" | relative_url }}">via RSS</a></p>
+      
+        </ul>
+
+
+
+
+        
 
       </div>
 

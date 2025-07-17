@@ -24,12 +24,12 @@ description: >- # this means to ignore newlines until "baseurl:"
   Tools for the frontier.
 baseurl: "" # the subpath of your site, e.g. /blog
 url: "https://babb.tel" # the base hostname & protocol for your site, e.g. http://example.com
-twitter_username: babbltd
-github_username:  babbltd
-instagram_username: babbltd
-facebook_username: babblimited
-linkedin_username: babbltd
-youtube_username: babbltd
+twitter_username: babbworks
+github_username:  babbworks
+instagram_username: babbworks
+facebook_username: babbworks
+linkedin_username: babbworks
+youtube_username: babbworks
 
 # Build settings
 theme: minima
@@ -39,12 +39,12 @@ plugins:
 
 header_pages:
   - categories/news.md
-  - pages/tools.md
-  - pages/tests.md
-  - pages/specs.md
-  - pages/releases.md
-  - pages/standards.md
-  - pages/company.md
+  - pages/Tools/tools.md
+  - pages/Specs/specs.md
+  - pages/Standards/standards.md
+  - pages/Tests/tests.md
+  - pages/Releases/releases.md
+  - pages/Company/company.md
 
 
 paginate: 20
