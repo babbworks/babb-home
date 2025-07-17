@@ -7,16 +7,17 @@ layout: default
 <div class="home">
   <h2>Taking business into orbit.</h2>
   <h4><b>From <a href="/rust-belt">Rust Belt</a>, to <a href="company/focus/2025/03/14/building-for-remote-regions.html">Kalahari</a> to the <a href="/cosmic-commerce">Cosmos</a>, we are pioneering <a href="/tools-for-life">digital & physical tools</a> that help people work & learn.</b></h4>
-<p>We created <a href="https://babb.tel/workwarrior">Workwarrior</a> to grow the ecosystem of open source productivity tools. We're now gradually building <a href="/warrior">Warrior</a> and <a href="/babbs">BABBS</a> as long-term answers to the issues of personal and industrial productivity. Every tool aims to be a <a href="/century-systems">Century System</a>. </p>
-<h4>All products and projects are based on and contribute to the <a href="/basics">BASICS Protocol</a> ("Business Assistance System"), a open source framework for services and functions, similar to an operating system.</h4>
-<p><a href="/workpads">Workpads</a> is our first commercial project. It's a open protocol and mobile program for <a href="/projects/workpads/2025/03/14/logging-business-events.html">creating and sharing business records</a>. Read <a href="/projects/times/2025/03/13/Workpads-Project.html">about the project</a>, try the <a href="https://kaiosdemo.workpads.app">KaiOS demo</a>, or <a href="https://pitch.babb.tel">view our seed pitch</a>.   <br><br>Why <a href="/name">Babb</a>?</h4>
+<p><a href="/workwarrior">Workwarrior</a> grows the ecosystem of open source productivity tools for individuals and industries. Get the terminal app <a href="https://github.com/babbworks/workwarrior">on GitHub</a>. </p>
+<p><a href="/workpads">Workpads</a> is our first commercial project. It's a open protocol and mobile program for <a href="projects/workpads/2025/03/14/logging-business-events.html">creating and sharing business records</a>. </p>
+<h4>Everything we do grows the <a href="/basics">BASICS Open Protocol</a>, a framework for business services, similar to an operating system.</h4>
+<p>Why <a href="/name">Babb</a>?</p>
 </div>
 </div>
 
  <div class="column-right">
   <h2><b><a href="/updates">Updates</a></b></h2>
   <ul>
-    {% for post in site.posts limit:5 %}      <li>
+    {% for post in site.posts limit:30 %}      <li>
         <a href="{{ post.url | relative_url }}">{{ post.title }}</a>
         <span>{{ post.date | date: "%B %d, %Y" }}</span>
       </li>
