@@ -29,6 +29,8 @@ Workwarrior is the first tool we built, an open source project to make working a
           <a href="https://github.com/babbworks/workwarrior">Github Repo</a></li>
     <li>
       <a href="https://www.babb.tel/workwarrior">Page for Workwarrior</a></li>
+    <li>
+      <a href="https://workwarrior.babb.tel">Standard</a></li>
 </ul>
 <h3>BITPADS</h3>
 <ul>
@@ -37,7 +39,9 @@ Workwarrior is the first tool we built, an open source project to make working a
     <li>
           <a href="https://github.com/babbworks/bitpads">Github Repo</a></li>
     <li>
-      <a href="https://www.babb.tel/why-workpads">Page for Bitpads</a></li>
+      <a href="https://www.babb.tel/bitpads">Page for Bitpads</a></li>
+    <li>
+      <a href="https://bitpads.babb.tel">Standard</a></li>
 </ul>
 <h3>WORKPADS</h3>
 <ul>
@@ -48,7 +52,9 @@ Workwarrior is the first tool we built, an open source project to make working a
     <li>
           <a href="https://github.com/babbworks/workpads.app">Github Repo</a></li>
     <li>
-      <a href="https://www.babb.tel/why-workpads">Page for Workpads</a></li>
+      <a href="https://www.babb.tel/workpads">Page for Workpads</a></li>
+      <li>
+      <a href="https://workpads.babb.tel">Standard</a></li>
 </ul>
 <h3>BASICS</h3>
 <ul>
@@ -56,6 +62,8 @@ Workwarrior is the first tool we built, an open source project to make working a
       <a href="https://github.com/babbworks/basics">Github Repo</a></li>
     <li>
       <a href="https://www.babb.tel/basics">Page for BASICS</a></li>
+    <li>
+      <a href="https://basics.babb.tel">Standard</a></li>
 </ul>
   </div>
 </div>

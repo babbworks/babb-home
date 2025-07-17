@@ -9,7 +9,7 @@ permalink: /releases
   <div class="column-left">
 <div class="home">
 <h2>Overview</h2>
- 
+ <p>Information about the releases of each product can be found in the sidebar. Critical updates will be provided below.</p>
 </div>
 </div>
 
@@ -37,19 +37,6 @@ permalink: /releases
     <li>
       <a href="https://babb.tel/workwarrior/releases">Page for Workwarrior Releases</a></li>
 </ul>
-<h3>Warrior</h3>
-<ul>
-    <li>
-      <a href="https://github.com/babbworks/warrior/releases">Releases (GitHub)</a></li>
-    <li>
-      <a href="https://babb.tel/warrior/releases">Page for Warrior Releases</a></li>
-</ul>
-<h3>Babb System (BABBS)</h3>
-<ul>
-    <li>
-      <a href="https://github.com/babbworks/babbs/releases">Complete</a></li>
-    <li>
-      <a href="https://babb.tel/babbs/releases">Page for Babb System Releases</a></li>
-</ul>
+
   </div>
 </div>

@@ -40,7 +40,6 @@ plugins:
 header_pages:
   - categories/news.md
   - pages/Tools/tools.md
-  - pages/Specs/specs.md
   - pages/Standards/standards.md
   - pages/Tests/tests.md
   - pages/Releases/releases.md
