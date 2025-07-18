@@ -8,7 +8,7 @@ permalink: /releases
 <div class="home-columns">
   <div class="column-left">
 <div class="home">
-<h2>Overview</h2>
+
  <p>Information about the releases of each product can be found in the sidebar. Critical updates will be provided below.</p>
 </div>
 </div>

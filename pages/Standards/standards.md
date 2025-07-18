@@ -8,7 +8,6 @@ permalink: /standards
 <div class="home-columns">
   <div class="column-left">
 <div class="home">
-<h2>Overview</h2>
 <p>These are the various standards being developed and maintained by Babb and its contributor communities. In many cases the growth of these standards is a highly collaborative process between the company and the open source community.</p>
 <p>Each standard relies on countless other industry specifications. Documentation of these standards is an ongoing effort.</p>
 

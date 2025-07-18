@@ -17,25 +17,12 @@ permalink: /company/
 <h3>Company</h3>
 <ul>
     <li>
-      <a href="https://en.wikipedia.org/wiki/Brotli">pitch.workpads.org</a></li>
+      <a href="https://pitch.babb.tel">company pitch</a></li>
 </ul>
-<h3>Supports</h3>
+<h3>Workpads</h3>
 <ul>
     <li>
-      <a href="https://en.wikipedia.org/wiki/Brotli">Brotli Data Compression</a></li>
-    <li>
-      <a href="https://base64.guru/standards/base64url">Base64 URL Safe</a></li>
-    <li>
-      <a href="https://en.wikipedia.org/wiki/Brotli">Brotli Data Compression</a></li>
+      <a href="https://seedpitch.babb.tel">seed pitch for workpads</a></li>
 </ul>
-<h3>References</h3>
-<ul>
-    <li>
-      <a href="https://en.wikipedia.org/wiki/Brotli">Brotli Data Compression</a></li>
-    <li>
-      <a href="https://base64.guru/standards/base64url">Base64 URL Safe</a></li>
-    <li>
-      <a href="https://en.wikipedia.org/wiki/Brotli">Brotli Data Compression</a></li>
-      </ul>
   </div>
 </div>
