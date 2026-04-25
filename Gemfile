@@ -2,6 +2,7 @@ source "https://rubygems.org"
 
 gem "jekyll", "~> 4.3"
 gem "minima", "=2.5.1"
+gem "jekyll-sass-converter", "~> 2.0"  # v3 uses sass-embedded which requires macOS 14+
 
 # github-pages gem forces safe: true which disables _plugins — use GitHub Actions instead
 # gem "github-pages", group: :jekyll_plugins

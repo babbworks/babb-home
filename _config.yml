@@ -37,13 +37,11 @@ plugins:
   - jekyll-paginate
 
 header_pages:
-  - categories/news.md
   - pages/Tools/tools.md
   - pages/Standards/standards.md
-  - pages/Tests/tests.md
   - pages/Releases/releases.md
-  - pages/Company/company.md
   - pages/basics.md
+  - pages/bitpadsbitledger.md
 
 
 

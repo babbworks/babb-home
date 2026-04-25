@@ -1,0 +1,1630 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BitPads & BitLedger — Universal Binary Transmission Protocols</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=IBM+Plex+Mono:wght@300;400;500&family=Barlow:wght@300;400;500&family=Barlow+Condensed:wght@600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --void:       #07090D;
+      --trace:      #0D1018;
+      --surface:    #13171F;
+      --dim:        #1E242E;
+      --border:     #272E3A;
+      --muted:      #525D6E;
+      --ground:     #B8B4AC;
+      --white:      #ECEAE4;
+      --signal:     #C8870A;
+      --signal-lo:  rgba(200,135,10,0.12);
+      --signal-mid: rgba(200,135,10,0.25);
+      --beacon:     #3A8FD4;
+      --beacon-lo:  rgba(58,143,212,0.12);
+      --confirm:    #3BAF68;
+      --alert:      #C84040;
+      --purple:     #9060C8;
+      --glow-signal: 0 0 40px rgba(200,135,10,0.18);
+      --ff-display: 'Cormorant Garamond', Georgia, serif;
+      --ff-mono:    'IBM Plex Mono', 'Courier New', monospace;
+      --ff-body:    'Barlow', system-ui, sans-serif;
+      --ff-label:   'Barlow Condensed', system-ui, sans-serif;
+    }
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--void);
+      color: var(--white);
+      font-family: var(--ff-body);
+      font-size: 16px;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* scanline texture */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: repeating-linear-gradient(0deg,
+        transparent 0px, transparent 3px,
+        rgba(0,0,0,0.025) 3px, rgba(0,0,0,0.025) 4px);
+      pointer-events: none;
+      z-index: 9000;
+    }
+
+    /* ── BINARY RAIN CANVAS ── */
+    #bg {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      opacity: 1;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 800;
+      background: rgba(7,9,13,0.94);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 40px;
+    }
+
+    .nav-brand {
+      font-family: var(--ff-mono);
+      font-size: 0.72rem;
+      font-weight: 500;
+      color: var(--signal);
+      letter-spacing: 0.18em;
+      text-decoration: none;
+    }
+
+    .nav-brand span { color: var(--muted); margin: 0 6px; }
+
+    .nav-links {
+      list-style: none;
+      display: flex;
+      gap: 0;
+    }
+
+    .nav-links a {
+      font-family: var(--ff-label);
+      font-size: 0.62rem;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--muted);
+      text-decoration: none;
+      padding: 0 16px;
+      height: 50px;
+      display: flex;
+      align-items: center;
+      border-left: 1px solid var(--border);
+      transition: color 0.15s, background 0.15s;
+    }
+
+    .nav-links a:hover {
+      color: var(--white);
+      background: var(--dim);
+    }
+
+    /* ── CONTENT WRAPPER ── */
+    .wrap {
+      max-width: 1160px;
+      margin: 0 auto;
+      padding: 0 40px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ── LABEL ── */
+    .eyebrow {
+      font-family: var(--ff-label);
+      font-size: 0.6rem;
+      font-weight: 700;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: var(--signal);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .eyebrow::before {
+      content: '';
+      display: block;
+      width: 28px;
+      height: 1px;
+      background: var(--signal);
+      flex-shrink: 0;
+    }
+
+    /* ── SECTION HEADING ── */
+    .sh {
+      font-family: var(--ff-display);
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      font-weight: 600;
+      line-height: 1.1;
+      letter-spacing: -0.015em;
+      color: var(--white);
+    }
+
+    .sh em { color: var(--signal); font-style: italic; }
+
+    .section-sub {
+      margin-top: 16px;
+      font-size: 0.9rem;
+      color: var(--muted);
+      line-height: 1.7;
+      max-width: 520px;
+    }
+
+    /* ── RULE ── */
+    hr.rule {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 0;
+    }
+
+    /* ══════════════════════════════════════════
+       HERO
+    ══════════════════════════════════════════ */
+    #hero {
+      min-height: calc(100vh - 50px);
+      display: grid;
+      grid-template-columns: 1fr 420px;
+      align-items: center;
+      gap: 60px;
+      padding: 80px 40px 80px;
+      max-width: 1160px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero-kicker {
+      font-family: var(--ff-mono);
+      font-size: 0.68rem;
+      color: var(--muted);
+      letter-spacing: 0.15em;
+      margin-bottom: 32px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .hero-kicker::before {
+      content: '▶';
+      color: var(--signal);
+      font-size: 0.55rem;
+      animation: blink 1.6s step-end infinite;
+    }
+
+    @keyframes blink {
+      0%,100% { opacity:1; } 50% { opacity:0; }
+    }
+
+    h1 {
+      font-family: var(--ff-display);
+      font-size: clamp(3.2rem, 7vw, 6.5rem);
+      font-weight: 600;
+      line-height: 1.0;
+      letter-spacing: -0.025em;
+      color: var(--white);
+      margin-bottom: 32px;
+    }
+
+    h1 em {
+      color: var(--signal);
+      font-style: italic;
+    }
+
+    .hero-desc {
+      font-size: 1.05rem;
+      font-weight: 300;
+      color: var(--ground);
+      line-height: 1.75;
+      max-width: 480px;
+      margin-bottom: 44px;
+    }
+
+    .hero-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .badge {
+      font-family: var(--ff-mono);
+      font-size: 0.62rem;
+      letter-spacing: 0.1em;
+      padding: 5px 11px;
+      border: 1px solid var(--border);
+      color: var(--muted);
+    }
+
+    .badge.lit {
+      border-color: rgba(200,135,10,0.4);
+      color: var(--signal);
+      background: var(--signal-lo);
+    }
+
+    /* Hero transmission diagram */
+    .hero-diagram {
+      position: relative;
+    }
+
+    .tx-frame {
+      background: var(--trace);
+      border: 1px solid var(--border);
+      padding: 28px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .tx-frame::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--signal), transparent);
+    }
+
+    .tx-label {
+      font-family: var(--ff-mono);
+      font-size: 0.58rem;
+      color: var(--muted);
+      letter-spacing: 0.15em;
+      margin-bottom: 16px;
+    }
+
+    .tx-bits {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 3px;
+      margin-bottom: 20px;
+    }
+
+    .tx-bit {
+      width: 14px;
+      height: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--ff-mono);
+      font-size: 0.52rem;
+      border: 1px solid var(--border);
+      color: var(--dim);
+      background: var(--dim);
+      transition: all 0.1s;
+    }
+
+    .tx-bit.on {
+      color: var(--signal);
+      background: var(--signal-lo);
+      border-color: rgba(200,135,10,0.35);
+    }
+
+    .tx-bit.beacon-on {
+      color: var(--beacon);
+      background: var(--beacon-lo);
+      border-color: rgba(58,143,212,0.35);
+    }
+
+    .tx-stat-row {
+      display: flex;
+      gap: 20px;
+      border-top: 1px solid var(--border);
+      padding-top: 16px;
+    }
+
+    .tx-stat {
+      flex: 1;
+    }
+
+    .tx-stat-val {
+      font-family: var(--ff-mono);
+      font-size: 1.1rem;
+      color: var(--signal);
+      font-weight: 500;
+    }
+
+    .tx-stat-lbl {
+      font-family: var(--ff-mono);
+      font-size: 0.55rem;
+      color: var(--muted);
+      letter-spacing: 0.1em;
+      margin-top: 2px;
+    }
+
+    /* scan line on hero diagram */
+    .scan-line {
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 60%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--signal), transparent);
+      animation: sweep 3.5s ease-in-out infinite;
+      opacity: 0.5;
+    }
+
+    @keyframes sweep {
+      0%   { top: 10%; left: -60%; }
+      100% { top: 90%; left: 160%; }
+    }
+
+    /* ══════════════════════════════════════════
+       CONSERVATION
+    ══════════════════════════════════════════ */
+    #conservation {
+      background: var(--trace);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      padding: 100px 0;
+      position: relative;
+      z-index: 1;
+    }
+
+    .conservation-inner {
+      max-width: 1160px;
+      margin: 0 auto;
+      padding: 0 40px;
+      text-align: center;
+    }
+
+    .conservation-quote {
+      font-family: var(--ff-display);
+      font-size: clamp(1rem, 1.8vw, 1.35rem);
+      font-style: italic;
+      color: var(--muted);
+      max-width: 640px;
+      margin: 0 auto 48px;
+      line-height: 1.75;
+    }
+
+    .equation {
+      font-family: var(--ff-display);
+      font-size: clamp(4rem, 11vw, 10rem);
+      font-weight: 400;
+      color: var(--signal);
+      line-height: 1;
+      text-shadow: var(--glow-signal);
+      margin-bottom: 64px;
+      letter-spacing: -0.02em;
+    }
+
+    .cons-grid {
+      display: grid;
+      grid-template-columns: repeat(3,1fr);
+      gap: 2px;
+      text-align: left;
+    }
+
+    .cons-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 32px;
+      transition: border-color 0.2s;
+    }
+
+    .cons-card:hover { border-color: rgba(200,135,10,0.4); }
+
+    .cons-domain {
+      font-family: var(--ff-label);
+      font-size: 0.58rem;
+      letter-spacing: 0.22em;
+      color: var(--signal);
+      margin-bottom: 12px;
+    }
+
+    .cons-formula {
+      font-family: var(--ff-mono);
+      font-size: 1.05rem;
+      color: var(--white);
+      margin-bottom: 12px;
+    }
+
+    .cons-desc {
+      font-size: 0.82rem;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    /* ══════════════════════════════════════════
+       PROTOCOLS
+    ══════════════════════════════════════════ */
+    #protocols {
+      padding: 100px 0;
+      position: relative;
+      z-index: 1;
+    }
+
+    .proto-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2px;
+      margin-top: 56px;
+    }
+
+    .proto-card {
+      background: var(--trace);
+      border: 1px solid var(--border);
+      padding: 48px 40px;
+      position: relative;
+    }
+
+    .proto-card::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+    }
+
+    .proto-card.bl::after { background: var(--signal); }
+    .proto-card.bp::after { background: var(--beacon); }
+
+    .proto-id {
+      font-family: var(--ff-mono);
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      margin-bottom: 24px;
+    }
+
+    .proto-card.bl .proto-id { color: var(--signal); }
+    .proto-card.bp .proto-id { color: var(--beacon); }
+
+    .proto-name {
+      font-family: var(--ff-display);
+      font-size: 2.4rem;
+      font-weight: 600;
+      line-height: 1.1;
+      color: var(--white);
+      margin-bottom: 20px;
+    }
+
+    .proto-desc {
+      font-size: 0.88rem;
+      color: var(--ground);
+      line-height: 1.7;
+      margin-bottom: 36px;
+    }
+
+    .proto-stats {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      border-top: 1px solid var(--border);
+      padding-top: 28px;
+    }
+
+    .proto-stat {
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+    }
+
+    .ps-val {
+      font-family: var(--ff-mono);
+      font-size: 1.4rem;
+      font-weight: 500;
+      line-height: 1;
+    }
+
+    .proto-card.bl .ps-val { color: var(--signal); }
+    .proto-card.bp .ps-val { color: var(--beacon); }
+
+    .ps-lbl {
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+
+    /* ══════════════════════════════════════════
+       ARCHITECTURE
+    ══════════════════════════════════════════ */
+    #architecture {
+      background: var(--trace);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      padding: 100px 0;
+      position: relative;
+      z-index: 1;
+    }
+
+    .bit-record-wrap {
+      margin-top: 56px;
+      overflow-x: auto;
+      padding-bottom: 8px;
+    }
+
+    .bit-row {
+      display: flex;
+      gap: 2px;
+      min-width: 700px;
+    }
+
+    .bit-layer-lbl {
+      font-family: var(--ff-mono);
+      font-size: 0.58rem;
+      color: var(--muted);
+      width: 72px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      letter-spacing: 0.08em;
+    }
+
+    .bit-cell {
+      height: 52px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--ff-mono);
+      font-size: 0.58rem;
+      letter-spacing: 0.06em;
+      cursor: default;
+      border: 1px solid transparent;
+      transition: transform 0.12s, border-color 0.12s, filter 0.12s;
+      white-space: nowrap;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .bit-cell:hover {
+      transform: scaleY(1.08);
+      z-index: 10;
+      filter: brightness(1.35);
+    }
+
+    .seg-m  { background: rgba(200,135,10,0.14); color: #D49020; border-color: rgba(200,135,10,0.06); }
+    .seg-q  { background: rgba(58,143,212,0.14);  color: #4AADEE; border-color: rgba(58,143,212,0.06); }
+    .seg-f  { background: rgba(59,175,104,0.14);  color: #50C880; border-color: rgba(59,175,104,0.06); }
+    .seg-a  { background: rgba(200,64,64,0.14);   color: #E06060; border-color: rgba(200,64,64,0.06); }
+
+    .bit-cell:hover.seg-m { border-color: rgba(200,135,10,0.5); }
+    .bit-cell:hover.seg-q { border-color: rgba(58,143,212,0.5); }
+    .bit-cell:hover.seg-f { border-color: rgba(59,175,104,0.5); }
+    .bit-cell:hover.seg-a { border-color: rgba(200,64,64,0.5); }
+
+    .bit-num-row {
+      display: flex;
+      gap: 2px;
+      min-width: 700px;
+      margin-top: 2px;
+    }
+
+    .bit-num {
+      font-family: var(--ff-mono);
+      font-size: 0.5rem;
+      color: var(--border);
+      height: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--dim);
+      background: var(--surface);
+    }
+
+    .bit-legend {
+      display: flex;
+      gap: 24px;
+      flex-wrap: wrap;
+      margin-top: 20px;
+    }
+
+    .leg-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--ff-mono);
+      font-size: 0.62rem;
+      color: var(--muted);
+    }
+
+    .leg-dot {
+      width: 8px; height: 8px;
+      border-radius: 1px;
+      flex-shrink: 0;
+    }
+
+    /* tooltip */
+    #tt {
+      position: fixed;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 14px 18px;
+      font-family: var(--ff-mono);
+      font-size: 0.7rem;
+      color: var(--white);
+      max-width: 280px;
+      pointer-events: none;
+      z-index: 9999;
+      display: none;
+      line-height: 1.6;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+    }
+
+    #tt.on { display: block; }
+    #tt strong { color: var(--signal); display: block; margin-bottom: 6px; letter-spacing: 0.04em; }
+    #tt .tt-range { color: var(--muted); font-size: 0.62rem; margin-top: 8px; }
+
+    /* layer bars */
+    .layer-viz {
+      margin-top: 72px;
+    }
+
+    .lv-title {
+      font-family: var(--ff-label);
+      font-size: 0.6rem;
+      letter-spacing: 0.22em;
+      color: var(--signal);
+      margin-bottom: 24px;
+    }
+
+    .lv-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 6px;
+    }
+
+    .lv-key {
+      font-family: var(--ff-mono);
+      font-size: 0.6rem;
+      color: var(--muted);
+      width: 72px;
+      flex-shrink: 0;
+      letter-spacing: 0.08em;
+    }
+
+    .lv-bar {
+      height: 38px;
+      display: flex;
+      align-items: center;
+      padding: 0 14px;
+      font-family: var(--ff-mono);
+      font-size: 0.62rem;
+      white-space: nowrap;
+      border: 1px solid;
+      transition: width 1.4s cubic-bezier(0.4,0,0.2,1);
+      overflow: hidden;
+      min-width: 10px;
+    }
+
+    .lv-bar.l1 { background: var(--signal-lo); border-color: rgba(200,135,10,0.3); color: var(--signal); }
+    .lv-bar.l2 { background: var(--beacon-lo); border-color: rgba(58,143,212,0.3); color: var(--beacon); }
+    .lv-bar.l3 { background: rgba(59,175,104,0.1); border-color: rgba(59,175,104,0.3); color: var(--confirm); }
+    .lv-bar.cmp { background: var(--signal-lo); border-color: rgba(200,135,10,0.5); color: var(--signal); }
+    .lv-bar.json { background: rgba(200,64,64,0.08); border-color: rgba(200,64,64,0.25); color: var(--alert); }
+
+    .lv-note {
+      font-family: var(--ff-mono);
+      font-size: 0.55rem;
+      color: var(--muted);
+      margin-left: 8px;
+      opacity: 0.7;
+    }
+
+    /* ══════════════════════════════════════════
+       CONTEXTS
+    ══════════════════════════════════════════ */
+    #contexts {
+      padding: 100px 0;
+      position: relative;
+      z-index: 1;
+    }
+
+    .ctx-grid {
+      display: grid;
+      grid-template-columns: repeat(3,1fr);
+      gap: 2px;
+      margin-top: 56px;
+    }
+
+    .ctx-card {
+      background: var(--trace);
+      border: 1px solid var(--border);
+      padding: 32px 28px;
+      transition: border-color 0.2s, background 0.2s;
+    }
+
+    .ctx-card:hover {
+      border-color: rgba(200,135,10,0.4);
+      background: rgba(200,135,10,0.03);
+    }
+
+    .ctx-glyph {
+      font-size: 1.6rem;
+      display: block;
+      margin-bottom: 18px;
+      filter: grayscale(0.3);
+    }
+
+    .ctx-zone {
+      font-family: var(--ff-label);
+      font-size: 0.58rem;
+      letter-spacing: 0.22em;
+      color: var(--signal);
+      margin-bottom: 8px;
+    }
+
+    .ctx-title {
+      font-family: var(--ff-display);
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--white);
+      line-height: 1.2;
+      margin-bottom: 10px;
+    }
+
+    .ctx-desc {
+      font-size: 0.8rem;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    /* ══════════════════════════════════════════
+       LINEAGE
+    ══════════════════════════════════════════ */
+    #lineage {
+      background: var(--trace);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      padding: 100px 0;
+      position: relative;
+      z-index: 1;
+    }
+
+    .timeline {
+      margin-top: 60px;
+      position: relative;
+      padding-left: 120px;
+    }
+
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 96px;
+      top: 8px; bottom: 8px;
+      width: 1px;
+      background: linear-gradient(180deg, transparent, var(--border) 10%, var(--border) 90%, transparent);
+    }
+
+    .tl-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 0;
+      margin-bottom: 48px;
+      position: relative;
+    }
+
+    .tl-year {
+      font-family: var(--ff-mono);
+      font-size: 0.65rem;
+      color: var(--muted);
+      position: absolute;
+      left: -120px;
+      width: 100px;
+      text-align: right;
+      padding-top: 3px;
+      letter-spacing: 0.06em;
+    }
+
+    .tl-node {
+      position: absolute;
+      left: -28px;
+      top: 4px;
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: var(--signal);
+      flex-shrink: 0;
+      z-index: 2;
+    }
+
+    .tl-node.now {
+      background: var(--confirm);
+      box-shadow: 0 0 14px rgba(59,175,104,0.6);
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%,100% { box-shadow: 0 0 14px rgba(59,175,104,0.6); }
+      50%      { box-shadow: 0 0 24px rgba(59,175,104,0.9); }
+    }
+
+    .tl-body { flex: 1; }
+
+    .tl-event {
+      font-family: var(--ff-display);
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: var(--white);
+      margin-bottom: 6px;
+      line-height: 1.2;
+    }
+
+    .tl-detail {
+      font-size: 0.82rem;
+      color: var(--muted);
+      line-height: 1.6;
+      max-width: 600px;
+    }
+
+    /* ══════════════════════════════════════════
+       NUMBERS
+    ══════════════════════════════════════════ */
+    #numbers {
+      padding: 100px 0;
+      position: relative;
+      z-index: 1;
+    }
+
+    .num-grid {
+      display: grid;
+      grid-template-columns: repeat(4,1fr);
+      gap: 2px;
+      margin-top: 56px;
+    }
+
+    .num-card {
+      background: var(--trace);
+      border: 1px solid var(--border);
+      padding: 36px 28px;
+    }
+
+    .num-big {
+      font-family: var(--ff-display);
+      font-size: 3rem;
+      font-weight: 600;
+      color: var(--signal);
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+
+    .num-unit {
+      font-family: var(--ff-mono);
+      font-size: 0.58rem;
+      color: var(--muted);
+      letter-spacing: 0.12em;
+      margin-bottom: 12px;
+      text-transform: uppercase;
+    }
+
+    .num-desc {
+      font-size: 0.8rem;
+      color: var(--ground);
+      line-height: 1.5;
+    }
+
+    /* efficiency bars */
+    .eff-block {
+      margin-top: 2px;
+      background: var(--trace);
+      border: 1px solid var(--border);
+      padding: 44px;
+    }
+
+    .eff-label {
+      font-family: var(--ff-label);
+      font-size: 0.6rem;
+      letter-spacing: 0.22em;
+      color: var(--signal);
+      margin-bottom: 36px;
+    }
+
+    .eff-row { margin-bottom: 28px; }
+
+    .eff-header {
+      display: flex;
+      justify-content: space-between;
+      font-family: var(--ff-mono);
+      font-size: 0.7rem;
+      margin-bottom: 10px;
+    }
+
+    .eff-name { color: var(--white); }
+
+    .eff-track {
+      height: 9px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+    }
+
+    .eff-fill {
+      height: 100%;
+      width: 0;
+      transition: width 1.6s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    .eff-fill.sig { background: var(--signal); }
+    .eff-fill.red { background: var(--alert); opacity: 0.55; }
+
+    /* ══════════════════════════════════════════
+       REPOS
+    ══════════════════════════════════════════ */
+    #repos {
+      background: var(--trace);
+      border-top: 1px solid var(--border);
+      padding: 80px 0;
+      position: relative;
+      z-index: 1;
+    }
+
+    .repo-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2px;
+      margin-top: 48px;
+    }
+
+    .repo-card {
+      display: block;
+      text-decoration: none;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 40px;
+      transition: border-color 0.2s, background 0.2s;
+    }
+
+    .repo-card:hover {
+      border-color: rgba(200,135,10,0.45);
+      background: rgba(200,135,10,0.04);
+    }
+
+    .repo-id {
+      font-family: var(--ff-mono);
+      font-size: 0.65rem;
+      letter-spacing: 0.16em;
+      color: var(--signal);
+      margin-bottom: 12px;
+    }
+
+    .repo-title {
+      font-family: var(--ff-display);
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: var(--white);
+      margin-bottom: 12px;
+    }
+
+    .repo-desc {
+      font-size: 0.82rem;
+      color: var(--muted);
+      line-height: 1.6;
+      margin-bottom: 24px;
+    }
+
+    .repo-link {
+      font-family: var(--ff-mono);
+      font-size: 0.65rem;
+      color: var(--signal);
+      letter-spacing: 0.08em;
+    }
+
+    /* ══════════════════════════════════════════
+       FOOTER
+    ══════════════════════════════════════════ */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 32px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: relative;
+      z-index: 1;
+    }
+
+    .ft-brand {
+      font-family: var(--ff-mono);
+      font-size: 0.65rem;
+      color: var(--signal);
+      letter-spacing: 0.16em;
+    }
+
+    .ft-info {
+      font-family: var(--ff-mono);
+      font-size: 0.6rem;
+      color: var(--muted);
+      letter-spacing: 0.1em;
+    }
+
+    /* ══════════════════════════════════════════
+       RESPONSIVE
+    ══════════════════════════════════════════ */
+    @media (max-width: 900px) {
+      #hero { grid-template-columns: 1fr; padding: 60px 24px; }
+      .hero-diagram { display: none; }
+      nav { padding: 0 20px; }
+      .nav-links { display: none; }
+      .wrap { padding: 0 24px; }
+      .proto-grid { grid-template-columns: 1fr; }
+      .cons-grid { grid-template-columns: 1fr; }
+      .ctx-grid { grid-template-columns: 1fr 1fr; }
+      .num-grid { grid-template-columns: 1fr 1fr; }
+      .repo-grid { grid-template-columns: 1fr; }
+      .eff-block { padding: 28px; }
+      footer { flex-direction: column; gap: 12px; text-align: center; }
+      #conservation, #lineage { padding: 60px 0; }
+      #protocols, #contexts, #numbers { padding: 60px 0; }
+      #architecture { padding: 60px 0; }
+      #repos { padding: 60px 0; }
+    }
+
+    @media (max-width: 560px) {
+      .ctx-grid { grid-template-columns: 1fr; }
+      .num-grid { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<canvas id="bg"></canvas>
+<div id="tt"></div>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-brand" href="#">BITPADS <span>·</span> BITLEDGER</a>
+  <ul class="nav-links">
+    <li><a href="#protocols">Protocols</a></li>
+    <li><a href="#architecture">Architecture</a></li>
+    <li><a href="#contexts">Contexts</a></li>
+    <li><a href="#lineage">Lineage</a></li>
+    <li><a href="#numbers">Numbers</a></li>
+    <li><a href="#repos">Repositories</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<div style="position:relative;z-index:1;">
+<section id="hero">
+  <div>
+    <p class="hero-kicker">BABBWORKS OPEN PROTOCOL FAMILY &nbsp;·&nbsp; V2 / V3</p>
+    <h1>The algebra<br>was always<br><em>the same.</em></h1>
+    <p class="hero-desc">Double-entry accounting, Kirchhoff's current law, mass conservation — one invariant governs all meaningful exchange. BitLedger encodes it in 40 bits. BitPads transmits it anywhere, from the factory floor to the far side of the solar system.</p>
+    <div class="hero-badges">
+      <span class="badge lit">BITPADS v2.0</span>
+      <span class="badge lit">BITLEDGER v3.0</span>
+      <span class="badge">5 BYTES · CORE RECORD</span>
+      <span class="badge">EARTH TO COSMOS</span>
+      <span class="badge">OPEN STANDARD</span>
+      <span class="badge">CRC-15 INTEGRITY</span>
+    </div>
+  </div>
+
+  <div class="hero-diagram">
+    <div class="tx-frame">
+      <div class="scan-line"></div>
+      <div class="tx-label">BITLEDGER FRAME · LAYER 3 · 40 BITS</div>
+      <div class="tx-bits" id="hero-bits"></div>
+      <div class="tx-stat-row">
+        <div class="tx-stat">
+          <div class="tx-stat-val">40</div>
+          <div class="tx-stat-lbl">BITS PER RECORD</div>
+        </div>
+        <div class="tx-stat">
+          <div class="tx-stat-val">5</div>
+          <div class="tx-stat-lbl">BYTES TOTAL</div>
+        </div>
+        <div class="tx-stat">
+          <div class="tx-stat-val">3</div>
+          <div class="tx-stat-lbl">INTEGRITY CHECKS</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+</div>
+
+<hr class="rule">
+
+<!-- CONSERVATION -->
+<section id="conservation">
+  <div class="conservation-inner">
+    <div class="eyebrow" style="justify-content:center;">Conservation Principle</div>
+    <p class="conservation-quote">"Every meaningful exchange is a conservation law. Money conserved, mass conserved, energy conserved, data conserved. BitLedger does not enforce this as a rule — it is the structure."</p>
+    <div class="equation">Σ Δv = 0</div>
+    <div class="cons-grid">
+      <div class="cons-card">
+        <div class="cons-domain">Financial Accounting</div>
+        <div class="cons-formula">Σ Debits = Σ Credits</div>
+        <div class="cons-desc">Pacioli, 1494. Every transaction has two sides that balance. For five centuries this was enforced at the application layer. BitLedger enforces it at encoding — a structural property, not a rule to check.</div>
+      </div>
+      <div class="cons-card">
+        <div class="cons-domain">Circuit Theory</div>
+        <div class="cons-formula">Σ I(node) = 0</div>
+        <div class="cons-desc">Kirchhoff, 1845. The sum of currents at any node is zero. Structurally identical to double-entry balance. The same 40-bit record covers power flows without changing the wire format.</div>
+      </div>
+      <div class="cons-card">
+        <div class="cons-domain">Industrial Operations</div>
+        <div class="cons-formula">Σ ṁ(in) = Σ ṁ(out)</div>
+        <div class="cons-desc">Mass in equals mass out. Every unit leaving one station must arrive at another. Factory floor, propellant tanks, cargo manifests — same invariant, same encoding, same integrity guarantees.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="rule">
+
+<!-- PROTOCOLS -->
+<section id="protocols">
+  <div class="wrap">
+    <div class="eyebrow">Protocol Family</div>
+    <h2 class="sh">Two protocols.<br>One wire format.</h2>
+    <p class="section-sub">BitLedger is the mathematical core. BitPads is the universal wrapper. Together they scale from a 1-byte heartbeat to a fully identified, timestamped, and auditable record.</p>
+    <div class="proto-grid">
+      <div class="proto-card bl">
+        <div class="proto-id">◈ BITLEDGER v3.0</div>
+        <div class="proto-name">The 40-bit<br>transaction record</div>
+        <p class="proto-desc">A complete double-entry accounting record — both sides of the entry, accounting classification, direction, settlement status, value, precision, and currency — encoded in exactly 40 bits. Designed from first principles at the binary representation of accounting states. The conservation invariant is not checked; it cannot be violated.</p>
+        <div class="proto-stats">
+          <div class="proto-stat"><span class="ps-val">40</span><span class="ps-lbl">bits per transaction record (5 bytes)</span></div>
+          <div class="proto-stat"><span class="ps-val">16</span><span class="ps-lbl">standard account pair codes</span></div>
+          <div class="proto-stat"><span class="ps-val">$33.5Q</span><span class="ps-lbl">maximum expressible value — 305× global GDP</span></div>
+          <div class="proto-stat"><span class="ps-val">3</span><span class="ps-lbl">independent error detection mechanisms</span></div>
+        </div>
+      </div>
+      <div class="proto-card bp">
+        <div class="proto-id">◉ BITPADS v2.0</div>
+        <div class="proto-name">The universal<br>transmission wrapper</div>
+        <p class="proto-desc">A universal binary protocol family extending BitLedger across every transmission context. A single Meta Byte declares frame type, content flags, and enhancement state before the receiver reads one payload byte. Four frame types span from a pure 1-byte signal to a fully annotated 44-byte record without changing structure.</p>
+        <div class="proto-stats">
+          <div class="proto-stat"><span class="ps-val">1→44</span><span class="ps-lbl">bytes, scaling on demand without structural change</span></div>
+          <div class="proto-stat"><span class="ps-val">4</span><span class="ps-lbl">frame types: Signal, Wave, Record, Ledger</span></div>
+          <div class="proto-stat"><span class="ps-val">13</span><span class="ps-lbl">signal slot positions (P1–P13)</span></div>
+          <div class="proto-stat"><span class="ps-val">155</span><span class="ps-lbl">years of C0 space reclaimed by Enhancement Grammar</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="rule">
+
+<!-- ARCHITECTURE -->
+<section id="architecture">
+  <div class="wrap">
+    <div class="eyebrow">Wire Format</div>
+    <h2 class="sh">The 40-bit record.<br><em>Hover any field.</em></h2>
+    <p class="section-sub">Every bit position carries a defined meaning. No padding. No negotiation. Conservation is a structural property of the encoding.</p>
+
+    <div class="bit-record-wrap">
+      <div class="bit-row" id="bit-row-cells"></div>
+      <div style="height:4px;"></div>
+      <div class="bit-num-row" id="bit-row-nums"></div>
+    </div>
+
+    <div class="bit-legend">
+      <div class="leg-item"><div class="leg-dot" style="background:rgba(200,135,10,0.7)"></div>Multiplicand · 17 bits</div>
+      <div class="leg-item"><div class="leg-dot" style="background:rgba(58,143,212,0.7)"></div>Multiplier · 8 bits</div>
+      <div class="leg-item"><div class="leg-dot" style="background:rgba(59,175,104,0.7)"></div>Flags · 7 bits</div>
+      <div class="leg-item"><div class="leg-dot" style="background:rgba(200,64,64,0.7)"></div>Accounting Block · 8 bits</div>
+    </div>
+
+    <div class="layer-viz">
+      <div class="lv-title">BITPADS TRANSMISSION EFFICIENCY · 100 TRANSACTIONS</div>
+      <div id="lv-rows"></div>
+    </div>
+  </div>
+</section>
+
+<hr class="rule">
+
+<!-- CONTEXTS -->
+<section id="contexts">
+  <div class="wrap">
+    <div class="eyebrow">Deployment Contexts</div>
+    <h2 class="sh">Earth to cosmos.<br>Every condition.</h2>
+    <p class="section-sub">Designed for the environments where communications must not fail — not as a constraint, but as the founding requirement.</p>
+    <div class="ctx-grid">
+      <div class="ctx-card">
+        <span class="ctx-glyph">🛰</span>
+        <div class="ctx-zone">Deep Space</div>
+        <div class="ctx-title">Satellite Constellation Operations</div>
+        <p class="ctx-desc">Power obligation settlement between nodes. Propellant tracking. Resource flows across orbital links. Every watt, every gram, accounted in 5 bytes. A 1960s teleprinter could relay the same stream.</p>
+      </div>
+      <div class="ctx-card">
+        <span class="ctx-glyph">📡</span>
+        <div class="ctx-zone">Remote Operations</div>
+        <div class="ctx-title">Low-Bandwidth, Intermittent Links</div>
+        <p class="ctx-desc">Kalahari-scale deployments. Areas with unstable or minimal connectivity. Operations where every byte of bandwidth has cost and latency. The protocol was designed for this environment — not retrofitted to it.</p>
+      </div>
+      <div class="ctx-card">
+        <span class="ctx-glyph">⚙️</span>
+        <div class="ctx-zone">Industrial</div>
+        <div class="ctx-title">Factory Floors & Field Operations</div>
+        <p class="ctx-desc">Material balance tracking between workstations. Manufacturing resource flows. High-frequency industrial controllers. Work that cannot pause for fragile software or verbose protocols.</p>
+      </div>
+      <div class="ctx-card">
+        <span class="ctx-glyph">🌾</span>
+        <div class="ctx-zone">Terrestrial Commerce</div>
+        <div class="ctx-title">Farming, Fabrication, Local Trade</div>
+        <p class="ctx-desc">The ongoing work of hard commerce. Field crews, shop floors, transport operators, local merchants. Open standards for trust between parties who may prefer paper with a digital audit trail.</p>
+      </div>
+      <div class="ctx-card">
+        <span class="ctx-glyph">🔌</span>
+        <div class="ctx-zone">IoT & Embedded</div>
+        <div class="ctx-title">Low-Power Constrained Devices</div>
+        <p class="ctx-desc">Sensor networks reporting resource consumption. Low-power handheld devices. IoT nodes where energy per transmission is a primary budget. Designed for hardware — not abstracted from it.</p>
+      </div>
+      <div class="ctx-card">
+        <span class="ctx-glyph">🏦</span>
+        <div class="ctx-zone">Financial Infrastructure</div>
+        <div class="ctx-title">Mobile Banking & Ledger Systems</div>
+        <p class="ctx-desc">Where ISO 20022 is XML and NACHA is fixed-width text, BitLedger is binary-native double-entry. 100 transactions in 512 bytes. Three independent error detection mechanisms. Integrity by design.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="rule">
+
+<!-- LINEAGE -->
+<section id="lineage">
+  <div class="wrap">
+    <div class="eyebrow">Engineering Heritage</div>
+    <h2 class="sh">5,000 years of<br>communication engineering.</h2>
+    <p class="section-sub">Every element of these protocols has a precedent. The algebra was already known. BitPads and BitLedger name it, encode it, and deploy it.</p>
+
+    <div class="timeline">
+      <div class="tl-item">
+        <span class="tl-year">c.3000 BCE</span>
+        <div class="tl-node"></div>
+        <div class="tl-body">
+          <div class="tl-event">Sumerian Clay Tokens</div>
+          <p class="tl-detail">Compact marks with meaning expanded through shared context. A single token representing a unit of grain, a head of livestock, a labor obligation. Minimal mark, rich shared codebook. BitPads binary pictography implements this principle in nibble streams — 4 bits per symbol, 16 concepts per codebook.</p>
+        </div>
+      </div>
+      <div class="tl-item">
+        <span class="tl-year">1494</span>
+        <div class="tl-node"></div>
+        <div class="tl-body">
+          <div class="tl-event">Pacioli's Double-Entry System</div>
+          <p class="tl-detail">Luca Pacioli formalized that every transaction has two sides and they must balance. For 530 years this was enforced at the application layer — a rule for software to check. BitLedger enforces it at the encoding layer. It is not a rule; it is a structural property. A record that does not balance cannot be encoded.</p>
+        </div>
+      </div>
+      <div class="tl-item">
+        <span class="tl-year">1845</span>
+        <div class="tl-node"></div>
+        <div class="tl-body">
+          <div class="tl-event">Kirchhoff's Circuit Laws</div>
+          <p class="tl-detail">The sum of currents at any node equals zero. Structurally identical to double-entry balance — the same algebra applied to a different quantity. BitLedger's universal domain extension recognizes this identity, enabling power flows and material flows to be encoded on the same 40-bit wire format as financial transactions.</p>
+        </div>
+      </div>
+      <div class="tl-item">
+        <span class="tl-year">1870</span>
+        <div class="tl-node"></div>
+        <div class="tl-body">
+          <div class="tl-event">Baudot's Five-Bit Code</div>
+          <p class="tl-detail">Five bits, thirty-two signals — the atom of binary communication. Every subsequent standard (Murray, ASCII, ISO 6429, Unicode) preserved this 5-bit space, leaving 3 upper bits of 32 C0 control characters structurally available. For 155 years, those bits sat unclaimed. BitPads C0 Enhancement Grammar reclaims them, adding priority, acknowledge request, and continuation flags to any of 29 standard transmission controls.</p>
+        </div>
+      </div>
+      <div class="tl-item">
+        <span class="tl-year">2025</span>
+        <div class="tl-node now"></div>
+        <div class="tl-body">
+          <div class="tl-event">BitLedger v3.0 · BitPads v2.0</div>
+          <p class="tl-detail">The first open, binary-native, double-entry protocol family with session-layer CRC integrity and universal domain extension. 40 bits for the core record. 1 to 44 bytes total transmission. Conservation enforced at the encoding level. Earth to cosmos. No dependencies. Direct kernel syscalls. Open specification.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="rule">
+
+<!-- NUMBERS -->
+<section id="numbers">
+  <div class="wrap">
+    <div class="eyebrow">Technical Specifications</div>
+    <h2 class="sh">Numbers that matter.</h2>
+    <div class="num-grid">
+      <div class="num-card">
+        <div class="num-big">40</div>
+        <div class="num-unit">bits · core record</div>
+        <div class="num-desc">A complete double-entry transaction. Both sides, full classification, value, direction, settlement, and integrity flags.</div>
+      </div>
+      <div class="num-card">
+        <div class="num-big">512</div>
+        <div class="num-unit">bytes · 100 transactions</div>
+        <div class="num-desc">Versus 80,000 bytes for equivalent JSON. A 156× reduction without loss of semantic fidelity.</div>
+      </div>
+      <div class="num-card">
+        <div class="num-big">$33.5Q</div>
+        <div class="num-unit">max expressible value</div>
+        <div class="num-desc">Approximately 305× total global GDP. The value space was designed to never overflow.</div>
+      </div>
+      <div class="num-card">
+        <div class="num-big">4.29B</div>
+        <div class="num-unit">max nodes (flat)</div>
+        <div class="num-desc">Hierarchical: 255 networks × 255 systems × 65,535 nodes. Scales from a two-device session to a global constellation.</div>
+      </div>
+    </div>
+    <div class="eff-block">
+      <div class="eff-label">WIRE SIZE COMPARISON · 100 TRANSACTIONS</div>
+      <div class="eff-row">
+        <div class="eff-header">
+          <span class="eff-name">BitLedger</span>
+          <span style="font-family:var(--ff-mono);font-size:0.7rem;color:var(--signal)">512 bytes</span>
+        </div>
+        <div class="eff-track"><div class="eff-fill sig" id="eff-bl"></div></div>
+      </div>
+      <div class="eff-row">
+        <div class="eff-header">
+          <span class="eff-name">JSON (equivalent)</span>
+          <span style="font-family:var(--ff-mono);font-size:0.7rem;color:var(--alert)">~80,000 bytes</span>
+        </div>
+        <div class="eff-track"><div class="eff-fill red" id="eff-json"></div></div>
+      </div>
+      <div class="eff-row">
+        <div class="eff-header">
+          <span class="eff-name">ISO 20022 XML</span>
+          <span style="font-family:var(--ff-mono);font-size:0.7rem;color:var(--alert)">~120,000 bytes</span>
+        </div>
+        <div class="eff-track"><div class="eff-fill red" id="eff-iso" style="opacity:0.4;"></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="rule">
+
+<!-- REPOS -->
+<section id="repos">
+  <div class="wrap">
+    <div class="eyebrow">Open Standards</div>
+    <h2 class="sh">Public repositories.<br>Open specification.</h2>
+    <p class="section-sub">Wire formats, field definitions, and reference implementations are documented and public. These are not products — they are protocols.</p>
+    <div class="repo-grid">
+      <a class="repo-card" href="https://github.com/babbworks/bitpads" target="_blank">
+        <div class="repo-id">◉ BABBWORKS / BITPADS</div>
+        <div class="repo-title">BitPads v2.0</div>
+        <p class="repo-desc">Universal binary protocol family. Four frame types. One Meta Byte. C0 Enhancement Grammar reclaims 155 years of unused signal space. Binary pictography. Scales from 1-byte heartbeat to fully annotated record. Reference implementation in hand-assembled x86-64 NASM — no C runtime, direct kernel syscalls.</p>
+        <div class="repo-link">→ github.com/babbworks/bitpads</div>
+      </a>
+      <a class="repo-card" href="https://github.com/babbworks/bitledger" target="_blank">
+        <div class="repo-id">◈ BABBWORKS / BITLEDGER</div>
+        <div class="repo-title">BitLedger v3.0</div>
+        <p class="repo-desc">Binary-native double-entry financial transmission protocol. 40-bit core record. Conservation invariant enforced at encoding. CRC-15 session integrity plus two cross-layer validation mechanisms. Universal domain extension for any conserved scalar — financial, physical, or operational.</p>
+        <div class="repo-link">→ github.com/babbworks/bitledger</div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="ft-brand">BITPADS · BITLEDGER · BABBWORKS INC.</div>
+  <div class="ft-info">OPEN BINARY PROTOCOL FAMILY · V2 / V3 · 2025</div>
+</footer>
+
+
+<script>
+/* ── BINARY RAIN BACKGROUND ── */
+(function() {
+  const c = document.getElementById('bg');
+  const x = c.getContext('2d');
+  let cols, drops;
+
+  function resize() {
+    c.width  = window.innerWidth;
+    c.height = window.innerHeight;
+    cols  = Math.floor(c.width / 16);
+    drops = Array.from({length: cols}, () => Math.random() * -80);
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  setInterval(function() {
+    x.fillStyle = 'rgba(7,9,13,0.06)';
+    x.fillRect(0, 0, c.width, c.height);
+    x.font = '11px monospace';
+    for (let i = 0; i < cols; i++) {
+      const ch  = Math.random() > 0.5 ? '1' : '0';
+      const lum = 0.05 + Math.random() * 0.22;
+      x.fillStyle = `rgba(200,135,10,${lum})`;
+      x.fillText(ch, i * 16, drops[i] * 16);
+      if (drops[i] * 16 > c.height && Math.random() > 0.978) drops[i] = 0;
+      else drops[i] += 0.6;
+    }
+  }, 75);
+})();
+
+/* ── HERO BIT DISPLAY ── */
+(function() {
+  const container = document.getElementById('hero-bits');
+  // Represent a sample 40-bit BitLedger record visually
+  // Fields: multiplicand(17) multiplier(8) flags(7) acct(8)
+  const pattern = [
+    // multiplicand - amber (17 bits) - some on, some off
+    [1,0,1,1,0,1,0,0,1,1,0,1,0,1,1,0,1],
+    // multiplier - beacon (8 bits)
+    [0,1,1,0,0,1,0,1],
+    // flags - green (7 bits)
+    [1,0,1,1,0,1,0],
+    // acct block - red (8 bits)
+    [1,0,0,0,1,1,0,1]
+  ].flat();
+
+  const cls = [
+    ...Array(17).fill('on'),
+    ...Array(8).fill('beacon-on'),
+    ...Array(7).fill('on'),
+    ...Array(8).fill('on')
+  ];
+
+  pattern.forEach((bit, i) => {
+    const d = document.createElement('div');
+    d.className = 'tx-bit';
+    d.textContent = bit;
+    if (bit === 1) d.classList.add(i >= 25 && i < 32 ? 'on' : i >= 32 ? 'on' : i >= 17 && i < 25 ? 'beacon-on' : 'on');
+    container.appendChild(d);
+  });
+
+  // Animate bits cycling
+  let tick = 0;
+  setInterval(function() {
+    const bits = container.querySelectorAll('.tx-bit');
+    const idx = Math.floor(Math.random() * 17); // only animate multiplicand region
+    const b = bits[idx];
+    const wasOn = b.classList.contains('on');
+    b.textContent = wasOn ? '0' : '1';
+    if (wasOn) b.classList.remove('on'); else b.classList.add('on');
+    tick++;
+  }, 220);
+})();
+
+/* ── 40-BIT RECORD INTERACTIVE ── */
+(function() {
+  const FIELDS = [
+    { seg:'seg-m', label:'MULT',  title:'Multiplicand (Bits 1–17)',    n:17, detail:'Price or value component. 17-bit field (range 0–131,071). Combined with the multiplier via N = A × 2^S + r. Supports values up to ~$33.5 quadrillion through the scaling formula.' },
+    { seg:'seg-q', label:'QTY',   title:'Multiplier (Bits 18–25)',     n:8,  detail:'Quantity component. 8-bit field (0–255). Active when QuantityPresent flag is set. Enables compact price × quantity encoding without separate records.' },
+    { seg:'seg-f', label:'RND',   title:'Rounding (Bits 26–27)',       n:2,  detail:'00 = Exact. 10 = Rounded down. 11 = Rounded up. 01 = Protocol error (malformed). Rounding state is encoded in the record, not inferred by the receiver.' },
+    { seg:'seg-f', label:'SPL',   title:'SplitOrder (Bit 28)',         n:1,  detail:'Marks records belonging to a split transaction sequence. Enables multi-record compound events to be assembled at the receiver end.' },
+    { seg:'seg-f', label:'DIR',   title:'Direction (Bit 29)',          n:1,  detail:'Flow direction for SET A. Must equal Bit 37 in the Accounting Block — cross-layer mismatch is one of three independent integrity checks.' },
+    { seg:'seg-f', label:'STS',   title:'Status (Bit 30)',             n:1,  detail:'Settlement status for SET A. Must equal Bit 38 in the Accounting Block. Second of three independent error detection mechanisms.' },
+    { seg:'seg-f', label:'D/C',   title:'Debit/Credit (Bit 31)',       n:1,  detail:'Classical debit/credit indicator. Combined with the Account Pair field in the Accounting Block to fully specify the double-entry direction.' },
+    { seg:'seg-f', label:'QP',    title:'QuantityPresent (Bit 32)',    n:1,  detail:'When set, the Multiplier field carries a quantity value. When clear, only the Multiplicand is active. Enables efficient single-value records.' },
+    { seg:'seg-a', label:'PAIR',  title:'Account Pair (Bits 33–36)',   n:4,  detail:'4-bit field: 16 standard accounting relationships. 0000=Op Expense/Asset. 0100=Op Income/Asset. 1000=Asset/Liability. 1111=Compound Continuation marker linking multi-leg transactions.' },
+    { seg:'seg-a', label:'DIR',   title:'Direction (Bit 37)',          n:1,  detail:'Accounting block direction. Must match Bit 29. Cross-layer validation — mismatch indicates malformed record and triggers NACK.' },
+    { seg:'seg-a', label:'STS',   title:'Status (Bit 38)',             n:1,  detail:'Accounting block settlement status. Must match Bit 30. Independent of SET A status field — redundant by design for robustness in noisy channels.' },
+    { seg:'seg-a', label:'CMP',   title:'Completeness (Bit 39)',       n:1,  detail:'Indicates whether this record completes a transaction sequence or is a partial entry in a compound event. Receiver uses this to know when a logical transaction is fully assembled.' },
+    { seg:'seg-a', label:'EXT',   title:'Extension (Bit 40)',          n:1,  detail:'Extension flag reserved for future protocol versions. Currently must be zero in conformant records. Third component of the integrity detection system.' },
+  ];
+
+  const cellRow = document.getElementById('bit-row-cells');
+  const numRow  = document.getElementById('bit-row-nums');
+  const tt      = document.getElementById('tt');
+
+  // Layer label
+  const spacer = (cls, txt) => {
+    const d = document.createElement('div');
+    d.className = cls;
+    d.textContent = txt;
+    return d;
+  };
+
+  cellRow.appendChild(spacer('bit-layer-lbl', 'L3 · 40b'));
+  numRow.appendChild(spacer('bit-layer-lbl', ''));
+
+  let bitPos = 1;
+
+  FIELDS.forEach(f => {
+    const cell = document.createElement('div');
+    cell.className = `bit-cell ${f.seg}`;
+    cell.style.flex = f.n;
+    cell.style.minWidth = (f.n * 20) + 'px';
+    cell.textContent = f.label;
+
+    cell.addEventListener('mouseenter', e => {
+      tt.innerHTML = `<strong>${f.title}</strong>${f.detail}<div class="tt-range">${f.n} bit${f.n>1?'s':''} · positions ${bitPos}–${bitPos+f.n-1}</div>`;
+      tt.classList.add('on');
+      moveTooltip(e);
+    });
+    cell.addEventListener('mousemove', moveTooltip);
+    cell.addEventListener('mouseleave', () => tt.classList.remove('on'));
+    cellRow.appendChild(cell);
+
+    // Number labels
+    const nCell = document.createElement('div');
+    nCell.className = 'bit-num';
+    nCell.style.flex = f.n;
+    nCell.style.minWidth = (f.n * 20) + 'px';
+    if (f.n === 1) {
+      nCell.textContent = bitPos;
+      nCell.style.justifyContent = 'center';
+    } else {
+      nCell.style.display = 'flex';
+      nCell.style.justifyContent = 'space-between';
+      nCell.style.padding = '0 4px';
+      nCell.innerHTML = `<span>${bitPos}</span><span>${bitPos+f.n-1}</span>`;
+    }
+    numRow.appendChild(nCell);
+
+    bitPos += f.n;
+  });
+
+  function moveTooltip(e) {
+    const x = Math.min(e.clientX + 18, window.innerWidth - 300);
+    const y = e.clientY - 16;
+    tt.style.left = x + 'px';
+    tt.style.top  = y + 'px';
+  }
+})();
+
+/* ── LAYER VISUALISATION ── */
+(function() {
+  const MAX = 120000;
+  const rows = [
+    { key:'L1',   label:'L1 SESSION',  cls:'l1',   bytes:8,      note:'Session init · 8 bytes · once per session' },
+    { key:'L2',   label:'L2 BATCH',    cls:'l2',   bytes:6,      note:'Batch header · 6 bytes · once per batch' },
+    { key:'×100', label:'× 100 RCDS',  cls:'l3',   bytes:500,    note:'100 × 5-byte records' },
+    { key:'TOTAL',label:'BL TOTAL',    cls:'cmp',  bytes:514,    note:'514 bytes total for 100 transactions' },
+    { key:'JSON', label:'JSON',        cls:'json',  bytes:80000,  note:'~80,000 bytes · 156× larger' },
+  ];
+
+  const container = document.getElementById('lv-rows');
+
+  rows.forEach((r, i) => {
+    const row = document.createElement('div');
+    row.className = 'lv-row';
+
+    const k = document.createElement('div');
+    k.className = 'lv-key';
+    k.textContent = r.key;
+    row.appendChild(k);
+
+    const bar = document.createElement('div');
+    bar.className = `lv-bar ${r.cls}`;
+    bar.style.width = '0';
+    bar.style.maxWidth = '100%';
+    const pct = Math.max((r.bytes / MAX) * 100, r.bytes < 600 ? 0.5 : 0);
+    bar.dataset.w = pct + '%';
+    bar.style.transition = `width 1.3s cubic-bezier(0.4,0,0.2,1) ${i * 0.1}s`;
+    bar.innerHTML = `${r.label} <span class="lv-note">${r.note}</span>`;
+    row.appendChild(bar);
+
+    container.appendChild(row);
+  });
+
+  const obs = new IntersectionObserver(entries => {
+    if (entries[0].isIntersecting) {
+      container.querySelectorAll('.lv-bar').forEach(b => b.style.width = b.dataset.w);
+      obs.disconnect();
+    }
+  }, {threshold: 0.3});
+  obs.observe(container);
+})();
+
+/* ── EFFICIENCY BARS ── */
+(function() {
+  const blEl   = document.getElementById('eff-bl');
+  const jsonEl = document.getElementById('eff-json');
+  const isoEl  = document.getElementById('eff-iso');
+
+  const obs = new IntersectionObserver(entries => {
+    if (entries[0].isIntersecting) {
+      setTimeout(() => { blEl.style.width   = '0.64%'; }, 150);
+      setTimeout(() => { jsonEl.style.width = '100%';  }, 350);
+      setTimeout(() => { isoEl.style.width  = '100%';  }, 550);
+      obs.disconnect();
+    }
+  }, {threshold: 0.4});
+  obs.observe(blEl);
+})();
+</script>
+
+</body>
+</html>
