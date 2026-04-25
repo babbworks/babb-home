@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="{{ page.lang | default: site.lang | default: "en" }}">
+
+  {%- include head.html -%}
+
+  <body style="overflow:hidden;">
+
+    {%- include header.html -%}
+
+    <main style="height:calc(100vh - 44px);overflow:hidden;margin-top:44px;">
+      {{ content }}
+    </main>
+
+    <div class="footer-trigger"></div>
+    {%- include footer.html -%}
+
+  </body>
+
+  <script>
+    var footer = document.querySelector('.site-footer');
+    var trigger = document.querySelector('.footer-trigger');
+    trigger.addEventListener('touchstart', function() {
+      footer.classList.add('footer-visible');
+    }, { passive: true });
+    document.addEventListener('touchstart', function(e) {
+      if (!footer.contains(e.target) && !trigger.contains(e.target)) {
+        footer.classList.remove('footer-visible');
+      }
+    }, { passive: true });
+  </script>
+
+</html>

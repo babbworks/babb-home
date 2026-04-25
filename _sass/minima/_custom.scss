@@ -1,0 +1,74 @@
+// ====================== COMPACT STICKY HEADER ======================
+.site-header {
+  position: fixed !important;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 9999;
+  background-color: #ffffff !important;
+  border-top: none !important;           // override minima's black 5px border-top
+  border-bottom: 1px solid #e5e5e5;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+  padding: 6px 0 !important;
+  min-height: 0 !important;
+}
+
+.site-header .wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+}
+
+.site-title {
+  font-size: 1rem !important;
+  line-height: 1 !important;             // override minima's 54px line-height
+  letter-spacing: 0 !important;
+  float: none !important;
+  margin: 0 !important;
+}
+
+.site-nav {
+  float: none !important;
+  line-height: 1 !important;             // override minima's 54px line-height
+}
+
+.site-nav .page-link {
+  font-size: 0.875rem !important;
+  line-height: 1 !important;
+  padding: 4px 10px;
+}
+
+// Push all content below the fixed header (~44px tall after compacting)
+body {
+  padding-top: 44px !important;
+}
+
+// ====================== FOOTER POPUP ======================
+.site-footer {
+  position: fixed !important;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  transform: translateY(100%);
+  transition: transform 0.3s ease;
+  z-index: 100;
+  margin-top: 0 !important;
+}
+
+.footer-trigger {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 14px;
+  z-index: 99;
+  cursor: s-resize;
+}
+
+.footer-trigger:hover + .site-footer,
+.site-footer:hover,
+.site-footer.footer-visible {
+  transform: translateY(0);
+}
+

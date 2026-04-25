@@ -13,8 +13,22 @@
       </div>
     </main>
 
+    <div class="footer-trigger"></div>
     {%- include footer.html -%}
 
   </body>
+
+  <script>
+    var footer = document.querySelector('.site-footer');
+    var trigger = document.querySelector('.footer-trigger');
+    trigger.addEventListener('touchstart', function() {
+      footer.classList.add('footer-visible');
+    }, { passive: true });
+    document.addEventListener('touchstart', function(e) {
+      if (!footer.contains(e.target) && !trigger.contains(e.target)) {
+        footer.classList.remove('footer-visible');
+      }
+    }, { passive: true });
+  </script>
 
 </html>

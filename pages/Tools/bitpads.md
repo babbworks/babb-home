@@ -86,6 +86,8 @@ permalink: /bitpads/
     <li>
       <a href="https://github.com/babbworks/bitpads">GitHub</a></li>
     <li>
+      <a href="https://bitpads.babb.tel">Bitpads Standard</a></li>
+    <li>
       <a href="https://workwarrior.org">bitpads.org</a></li>
 </ul>
 <h3>Project</h3>

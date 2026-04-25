@@ -1,7 +1,7 @@
 ---
 layout: default
-title: Updates
-permalink: /updates/
+title: Warrior
+permalink: /warrior/
 ---
 
 <div class="home-columns">

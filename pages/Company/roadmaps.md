@@ -1,7 +1,7 @@
 ---
 layout: page
-title: Bitpads
-permalink: /bitpads/
+title: Roadmaps
+permalink: /roadmaps/
 ---
 
 <p>Please view roadmaps directly on GitHub.</p>

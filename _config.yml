@@ -28,7 +28,6 @@ twitter_username: babbworks
 github_username:  babbworks
 instagram_username: babbworks
 facebook_username: babbworks
-linkedin_username: babbworks
 youtube_username: babbworks
 
 # Build settings
@@ -44,6 +43,8 @@ header_pages:
   - pages/Tests/tests.md
   - pages/Releases/releases.md
   - pages/Company/company.md
+  - pages/basics.md
+
 
 
 paginate: 20

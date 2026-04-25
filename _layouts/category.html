@@ -1,18 +1,15 @@
 ---
-layout: page
+layout: default
 ---
 
-<h1>Posts in Category: {{ page.category }}</h1>
-
-<ul>
-  {% for post in site.posts %}
-    {% if post.categories contains page.category %}
+<div class="category-page">
+  <h1>{{ page.title }}</h1>
+  <ul>
+    {% for post in page.posts %}
       <li>
-        <a href="{{ post.url | relative_url }}">{{ post.title }}</a> - <span>{{ post.date | date: "%B %d, %Y" }}</span>
+        <a href="{{ post.url | relative_url }}">{{ post.title }}</a>
+        <span>{{ post.date | date: "%B %d, %Y" }}</span>
       </li>
-    {% endif %}
-  {% endfor %}
-</ul>
-
-
-
+    {% endfor %}
+  </ul>
+</div>
