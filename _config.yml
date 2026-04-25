@@ -23,7 +23,7 @@ email: hello@babb.tel
 description: >- # this means to ignore newlines until "baseurl:"
   Tools for the frontier.
 baseurl: "" # the subpath of your site, e.g. /blog
-url: "https://babb.tel" # the base hostname & protocol for your site, e.g. http://example.com
+url: "https://www.babb.tel" # the base hostname & protocol for your site, e.g. http://example.com
 twitter_username: babbworks
 github_username:  babbworks
 instagram_username: babbworks
