@@ -38,11 +38,12 @@ plugins:
 
 header_pages:
   - pages/Tools/tools.md
-  - pages/Standards/standards.md
   - pages/Releases/releases.md
   - pages/basics.md
   - pages/bitpadsbitledger.md
 
+# tests
+#frontier
 
 
 paginate: 20

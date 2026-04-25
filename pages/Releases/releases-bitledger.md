@@ -1,8 +1,8 @@
 ---
 layout: default
-title: "Releases for Workpads"
-permalink: /workpads/releases/
-categories: releases workpads
+title: "Releases for BitLedger Protocol"
+permalink: /bitledger/releases/
+categories: releases bitledger
 ---
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Barlow:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Barlow+Condensed:wght@500;600;700&display=swap');
@@ -60,9 +60,9 @@ a.bh-tag:hover{color:var(--ink);}
 <div class="bh-wrap">
 
 <header class="br-header">
-  <span class="bh-tag">Protocol &amp; Application</span>
-  <h1>Workpads</h1>
-  <p>A job-record system for mobile teams — centered on one durable unit, the work document, built to coordinate when networks can't be counted on.</p>
+  <span class="bh-tag">Open Binary Standard</span>
+  <h1>BitLedger Protocol</h1>
+  <p>A compact binary transmission protocol for double-entry financial records — encoding the balance invariant at the wire level, not as an application-layer check after the fact.</p>
 </header>
 
 <hr class="bh-rule">
@@ -72,7 +72,7 @@ a.bh-tag:hover{color:var(--ink);}
     <a class="bh-tag" href="/categories/releases">Releases</a>
   </div>
   {% assign rel = site.posts | where_exp: "p", "p.categories contains 'releases'" %}
-  {% assign proj_posts = rel | where_exp: "p", "p.categories contains 'workpads'" %}
+  {% assign proj_posts = rel | where_exp: "p", "p.categories contains 'bitledger'" %}
   {% if proj_posts.size > 0 %}
   <ul class="dispatch-list">
     {% for post in proj_posts limit:5 %}
@@ -93,33 +93,32 @@ a.bh-tag:hover{color:var(--ink);}
 
 <div class="br-prose">
 
-<h2>The record is the unit</h2>
-<p>Workpads is organized around the PADS model — <strong>Processes, Actions, Details, Story</strong> — and this model is stable. Every release of Workpads must preserve the integrity and completeness of the PADS structure. The encoding may be refined, the surfaces may multiply, the transports may vary. The four-component record shape does not change. It is the contract with every operator who has ever saved a job record in Workpads.</p>
+<h2>Balance is structural, not checked</h2>
+<p>The foundational commitment of BitLedger: <strong>a record that does not balance cannot be encoded.</strong> This is not validation that runs when you submit. It is a property of the encoding itself. The BitLedger format cannot represent a transaction where debits and credits fail to balance — the same way a correctly designed lock cannot be opened by the wrong key. The balance invariant is structural. Every release must preserve this, and no future extension may introduce a partial-validity state where an unbalanced record might slip through.</p>
 
-<h2>Offline and private by default</h2>
-<p>No account is required for baseline Workpads use. No network connection is required to create, edit, or share a record. Local-first behavior is the default; remote features are extensions, never prerequisites. Every release must maintain this: if connectivity drops, nothing breaks. If the Workpads service disappears, your records remain intact, readable, and portable. This commitment is not optional — it is the design parameter from which every other decision follows.</p>
+<h2>The Pacioli commitment</h2>
+<p>Luca Pacioli formalized double-entry bookkeeping in 1494 as a structure in which a record cannot lie without revealing the lie. Debit and credit are not moral categories — they are structural positions. BitLedger encodes this same invariant at the binary wire level, five hundred and thirty years later. <strong>Every release of BitLedger must deepen the fidelity to this lineage, not depart from it.</strong> New features that require weakening the balance invariant, introducing optional fields that compromise structural completeness, or allowing records that require external context to validate are not compatible with this commitment.</p>
 
-<h2>Shareability without friction</h2>
-<p>Job records encode as compact URLs that self-load on the receiver's end. No app download. No account on the receiving end. No data connection required. The encoding must remain transportable over SMS, email, or any text channel. Each release of Workpads must preserve or improve the compactness and self-loading property of share payloads. Coordination should be as lightweight as a text message — because for many of our users, it literally is.</p>
+<h2>Audit trail by construction</h2>
+<p>A BitLedger record preserves the complete transaction by construction. There is no separate audit log, no secondary record, no external ledger required to reconstruct what happened. The encoding is self-describing: account, amount, direction, timestamp, and the structural relationship between entries are all present in the payload. An auditor with the specification document can decode any BitLedger record without access to any external system. Every release must maintain and extend this self-describing property.</p>
 
-<h2>BASICS conformance is not aspirational</h2>
-<p>Workpads is the reference implementation of the BASICS Standard. This means each release must meet BASICS Core tier conformance as a shipping requirement, not a future milestone. Where the standard evolves, Workpads evolves with it. Where Workpads exposes a gap in the standard, the gap is documented and the standard is updated. This feedback loop between reference implementation and specification is how BASICS remains a living framework rather than a document.</p>
+<h2>Lean enough to travel anywhere</h2>
+<p>Financial records must coordinate across constrained channels — satellite links, SMS, intermittent connections, air-gapped environments. BitLedger is designed so that a complete, auditable double-entry transaction can travel as a compact binary payload over any channel that carries bits. The encoding does not assume a database on either end. It does not require a persistent connection for delivery confirmation. It does not depend on a central authority to validate what was sent. Each release must be evaluated against the minimum-channel assumption: does this change make the payload larger without proportional gain in expressiveness or structural integrity?</p>
 
-<h2>The CLI leads</h2>
-<p>The Workpads CLI is not a simplified version of the browser client. It is the reference client — the first implementation, the most complete, and the one against which all others are validated. Browser and mobile surfaces consume the same service contracts as the CLI. <strong>No surface may offer a capability the CLI does not.</strong> This discipline keeps the contract honest and prevents the gradual divergence that makes tool suites unmaintainable over time.</p>
+<h2>Interoperability with the double-entry ecosystem</h2>
+<p>BitLedger is designed for interoperability with hledger and the broader plain-text accounting ecosystem. BitLedger encodes what hledger stores — it is a compact binary transport for records that hledger can natively represent. This relationship is a commitment: each release must maintain or improve the fidelity of the round-trip between BitLedger encoding and hledger-compatible plain-text format. <strong>BitLedger is not a replacement for plain-text accounting. It is a transport that makes those records transmissible everywhere.</strong></p>
 
-<h2>Compatibility across constraints</h2>
-<p>Workpads began with the hardest deployment target: KaiOS feature phones without touchscreens, navigated by D-pad, with limited JavaScript runtimes and intermittent SMS-only connectivity. Every release must maintain behavioral consistency across CLI, browser, and mobile surfaces — including on constrained devices. The constraints are features. A tool that works on a twenty-dollar phone over SMS is a tool that works everywhere.</p>
+<h2>Open standard, no custodian required</h2>
+<p>BitLedger is an open standard. The specification is the standard; any developer may implement it; no license is required. The governance model follows BASICS: community review, documented migration impact for changes, explicit replacement for deprecated requirements, and public maintenance. The standard does not belong to Babb — it belongs to the community that implements and relies on it. Each release is a public document, version-controlled, with a complete changelog. No change is made silently.</p>
 
 <div class="br-contribution">
-  <h3>Contribute to Workpads</h3>
-  <p>Workpads is open source and actively maintained. The CLI is the best place to start — clone the repo, run the setup, and create a job record. The service contracts, PADS schema, and encoding specification are all documented in the repository. If you encounter a gap, a rough edge, or an untested constraint, open an issue. Pull requests welcome across the stack.</p>
-  <p>Workpads for KaiOS is the next major milestone — if you have experience with KaiOS development, D-pad interfaces, or SMS encoding, your contribution here would have outsized impact for teams in the field.</p>
+  <h3>Contribute to BitLedger</h3>
+  <p>BitLedger is a protocol standard in active development. The specification, reference implementation, and conformance suite are in the repository. The most useful contributions right now are independent implementations and interoperability testing — particularly round-trip testing between BitLedger encoding and hledger-compatible formats. If you work in fintech, accounting software, or plain-text accounting, your domain knowledge directly improves the protocol.</p>
+  <p>Clone the repo, read the spec, and try to encode a real transaction. If the spec is ambiguous or incomplete for your use case, open an issue. The governance process is open to proposals for extensions that maintain the balance invariant and structural honesty commitments.</p>
   <div class="br-footnote-links">
-    <a class="tool-lnk" href="https://github.com/babbworks/workpads">GitHub →</a>
-    <a class="tool-lnk" href="https://github.com/babbworks/workpads/issues">Open an Issue →</a>
-    <a class="tool-lnk" href="mailto:workpads@babb.tel">workpads@babb.tel</a>
-    <a class="tool-lnk" href="https://twitter.com/workpads">@workpads</a>
+    <a class="tool-lnk" href="https://github.com/babbworks/bitledger">GitHub →</a>
+    <a class="tool-lnk" href="https://github.com/babbworks/bitledger/issues">Open an Issue →</a>
+    <a class="tool-lnk" href="mailto:bitledger@babb.tel">bitledger@babb.tel</a>
   </div>
 </div>
 
@@ -135,67 +134,68 @@ a.bh-tag:hover{color:var(--ink);}
     </div>
     <div class="spec">
       <div class="spec-k">Status</div>
-      <div class="spec-v">Active development · CLI reference client shipping</div>
-    </div>
-    <div class="spec">
-      <div class="spec-k">Standard</div>
-      <div class="spec-v"><a href="/basics/releases">BASICS Core conformant</a></div>
+      <div class="spec-v">Active development · Specification published</div>
     </div>
   </div>
 
   <div class="br-sidebar-section">
     <span class="br-sidebar-head">Releases</span>
-    {% assign ann = site.posts | where_exp: "p", "p.categories contains 'workpads' and p.title contains 'v0.1'" | first %}
+    {% assign ann = site.posts | where_exp: "p", "p.categories contains 'bitledger' and p.title contains 'v0.1'" | first %}
     <div class="spec">
       <div class="spec-k">v0.1.0</div>
-      <div class="spec-v">{% if ann %}<a href="{{ ann.url | relative_url }}">{{ ann.title }}</a>{% else %}Initial release{% endif %}</div>
+      <div class="spec-v">{% if ann %}<a href="{{ ann.url | relative_url }}">{{ ann.title }}</a>{% else %}Initial specification release{% endif %}</div>
     </div>
   </div>
 
   <div class="br-sidebar-section">
-    <span class="br-sidebar-head">Surfaces</span>
+    <span class="br-sidebar-head">Technical</span>
     <div class="spec">
-      <div class="spec-k">CLI</div>
-      <div class="spec-v">Reference client · Active</div>
+      <div class="spec-k">Model</div>
+      <div class="spec-v">Double-entry · balance enforced at encoding</div>
     </div>
     <div class="spec">
-      <div class="spec-k">Browser</div>
-      <div class="spec-v">Active development</div>
+      <div class="spec-k">Lineage</div>
+      <div class="spec-v">Pacioli 1494 → wire-level encoding</div>
     </div>
     <div class="spec">
-      <div class="spec-k">KaiOS</div>
-      <div class="spec-v">Coming soon · SMS transport</div>
+      <div class="spec-k">Interoperability</div>
+      <div class="spec-v">hledger · plain-text accounting formats</div>
+    </div>
+    <div class="spec">
+      <div class="spec-k">Transport</div>
+      <div class="spec-v">Any binary channel · constrained-network ready</div>
+    </div>
+    <div class="spec">
+      <div class="spec-k">Conformance</div>
+      <div class="spec-v">Test suite included · independently verifiable</div>
     </div>
   </div>
 
   <div class="br-sidebar-section">
-    <span class="br-sidebar-head">Protocol</span>
+    <span class="br-sidebar-head">Related</span>
     <div class="spec">
-      <div class="spec-v"><a href="/bitpads/releases">BitPads binary encoding →</a></div>
+      <div class="spec-v"><a href="/bitpads/releases">BitPads Protocol →</a></div>
     </div>
     <div class="spec">
-      <div class="spec-v"><a href="https://workpads.babb.tel">Protocol standard →</a></div>
+      <div class="spec-v"><a href="/basics/releases">BASICS Standard →</a></div>
     </div>
   </div>
 
   <div class="br-sidebar-section">
     <span class="br-sidebar-head">Repository</span>
     <div class="spec">
-      <div class="spec-v"><a href="https://github.com/babbworks/workpads">babbworks/workpads →</a></div>
+      <div class="spec-v"><a href="https://github.com/babbworks/bitledger">babbworks/bitledger →</a></div>
     </div>
   </div>
 
   <div class="br-sidebar-section">
     <span class="br-sidebar-head">Contact</span>
     <div class="spec">
-      <div class="spec-v"><a href="mailto:workpads@babb.tel">workpads@babb.tel</a></div>
-    </div>
-    <div class="spec">
-      <div class="spec-v"><a href="https://twitter.com/workpads">@workpads</a></div>
+      <div class="spec-v"><a href="mailto:bitledger@babb.tel">bitledger@babb.tel</a></div>
     </div>
   </div>
 
-  <a class="bh-btn" href="https://github.com/babbworks/workpads/releases" style="margin-top:8px;">GitHub Releases →</a>
+  <a class="bh-btn" href="https://github.com/babbworks/bitledger/releases" style="margin-top:8px;">GitHub Releases →</a>
 
 </div><!-- /br-sidebar -->
 

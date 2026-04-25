@@ -1,0 +1,18 @@
+---
+layout: post
+title:  "BitPads Protocol v0.1.0 — Initial Release"
+date:   2026-04-25 09:15:00 -0500
+categories: releases bitpads
+---
+
+BitPads Protocol v0.1.0 is the first formal release of the open binary encoding standard that underlies Workpads — a compact representation optimized for constrained transmission channels including SMS, satellite links, KaiOS devices, and low-bandwidth field operations across sub-Saharan Africa.
+
+The v0.1.0 release defines the Enhancement Grammar utilizing the three unclaimed upper bits of the Baudot C0 control character space — a structural pocket that has remained available through every binary communication standard since Baudot's 1870 telegraph code (Murray, ASCII, ISO 6429, Unicode control characters). Every standard since preserved this space. BitPads reclaims it.
+
+The protocol encodes PADS job records (Processes, Actions, Details, Story) at the wire level with structural honesty: a malformed record cannot be encoded. The minimum wire footprint discipline is enforced by the format itself, not by application logic. Payloads are designed to travel as standard SMS messages and self-load on the receiver's device without a data connection.
+
+BitPads is an open standard — freely implementable, no license fees, maintained under the same open governance model as BASICS. The v0.1.0 specification document is available in the repository alongside a reference implementation. Implementors are encouraged to engage via GitHub issues and the standard's mailing list at bitpads@babb.tel.
+
+---
+
+[BitPads releases](/bitpads/releases/) · [All releases](/categories/releases/) · [BitPads dispatches](/categories/bitpads/)

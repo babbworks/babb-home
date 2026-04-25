@@ -7,15 +7,15 @@ permalink: /tools/
 <div class="home-columns">
   <div class="column-left">
 <div class="home">
-<h2></h2>
- The tools we build are made to last a very long time. They're the result of internal, global and galactic collaboration! Every tool shares a common purpose: help individuals work and learn on their own, and with others. By default, tools are personal, private and powerful. Each tool that we forge is designed to overcome any limitations that users may face, from technical to educational to situational.
-<br><br>
-<a href="/bitpads">Bitpads</a> is a protocol for creating and transmitting simple records and system signals using binary data.
- <hr><br>
- <a href="/workwarrior">Workwarrior</a> grows the ecosystem of open source productivity tools for individuals & industries. Get the terminal app <a href="https://github.com/babbworks/workwarrior">on GitHub</a>.
- <hr>
-<br><a href="/workpads">Workpads</a> is a <a href="https://workpads.babb.tel">protocol</a> & mobile app for <a href="/creating">creating</a> & <a href="/sharing">sharing</a> unique <a href="/business-records">business records</a>, based on the <a href="/bitpads">Bitpads Standard</a>.<hr>
-<br><br>
+
+<p>There is a category of software that most of the industry ignores: tools for people doing physical, field, and operational work — tradespeople, farmers, technicians, dispatchers, factory-floor supervisors, micro-enterprise owners operating on a single feature phone. Not knowledge workers. Not startup teams with good laptops and fast Wi-Fi. The people for whom software has historically been designed last, if at all. Babb builds for them first, because the constraints their environments impose produce better tools for everyone.</p>
+
+<p>Every tool in the Babb suite is built around something that does not change. <a href="/workpads">Workpads</a> is built around the job record — a structured account of what happened, what should happen next, and who is responsible. <a href="https://github.com/babbworks/workwarrior">Workwarrior</a> is built around the terminal and its discipline: explicit commands, deterministic output, composable tools that each do one thing well. <a href="/bitledger">BitLedger</a> is built around the balance invariant that has governed commercial accounting since Venice in 1494. <a href="/bitpads">BitPads</a> is built around the compact binary representation that Baudot established in 1870 and every standard since has preserved. The BASICS Standard is built around a single principle: command and control belongs to the operator, not the software. When a tool is built on something that does not change, the tool can last a very long time.</p>
+
+<p>The suite is designed to compound. Each layer supports the next: BASICS defines the engineering contract that every tool upholds; BitPads and BitLedger define the binary encoding that makes records transmissible anywhere; Workpads implements the job-record system that proves these protocols in production; Workwarrior provides the terminal environment where the full power of the suite is available to individuals and teams. A person who uses all of Babb's tools gets something more than a collection of useful software — they get a working system where data flows between surfaces without translation, where records made on a twenty-dollar feature phone are compatible with a full CLI environment, where the discipline built at the terminal carries forward onto every other device.</p>
+
+<p>All of it is open. The code is on GitHub. The protocols are freely implementable — no license, no fee. The standards are governed openly with documented cycles and published migration impact assessments. The data belongs to the person or organization that creates it. These are not marketing commitments. They are structural properties of how the tools are built, because a tool that requires you to trust its maker to remain accessible is not a tool built for the long arc.</p>
+
 </div>
 </div>
 

@@ -1,90 +1,295 @@
-<footer class="site-footer h-card">
+<footer class="site-footer bf h-card">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Barlow:wght@300;400;600&family=Barlow+Condensed:wght@500;600;700&display=swap');
+
+.bf {
+  background: #0C0B0A;
+  color: #9A9490;
+  font-family: 'Barlow', system-ui, sans-serif;
+  border-top: none !important;
+  overflow: hidden;
+  position: relative;
+  max-height: 92vh;
+  overflow-y: auto;
+}
+
+/* ── decorative layer ── */
+.bf-bg {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  user-select: none;
+  overflow: hidden;
+}
+
+.bf-wedge {
+  position: absolute;
+  font-family: serif;
+  font-size: 16px;
+  color: #B07830;
+  opacity: 0.28;
+  line-height: 1;
+}
+
+.bf-dot {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  border-radius: 50%;
+  background: #D4C8A8;
+  opacity: 0.5;
+}
+.bf-dot-lg {
+  width: 3px;
+  height: 3px;
+  opacity: 0.42;
+}
+
+@keyframes bfPulse {
+  0%, 100% { opacity: 0.2; }
+  50%       { opacity: 0.75; }
+}
+@keyframes bfPulse2 {
+  0%, 100% { opacity: 0.15; }
+  50%       { opacity: 0.65; }
+}
+@keyframes bfPulse3 {
+  0%, 100% { opacity: 0.25; }
+  50%       { opacity: 0.85; }
+}
+
+.bf-dot-p1 { animation: bfPulse  5s ease-in-out infinite; }
+.bf-dot-p2 { animation: bfPulse2 7s ease-in-out infinite 1.8s; }
+.bf-dot-p3 { animation: bfPulse3 4s ease-in-out infinite 0.9s; }
+
+@media (max-width: 600px) {
+  .bf-dot-p1, .bf-dot-p2, .bf-dot-p3 { animation: none; opacity: 0.45; }
+}
+
+/* ── inner layout ── */
+.bf-inner {
+  position: relative;
+  z-index: 1;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 40px 40px 28px;
+}
+@media (max-width: 600px) { .bf-inner { padding: 32px 20px 20px; } }
+
+.bf-eyebrow {
+  font-family: 'Barlow Condensed', system-ui, sans-serif;
+  font-size: 0.55rem;
+  font-weight: 700;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: #6A6460;
+  margin: 0 0 28px;
+}
+
+.bf-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 32px 24px;
+  margin-bottom: 36px;
+}
+@media (max-width: 900px) { .bf-grid { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 560px) { .bf-grid { grid-template-columns: repeat(2, 1fr); gap: 24px 16px; } }
+
+.bf-col-head {
+  font-family: 'Barlow Condensed', system-ui, sans-serif;
+  font-size: 0.54rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: #C8BEA8;
+  margin: 0 0 12px;
+  display: block;
+}
+
+.bf ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.bf li {
+  margin-bottom: 6px;
+}
+
+.bf a, .bf .bf-plain {
+  font-size: 0.8rem;
+  color: #9A9490;
+  text-decoration: none;
+  line-height: 1.5;
+  transition: color 0.14s;
+  display: inline-block;
+}
+.bf a:hover { color: #B07830; }
+.bf a:visited { color: #9A9490; }
+
+.bf .social-media-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.bf .social-media-list li { margin-bottom: 6px; }
+.bf .social-media-list a { display: inline-flex; align-items: center; gap: 7px; }
+.bf .svg-icon { width: 14px; height: 14px; fill: #7A7470; flex-shrink: 0; transition: fill 0.14s; }
+.bf .social-media-list a:hover .svg-icon { fill: #B07830; }
+.bf .username { font-size: 0.8rem; }
+
+.bf-bottom {
+  border-top: 1px solid #1A1815;
+  padding-top: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.bf-copy {
+  font-size: 0.68rem;
+  color: #5A5650;
+  font-family: 'Barlow Condensed', system-ui, sans-serif;
+  letter-spacing: 0.1em;
+}
+
+.bf-bottom-links {
+  display: flex;
+  gap: 16px;
+}
+.bf-bottom-links a {
+  font-size: 0.68rem;
+  color: #5A5650;
+  text-decoration: none;
+  font-family: 'Barlow Condensed', system-ui, sans-serif;
+  letter-spacing: 0.1em;
+  transition: color 0.14s;
+}
+.bf-bottom-links a:hover { color: #B07830; }
+</style>
+
   <data class="u-url" href="{{ "/" | relative_url }}"></data>
 
-  <div class="wrapper">
+  <!-- Decorative background — populated by JS on each load -->
+  <div class="bf-bg" id="bf-bg" aria-hidden="true"></div>
 
-    <h2 class="footer-heading"></b>Tools for the frontier.</b></h2>
+  <script>
+  (function () {
+    var glyphs = ['𒀭','𒁹','𒌨','𒀼','𒁲','𒀀','𒁺'];
+    var pulseClasses = ['bf-dot-p1','bf-dot-p2','bf-dot-p3'];
+    var bg = document.getElementById('bf-bg');
+    if (!bg) return;
 
-    <div class="footer-col-wrapper">
-      <div class="footer-col footer-col-1">
-        <h2 class="footer-heading">COMPANY</h2>
-        <ul class="contact-list">
-          <li class="p-name">
-            Babb Works Inc. 
-            </li>
-            {%- if site.email -%}
-            <li><a class="u-email" href="mailto:{{ site.email }}">{{ site.email }}</a></li>
-            <li>t.me/<a href="https://t.me/babbworks">babbworks</a></li>
-            {%- endif -%}
-            ----------------
-            <li><a href="/oath-for-orbit">Oath for Orbit 🚀</a></li>
-            <li><a href="/common-questions">Common Questions</a></li>
-            ----------------
+    /* reproducible-enough shuffle using seeded positions via Math.random */
+    function rand(min, max) { return (Math.random() * (max - min) + min).toFixed(1); }
 
-            {%- if site.phone -%}
-            {%- endif -%}
+    /* 6 cuneiform wedges — kept sparse, avoid centre cluster */
+    var wedgeZones = [
+      [2, 18], [20, 36], [38, 54], [56, 72], [74, 88], [88, 97]
+    ];
+    wedgeZones.forEach(function (zone) {
+      var s = document.createElement('span');
+      s.className = 'bf-wedge';
+      s.textContent = glyphs[Math.floor(Math.random() * glyphs.length)];
+      s.style.left = rand(zone[0], zone[1]) + '%';
+      s.style.top  = rand(8, 88) + '%';
+      bg.appendChild(s);
+    });
+
+    /* 12 static stars spread across width */
+    for (var i = 0; i < 12; i++) {
+      var d = document.createElement('div');
+      d.className = 'bf-dot' + (Math.random() > 0.6 ? ' bf-dot-lg' : '');
+      d.style.left = rand(i * 8, i * 8 + 7) + '%';
+      d.style.top  = rand(5, 92) + '%';
+      bg.appendChild(d);
+    }
+
+    /* 5 pulsing stars at random positions */
+    for (var j = 0; j < 5; j++) {
+      var p = document.createElement('div');
+      var pc = pulseClasses[j % pulseClasses.length];
+      p.className = 'bf-dot bf-dot-lg ' + pc;
+      p.style.left = rand(j * 18 + 2, j * 18 + 16) + '%';
+      p.style.top  = rand(5, 90) + '%';
+      bg.appendChild(p);
+    }
+  }());
+  </script>
+
+  <div class="bf-inner">
+    <p class="bf-eyebrow">Tools for the frontier.</p>
+
+    <div class="bf-grid">
+
+      <div class="bf-col">
+        <span class="bf-col-head">Company</span>
+        <ul>
+          <li><span class="bf-plain" style="font-size:0.8rem;color:#C8BEA8;">Babb Works Inc.</span></li>
+          <li><a href="mailto:{{ site.email }}">{{ site.email }}</a></li>
+          <li><a href="https://t.me/babbworks">Telegram</a></li>
+          <li style="margin-top:10px;"><a href="/oath-for-orbit">Oath for Orbit</a></li>
+          <li><a href="/common-questions">Common Questions</a></li>
         </ul>
       </div>
 
-      <div class="footer-col footer-col-2">
-        <h2 class="footer-heading">CONNECT</h2>
+      <div class="bf-col">
+        <span class="bf-col-head">Connect</span>
         {%- include social.html -%}
       </div>
 
-      <div class="footer-col footer-col-3">
-        <h2 class="footer-heading">TOOLS</h2>
-        <a href="/workwarrior">Workwarrior</a><br>
-        <a href="/workpads">Workpads</a><br>
-<br>
-        <h2 class="footer-heading">STANDARDS</h2>
-        <a href="https://bitpads.babb.tel">Bitpads</a><br>
-        <a href="https://basics.babb.tel">BASICS</a><br>
-        <a href="https://workwarrior.babb.tel">Workwarrior</a><br>
-        <a href="https://workpads.babb.tel">Workpads</a><br>
-
-
-      </div>
-
-      <div class="footer-col footer-col-4">
-        <h2 class="footer-heading">SITES</h2>
-        <a href="https://company.babb.tel">Company</a><br>
-        <a href="https://pitch.babb.tel">Babb Pitch</a><br>
-        <a href="https://seedpitch.babb.tel">Seed Pitch</a><br><br>
-        <h2 class="footer-heading">GITHUB</h2>
-        <a href="https://github.com/orgs/babbworks/discussions">Discussions</a><br>
-        <a href="https://github.com/orgs/babbworks/repositories">Repositories</a><br>
-        
-
-
-
-        
-
-      </div>
-
-      <div class="footer-col footer-col-5 ">
-        <h2 class="footer-heading">UPDATES</h2>
-
+      <div class="bf-col">
+        <span class="bf-col-head">Tools</span>
         <ul>
-          {% for post in site.posts limit:10 %}      <li>
-              <a href="{{ post.url | relative_url }}">{{ post.title }}</a>
-            </li>
-          {% endfor %}
-          <p class="rss-subscribe">subscribe <a href="{{ "/feed.xml" | relative_url }}">via RSS</a></p>
-      
+          <li><a href="/workwarrior">Workwarrior</a></li>
+          <li><a href="/workpads">Workpads</a></li>
         </ul>
+        <span class="bf-col-head" style="margin-top:18px;color:#C8BEA8;">Standards</span>
+        <ul>
+          <li><a href="https://bitpads.babb.tel">BitPads</a></li>
+          <li><a href="https://bitledger.babb.tel">BitLedger</a></li>
+          <li><a href="https://basics.babb.tel">BASICS</a></li>
+          <li><a href="https://workwarrior.babb.tel">Workwarrior</a></li>
+          <li><a href="https://workpads.babb.tel">Workpads</a></li>
+        </ul>
+      </div>
 
+      <div class="bf-col">
+        <span class="bf-col-head">Sites</span>
+        <ul>
+          <li><a href="https://company.babb.tel">Company</a></li>
+          <li><a href="https://pitch.babb.tel">Pitch</a></li>
+          <li><a href="https://seedpitch.babb.tel">Seed Pitch</a></li>
+        </ul>
+        <span class="bf-col-head" style="margin-top:18px;color:#C8BEA8;">GitHub</span>
+        <ul>
+          <li><a href="https://github.com/orgs/babbworks/discussions">Discussions</a></li>
+          <li><a href="https://github.com/orgs/babbworks/repositories">Repositories</a></li>
+        </ul>
+      </div>
 
-
-
-        
-
+      <div class="bf-col">
+        <span class="bf-col-head">Updates</span>
+        <ul>
+          {% for post in site.posts limit:10 %}
+          <li><a href="{{ post.url | relative_url }}">{{ post.title }}</a></li>
+          {% endfor %}
+          <li style="margin-top:8px;"><a href="{{ '/feed.xml' | relative_url }}" style="color:#2E2C29;">RSS feed</a></li>
+        </ul>
       </div>
 
     </div>
 
+    <div class="bf-bottom">
+      <span class="bf-copy">© {{ 'now' | date: "%Y" }} Babb Works Inc.</span>
+      <div class="bf-bottom-links">
+        <a href="/releases">Releases</a>
+        <a href="/updates">Dispatches</a>
+        <a href="https://github.com/babbworks">GitHub</a>
+      </div>
+    </div>
   </div>
-
-  
-
 
 </footer>

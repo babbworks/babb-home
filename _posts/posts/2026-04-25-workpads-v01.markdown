@@ -1,0 +1,18 @@
+---
+layout: post
+title:  "Workpads v0.1.0 — Initial Release"
+date:   2026-04-25 09:05:00 -0500
+categories: releases workpads
+---
+
+Workpads v0.1.0 is the first public release of the PADS job-record system — a mobile-first tool for field service and trades teams that keeps coordination centered on one durable unit: the work document.
+
+The v0.1.0 release ships the CLI as the reference client, with browser and mobile surfaces consuming the same service contracts. Records are structured using the PADS model — Processes, Actions, Details, Story — and encode into compact URLs that self-load on the receiver's end without a data connection. No accounts required for baseline use. Offline and private by default.
+
+This release establishes the core encoding layer and the dual authoring format: key-value and YAML both normalize to runtime JSON schemas, which feed into the compact share payload. The CLI supports template validation, record creation, editing, sharing, importing, rendering, and storage policy management.
+
+Workpads v0.1.0 is BASICS Core-conformant. The framework's constraint that records must be self-describing, minimal, and structurally honest is realized at every layer of the PADS encoding. Workpads for KaiOS — bringing full job-record capability to feature phones via standard SMS — is in active development and will follow as a subsequent release.
+
+---
+
+[Workpads releases](/workpads/releases/) · [All releases](/categories/releases/) · [Workpads dispatches](/categories/workpads/)

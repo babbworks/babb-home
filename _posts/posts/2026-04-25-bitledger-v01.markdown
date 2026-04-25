@@ -1,0 +1,18 @@
+---
+layout: post
+title:  "BitLedger Protocol v0.1.0 — Initial Release"
+date:   2026-04-25 09:20:00 -0500
+categories: releases bitledger
+---
+
+BitLedger v0.1.0 is the first formal release of the compact binary transmission protocol for double-entry financial records — encoding the structural balance invariant at the wire level rather than enforcing it as application-layer validation after the fact.
+
+The v0.1.0 release defines the core encoding: a record that does not balance cannot be represented in BitLedger. This is not a check that runs when you save; it is a property of the encoding itself. The approach descends directly from Luca Pacioli's 1494 formalization of double-entry bookkeeping — debit and credit as structural positions in a record that cannot lie without revealing the lie — applied five hundred and thirty years later at the binary wire level.
+
+BitLedger is designed for lean transmission of financial coordination data over constrained channels: satellite links, SMS, intermittent connections. The encoding preserves the complete transaction record by construction, producing an audit trail as a structural property rather than a logging afterthought. Compact representation means financial records can travel the same channels as any other Babb protocol payload.
+
+BitLedger is an open standard under the same governance model as BASICS and BitPads. The v0.1.0 specification and reference implementation are available at the repository. The protocol is designed for interoperability with hledger and other double-entry tools — BitLedger encodes what hledger stores, without requiring hledger to receive it.
+
+---
+
+[BitLedger releases](/bitledger/releases/) · [All releases](/categories/releases/) · [BitLedger dispatches](/categories/bitledger/)

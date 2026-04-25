@@ -1,8 +1,8 @@
 ---
 layout: default
-title: "Releases for Workpads"
-permalink: /workpads/releases/
-categories: releases workpads
+title: "Releases for BitPads Protocol"
+permalink: /bitpads/releases/
+categories: releases bitpads
 ---
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Barlow:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Barlow+Condensed:wght@500;600;700&display=swap');
@@ -60,9 +60,9 @@ a.bh-tag:hover{color:var(--ink);}
 <div class="bh-wrap">
 
 <header class="br-header">
-  <span class="bh-tag">Protocol &amp; Application</span>
-  <h1>Workpads</h1>
-  <p>A job-record system for mobile teams — centered on one durable unit, the work document, built to coordinate when networks can't be counted on.</p>
+  <span class="bh-tag">Open Binary Standard</span>
+  <h1>BitPads Protocol</h1>
+  <p>A compact binary encoding standard for job records — optimized for constrained transmission channels including SMS, satellite links, KaiOS feature phones, and low-bandwidth field operations.</p>
 </header>
 
 <hr class="bh-rule">
@@ -72,7 +72,7 @@ a.bh-tag:hover{color:var(--ink);}
     <a class="bh-tag" href="/categories/releases">Releases</a>
   </div>
   {% assign rel = site.posts | where_exp: "p", "p.categories contains 'releases'" %}
-  {% assign proj_posts = rel | where_exp: "p", "p.categories contains 'workpads'" %}
+  {% assign proj_posts = rel | where_exp: "p", "p.categories contains 'bitpads'" %}
   {% if proj_posts.size > 0 %}
   <ul class="dispatch-list">
     {% for post in proj_posts limit:5 %}
@@ -93,33 +93,30 @@ a.bh-tag:hover{color:var(--ink);}
 
 <div class="br-prose">
 
-<h2>The record is the unit</h2>
-<p>Workpads is organized around the PADS model — <strong>Processes, Actions, Details, Story</strong> — and this model is stable. Every release of Workpads must preserve the integrity and completeness of the PADS structure. The encoding may be refined, the surfaces may multiply, the transports may vary. The four-component record shape does not change. It is the contract with every operator who has ever saved a job record in Workpads.</p>
+<h2>Every bit must earn its place</h2>
+<p>The minimum wire footprint is a hard commitment, not a preference. BitPads encoding is designed to carry the full PADS job record — Processes, Actions, Details, Story — in a payload that travels as a standard SMS message. <strong>No field is included by default that is not required for reconstruction.</strong> Every release of BitPads must be evaluated against this constraint: does any change increase the minimum payload size? If so, the change requires explicit justification and must be weighed against the cost to the lowest-bandwidth use case.</p>
 
-<h2>Offline and private by default</h2>
-<p>No account is required for baseline Workpads use. No network connection is required to create, edit, or share a record. Local-first behavior is the default; remote features are extensions, never prerequisites. Every release must maintain this: if connectivity drops, nothing breaks. If the Workpads service disappears, your records remain intact, readable, and portable. This commitment is not optional — it is the design parameter from which every other decision follows.</p>
+<h2>Structural honesty at the wire level</h2>
+<p>A malformed BitPads record cannot be encoded. This is a property of the format, not a validator that runs at application layer. The encoding enforces the structural constraints of the PADS model by construction: a record missing required fields does not produce a partial encoding — it does not produce an encoding at all. Every release must preserve this property. Adding fields or extending the schema must never introduce partial-validity states where a record can be encoded but not safely decoded.</p>
 
-<h2>Shareability without friction</h2>
-<p>Job records encode as compact URLs that self-load on the receiver's end. No app download. No account on the receiving end. No data connection required. The encoding must remain transportable over SMS, email, or any text channel. Each release of Workpads must preserve or improve the compactness and self-loading property of share payloads. Coordination should be as lightweight as a text message — because for many of our users, it literally is.</p>
+<h2>The Baudot inheritance</h2>
+<p>BitPads reclaims three upper bits of the C0 control character space that Baudot established in 1870 and every subsequent standard has left unclaimed. This is not a historical curiosity — it is a structural pocket mathematically guaranteed by the five-bit constraint that has governed every binary communication standard from telegraph code through ASCII to Unicode control characters. <strong>The BitPads Enhancement Grammar defines the occupancy of this space and owns it forward.</strong> Each release must document any extension to the Enhancement Grammar with full justification for why it belongs in this reserved pocket.</p>
 
-<h2>BASICS conformance is not aspirational</h2>
-<p>Workpads is the reference implementation of the BASICS Standard. This means each release must meet BASICS Core tier conformance as a shipping requirement, not a future milestone. Where the standard evolves, Workpads evolves with it. Where Workpads exposes a gap in the standard, the gap is documented and the standard is updated. This feedback loop between reference implementation and specification is how BASICS remains a living framework rather than a document.</p>
+<h2>Transport agnosticism</h2>
+<p>BitPads payloads are designed to travel over any binary channel: SMS, IP, satellite, serial, or any future transport. The protocol makes no assumptions about the channel it traverses. It does not assume packet ordering, reliable delivery, or low latency. It does not assume the sender and receiver share a data connection. It assumes only that bits can be transmitted and that the receiver can decode them. Every release must test against this minimum transport assumption, not against the most convenient modern network.</p>
 
-<h2>The CLI leads</h2>
-<p>The Workpads CLI is not a simplified version of the browser client. It is the reference client — the first implementation, the most complete, and the one against which all others are validated. Browser and mobile surfaces consume the same service contracts as the CLI. <strong>No surface may offer a capability the CLI does not.</strong> This discipline keeps the contract honest and prevents the gradual divergence that makes tool suites unmaintainable over time.</p>
-
-<h2>Compatibility across constraints</h2>
-<p>Workpads began with the hardest deployment target: KaiOS feature phones without touchscreens, navigated by D-pad, with limited JavaScript runtimes and intermittent SMS-only connectivity. Every release must maintain behavioral consistency across CLI, browser, and mobile surfaces — including on constrained devices. The constraints are features. A tool that works on a twenty-dollar phone over SMS is a tool that works everywhere.</p>
+<h2>Open standard, freely implementable</h2>
+<p>BitPads is an open standard under the same governance model as BASICS — no license fees, no platform dependency, no proprietary encoding. The specification is the standard; the reference implementation demonstrates it. Any developer may implement BitPads encoding and decoding independently, and those implementations are equally valid BitPads implementations if they conform to the specification. <strong>Conformance is verifiable, not claimed.</strong> Each release ships a conformance test suite that any implementation can run.</p>
 
 <div class="br-contribution">
-  <h3>Contribute to Workpads</h3>
-  <p>Workpads is open source and actively maintained. The CLI is the best place to start — clone the repo, run the setup, and create a job record. The service contracts, PADS schema, and encoding specification are all documented in the repository. If you encounter a gap, a rough edge, or an untested constraint, open an issue. Pull requests welcome across the stack.</p>
-  <p>Workpads for KaiOS is the next major milestone — if you have experience with KaiOS development, D-pad interfaces, or SMS encoding, your contribution here would have outsized impact for teams in the field.</p>
+  <h3>Contribute to BitPads</h3>
+  <p>BitPads is an open protocol standard. The specification document, reference implementation, and conformance suite are all in the repository. The most valuable contributions are independent implementations: if you build a BitPads encoder or decoder in any language and run it against the conformance suite, you are doing the work that validates the standard. Gaps in the spec that only manifest when implementing from scratch are the most important gaps to find.</p>
+  <p>Clone the repo, read the spec, write an encoder, run the tests. If something does not make sense, open an issue. If something is missing, open a PR. The Enhancement Grammar extension process is documented — proposals for new usage of the C0 space go through that process.</p>
   <div class="br-footnote-links">
-    <a class="tool-lnk" href="https://github.com/babbworks/workpads">GitHub →</a>
-    <a class="tool-lnk" href="https://github.com/babbworks/workpads/issues">Open an Issue →</a>
-    <a class="tool-lnk" href="mailto:workpads@babb.tel">workpads@babb.tel</a>
-    <a class="tool-lnk" href="https://twitter.com/workpads">@workpads</a>
+    <a class="tool-lnk" href="https://github.com/babbworks/bitpads">GitHub →</a>
+    <a class="tool-lnk" href="https://github.com/babbworks/bitpads/issues">Open an Issue →</a>
+    <a class="tool-lnk" href="mailto:bitpads@babb.tel">bitpads@babb.tel</a>
+    <a class="tool-lnk" href="https://twitter.com/bitpads">@bitpads</a>
   </div>
 </div>
 
@@ -135,67 +132,61 @@ a.bh-tag:hover{color:var(--ink);}
     </div>
     <div class="spec">
       <div class="spec-k">Status</div>
-      <div class="spec-v">Active development · CLI reference client shipping</div>
+      <div class="spec-v">Active development · Specification published</div>
     </div>
     <div class="spec">
-      <div class="spec-k">Standard</div>
-      <div class="spec-v"><a href="/basics/releases">BASICS Core conformant</a></div>
+      <div class="spec-k">Application layer</div>
+      <div class="spec-v"><a href="/workpads/releases">Workpads →</a></div>
     </div>
   </div>
 
   <div class="br-sidebar-section">
     <span class="br-sidebar-head">Releases</span>
-    {% assign ann = site.posts | where_exp: "p", "p.categories contains 'workpads' and p.title contains 'v0.1'" | first %}
+    {% assign ann = site.posts | where_exp: "p", "p.categories contains 'bitpads' and p.title contains 'v0.1'" | first %}
     <div class="spec">
       <div class="spec-k">v0.1.0</div>
-      <div class="spec-v">{% if ann %}<a href="{{ ann.url | relative_url }}">{{ ann.title }}</a>{% else %}Initial release{% endif %}</div>
+      <div class="spec-v">{% if ann %}<a href="{{ ann.url | relative_url }}">{{ ann.title }}</a>{% else %}Initial specification release{% endif %}</div>
     </div>
   </div>
 
   <div class="br-sidebar-section">
-    <span class="br-sidebar-head">Surfaces</span>
+    <span class="br-sidebar-head">Technical</span>
     <div class="spec">
-      <div class="spec-k">CLI</div>
-      <div class="spec-v">Reference client · Active</div>
+      <div class="spec-k">Encoding</div>
+      <div class="spec-v">Compact binary · SMS-transportable</div>
     </div>
     <div class="spec">
-      <div class="spec-k">Browser</div>
-      <div class="spec-v">Active development</div>
+      <div class="spec-k">Heritage</div>
+      <div class="spec-v">Baudot C0 Enhancement Grammar · five-bit constraint lineage</div>
     </div>
     <div class="spec">
-      <div class="spec-k">KaiOS</div>
-      <div class="spec-v">Coming soon · SMS transport</div>
-    </div>
-  </div>
-
-  <div class="br-sidebar-section">
-    <span class="br-sidebar-head">Protocol</span>
-    <div class="spec">
-      <div class="spec-v"><a href="/bitpads/releases">BitPads binary encoding →</a></div>
+      <div class="spec-k">Transport</div>
+      <div class="spec-v">SMS · IP · satellite · any binary channel</div>
     </div>
     <div class="spec">
-      <div class="spec-v"><a href="https://workpads.babb.tel">Protocol standard →</a></div>
+      <div class="spec-k">Conformance</div>
+      <div class="spec-v">Test suite included · independently verifiable</div>
     </div>
   </div>
 
   <div class="br-sidebar-section">
     <span class="br-sidebar-head">Repository</span>
     <div class="spec">
-      <div class="spec-v"><a href="https://github.com/babbworks/workpads">babbworks/workpads →</a></div>
+      <div class="spec-v"><a href="https://github.com/babbworks/bitpads">babbworks/bitpads →</a></div>
     </div>
   </div>
 
   <div class="br-sidebar-section">
     <span class="br-sidebar-head">Contact</span>
     <div class="spec">
-      <div class="spec-v"><a href="mailto:workpads@babb.tel">workpads@babb.tel</a></div>
+      <div class="spec-v"><a href="mailto:bitpads@babb.tel">bitpads@babb.tel</a></div>
     </div>
     <div class="spec">
-      <div class="spec-v"><a href="https://twitter.com/workpads">@workpads</a></div>
+      <div class="spec-v"><a href="https://twitter.com/bitpads">@bitpads</a></div>
     </div>
   </div>
 
-  <a class="bh-btn" href="https://github.com/babbworks/workpads/releases" style="margin-top:8px;">GitHub Releases →</a>
+  <a class="bh-btn" href="https://github.com/babbworks/bitpads/releases" style="margin-top:8px;">GitHub Releases →</a>
 
 </div><!-- /br-sidebar -->
 
