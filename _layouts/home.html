@@ -1,31 +1,1004 @@
 ---
 layout: default
 ---
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Barlow:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Barlow+Condensed:wght@500;600;700&display=swap');
 
-<div class="home-columns">
-  <div class="column-left">
-<div class="home">
-  <h2>Taking business into orbit.</h2>
-  <h4><b>From <a href="/rust-belt">Rust Belt</a>, to <a href="company/focus/2025/03/14/building-for-remote-regions.html">Kalahari</a> to the <a href="/cosmic-commerce">Cosmos</a>, we are pioneering <a href="/tools-for-life">digital & physical tools</a> that help people work & learn.</b></h4>
-<p><a href="/workwarrior">Workwarrior</a> grows the ecosystem of open source productivity tools for individuals & industries. Get the terminal app <a href="https://github.com/babbworks/workwarrior">on GitHub</a>. </p>
-<p><b><a href="/workpads">Workpads</a> is a <a href="https://workpads.babb.tel">protocol</a> & mobile app for <a href="/creating">creating</a> & <a href="/sharing">sharing</a> unique business records</a>, based on the <a href="/bitpads">Bitpads Standard</a>. </b></p>
-<h4>🚀 Read our <a href="/oath-for-orbit">Oath for Orbit</a>.</h4>
-<h4>🛣️ Checkout our <a href="/roadmaps">roadmaps</a>.</h4>
-<p>🌌 Why <a href="/whybabb">Babb</a>?</p>
-</div>
-</div>
+/* ══════════════════════════════════════
+   BABB HOMEPAGE — CUSTOM STYLES
+   Scoped inside .bh to avoid site conflicts
+══════════════════════════════════════ */
 
- <div class="column-right">
-  <h2><b><a href="/updates">Updates</a></b></h2>
-  <ul>
-    {% for post in site.posts limit:30 %}      <li>
-        <a href="{{ post.url | relative_url }}">{{ post.title }}</a>
-        <span>{{ post.date | date: "%B %d, %Y" }}</span>
-      </li>
-    {% endfor %}
-    <p class="rss-subscribe">subscribe <a href="{{ "/feed.xml" | relative_url }}">via RSS</a></p>
+.bh {
+  --bg:        #F8F7F4;
+  --ink:       #100F0E;
+  --ink-2:     #3B3A37;
+  --ink-3:     #7A7872;
+  --ink-4:     #B8B5AE;
+  --accent:    #B07830;
+  --accent-lo: rgba(176,120,48,0.09);
+  --rule:      #E0DDD8;
+  --ff-h:      'Instrument Serif', Georgia, serif;
+  --ff-b:      'Barlow', system-ui, sans-serif;
+  --ff-lbl:    'Barlow Condensed', system-ui, sans-serif;
 
-  </ul>
+  font-family: var(--ff-b);
+  color: var(--ink);
+  background: var(--bg);
+}
 
+/* Pull content to edges of the minima wrapper (wrapper padding: 30px desktop, 15px ≤1100px) */
+.bh { margin: 0 -30px; }
+@media (max-width: 1100px) { .bh { margin: 0 -15px; } }
+
+/* Inner container */
+.bh-wrap {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 40px;
+}
+@media (max-width: 600px) { .bh-wrap { padding: 0 20px; } }
+
+/* ── EYEBROW LABEL ── */
+.bh-tag {
+  font-family: var(--ff-lbl);
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--accent);
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+.bh-tag::before {
+  content: '';
+  display: block;
+  width: 22px;
+  height: 1px;
+  background: var(--accent);
+  flex-shrink: 0;
+}
+
+/* ── SECTION RULE ── */
+.bh-rule {
+  border: none;
+  border-top: 1px solid var(--rule);
+  margin: 0;
+}
+
+/* ══════════════════════════════════════
+   HERO
+══════════════════════════════════════ */
+.bh-hero {
+  padding: 72px 0 64px;
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  gap: 64px;
+  align-items: start;
+}
+
+.bh-hero h1 {
+  font-family: var(--ff-h);
+  font-size: clamp(2.8rem, 6vw, 5rem);
+  font-weight: 400;
+  line-height: 1.06;
+  letter-spacing: -0.025em;
+  color: var(--ink);
+  margin: 0 0 28px;
+}
+.bh-hero h1 em {
+  font-style: italic;
+  color: var(--accent);
+}
+
+.bh-tagline {
+  font-family: var(--ff-b);
+  font-size: 1.05rem;
+  font-weight: 400;
+  color: var(--ink-2);
+  line-height: 1.7;
+  margin: 0 0 12px;
+  max-width: 540px;
+}
+
+.bh-tagline strong {
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.bh-mission {
+  font-family: var(--ff-b);
+  font-size: 0.88rem;
+  color: var(--ink-3);
+  line-height: 1.75;
+  max-width: 520px;
+  margin: 16px 0 32px;
+}
+
+.bh-hero-btns {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.bh-btn {
+  font-family: var(--ff-lbl);
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  text-decoration: none;
+  padding: 10px 20px;
+  border: 1px solid var(--ink);
+  color: var(--ink);
+  transition: background 0.14s, color 0.14s;
+  display: inline-block;
+}
+.bh-btn:hover { background: var(--ink); color: var(--bg); }
+.bh-btn:visited { color: var(--ink); }
+.bh-btn.ghost {
+  border-color: var(--rule);
+  color: var(--ink-3);
+}
+.bh-btn.ghost:hover { background: var(--rule); color: var(--ink); }
+.bh-btn.ghost:visited { color: var(--ink-3); }
+
+/* Hero aside */
+.bh-hero-aside {
+  border-left: 1px solid var(--rule);
+  padding-left: 36px;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  padding-top: 8px;
+}
+
+.bh-aside-row {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.bh-aside-num {
+  font-family: var(--ff-h);
+  font-size: 2rem;
+  font-style: italic;
+  color: var(--accent);
+  line-height: 1;
+}
+
+.bh-aside-lbl {
+  font-family: var(--ff-lbl);
+  font-size: 0.58rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ink-4);
+}
+
+/* ══════════════════════════════════════
+   THESIS
+══════════════════════════════════════ */
+.bh-thesis {
+  padding: 72px 0;
+}
+
+.bh-thesis-head {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: 60px;
+  margin-bottom: 56px;
+  align-items: start;
+}
+
+.bh-thesis-intro {
+  font-family: var(--ff-h);
+  font-size: 1.5rem;
+  font-weight: 400;
+  font-style: italic;
+  color: var(--ink-2);
+  line-height: 1.45;
+  margin: 0;
+}
+
+.bh-pillars {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2px;
+}
+
+.bh-pillar {
+  background: white;
+  border: 1px solid var(--rule);
+  padding: 32px 28px;
+}
+
+.bh-pillar-n {
+  font-family: var(--ff-h);
+  font-size: 2.4rem;
+  font-weight: 400;
+  color: var(--accent);
+  line-height: 1;
+  margin-bottom: 16px;
+}
+
+.bh-pillar-title {
+  font-family: var(--ff-b);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: 10px;
+  line-height: 1.3;
+}
+
+.bh-pillar-body {
+  font-family: var(--ff-b);
+  font-size: 0.8rem;
+  color: var(--ink-3);
+  line-height: 1.7;
+  margin: 0;
+}
+
+/* ══════════════════════════════════════
+   LINEAGE STRIP
+══════════════════════════════════════ */
+.bh-lineage {
+  padding: 72px 0;
+  background: var(--ink);
+  /* full-bleed relative to .bh-wrap */
+  margin-left: -40px;
+  margin-right: -40px;
+  padding-left: 40px;
+  padding-right: 40px;
+}
+
+@media (max-width: 600px) {
+  .bh-lineage {
+    margin-left: -20px;
+    margin-right: -20px;
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+}
+
+.bh-lineage .bh-tag { color: rgba(176,120,48,0.85); }
+.bh-lineage .bh-tag::before { background: rgba(176,120,48,0.85); }
+
+.bh-lineage-sub {
+  font-family: var(--ff-b);
+  font-size: 0.88rem;
+  color: #6A6864;
+  line-height: 1.65;
+  max-width: 500px;
+  margin: 0 0 36px;
+}
+
+.ln-bar {
+  display: flex;
+  border: 1px solid #252422;
+}
+
+.ln-btn {
+  flex: 1;
+  background: none;
+  border: none;
+  border-right: 1px solid #252422;
+  padding: 18px 14px 16px;
+  cursor: pointer;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  transition: background 0.14s;
+}
+.ln-btn:last-child { border-right: none; }
+.ln-btn:hover { background: #1A1917; }
+.ln-btn.active { background: #1E1C1A; border-bottom: 2px solid var(--accent); margin-bottom: -1px; }
+
+.ln-btn-era {
+  font-family: var(--ff-lbl);
+  font-size: 0.56rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  color: #554E48;
+  transition: color 0.14s;
+}
+.ln-btn.active .ln-btn-era { color: var(--accent); }
+
+.ln-btn-title {
+  font-family: var(--ff-h);
+  font-size: 0.88rem;
+  color: #5A5752;
+  line-height: 1.25;
+  transition: color 0.14s;
+}
+.ln-btn.active .ln-btn-title { color: #DEDAD4; }
+
+.ln-panels {
+  border: 1px solid #252422;
+  border-top: none;
+}
+
+.ln-panel {
+  display: none;
+  padding: 36px 40px;
+  animation: lnIn 0.18s ease;
+}
+.ln-panel.active { display: block; }
+
+@keyframes lnIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: none; }
+}
+
+.ln-panel h4 {
+  font-family: var(--ff-h);
+  font-size: 1.15rem;
+  font-weight: 400;
+  color: #DEDAD4;
+  margin: 0 0 14px;
+  line-height: 1.3;
+}
+
+.ln-panel p {
+  font-family: var(--ff-b);
+  font-size: 0.85rem;
+  color: #7A7772;
+  line-height: 1.85;
+  margin: 0;
+  max-width: 760px;
+}
+
+.ln-panel em { font-style: italic; color: #9A9590; }
+
+/* ══════════════════════════════════════
+   TOOLS
+══════════════════════════════════════ */
+.bh-tool {
+  padding: 72px 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  align-items: start;
+}
+
+.tool-tag {
+  font-family: var(--ff-lbl);
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 14px;
+}
+
+.tool-h {
+  font-family: var(--ff-h);
+  font-size: clamp(2rem, 3.5vw, 2.8rem);
+  font-weight: 400;
+  color: var(--ink);
+  margin: 0 0 22px;
+  line-height: 1.1;
+}
+
+.tool-p {
+  font-family: var(--ff-b);
+  font-size: 0.88rem;
+  color: var(--ink-2);
+  line-height: 1.8;
+  margin: 0 0 14px;
+}
+
+.tool-links {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-top: 20px;
+}
+
+.tool-lnk {
+  font-family: var(--ff-lbl);
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--ink);
+  border-bottom: 1px solid var(--accent);
+  padding-bottom: 2px;
+  transition: color 0.14s;
+}
+.tool-lnk:hover { color: var(--accent); }
+.tool-lnk:visited { color: var(--ink); }
+
+/* Tool spec panel */
+.tool-specs {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding-left: 36px;
+  border-left: 1px solid var(--rule);
+}
+
+.spec {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.spec-k {
+  font-family: var(--ff-lbl);
+  font-size: 0.56rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--ink-4);
+}
+
+.spec-v {
+  font-family: var(--ff-b);
+  font-size: 0.82rem;
+  color: var(--ink-2);
+  line-height: 1.55;
+}
+
+.spec-v a { color: var(--accent); text-decoration: none; }
+.spec-v a:hover { text-decoration: underline; }
+
+/* ══════════════════════════════════════
+   KAIOS — DARK FULL BLEED
+══════════════════════════════════════ */
+.bh-kaios {
+  background: #0C0B0A;
+  margin-left: -40px;
+  margin-right: -40px;
+  padding: 80px 40px;
+  border-top: 1px solid #1E1C1A;
+  border-bottom: 1px solid #1E1C1A;
+}
+
+@media (max-width: 600px) {
+  .bh-kaios {
+    margin-left: -20px;
+    margin-right: -20px;
+    padding: 60px 20px;
+  }
+}
+
+.bh-kaios-inner {
+  max-width: 1020px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 72px;
+  align-items: start;
+}
+
+.bh-kaios .bh-tag { color: var(--accent); }
+.bh-kaios .bh-tag::before { background: var(--accent); }
+.bh-kaios .tool-tag { color: rgba(176,120,48,0.7); }
+.bh-kaios .tool-h { color: #DEDAD4; }
+.bh-kaios .tool-p { color: #706D68; }
+.bh-kaios .tool-specs { border-left-color: #1E1C1A; }
+.bh-kaios .spec-k { color: #3D3A36; }
+.bh-kaios .spec-v { color: #706D68; }
+.bh-kaios .tool-lnk { color: #DEDAD4; border-bottom-color: var(--accent); }
+.bh-kaios .tool-lnk:hover { color: var(--accent); }
+.bh-kaios .tool-lnk:visited { color: #DEDAD4; }
+
+.kaios-status {
+  display: inline-block;
+  margin-top: 24px;
+  padding: 10px 18px;
+  border: 1px solid rgba(176,120,48,0.3);
+  font-family: var(--ff-lbl);
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(176,120,48,0.65);
+}
+
+/* ▲ To update when Workpads for KaiOS launches: edit .kaios-status text and class below */
+.kaios-status a {
+  color: var(--accent);
+  text-decoration: none;
+}
+.kaios-status a:hover { text-decoration: underline; }
+
+/* ══════════════════════════════════════
+   CLARKWARE (lower, brief)
+══════════════════════════════════════ */
+.bh-clark {
+  padding: 64px 0;
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 60px;
+  align-items: start;
+}
+
+.bh-clark-left {}
+.bh-clark-left h3 {
+  font-family: var(--ff-h);
+  font-size: 1.8rem;
+  font-weight: 400;
+  color: var(--ink);
+  margin: 0 0 10px;
+}
+
+.bh-clark-body {
+  font-family: var(--ff-b);
+  font-size: 0.88rem;
+  color: var(--ink-3);
+  line-height: 1.8;
+  margin: 0 0 16px;
+}
+
+/* ══════════════════════════════════════
+   OATH
+══════════════════════════════════════ */
+.bh-oath {
+  padding: 56px 0;
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 60px;
+  align-items: center;
+}
+
+.bh-oath-label {
+  font-family: var(--ff-h);
+  font-size: 1.2rem;
+  font-weight: 400;
+  font-style: italic;
+  color: var(--ink-3);
+  line-height: 1.4;
+}
+
+.bh-oath-text {
+  font-family: var(--ff-h);
+  font-size: 1.1rem;
+  font-style: italic;
+  color: var(--ink-2);
+  line-height: 1.75;
+  margin: 0 0 16px;
+  border-left: 2px solid var(--accent);
+  padding-left: 24px;
+}
+
+/* ══════════════════════════════════════
+   DISPATCHES
+══════════════════════════════════════ */
+.bh-dispatches {
+  padding: 72px 0 80px;
+}
+
+.dispatches-layout {
+  display: grid;
+  grid-template-columns: 1fr 280px;
+  gap: 64px;
+  margin-top: 32px;
+  align-items: start;
+}
+
+.dispatch-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.dispatch-item {
+  display: grid;
+  grid-template-columns: 110px 1fr;
+  gap: 16px;
+  padding: 13px 0;
+  border-bottom: 1px solid var(--rule);
+  align-items: baseline;
+}
+
+.dispatch-item:first-child { border-top: 1px solid var(--rule); }
+
+.dispatch-date {
+  font-family: var(--ff-lbl);
+  font-size: 0.58rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-4);
+}
+
+.dispatch-title {
+  font-family: var(--ff-b);
+  font-size: 0.88rem;
+  color: var(--ink);
+  text-decoration: none;
+  line-height: 1.4;
+  transition: color 0.14s;
+}
+.dispatch-title:hover { color: var(--accent); }
+.dispatch-title:visited { color: var(--ink-2); }
+
+.dispatch-rss {
+  display: inline-block;
+  margin-top: 16px;
+  font-family: var(--ff-lbl);
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-4);
+  text-decoration: none;
+}
+.dispatch-rss:hover { color: var(--accent); }
+
+.dispatches-aside {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.dispatches-aside h4 {
+  font-family: var(--ff-h);
+  font-size: 1.4rem;
+  font-weight: 400;
+  color: var(--ink);
+  margin: 0 0 8px;
+  line-height: 1.2;
+}
+
+.dispatches-aside p {
+  font-family: var(--ff-b);
+  font-size: 0.82rem;
+  color: var(--ink-3);
+  line-height: 1.7;
+  margin: 0;
+}
+
+/* ══════════════════════════════════════
+   RESPONSIVE
+══════════════════════════════════════ */
+@media (max-width: 900px) {
+  .bh-hero         { grid-template-columns: 1fr; }
+  .bh-hero-aside   { border-left: none; padding-left: 0; border-top: 1px solid var(--rule); padding-top: 28px; flex-direction: row; flex-wrap: wrap; gap: 24px 40px; }
+  .bh-thesis-head  { grid-template-columns: 1fr; gap: 24px; }
+  .bh-pillars      { grid-template-columns: 1fr; }
+  .bh-tool         { grid-template-columns: 1fr; gap: 40px; }
+  .tool-specs      { border-left: none; border-top: 1px solid var(--rule); padding-left: 0; padding-top: 28px; }
+  .bh-kaios-inner  { grid-template-columns: 1fr; gap: 40px; }
+  .bh-kaios .tool-specs { border-left: none; border-top: 1px solid #1E1C1A; padding-left: 0; padding-top: 24px; }
+  .bh-clark        { grid-template-columns: 1fr; gap: 24px; }
+  .bh-oath         { grid-template-columns: 1fr; gap: 24px; }
+  .dispatches-layout { grid-template-columns: 1fr; }
+  .dispatch-item   { grid-template-columns: 90px 1fr; }
+  .ln-bar          { flex-wrap: wrap; }
+  .ln-btn          { flex: 1 1 40%; border-right: 1px solid #252422; border-bottom: 1px solid #252422; }
+  .ln-panel        { padding: 28px 20px; }
+}
+
+@media (max-width: 560px) {
+  .bh-hero h1      { font-size: 2.4rem; }
+  .bh-pillars      { gap: 8px; }
+  .ln-btn          { flex: 1 1 100%; border-right: none; }
+  .dispatch-item   { grid-template-columns: 1fr; gap: 3px; }
+  .dispatch-date   { font-size: 0.54rem; }
+}
+</style>
+
+<div class="bh">
+<div class="bh-wrap">
+
+<!-- ══ HERO ══════════════════════════════════ -->
+<section class="bh-hero">
+  <div>
+    <span class="bh-tag">Babb Works</span>
+    <h1>Taking business<br><em>into orbit.</em></h1>
+    <p class="bh-tagline"><strong>From <a href="/rust-belt" style="color:inherit;">Rust Belt</a>, to <a href="/company/focus/2025/03/14/building-for-remote-regions.html" style="color:inherit;">Kalahari</a>, to the <a href="/cosmic-commerce" style="color:inherit;">Cosmos</a></strong> — we pioneer digital and physical tools that help people work and learn.</p>
+    <p class="bh-mission">Babb is an industrial software company and open-source foundry. We build for the working world: individuals, small teams, shop floors, farms, field crews, and operators whose work cannot pause for fragile software. We build on fundamentals — in software, hardware, and the perennial disciplines of communication and commerce — because we are building for a very long time.</p>
+    <div class="bh-hero-btns">
+      <a class="bh-btn" href="https://github.com/babbworks/workwarrior">Get Workwarrior</a>
+      <a class="bh-btn ghost" href="/tools">All Tools</a>
+      <a class="bh-btn ghost" href="/roadmaps">Roadmap</a>
+    </div>
+  </div>
+  <div class="bh-hero-aside">
+    <div class="bh-aside-row">
+      <div class="bh-aside-num">20+</div>
+      <div class="bh-aside-lbl">Open repositories</div>
+    </div>
+    <div class="bh-aside-row">
+      <div class="bh-aside-num">5</div>
+      <div class="bh-aside-lbl">Public standards maintained</div>
+    </div>
+    <div class="bh-aside-row">
+      <div class="bh-aside-num">100M+</div>
+      <div class="bh-aside-lbl">Device reach, Africa first</div>
+    </div>
+    <div class="bh-aside-row">
+      <div class="bh-aside-num">∞</div>
+      <div class="bh-aside-lbl">Time horizon on every tool</div>
+    </div>
+  </div>
+</section>
+
+<hr class="bh-rule">
+
+<!-- ══ THESIS ══════════════════════════════════ -->
+<section class="bh-thesis">
+  <div class="bh-thesis-head">
+    <span class="bh-tag">What We Stand For</span>
+    <p class="bh-thesis-intro">Operator autonomy. Individual development. Tools that last because they are built on things that do not change.</p>
+  </div>
+  <div class="bh-pillars">
+    <div class="bh-pillar">
+      <div class="bh-pillar-n">01</div>
+      <div class="bh-pillar-title">Fundamentals, all the way down</div>
+      <p class="bh-pillar-body">We build on the mathematical and structural foundations of communication and commerce — not on the assumptions of the moment. Our protocols encode invariants that have governed trade since Sumerian clay tablets. Our interfaces speak a language older than the internet. We optimize for the long arc.</p>
+    </div>
+    <div class="bh-pillar">
+      <div class="bh-pillar-n">02</div>
+      <div class="bh-pillar-title">Operator autonomy, not operator dependency</div>
+      <p class="bh-pillar-body">Every Babb tool is built so the person using it understands it, owns it, and can walk away with their work intact. Open standards, not lock-in. Offline-first, not always-connected. Local-first data, because your records belong to you — not to a platform.</p>
+    </div>
+    <div class="bh-pillar">
+      <div class="bh-pillar-n">03</div>
+      <div class="bh-pillar-title">Tools that teach, not just perform</div>
+      <p class="bh-pillar-body">The most lasting contribution a tool can make is improving the capability of its user. Across the Babb suite, capturing and recalling ideas, information, and artifacts from working and playing is woven into every surface — an independent layer that travels with you, under your full control. Our tools go far beyond conventional help: annotated examples, context-rich guidance, and intelligent prompting that builds real understanding over time.</p>
+    </div>
+  </div>
+</section>
+
+</div><!-- /bh-wrap -->
+
+<!-- ══ LINEAGE — dark full bleed ══════════════ -->
+<div class="bh-lineage">
+  <div class="bh-wrap">
+    <span class="bh-tag">The Long Arc</span>
+    <p class="bh-lineage-sub">The practices behind Babb's tools are not new. The coordination problems we are solving were first solved in clay and reed. Select a moment.</p>
+
+    <div class="ln-bar">
+      <button class="ln-btn active" data-panel="ln-sumer">
+        <span class="ln-btn-era">c. 3300 BCE</span>
+        <span class="ln-btn-title">The First<br>Business Records</span>
+      </button>
+      <button class="ln-btn" data-panel="ln-pacioli">
+        <span class="ln-btn-era">1494</span>
+        <span class="ln-btn-title">Double-Entry<br>Accounting</span>
+      </button>
+      <button class="ln-btn" data-panel="ln-baudot">
+        <span class="ln-btn-era">1870</span>
+        <span class="ln-btn-title">Telegraphic<br>Commerce</span>
+      </button>
+      <button class="ln-btn" data-panel="ln-unix">
+        <span class="ln-btn-era">1969</span>
+        <span class="ln-btn-title">The Command<br>Line</span>
+      </button>
+      <button class="ln-btn" data-panel="ln-babb">
+        <span class="ln-btn-era">Now</span>
+        <span class="ln-btn-title">Babb</span>
+      </button>
+    </div>
+
+    <div class="ln-panels">
+      <div id="ln-sumer" class="ln-panel active">
+        <h4>Uruk, Mesopotamia — the first industrial coordination records</h4>
+        <p>Around 3300 BCE in the city of Uruk, administrators began pressing reed styluses into soft clay to record what arrived, what was issued, and to whom. The earliest known tablet — a beer ration record from around 3300 BCE — shows human heads eating from bowls beside conical vessels, with numerical marks: how much beer, for how many workers. These were not literary documents. They were operational records for a managed workforce. Temple complexes in Lagash deployed over 6,000 laborers in textile workshops, fisheries, grain cultivation, and irrigation maintenance. Each worker's ration was standardized and logged: adults received 30–40 sila of barley per month; children received 20. Scribes recorded daily wage rates, delivery weights, labor assignments, and commodity flows across city-states whose productive capacity depended entirely on the legibility of these records. The transition from clay tokens to written tablets was itself driven by scale: as city populations reached the tens of thousands, three-dimensional tokens stored in envelopes became unworkable. Pressing the token's impression into the clay surface — then discarding the token — was the world's first data compression. Two-dimensional marks replaced physical objects because operations had grown too large for any other method. The logic Babb applies to lean binary records, standardized formats, and offline-first data capture is this same logic — applied five millennia later.</p>
+      </div>
+      <div id="ln-pacioli" class="ln-panel">
+        <h4>Venice, 1494 — the method that balanced the books of empire</h4>
+        <p>Luca Pacioli's <em>Summa de Arithmetica</em> did not invent double-entry bookkeeping — Venetian merchants had practiced it for two centuries. What Pacioli did was formalize and publish the method at the exact moment the printing press could carry it across Europe. The core insight: every transaction has two sides, and those sides must balance. Debit and credit are not moral categories — they are structural positions in a record that cannot lie without revealing the lie. The method enabled the merchant republics of northern Italy to coordinate trade at scales previously impossible: goods moving between agents in distant cities, multiple currencies, time-delayed settlement, complex partnerships. The ledger became the operating system of early modern commerce. BitLedger, Babb's compact binary transmission protocol, encodes this same invariant at the wire level — not as a rule to check after the fact, but as a structural property of the encoding. A record that does not balance cannot be encoded. Five hundred and thirty years later, the mathematics is identical.</p>
+      </div>
+      <div id="ln-baudot" class="ln-panel">
+        <h4>Paris, 1870 — five bits, thirty-two signals, the beginning of binary commerce</h4>
+        <p>Émile Baudot's telegraph code reduced the alphabet to five binary positions — each a combination of electrical marks and spaces. Five bits. Thirty-two possible signals. Every subsequent binary communication standard (Murray code, ASCII, ISO 6429, Unicode control characters) preserved this space, because the constraint is mathematical: five bits is the minimum to encode the Roman alphabet plus basic controls. The telegraph collapsed distance for commerce. A merchant in London could coordinate a purchase in Mumbai in minutes rather than months. Commodity markets, insurance, and modern banking were restructured around telegraphic speed. Baudot's code was also a compression decision: the tradeoff between expressiveness and bandwidth — how much information travels through a constrained channel per unit of cost — is the same engineering problem BitPads addresses today for satellite links, KaiOS devices, and low-bandwidth field operations across sub-Saharan Africa. One hundred and fifty-five years later, three upper bits of Baudot's original C0 control character space remain structurally available — unclaimed by every standard since. The BitPads Enhancement Grammar reclaims them.</p>
+      </div>
+      <div id="ln-unix" class="ln-panel">
+        <h4>Bell Labs, 1969 — the interface that outlasted every successor</h4>
+        <p>Unix was designed under extraordinary constraint: a PDP-7 with 8KB of memory, a small team, no budget. The answers those constraints produced — small composable tools, text as the universal interface, files as the organizing principle, explicit commands rather than hidden state — turned out to be so structurally correct that every serious computing environment since has either adopted them or been forced to explain why not. The terminal is not an anachronism. It is the interface that survived every generation of "simpler" successors, because it models the computer as it actually is: a machine that receives explicit instructions and returns deterministic output. Workwarrior is built on this foundation — not as a nostalgic choice, but because the terminal's composability, scriptability, and transparency make it the correct substrate for tools intended to last. The work ahead is to make that foundation genuinely accessible: to lower the entry cost, to carry the same rigor onto mobile devices and dedicated work screens, and to let the discipline of the terminal inform how software behaves everywhere else.</p>
+      </div>
+      <div id="ln-babb" class="ln-panel">
+        <h4>Rust Belt to Kalahari to Cosmos — the moment Babb was built for</h4>
+        <p>We are in a period of simultaneous reindustrialization and expanding connectivity, where traditional hard work — farming, fabrication, transport, field service, local trade — remains foundational while new infrastructure extends into spaces and regions that previous generations of software ignored entirely. Babb is building for continuity across all of it: old and new infrastructure, local and global markets, terrestrial and off-world operations. The tools we build are rooted in practices that are five thousand years old and designed to operate in environments that did not exist five years ago. The constraint that makes a Sumerian tablet readable today is the same constraint we apply to every protocol: records should be self-describing, minimal, and structurally honest. Every tool should compound the capability of its user. Every standard should be free to implement, maintained openly, and durable enough to outlast the organization that created it. Babb's time has come — not because the problems are new, but because the moment that demands permanent, capable, accessible tools for every operator on every continent has arrived.</p>
+      </div>
+    </div>
   </div>
 </div>
+
+<div class="bh-wrap">
+
+<hr class="bh-rule">
+
+<!-- ══ WORKWARRIOR ══════════════════════════ -->
+<section class="bh-tool">
+  <div>
+    <div class="tool-tag">Flagship · Terminal-first · Open Source</div>
+    <h2 class="tool-h">Workwarrior</h2>
+    <p class="tool-p">Productivity is personal. Workwarrior unifies the four daily disciplines of real work — tasks, time, notes, and exchanges — into a terminal environment that is composable, scriptable, and entirely yours. It connects best-in-class CLI tools (Taskwarrior, Timewarrior, JRNL, hledger) through a coherent profile system that holds your work context intact across sessions, devices, and collaborators.</p>
+    <p class="tool-p">Workwarrior represents the building blocks we are putting in place to simplify and strengthen personal and team work from the ground up. The terminal is where we establish the foundations — the data models, the discipline, the composability. From there, the same logic extends onto mobile devices, dedicated work screens, and consumer hardware. The rigor of the terminal travels. The intimidation factor does not.</p>
+    <p class="tool-p">The learning layer is built in: Workwarrior goes beyond help documentation to provide context-rich guidance, annotated examples, and structured prompting that helps users genuinely understand and improve how they work — not just execute commands.</p>
+    <div class="tool-links">
+      <a class="tool-lnk" href="/workwarrior">Learn more</a>
+      <a class="tool-lnk" href="https://github.com/babbworks/workwarrior">GitHub →</a>
+    </div>
+  </div>
+  <div class="tool-specs">
+    <div class="spec">
+      <div class="spec-k">Core disciplines</div>
+      <div class="spec-v">Tasks · Time · Notes · Exchanges — unified under one profile</div>
+    </div>
+    <div class="spec">
+      <div class="spec-k">Foundation</div>
+      <div class="spec-v">Taskwarrior · Timewarrior · JRNL · hledger</div>
+    </div>
+    <div class="spec">
+      <div class="spec-k">Knowledge layer</div>
+      <div class="spec-v">Personal capture and recall travels with you — independent service, full user control over what is saved and shared</div>
+    </div>
+    <div class="spec">
+      <div class="spec-k">Trajectory</div>
+      <div class="spec-v">Terminal → mobile → dedicated screens → consumer devices</div>
+    </div>
+    <div class="spec">
+      <div class="spec-k">Status</div>
+      <div class="spec-v">Active development · <a href="https://github.com/babbworks/workwarrior">Open source</a></div>
+    </div>
+  </div>
+</section>
+
+<hr class="bh-rule">
+
+<!-- ══ WORKPADS ══════════════════════════ -->
+<section class="bh-tool">
+  <div>
+    <div class="tool-tag">Protocol &amp; Application</div>
+    <h2 class="tool-h">Workpads</h2>
+    <p class="tool-p">A job-record system built around one durable unit: the single work document. Instead of forcing small teams into heavy software stacks, Workpads keeps the center of gravity where it belongs — on a clear record of what happened, what should happen next, and why.</p>
+    <p class="tool-p">Workpads is organized around <strong>PADS</strong>: Processes, Actions, Details, Story. Minimal enough to model real jobs on the lowest-cost mobile devices; structured enough to produce records that integrate with CLI tools and web surfaces without format translation. Job records encode as compact textable strings that self-load on the receiver's end without a data connection — coordination that continues when networks don't.</p>
+    <div class="tool-links">
+      <a class="tool-lnk" href="/workpads">Learn more</a>
+      <a class="tool-lnk" href="https://workpads.babb.tel">Protocol standard →</a>
+    </div>
+  </div>
+  <div class="tool-specs">
+    <div class="spec">
+      <div class="spec-k">Core model</div>
+      <div class="spec-v">PADS — Processes · Actions · Details · Story</div>
+    </div>
+    <div class="spec">
+      <div class="spec-k">Transport</div>
+      <div class="spec-v">Textable strings, self-loading on the receiver — no data connection required</div>
+    </div>
+    <div class="spec">
+      <div class="spec-k">Format compatibility</div>
+      <div class="spec-v">Matches CLI tools and web versions exactly — no format translation</div>
+    </div>
+    <div class="spec">
+      <div class="spec-k">Underlying standard</div>
+      <div class="spec-v"><a href="/bitpads">BitPads Protocol</a> — open binary standard beneath the application</div>
+    </div>
+    <div class="spec">
+      <div class="spec-k">Status</div>
+      <div class="spec-v">Active development · Mobile, web, and CLI surfaces</div>
+    </div>
+  </div>
+</section>
+
+</div><!-- /bh-wrap -->
+
+<!-- ══ KAIOS — dark full bleed ══════════════ -->
+<div class="bh-kaios">
+  <div class="bh-wrap">
+  <div class="bh-kaios-inner">
+    <div>
+      <span class="bh-tag">Field Deployment · Africa First</span>
+      <div class="tool-tag">KaiOS &amp; Constrained Devices</div>
+      <h2 class="tool-h">The phone that costs twenty dollars is already in the hands of 400 million people.</h2>
+      <p class="tool-p">No serious business software exists for it. We are changing that.</p>
+      <p class="tool-p">KaiOS runs on feature phones without touchscreens, navigated by D-pad, with limited JavaScript runtimes and no PWA support. Networks are intermittent. Data costs money. These are not problems to apologize for — they are the design parameters of a first-class deployment target. Babb embraces every constraint as a forcing function for tools that are genuinely lean, genuinely durable, and genuinely accessible.</p>
+      <p class="tool-p">Workpads for KaiOS turns these devices into daily employee work tools. Job records are created, shared, and received using standard SMS — no data plan required. A Workpads link travels as a text message and self-loads on the receiver's end. Business coordination continues when networks do not. Our approach positions KaiOS devices as capable enterprise tools that can make entire tool suites redundant for workforces that previously had nothing built for them.</p>
+
+      <!-- ▲ UPDATE THIS BLOCK when Workpads for KaiOS ships: change class to "kaios-status launched" and update text -->
+      <span class="kaios-status">Workpads for KaiOS — coming soon &nbsp;·&nbsp; <a href="/updates">Follow updates →</a></span>
+    </div>
+    <div class="tool-specs">
+      <div class="spec">
+        <div class="spec-k">Primary pilot</div>
+        <div class="spec-v">Zambia — initial field deployment</div>
+      </div>
+      <div class="spec">
+        <div class="spec-k">Target reach</div>
+        <div class="spec-v">100M+ KaiOS devices across Africa; addressable across agriculture, trades, field service, and micro-enterprise</div>
+      </div>
+      <div class="spec">
+        <div class="spec-k">What makes it different</div>
+        <div class="spec-v">Data formats and exports match Babb CLI and web tools exactly. All data capture is personal-use-first — no platform dependency, full user control</div>
+      </div>
+      <div class="spec">
+        <div class="spec-k">Network approach</div>
+        <div class="spec-v">Standard SMS transport — textable Workpads strings work on down or costly networks without a data connection</div>
+      </div>
+      <div class="spec">
+        <div class="spec-k">Constraints embraced</div>
+        <div class="spec-v">D-pad navigation · offline-first · minimal JS · SMS transport — treated as features, not limitations</div>
+      </div>
+      <div class="spec">
+        <div class="spec-k">Opportunity</div>
+        <div class="spec-v">As the suite strengthens, Babb tools become redundant with competing tool categories — one open, coordinated platform for workforce and business operations</div>
+      </div>
+    </div>
+  </div>
+  </div>
+</div>
+
+<div class="bh-wrap">
+
+<hr class="bh-rule">
+
+<!-- ══ CLARKWARE ══════════════════════════ -->
+<section class="bh-clark">
+  <div class="bh-clark-left">
+    <span class="bh-tag">Industrial</span>
+    <h3>Clarkware</h3>
+    <a class="tool-lnk" href="https://github.com/babbworks/clarkware">GitHub →</a>
+  </div>
+  <div>
+    <p class="bh-clark-body">While Workwarrior and Workpads address personal and team-scale work, Babb's development extends into industrial operations. Clarkware is an on-the-floor manufacturing environment for technicians, supervisors, and integrated services — designed to accelerate production capacity and supply chain coordination in environments where fragile software has no place. It demonstrates Babb's thesis applied at operational scale: the same commitment to legible records, operator autonomy, and durable formats, brought to the factory floor and field operation. Clarkware is in focused development and will be introduced as the industrial layer of the Babb stack as it matures.</p>
+    <p class="bh-clark-body" style="color:var(--ink-4);font-size:0.8rem;">Also in the ecosystem: <a href="https://github.com/babbworks/clark-chat" style="color:inherit;">ClarkChat</a> — persistent, type-aware conversation for operations, learning, and automation.</p>
+  </div>
+</section>
+
+<hr class="bh-rule">
+
+<!-- ══ OATH ══════════════════════════ -->
+<section class="bh-oath">
+  <div class="bh-oath-label">Oath<br>for<br>Orbit</div>
+  <div>
+    <p class="bh-oath-text">"From the Midwest to the Kalahari to the Cosmos, Babb exists to help people and businesses lead and endure. The durable tools and technologies that can reliably operate far away are the same ones that faithfully serve Earth's remotest regions. This is our shared oath — to take the common spirit of business up into orbit and beyond."</p>
+    <a class="tool-lnk" href="/oath-for-orbit">Read the full Oath →</a>
+  </div>
+</section>
+
+<hr class="bh-rule">
+
+<!-- ══ DISPATCHES ══════════════════════ -->
+<section class="bh-dispatches">
+  <span class="bh-tag">Dispatches</span>
+  <div class="dispatches-layout">
+    <div>
+      <ul class="dispatch-list">
+        {% for post in site.posts limit:20 %}
+        <li class="dispatch-item">
+          <span class="dispatch-date">{{ post.date | date: "%b %d, %Y" }}</span>
+          <a class="dispatch-title" href="{{ post.url | relative_url }}">{{ post.title }}</a>
+        </li>
+        {% endfor %}
+      </ul>
+      <a class="dispatch-rss" href="{{ "/feed.xml" | relative_url }}">↗ Subscribe via RSS</a>
+    </div>
+    <div class="dispatches-aside">
+      <div>
+        <h4>Follow the build.</h4>
+        <p>Dispatches are manually posted notes from the Babb team — project progress, field reports, and thinking posted when there is something worth saying. No algorithm. No content schedule.</p>
+      </div>
+      <a class="bh-btn" href="/updates">All dispatches →</a>
+    </div>
+  </div>
+</section>
+
+</div><!-- /bh-wrap -->
+</div><!-- /bh -->
+
+<script>
+(function () {
+  var btns   = document.querySelectorAll('.ln-btn');
+  var panels = document.querySelectorAll('.ln-panel');
+  btns.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      btns.forEach(function (b) { b.classList.remove('active'); });
+      panels.forEach(function (p) { p.classList.remove('active'); });
+      btn.classList.add('active');
+      var t = document.getElementById(btn.dataset.panel);
+      if (t) t.classList.add('active');
+    });
+  });
+}());
+</script>

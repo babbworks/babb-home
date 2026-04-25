@@ -117,6 +117,23 @@ body {
 }
 
 // ====================== FOOTER POPUP ======================
+// On mobile, disable the popup for regular pages — footer flows at bottom of content.
+// Fullframe pages keep the touch-trigger popup since there's no page scroll.
+@media screen and (max-width: 600px) {
+  body:not(.fullframe-page) {
+    .footer-trigger {
+      display: none !important;
+    }
+
+    .site-footer {
+      position: static !important;
+      transform: none !important;
+      transition: none !important;
+      box-shadow: none !important;
+    }
+  }
+}
+
 .site-footer {
   position: fixed !important;
   bottom: 0;

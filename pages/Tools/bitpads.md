@@ -289,8 +289,8 @@ BitPads wraps that universal core — giving any transmission context, identity,
 <div class="column-right">
   <h3>Overview</h3>
   <ul>
-    <li><a href="/bitpads/">Protocol Overview</a></li>
-    <li><a href="/protocols/">Interactive Site</a></li>
+    <li><a href="/bitpads/">Interactive Site</a></li>
+    <li><a href="/bitpads-app/">Standalone Page</a></li>
   </ul>
   <h3>Updates</h3>
   <ul>
