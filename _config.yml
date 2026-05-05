@@ -39,6 +39,7 @@ plugins:
 header_pages:
   - pages/Tools/tools.md
   - pages/Releases/releases.md
+  - pages/works.md
   - pages/basics.md
   - pages/bitpadsbitledger.md
 
