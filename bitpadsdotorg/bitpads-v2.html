@@ -1,0 +1,1193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BitPads Protocol v2.0 — Meta Bytes, Wave &amp; Record Modes</title>
+<link rel="stylesheet" href="bp-style.css">
+<style>
+.hero { padding: 60px 0 40px; }
+.section-num {
+  font-family: var(--mono); font-size: 9px;
+  color: var(--nasa-red); letter-spacing: 0.14em;
+  text-transform: uppercase; margin-bottom: 6px;
+}
+.infra-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 1px;
+  background: var(--rule); border: 1px solid var(--rule); margin: 20px 0;
+}
+.infra-col { background: var(--bg-panel); padding: 22px; }
+.infra-col h4 { margin: 0 0 10px; }
+.infra-col ul { margin: 0; padding-left: 16px; font-size: 13px; color: var(--ink-soft); }
+.infra-col li { margin-bottom: 5px; line-height: 1.4; }
+.tag-new {
+  display: inline-block; font-family: var(--mono); font-size: 8px;
+  text-transform: uppercase; letter-spacing: 0.1em;
+  background: var(--nasa-red); color: white;
+  padding: 1px 5px; margin-left: 6px; vertical-align: middle;
+}
+.tag-v2 {
+  display: inline-block; font-family: var(--mono); font-size: 8px;
+  text-transform: uppercase; letter-spacing: 0.1em;
+  background: var(--nasa-blue); color: white;
+  padding: 1px 5px; margin-left: 6px; vertical-align: middle;
+}
+.decoder-tree {
+  background: var(--bg-dark); color: #A8C4E0;
+  font-family: var(--mono); font-size: 12px;
+  line-height: 1.85; padding: 22px 26px;
+  margin: 20px 0; border-left: 3px solid var(--nasa-gold);
+  overflow-x: auto;
+}
+.decoder-tree .dt-k { color: var(--nasa-gold); }
+.decoder-tree .dt-v { color: #7ECEF4; }
+.decoder-tree .dt-c { color: #6A8A6A; }
+.footprint-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1px; background: var(--rule); border: 1px solid var(--rule); margin: 20px 0;
+}
+.fp-cell { background: var(--bg-panel); padding: 20px; }
+.fp-label { font-family: var(--mono); font-size: 9px; text-transform: uppercase;
+  letter-spacing: 0.12em; color: var(--nasa-red); margin-bottom: 6px; }
+.fp-bytes { font-family: var(--display); font-weight: 700; font-size: 32px;
+  color: var(--nasa-blue); line-height: 1; margin-bottom: 4px; }
+.fp-unit { font-family: var(--mono); font-size: 9px; color: var(--ink-faint);
+  text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px; }
+.fp-desc { font-size: 12px; color: var(--ink-soft); }
+.change-new td { background: oklch(0.97 0.01 145); }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="index.html">
+      <span class="brand-mark">BP</span>
+      <span class="brand-name">BitPads Protocol</span>
+    </a>
+    <nav class="topnav">
+      <a href="overview.html">Overview</a>
+      <a href="bitpads-v2.html">BitPads v2</a>
+      <a href="bitledger.html" class="active">BitLedger</a>
+      <a href="universal-domain.html">Universal Domain</a>
+      <div class="nav-group">
+        <a href="enhancement-grammar.html">Enhancement</a>
+        <div class="nav-dropdown">
+          <a href="enhancement-grammar.html">Grammar &amp; Signal Slots</a>
+          <a href="enhancement-commands.html">Commands &amp; Context</a>
+          <a href="enhancement-telegraph-1.html">Telegraph Emulation I</a>
+          <a href="enhancement-telegraph-2.html">Telegraph Emulation II</a>
+          <a href="enhancement-nesting.html">Nesting &amp; Overhead</a>
+        </div>
+      </div>
+      <a href="compound-mode.html">Compound Mode</a>
+      <a href="engineering.html">Engineering</a>
+      <a href="guide.html">Guide</a>
+      <a href="cli.html">CLI</a>
+      <a href="reference.html">Reference</a>
+    </nav>
+  </div>
+</header>
+
+<div class="page">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <p class="toc-label">Contents</p>
+    <ol class="toc">
+      <li><a href="#philosophy">Philosophy &amp; First Principles</a></li>
+      <li><a href="#meta1">Meta Byte 1 — Universal Header</a></li>
+      <li><a href="#role-a">Role A — Wave Basic Treatment</a></li>
+      <li><a href="#role-b">Role B — Wave Categories</a></li>
+      <li><a href="#role-c">Role C — Record Component Flags</a></li>
+      <li><a href="#pure-signal">The Pure Signal</a></li>
+      <li><a href="#meta2">Meta Byte 2 — Extended Record Context</a></li>
+      <li><a href="#signal-slot">Signal Slot Presence Byte</a></li>
+      <li><a href="#layer1">Layer 1 — Session Header</a></li>
+      <li><a href="#identity">Identity System</a></li>
+      <li><a href="#value-block">Value Block &amp; Setup Byte</a></li>
+      <li><a href="#time-system">Time System</a></li>
+      <li><a href="#task-note">Task &amp; Note Components</a></li>
+      <li><a href="#component-order">Component Order &amp; Decoder Tree</a></li>
+      <li><a href="#footprints">Transmission Footprints</a></li>
+      <li><a href="#changes">v2.0 Change Summary</a></li>
+    </ol>
+  </aside>
+
+  <!-- MAIN -->
+  <main>
+    <!-- HERO -->
+    <div class="hero">
+      <p class="eyebrow">BitPads Protocol · Version 2.0</p>
+      <h1>Meta Bytes,<br>Wave &amp;<br>Record Modes</h1>
+      <p class="lead">A compact binary communication standard built on the Sumerian accounting token principle: a minimal mark plus a shared codebook produces maximum meaning per transmitted bit.</p>
+      <div class="stat-grid">
+        <div class="stat-cell"><div class="stat-val">1</div><div class="stat-unit">Byte Minimum</div><div class="stat-desc">Pure signal — complete wave with a single octet</div></div>
+        <div class="stat-cell"><div class="stat-val">8</div><div class="stat-unit">Bits in Meta 1</div><div class="stat-desc">Universal header present in every BitPad transmission</div></div>
+        <div class="stat-cell"><div class="stat-val">16</div><div class="stat-unit">Wave Categories</div><div class="stat-desc">Role B category codes 0000–1111</div></div>
+        <div class="stat-cell"><div class="stat-val">64</div><div class="stat-unit">Bits in Layer 1</div><div class="stat-desc">Full session identity header with CRC-15 integrity</div></div>
+      </div>
+    </div>
+
+    <!-- §1 PHILOSOPHY -->
+    <section id="philosophy">
+      <div class="section-num">§ 01</div>
+      <h2>Philosophy &amp; First Principles</h2>
+      <p class="lead">BitPads v2.0 is built on two converging design principles that favour compression of shared knowledge over per-transmission verbosity.</p>
+
+      <p class="pullquote">A Sumerian accounting token carries no redundant description — its shape is its meaning, and the codebook lives in the minds of sender and receiver alike.</p>
+
+      <h3>The Two Core Principles</h3>
+
+      <div class="principles">
+        <div class="principle">
+          <div class="pr-num">01 — Sumerian Token</div>
+          <div class="pr-head">Compact Mark + Shared Codebook</div>
+          <p class="pr-body">Transmission bytes carry only the variant information. Invariant meaning — field positions, role definitions, value scales — is encoded once in the specification and shared by all conforming implementations. The wire carries the difference, not the definition.</p>
+        </div>
+        <div class="principle">
+          <div class="pr-num">02 — Microservices</div>
+          <div class="pr-head">Invariant Core, Modular Extensions</div>
+          <p class="pr-body">System bytes (Meta 1, Meta 2, Layer 1) carry only logic that applies to every possible transmission. Everything else — value encoding, time fields, task blocks, note blocks — is a module activated by a presence flag. Absent modules cost zero bits.</p>
+        </div>
+        <div class="principle">
+          <div class="pr-num">03 — Dual Mode</div>
+          <div class="pr-head">Wave vs Record</div>
+          <p class="pr-body">Bit 1 of Meta Byte 1 selects the fundamental transmission mode. Wave mode (0) is optimised for real-time signals and status messages. Record mode (1) activates the extended component system for structured data transmission.</p>
+        </div>
+        <div class="principle">
+          <div class="pr-num">04 — Zero-Cost Absence</div>
+          <div class="pr-head">Present = Announced</div>
+          <p class="pr-body">Every optional component has a corresponding presence bit. If the bit is 0, the component is entirely absent from the byte stream. The receiver never allocates parsing state for absent components.</p>
+        </div>
+      </div>
+
+      <h3>Infrastructure vs Modules</h3>
+      <p>BitPads v2.0 separates its byte space into fixed core infrastructure and optional modules:</p>
+
+      <div class="infra-grid">
+        <div class="infra-col">
+          <h4>Core Infrastructure</h4>
+          <ul>
+            <li><strong>Meta Byte 1</strong> — Universal 8-bit header, always present</li>
+            <li><strong>Meta Byte 2</strong> — Extended record context (Record mode only)</li>
+            <li><strong>Layer 1</strong> — 64-bit session header with identity and CRC</li>
+            <li><strong>Layer 2</strong> — Batch header (protocol-specific, e.g. BitLedger)</li>
+          </ul>
+        </div>
+        <div class="infra-col">
+          <h4>Optional Modules</h4>
+          <ul>
+            <li>Signal Slot Presence Byte <span class="tag-new">v2.0</span></li>
+            <li>System Context Extension</li>
+            <li>Setup Byte</li>
+            <li>Value Block</li>
+            <li>Time Field</li>
+            <li>Task Block</li>
+            <li>Note Block</li>
+            <li>Extension Bytes</li>
+            <li>C0 Enhancement Module</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- §2 META BYTE 1 -->
+    <section id="meta1">
+      <div class="section-num">§ 02</div>
+      <h2>Meta Byte 1 — The Universal Header</h2>
+      <p>Meta Byte 1 is present in every BitPad transmission without exception. It is always the first byte received and must be decoded before any further parsing can occur.</p>
+
+      <div class="bit-display">
+        <div class="bit-display-label">Meta Byte 1 — 8 bits</div>
+        <div class="bit-cells">
+          <div class="bit-cell mode" data-layer="meta"><div class="bit-pos">1</div><div class="bit-val">0</div><div class="bit-name">Mode</div></div>
+          <div class="bit-cell mode" data-layer="meta"><div class="bit-pos">2</div><div class="bit-val">0</div><div class="bit-name">ACK/SysCtx</div></div>
+          <div class="bit-cell mode" data-layer="meta"><div class="bit-pos">3</div><div class="bit-val">0</div><div class="bit-name">Cont.</div></div>
+          <div class="bit-cell mode" data-layer="meta"><div class="bit-pos">4</div><div class="bit-val">0</div><div class="bit-name">Treat.Sw.</div></div>
+          <div class="bit-cell data" data-layer="meta"><div class="bit-pos">5</div><div class="bit-val">0</div><div class="bit-name">Content</div></div>
+          <div class="bit-cell data" data-layer="meta"><div class="bit-pos">6</div><div class="bit-val">0</div><div class="bit-name">Content</div></div>
+          <div class="bit-cell data" data-layer="meta"><div class="bit-pos">7</div><div class="bit-val">0</div><div class="bit-name">Content</div></div>
+          <div class="bit-cell data" data-layer="meta"><div class="bit-pos">8</div><div class="bit-val">0</div><div class="bit-name">Content</div></div>
+        </div>
+        <div class="bit-legend">
+          <div class="legend-item"><div class="legend-swatch mode"></div>Mode / Control</div>
+          <div class="legend-item"><div class="legend-swatch data"></div>Content Field (Role A / B / C)</div>
+        </div>
+      </div>
+
+      <table class="data-table">
+        <thead><tr><th>Bit(s)</th><th>Field</th><th>Value 0</th><th>Value 1</th><th>Notes</th></tr></thead>
+        <tbody>
+          <tr class="xrow" data-drawer="d-mb1-1">
+            <td><code>Bit 1</code> <span class="xrow-indicator">▼</span></td>
+            <td>BitPad Mode</td>
+            <td>Wave</td>
+            <td>Record</td>
+          </tr>
+          <tr class="xdrawer" id="d-mb1-1"><td colspan="5"><div class="xdrawer-inner"><div class="xdrawer-grid">
+            <div class="xdrawer-section"><h5>Wave Mode (0)</h5><p>Optimised for real-time signals and status. Meta Byte 2 is absent. Layer 1 presence governed by Role B category code. Bits 2–8 carry Wave-specific role fields.</p></div>
+            <div class="xdrawer-section"><h5>Record Mode (1)</h5><p>Activates the full component system. Meta Byte 2 always follows Meta Byte 1. Layer 1 is always expected in Record mode. Bits 5–8 become Role C component expect flags.</p></div>
+            <div class="xdrawer-section"><h5>Decoder Action</h5><p>This is the first branch in the decoder tree. Read bit 1 before any other field. All subsequent field interpretations depend on this value.</p></div>
+          </div></div></td></tr>
+
+          <tr class="xrow" data-drawer="d-mb1-2">
+            <td><code>Bit 2</code> <span class="xrow-indicator">▼</span></td>
+            <td>ACK Request / SysCtx</td>
+            <td>No ACK / No SysCtx</td>
+            <td>ACK Req. (Wave) / SysCtx follows L1 (Record)</td>
+          </tr>
+          <tr class="xdrawer" id="d-mb1-2"><td colspan="5"><div class="xdrawer-inner"><div class="xdrawer-grid">
+            <div class="xdrawer-section"><h5>Dual Role</h5><p>This bit has different meanings depending on Bit 1. This is the primary example of the context-sensitive field design in BitPads v2.0.</p></div>
+            <div class="xdrawer-section"><h5>Wave Mode</h5><p>When bit 1 = 0: setting bit 2 = 1 requests an acknowledgement from the receiver. The receiver should reply with an ACK wave using the sender's session identity.</p></div>
+            <div class="xdrawer-section"><h5>Record Mode</h5><p>When bit 1 = 1: setting bit 2 = 1 signals that a System Context Extension block immediately follows Layer 1. The extension provides additional system routing and version context.</p></div>
+          </div></div></td></tr>
+
+          <tr class="xrow" data-drawer="d-mb1-3">
+            <td><code>Bit 3</code> <span class="xrow-indicator">▼</span></td>
+            <td>Continuation</td>
+            <td>Complete (final fragment)</td>
+            <td>Fragment — more follows</td>
+          </tr>
+          <tr class="xdrawer" id="d-mb1-3"><td colspan="5"><div class="xdrawer-inner"><div class="xdrawer-grid">
+            <div class="xdrawer-section"><h5>Fragmentation</h5><p>When a payload exceeds channel capacity, the sender splits it into fragments. Each fragment has its own Meta Byte 1 with bit 3 = 1, except the final fragment which uses bit 3 = 0.</p></div>
+            <div class="xdrawer-section"><h5>Receiver Behaviour</h5><p>The receiver accumulates all fragments in order. Reassembly begins only when a fragment arrives with bit 3 = 0. Fragment ordering relies on Layer 1 session context.</p></div>
+            <div class="xdrawer-section"><h5>Note</h5><p>Applies in both Wave and Record modes. A single-fragment transmission always has bit 3 = 0. The complete/fragment distinction does not affect component presence parsing.</p></div>
+          </div></div></td></tr>
+
+          <tr class="xrow" data-drawer="d-mb1-4">
+            <td><code>Bit 4</code> <span class="xrow-indicator">▼</span></td>
+            <td>Treatment Switch</td>
+            <td>Basic Treatment (Role A)</td>
+            <td>Category Mode (Role B)</td>
+          </tr>
+          <tr class="xdrawer" id="d-mb1-4"><td colspan="5"><div class="xdrawer-inner"><div class="xdrawer-grid">
+            <div class="xdrawer-section"><h5>Wave Only</h5><p>Bit 4 is meaningful only in Wave mode (bit 1 = 0). In Record mode (bit 1 = 1), bit 4 is part of the Role C component flags and carries no treatment-switch meaning.</p></div>
+            <div class="xdrawer-section"><h5>Role A (0)</h5><p>Bits 5–8 are individually assigned flags: Priority, Cipher Active, Extended Flags, Profile Defined. Each bit is independent.</p></div>
+            <div class="xdrawer-section"><h5>Role B (1)</h5><p>Bits 5–8 form a 4-bit category code (0000–1111). The code selects one of 16 wave categories, each with its own Layer 1 requirement and content structure.</p></div>
+          </div></div></td></tr>
+
+          <tr class="xrow" data-drawer="d-mb1-5">
+            <td><code>Bits 5–8</code> <span class="xrow-indicator">▼</span></td>
+            <td>Content Field</td>
+            <td colspan="2">Role A flags / Role B category / Role C expect flags</td>
+          </tr>
+          <tr class="xdrawer" id="d-mb1-5"><td colspan="5"><div class="xdrawer-inner"><div class="xdrawer-grid">
+            <div class="xdrawer-section"><h5>Three Roles</h5><p>These four bits carry different structures depending on mode and treatment switch. The decoder must resolve bits 1 and 4 before interpreting bits 5–8.</p></div>
+            <div class="xdrawer-section"><h5>Role A (Wave Basic)</h5><p>Bit 5: Priority. Bit 6: Cipher Active (v2.0 corrected). Bit 7: Extended Flags. Bit 8: Profile Defined.</p></div>
+            <div class="xdrawer-section"><h5>Role B (Wave Category)</h5><p>4-bit unsigned integer 0–15 selecting one of 16 transmission categories. See §4 for the complete table.</p></div>
+            <div class="xdrawer-section"><h5>Role C (Record)</h5><p>Bit 5: Value Present. Bit 6: Time Present. Bit 7: Task Present. Bit 8: Note Present. Each flag directly controls component parsing.</p></div>
+          </div></div></td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- §3 ROLE A -->
+    <section id="role-a">
+      <div class="section-num">§ 03</div>
+      <h2>Role A — Wave Basic Treatment</h2>
+      <p>Active when bit 1 = 0 (Wave) and bit 4 = 0 (Basic). Bits 5–8 carry four independent boolean flags.</p>
+
+      <div class="bit-display">
+        <div class="bit-display-label">Meta Byte 1 — Role A Configuration (bit1=0, bit4=0)</div>
+        <div class="bit-cells">
+          <div class="bit-cell mode" data-layer="meta"><div class="bit-pos">1</div><div class="bit-val off">0</div><div class="bit-name">Wave</div></div>
+          <div class="bit-cell mode" data-layer="meta"><div class="bit-pos">2</div><div class="bit-val">·</div><div class="bit-name">ACK Req</div></div>
+          <div class="bit-cell mode" data-layer="meta"><div class="bit-pos">3</div><div class="bit-val">·</div><div class="bit-name">Cont.</div></div>
+          <div class="bit-cell mode" data-layer="meta"><div class="bit-pos">4</div><div class="bit-val off">0</div><div class="bit-name">Basic</div></div>
+          <div class="bit-cell data" data-layer="meta"><div class="bit-pos">5</div><div class="bit-val">·</div><div class="bit-name">Priority</div></div>
+          <div class="bit-cell enhance" data-layer="meta"><div class="bit-pos">6</div><div class="bit-val">·</div><div class="bit-name">Cipher</div></div>
+          <div class="bit-cell data" data-layer="meta"><div class="bit-pos">7</div><div class="bit-val">·</div><div class="bit-name">Ext.Flags</div></div>
+          <div class="bit-cell data" data-layer="meta"><div class="bit-pos">8</div><div class="bit-val">·</div><div class="bit-name">Profile</div></div>
+        </div>
+      </div>
+
+      <table class="data-table">
+        <thead><tr><th>Bit</th><th>Field</th><th>0 Meaning</th><th>1 Meaning</th><th>Notes</th></tr></thead>
+        <tbody>
+          <tr><td><code>5</code></td><td>Priority</td><td>Normal priority</td><td>High priority — process before queued normals</td><td>Receiver scheduling hint</td></tr>
+          <tr><td><code>6</code></td><td>Cipher Active</td><td>Plaintext payload</td><td>Payload is encrypted per session cipher agreement</td><td><span class="tag-v2">v2.0</span> Corrected from ACK in v1.x</td></tr>
+          <tr><td><code>7</code></td><td>Extended Flags</td><td>No extension byte</td><td>Additional flag byte follows after payload</td><td>Profile-specific flags overflow</td></tr>
+          <tr><td><code>8</code></td><td>Profile Defined</td><td>Standard wave</td><td>Profile-specific interpretation applies</td><td>Application layer controls meaning</td></tr>
+        </tbody>
+      </table>
+
+      <div class="notice warn">
+        <p><strong>v2.0 Correction:</strong> Bit 6 in Role A previously served as a second ACK-related field in some v1.x documentation. In v2.0 this is formally assigned as Cipher Active. Any implementation treating bit 6 as an ACK flag in Role A is non-conformant.</p>
+      </div>
+    </section>
+
+    <!-- §4 ROLE B -->
+    <section id="role-b">
+      <div class="section-num">§ 04</div>
+      <h2>Role B — Wave Categories</h2>
+      <p>Active when bit 1 = 0 (Wave) and bit 4 = 1 (Category). Bits 5–8 form a 4-bit category code selecting one of 16 defined transmission categories.</p>
+
+      <div class="bit-display">
+        <div class="bit-display-label">Meta Byte 1 — Role B Configuration (bit1=0, bit4=1)</div>
+        <div class="bit-cells">
+          <div class="bit-cell mode" data-layer="meta"><div class="bit-pos">1</div><div class="bit-val off">0</div><div class="bit-name">Wave</div></div>
+          <div class="bit-cell mode" data-layer="meta"><div class="bit-pos">2</div><div class="bit-val">·</div><div class="bit-name">ACK Req</div></div>
+          <div class="bit-cell mode" data-layer="meta"><div class="bit-pos">3</div><div class="bit-val">·</div><div class="bit-name">Cont.</div></div>
+          <div class="bit-cell mode" data-layer="meta"><div class="bit-pos">4</div><div class="bit-val on">1</div><div class="bit-name">Cat.Mode</div></div>
+          <div class="bit-cell data w4" data-layer="meta"><div class="bit-pos">5–8</div><div class="bit-val">CCCC</div><div class="bit-name">Category Code</div></div>
+        </div>
+      </div>
+
+      <table class="data-table">
+        <thead><tr><th>Code</th><th>Category</th><th>L1 Required</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr class="xrow" data-drawer="d-rb-0000">
+            <td><code>0000</code> <span class="xrow-indicator">▼</span></td>
+            <td>Pure Signal / Heartbeat</td>
+            <td>No</td>
+            <td>Minimal presence signal, keepalive, or null transmission</td>
+          </tr>
+          <tr class="xdrawer" id="d-rb-0000"><td colspan="4"><div class="xdrawer-inner"><div class="xdrawer-grid">
+            <div class="xdrawer-section"><h5>Bit Pattern</h5><div class="xdrawer-bits"><span class="xdrawer-bit off">0</span><span class="xdrawer-bit off">0</span><span class="xdrawer-bit off">0</span><span class="xdrawer-bit off">0</span></div></div>
+            <div class="xdrawer-section"><h5>Content Structure</h5><p>No payload required. Full byte: <code>0001 0000</code> (0x10) with bits 1–4 set for Wave/Category. The entire transmission may be a single byte.</p></div>
+            <div class="xdrawer-section"><h5>Use Cases</h5><p>Connection keepalive, session probe, acknowledgement-free presence check, channel quality test.</p></div>
+            <div class="xdrawer-section"><h5>Example</h5><div class="printout"><div class="ph">── PURE SIGNAL ──────────</div><div><span class="pl">Byte   </span><span class="pv">0x10</span></div><div><span class="pl">Bits   </span><span class="pb">0001 0000</span></div><div><span class="pl">L1     </span><span class="pv">absent</span></div></div></div>
+          </div></div></td></tr>
+
+          <tr class="xrow" data-drawer="d-rb-0001">
+            <td><code>0001</code> <span class="xrow-indicator">▼</span></td>
+            <td>Status Report</td>
+            <td>Optional</td>
+            <td>Device or system status broadcast</td>
+          </tr>
+          <tr class="xdrawer" id="d-rb-0001"><td colspan="4"><div class="xdrawer-inner"><div class="xdrawer-grid">
+            <div class="xdrawer-section"><h5>Bit Pattern</h5><div class="xdrawer-bits"><span class="xdrawer-bit off">0</span><span class="xdrawer-bit off">0</span><span class="xdrawer-bit off">0</span><span class="xdrawer-bit on">1</span></div></div>
+            <div class="xdrawer-section"><h5>Content</h5><p>Status payload follows. Format is profile-defined. May include a value byte encoding a numeric status code.</p></div>
+            <div class="xdrawer-section"><h5>Use Cases</h5><p>Sensor reading, device health report, battery level, temperature broadcast, system state notification.</p></div>
+          </div></div></td></tr>
+
+          <tr class="xrow" data-drawer="d-rb-0010">
+            <td><code>0010</code> <span class="xrow-indicator">▼</span></td>
+            <td>Command</td>
+            <td>Optional</td>
+            <td>Instruction directed at a receiver or device class</td>
+          </tr>
+          <tr class="xdrawer" id="d-rb-0010"><td colspan="4"><div class="xdrawer-inner"><div class="xdrawer-grid">
+            <div class="xdrawer-section"><h5>Bit Pattern</h5><div class="xdrawer-bits"><span class="xdrawer-bit off">0</span><span class="xdrawer-bit off">0</span><span class="xdrawer-bit on">1</span><span class="xdrawer-bit off">0</span></div></div>
+            <div class="xdrawer-section"><h5>Content</h5><p>Command byte follows. May include parameters in subsequent bytes. If Layer 1 is present, the command is directed at the specific sender ID.</p></div>
+            <div class="xdrawer-section"><h5>Use Cases</h5><p>Actuator control, configuration push, mode change request, remote procedure invocation.</p></div>
+          </div></div></td></tr>
+
+          <tr class="xrow" data-drawer="d-rb-0011">
+            <td><code>0011</code> <span class="xrow-indicator">▼</span></td>
+            <td>Query / Request</td>
+            <td>Optional</td>
+            <td>Request for data or status from a receiver</td>
+          </tr>
+          <tr class="xdrawer" id="d-rb-0011"><td colspan="4"><div class="xdrawer-inner"><div class="xdrawer-grid">
+            <div class="xdrawer-section"><h5>Bit Pattern</h5><div class="xdrawer-bits"><span class="xdrawer-bit off">0</span><span class="xdrawer-bit off">0</span><span class="xdrawer-bit on">1</span><span class="xdrawer-bit on">1</span></div></div>
+            <div class="xdrawer-section"><h5>Content</h5><p>Query parameters follow. Typically paired with bit 2 = 1 (ACK Request) to receive the response. The response will be a Status Report or Record wave.</p></div>
+            <div class="xdrawer-section"><h5>Use Cases</h5><p>Sensor poll, configuration read, capability discovery, data pull request.</p></div>
+          </div></div></td></tr>
+
+          <tr class="xrow" data-drawer="d-rb-0100">
+            <td><code>0100</code> <span class="xrow-indicator">▼</span></td>
+            <td>Alert / Alarm</td>
+            <td>Recommended</td>
+            <td>Time-sensitive alert requiring immediate attention</td>
+          </tr>
+          <tr class="xdrawer" id="d-rb-0100"><td colspan="4"><div class="xdrawer-inner"><div class="xdrawer-grid">
+            <div class="xdrawer-section"><h5>Bit Pattern</h5><div class="xdrawer-bits"><span class="xdrawer-bit off">0</span><span class="xdrawer-bit on">1</span><span class="xdrawer-bit off">0</span><span class="xdrawer-bit off">0</span></div></div>
+            <div class="xdrawer-section"><h5>Content</h5><p>Alert code byte. Severity encoded in high nibble, type in low nibble. Layer 1 recommended so the alert source is authenticated.</p></div>
+            <div class="xdrawer-section"><h5>Use Cases</h5><p>Threshold breach, fault condition, emergency stop, intrusion detection, power failure warning.</p></div>
+          </div></div></td></tr>
+
+          <tr class="xrow" data-drawer="d-rb-0101">
+            <td><code>0101</code> <span class="xrow-indicator">▼</span></td>
+            <td>Acknowledgement</td>
+            <td>Optional</td>
+            <td>Positive confirmation of a prior transmission</td>
+          </tr>
+          <tr class="xdrawer" id="d-rb-0101"><td colspan="4"><div class="xdrawer-inner"><div class="xdrawer-grid">
+            <div class="xdrawer-section"><h5>Bit Pattern</h5><div class="xdrawer-bits"><span class="xdrawer-bit off">0</span><span class="xdrawer-bit on">1</span><span class="xdrawer-bit off">0</span><span class="xdrawer-bit on">1</span></div></div>
+            <div class="xdrawer-section"><h5>Content</h5><p>Echo of the session or sequence identifier from the original transmission. The receiver confirms receipt. May be combined with status data.</p></div>
+          </div></div></td></tr>
+
+          <tr class="xrow" data-drawer="d-rb-0110">
+            <td><code>0110</code> <span class="xrow-indicator">▼</span></td>
+            <td>Negative Acknowledgement</td>
+            <td>Optional</td>
+            <td>Negative confirmation — reject, error, or retransmit request</td>
+          </tr>
+          <tr class="xdrawer" id="d-rb-0110"><td colspan="4"><div class="xdrawer-inner"><div class="xdrawer-grid">
+            <div class="xdrawer-section"><h5>Bit Pattern</h5><div class="xdrawer-bits"><span class="xdrawer-bit off">0</span><span class="xdrawer-bit on">1</span><span class="xdrawer-bit on">1</span><span class="xdrawer-bit off">0</span></div></div>
+            <div class="xdrawer-section"><h5>Content</h5><p>Error code byte. High nibble: error class. Low nibble: specific error. May request retransmission when combined with session sequence data.</p></div>
+          </div></div></td></tr>
+
+          <tr class="xrow" data-drawer="d-rb-0111">
+            <td><code>0111</code> <span class="xrow-indicator">▼</span></td>
+            <td>Sync / Time Reference</td>
+            <td>Recommended</td>
+            <td>Clock synchronisation or time reference broadcast</td>
+          </tr>
+          <tr class="xdrawer" id="d-rb-0111"><td colspan="4"><div class="xdrawer-inner"><div class="xdrawer-grid">
+            <div class="xdrawer-section"><h5>Bit Pattern</h5><div class="xdrawer-bits"><span class="xdrawer-bit off">0</span><span class="xdrawer-bit on">1</span><span class="xdrawer-bit on">1</span><span class="xdrawer-bit on">1</span></div></div>
+            <div class="xdrawer-section"><h5>Content</h5><p>Time reference payload in Tier 1 or Tier 2 format (see §12). Used to synchronise distributed receivers to a common time base.</p></div>
+          </div></div></td></tr>
+
+          <tr class="xrow" data-drawer="d-rb-1000">
+            <td><code>1000</code> <span class="xrow-indicator">▼</span></td>
+            <td>Discovery / Broadcast</td>
+            <td>No</td>
+            <td>Presence broadcast for network discovery</td>
+          </tr>
+          <tr class="xdrawer" id="d-rb-1000"><td colspan="4"><div class="xdrawer-inner"><div class="xdrawer-grid">
+            <div class="xdrawer-section"><h5>Bit Pattern</h5><div class="xdrawer-bits"><span class="xdrawer-bit on">1</span><span class="xdrawer-bit off">0</span><span class="xdrawer-bit off">0</span><span class="xdrawer-bit off">0</span></div></div>
+            <div class="xdrawer-section"><h5>Content</h5><p>Device capability byte. Bits indicate supported protocol features. No Layer 1 required for a broadcast discovery. Layer 1 presence allows directed discovery response.</p></div>
+          </div></div></td></tr>
+
+          <tr class="xrow" data-drawer="d-rb-1001">
+            <td><code>1001</code> <span class="xrow-indicator">▼</span></td>
+            <td>Data Transfer</td>
+            <td>Required</td>
+            <td>Structured data payload requiring identity context</td>
+          </tr>
+          <tr class="xdrawer" id="d-rb-1001"><td colspan="4"><div class="xdrawer-inner"><div class="xdrawer-grid">
+            <div class="xdrawer-section"><h5>Bit Pattern</h5><div class="xdrawer-bits"><span class="xdrawer-bit on">1</span><span class="xdrawer-bit off">0</span><span class="xdrawer-bit off">0</span><span class="xdrawer-bit on">1</span></div></div>
+            <div class="xdrawer-section"><h5>Content</h5><p>Arbitrary data payload. Layer 1 is required to attribute the transfer. This is the primary category for application data exchange in Wave mode.</p></div>
+          </div></div></td></tr>
+
+          <tr class="xrow" data-drawer="d-rb-1010">
+            <td><code>1010</code> <span class="xrow-indicator">▼</span></td>
+            <td>Configuration</td>
+            <td>Required</td>
+            <td>System or device configuration push</td>
+          </tr>
+          <tr class="xdrawer" id="d-rb-1010"><td colspan="4"><div class="xdrawer-inner"><div class="xdrawer-grid">
+            <div class="xdrawer-section"><h5>Bit Pattern</h5><div class="xdrawer-bits"><span class="xdrawer-bit on">1</span><span class="xdrawer-bit off">0</span><span class="xdrawer-bit on">1</span><span class="xdrawer-bit off">0</span></div></div>
+            <div class="xdrawer-section"><h5>Content</h5><p>Configuration key-value payload. Layer 1 required for authentication of configuration authority. Receivers should validate sender permissions before applying.</p></div>
+          </div></div></td></tr>
+
+          <tr class="xrow" data-drawer="d-rb-1011">
+            <td><code>1011</code> <span class="xrow-indicator">▼</span></td>
+            <td>Diagnostic</td>
+            <td>Optional</td>
+            <td>Diagnostic payload for system analysis or debugging</td>
+          </tr>
+          <tr class="xdrawer" id="d-rb-1011"><td colspan="4"><div class="xdrawer-inner"><div class="xdrawer-grid">
+            <div class="xdrawer-section"><h5>Bit Pattern</h5><div class="xdrawer-bits"><span class="xdrawer-bit on">1</span><span class="xdrawer-bit off">0</span><span class="xdrawer-bit on">1</span><span class="xdrawer-bit on">1</span></div></div>
+            <div class="xdrawer-section"><h5>Content</h5><p>Diagnostic data in profile-defined format. May contain error logs, performance counters, or system state snapshots. Layer 1 optional but recommended for traceability.</p></div>
+          </div></div></td></tr>
+
+          <tr class="xrow" data-drawer="d-rb-1100">
+            <td><code>1100</code> <span class="xrow-indicator">▼</span></td>
+            <td>Financial Signal <span class="tag-new">v2.0</span></td>
+            <td>Required</td>
+            <td>Financial data wave — formerly Mission Specific A</td>
+          </tr>
+          <tr class="xdrawer" id="d-rb-1100"><td colspan="4"><div class="xdrawer-inner"><div class="xdrawer-grid">
+            <div class="xdrawer-section"><h5>Bit Pattern</h5><div class="xdrawer-bits"><span class="xdrawer-bit on">1</span><span class="xdrawer-bit on">1</span><span class="xdrawer-bit off">0</span><span class="xdrawer-bit off">0</span></div></div>
+            <div class="xdrawer-section"><h5>v2.0 Assignment</h5><p>Previously labelled "Mission Specific A" as a placeholder. v2.0 formally assigns this category to financial wave signals, complementing the BitLedger protocol for lightweight value indication.</p></div>
+            <div class="xdrawer-section"><h5>Content</h5><p>Financial signal payload. Layer 1 required for attribution. Value encoding follows the BitPads value tier system. For full financial transaction records, use Record mode with BitLedger.</p></div>
+          </div></div></td></tr>
+
+          <tr class="xrow" data-drawer="d-rb-1101">
+            <td><code>1101</code> <span class="xrow-indicator">▼</span></td>
+            <td>Identity Signal <span class="tag-new">v2.0</span></td>
+            <td>Required</td>
+            <td>Identity assertion or credential wave — formerly Mission Specific B</td>
+          </tr>
+          <tr class="xdrawer" id="d-rb-1101"><td colspan="4"><div class="xdrawer-inner"><div class="xdrawer-grid">
+            <div class="xdrawer-section"><h5>Bit Pattern</h5><div class="xdrawer-bits"><span class="xdrawer-bit on">1</span><span class="xdrawer-bit on">1</span><span class="xdrawer-bit off">0</span><span class="xdrawer-bit on">1</span></div></div>
+            <div class="xdrawer-section"><h5>v2.0 Assignment</h5><p>Formally assigned in v2.0. Used for identity assertion waves — presenting credentials, session tokens, or public identity markers without a full Record structure.</p></div>
+          </div></div></td></tr>
+
+          <tr class="xrow" data-drawer="d-rb-1110">
+            <td><code>1110</code> <span class="xrow-indicator">▼</span></td>
+            <td>Control Signal <span class="tag-new">v2.0</span></td>
+            <td>Optional</td>
+            <td>Protocol control and session management — formerly Mission Specific C</td>
+          </tr>
+          <tr class="xdrawer" id="d-rb-1110"><td colspan="4"><div class="xdrawer-inner"><div class="xdrawer-grid">
+            <div class="xdrawer-section"><h5>Bit Pattern</h5><div class="xdrawer-bits"><span class="xdrawer-bit on">1</span><span class="xdrawer-bit on">1</span><span class="xdrawer-bit on">1</span><span class="xdrawer-bit off">0</span></div></div>
+            <div class="xdrawer-section"><h5>v2.0 Assignment</h5><p>Formally assigned for protocol-level control signals: session initiation, teardown, band change, protocol version negotiation. Analogous to the BitLedger Control Record concept in Wave mode.</p></div>
+          </div></div></td></tr>
+
+          <tr class="xrow" data-drawer="d-rb-1111">
+            <td><code>1111</code> <span class="xrow-indicator">▼</span></td>
+            <td>Extended Category</td>
+            <td>Required</td>
+            <td>8-bit extended category byte follows — 256 additional category codes</td>
+          </tr>
+          <tr class="xdrawer" id="d-rb-1111"><td colspan="4"><div class="xdrawer-inner"><div class="xdrawer-grid">
+            <div class="xdrawer-section"><h5>Bit Pattern</h5><div class="xdrawer-bits"><span class="xdrawer-bit on">1</span><span class="xdrawer-bit on">1</span><span class="xdrawer-bit on">1</span><span class="xdrawer-bit on">1</span></div></div>
+            <div class="xdrawer-section"><h5>Extension Mechanic</h5><p>When bits 5–8 are all 1, the next byte is an Extended Category Byte providing 256 additional category codes (0x00–0xFF). This allows future expansion without breaking the core 4-bit space.</p></div>
+            <div class="xdrawer-section"><h5>Decoder Action</h5><p>After reading bits 5–8 = 1111, read the next byte. That byte is the extended category code. Layer 1 must be present (always required for extended categories).</p></div>
+            <div class="xdrawer-section"><h5>Example</h5><div class="printout"><div class="ph">── EXTENDED CATEGORY ────</div><div><span class="pl">Byte 1 </span><span class="pv">0x1F</span><span class="pc"> (meta, cat=1111)</span></div><div><span class="pl">Byte 2 </span><span class="pv">0x42</span><span class="pc"> (ext category 66)</span></div></div></div>
+          </div></div></td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- §5 ROLE C -->
+    <section id="role-c">
+      <div class="section-num">§ 05</div>
+      <h2>Role C — Record Component Flags</h2>
+      <p>Active when bit 1 = 1 (Record mode). Bits 5–8 become individual component expect flags. Each flag set to 1 tells the decoder that the corresponding component will be present in the byte stream.</p>
+
+      <div class="bit-display">
+        <div class="bit-display-label">Meta Byte 1 — Role C Configuration (bit1=1, Record mode)</div>
+        <div class="bit-cells">
+          <div class="bit-cell mode" data-layer="meta"><div class="bit-pos">1</div><div class="bit-val on">1</div><div class="bit-name">Record</div></div>
+          <div class="bit-cell mode" data-layer="meta"><div class="bit-pos">2</div><div class="bit-val">·</div><div class="bit-name">SysCtx</div></div>
+          <div class="bit-cell mode" data-layer="meta"><div class="bit-pos">3</div><div class="bit-val">·</div><div class="bit-name">Cont.</div></div>
+          <div class="bit-cell mode" data-layer="meta"><div class="bit-pos">4</div><div class="bit-val">·</div><div class="bit-name">(see note)</div></div>
+          <div class="bit-cell data" data-layer="meta"><div class="bit-pos">5</div><div class="bit-val">·</div><div class="bit-name">Val.Pres.</div></div>
+          <div class="bit-cell time-f" data-layer="meta"><div class="bit-pos">6</div><div class="bit-val">·</div><div class="bit-name">Time Pres.</div></div>
+          <div class="bit-cell task-f" data-layer="meta"><div class="bit-pos">7</div><div class="bit-val">·</div><div class="bit-name">Task Pres.</div></div>
+          <div class="bit-cell data" data-layer="meta"><div class="bit-pos">8</div><div class="bit-val">·</div><div class="bit-name">Note Pres.</div></div>
+        </div>
+      </div>
+
+      <table class="data-table">
+        <thead><tr><th>Bit</th><th>Component</th><th>0</th><th>1</th><th>Position in Stream</th></tr></thead>
+        <tbody>
+          <tr><td><code>5</code></td><td>Value Present</td><td>No value component</td><td>Value block follows (after Setup Byte if present)</td><td>Position 7 in component order</td></tr>
+          <tr><td><code>6</code></td><td>Time Present</td><td>No time component</td><td>Time field follows value block</td><td>Position 9 in component order</td></tr>
+          <tr><td><code>7</code></td><td>Task Present</td><td>No task component</td><td>Task block follows time field</td><td>Position 10 in component order</td></tr>
+          <tr><td><code>8</code></td><td>Note Present</td><td>No note component</td><td>Note block follows task block</td><td>Position 11 in component order</td></tr>
+        </tbody>
+      </table>
+
+      <div class="notice">
+        <p><strong>Bit 4 in Record Mode:</strong> When bit 1 = 1, bit 4 is part of the component flag group and does not carry the Treatment Switch meaning. In practice, bit 4 in Record mode is reserved (must be 0) pending v2.x extension assignment.</p>
+      </div>
+    </section>
+
+    <!-- §6 PURE SIGNAL -->
+    <section id="pure-signal">
+      <div class="section-num">§ 06</div>
+      <h2>The Pure Signal</h2>
+      <p>A pure signal is a single-byte transmission — the theoretical minimum. It carries mode, category, and basic flags but no payload, no Layer 1, and no components. Two canonical examples:</p>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+        <div>
+          <h3>0x40 — Broadcast Discovery</h3>
+          <div class="bit-display">
+            <div class="bit-display-label">0x40 = 0100 0000</div>
+            <div class="bit-cells">
+              <div class="bit-cell mode" data-layer="meta"><div class="bit-pos">1</div><div class="bit-val off">0</div><div class="bit-name">Wave</div></div>
+              <div class="bit-cell mode" data-layer="meta"><div class="bit-pos">2</div><div class="bit-val on">1</div><div class="bit-name">ACK Req</div></div>
+              <div class="bit-cell mode" data-layer="meta"><div class="bit-pos">3</div><div class="bit-val off">0</div><div class="bit-name">Complete</div></div>
+              <div class="bit-cell mode" data-layer="meta"><div class="bit-pos">4</div><div class="bit-val off">0</div><div class="bit-name">Basic</div></div>
+              <div class="bit-cell data" data-layer="meta"><div class="bit-pos">5</div><div class="bit-val off">0</div><div class="bit-name">Normal</div></div>
+              <div class="bit-cell enhance" data-layer="meta"><div class="bit-pos">6</div><div class="bit-val off">0</div><div class="bit-name">Plain</div></div>
+              <div class="bit-cell data" data-layer="meta"><div class="bit-pos">7</div><div class="bit-val off">0</div><div class="bit-name">No Ext</div></div>
+              <div class="bit-cell data" data-layer="meta"><div class="bit-pos">8</div><div class="bit-val off">0</div><div class="bit-name">Std</div></div>
+            </div>
+          </div>
+          <div class="printout"><div class="ph">── 0x40 SIGNAL ──────────</div><div><span class="pl">Hex    </span><span class="pv">0x40</span></div><div><span class="pl">Bits   </span><span class="pb">0100 0000</span></div><div><span class="pl">Mode   </span><span class="pv">Wave / Role A / Basic</span></div><div><span class="pl">Bit 2  </span><span class="pv">ACK requested</span></div><div><span class="pl">Size   </span><span class="pg">1 byte</span></div></div>
+        </div>
+        <div>
+          <h3>0x0F — Heartbeat</h3>
+          <div class="bit-display">
+            <div class="bit-display-label">0x0F = 0000 1111</div>
+            <div class="bit-cells">
+              <div class="bit-cell mode" data-layer="meta"><div class="bit-pos">1</div><div class="bit-val off">0</div><div class="bit-name">Wave</div></div>
+              <div class="bit-cell mode" data-layer="meta"><div class="bit-pos">2</div><div class="bit-val off">0</div><div class="bit-name">No ACK</div></div>
+              <div class="bit-cell mode" data-layer="meta"><div class="bit-pos">3</div><div class="bit-val off">0</div><div class="bit-name">Complete</div></div>
+              <div class="bit-cell mode" data-layer="meta"><div class="bit-pos">4</div><div class="bit-val off">0</div><div class="bit-name">Basic</div></div>
+              <div class="bit-cell data" data-layer="meta"><div class="bit-pos">5</div><div class="bit-val on">1</div><div class="bit-name">High Pri</div></div>
+              <div class="bit-cell enhance" data-layer="meta"><div class="bit-pos">6</div><div class="bit-val on">1</div><div class="bit-name">Cipher</div></div>
+              <div class="bit-cell data" data-layer="meta"><div class="bit-pos">7</div><div class="bit-val on">1</div><div class="bit-name">Ext Flags</div></div>
+              <div class="bit-cell data" data-layer="meta"><div class="bit-pos">8</div><div class="bit-val on">1</div><div class="bit-name">Profile</div></div>
+            </div>
+          </div>
+          <div class="printout"><div class="ph">── 0x0F SIGNAL ──────────</div><div><span class="pl">Hex    </span><span class="pv">0x0F</span></div><div><span class="pl">Bits   </span><span class="pb">0000 1111</span></div><div><span class="pl">Mode   </span><span class="pv">Wave / Role A / Basic</span></div><div><span class="pl">Flags  </span><span class="pv">Priority+Cipher+ExtFlags+Profile</span></div><div><span class="pl">Size   </span><span class="pg">1 byte (+ ext byte)</span></div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- §7 META BYTE 2 -->
+    <section id="meta2">
+      <div class="section-num">§ 07</div>
+      <h2>Meta Byte 2 — Extended Record Context</h2>
+      <p>Present only in Record mode (bit 1 of Meta Byte 1 = 1). Always immediately follows Meta Byte 1. Provides archetype classification, time reference selection, and module presence signals.</p>
+
+      <div class="bit-display">
+        <div class="bit-display-label">Meta Byte 2 — 8 bits (Record mode only)</div>
+        <div class="bit-cells">
+          <div class="bit-cell account w4" data-layer="meta"><div class="bit-pos">1–4</div><div class="bit-val">AAAA</div><div class="bit-name">Archetype / Ext Flags</div></div>
+          <div class="bit-cell time-f w2" data-layer="meta"><div class="bit-pos">5–6</div><div class="bit-val">TT</div><div class="bit-name">Time Ref Sel.</div></div>
+          <div class="bit-cell data" data-layer="meta"><div class="bit-pos">7</div><div class="bit-val">·</div><div class="bit-name">Setup Pres.</div></div>
+          <div class="bit-cell enhance" data-layer="meta"><div class="bit-pos">8</div><div class="bit-val">·</div><div class="bit-name">SigSlot Pres.</div></div>
+        </div>
+        <div class="bit-legend">
+          <div class="legend-item"><div class="legend-swatch account"></div>Archetype / Extended Flags</div>
+          <div class="legend-item"><div class="legend-swatch time-f"></div>Time Reference Selector</div>
+          <div class="legend-item"><div class="legend-swatch data"></div>Setup Byte Presence</div>
+          <div class="legend-item"><div class="legend-swatch enhance"></div>Signal Slot Presence</div>
+        </div>
+      </div>
+
+      <h3>Bits 1–4: Archetype / Extended Flags</h3>
+      <p>These bits have a primary role and a secondary role depending on the wave category.</p>
+
+      <p><strong>Primary Role (category 1001 — Data Transfer):</strong> The 4-bit value selects a record archetype — a named pattern of expected components that allows receivers to optimise their parsing path without reading every presence flag individually.</p>
+
+      <p><strong>Secondary Role (all other categories):</strong> Acts as sub-type or extension flags for the category in use:</p>
+
+      <table class="data-table">
+        <thead><tr><th>Category</th><th>Bits 1–4 Meaning</th></tr></thead>
+        <tbody>
+          <tr><td><code>0100</code> Basic Record</td><td>Sub-type selector. 0000 = generic, 0001 = ledger, 0010 = identity, 0011–1111 = profile-defined</td></tr>
+          <tr><td><code>0101</code> Transaction + Message</td><td>High nibble: transaction sub-type. Low bit: message appended flag</td></tr>
+          <tr><td><code>0110</code> Multi-record</td><td>Record count hint (0000 = unknown, 0001–1111 = up to 15 records in batch)</td></tr>
+          <tr><td><code>0111</code> Session Record</td><td>Session event type (0000=open, 0001=close, 0010=suspend, 0011=resume)</td></tr>
+          <tr><td><code>1000</code> Extended Archetype</td><td>When bits 1–4 = 1111 in primary role, a second archetype byte follows</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Bits 5–6: Time Reference Selector</h3>
+      <table class="data-table">
+        <thead><tr><th>Code</th><th>Mode</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td><code>00</code></td><td>None</td><td>No time reference in this record. Time field absent regardless of Role C bit 6.</td></tr>
+          <tr><td><code>01</code></td><td>Tier 1 Session Offset</td><td>8-bit integer. Time expressed as offset from session-established epoch. Range 0–255 units.</td></tr>
+          <tr><td><code>10</code></td><td>Tier 1 External</td><td>8-bit integer. Time expressed as offset from externally synchronised reference (e.g. last Sync wave).</td></tr>
+          <tr><td><code>11</code></td><td>Tier 2 Time Block</td><td>Full Tier 2 Time Block follows. See §12 for Time Block Header structure.</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Bit 7: Setup Byte Present</h3>
+      <p>When set to 1, a Setup Byte follows Layer 1 (and System Context Extension if present). The Setup Byte controls value encoding parameters including tier, scaling factor, and decimal position.</p>
+
+      <h3>Bit 8: Signal Slot Presence <span class="tag-new">v2.0</span></h3>
+      <p>When set to 1, a Signal Slot Presence Byte follows immediately after Meta Byte 2 and before Layer 1. This byte declares which of the five enhancement signal slots are active. In v1.x this bit was Reserved = 1.</p>
+    </section>
+
+    <!-- §8 SIGNAL SLOT PRESENCE -->
+    <section id="signal-slot">
+      <div class="section-num">§ 08</div>
+      <h2>Signal Slot Presence Byte</h2>
+      <p>Present only when Meta Byte 2, bit 8 = 1. Inserted into the byte stream immediately after Meta Byte 2, before Layer 1. Declares which enhancement signal slots carry active data.</p>
+
+      <div class="notice warn">
+        <p><strong>v2.0 Addition:</strong> The Signal Slot Presence Byte is new in v2.0. It was made possible by repurposing the previously Reserved = 1 bit (Meta Byte 2, bit 8) which had no functional role in v1.x.</p>
+      </div>
+
+      <div class="bit-display">
+        <div class="bit-display-label">Signal Slot Presence Byte</div>
+        <div class="bit-cells">
+          <div class="bit-cell enhance" data-layer="meta"><div class="bit-pos">1</div><div class="bit-val">·</div><div class="bit-name">P4 Active</div></div>
+          <div class="bit-cell enhance" data-layer="meta"><div class="bit-pos">2</div><div class="bit-val">·</div><div class="bit-name">P5 Active</div></div>
+          <div class="bit-cell enhance" data-layer="meta"><div class="bit-pos">3</div><div class="bit-val">·</div><div class="bit-name">P6 Active</div></div>
+          <div class="bit-cell enhance" data-layer="meta"><div class="bit-pos">4</div><div class="bit-val">·</div><div class="bit-name">P7 Active</div></div>
+          <div class="bit-cell enhance" data-layer="meta"><div class="bit-pos">5</div><div class="bit-val">·</div><div class="bit-name">P8 Active</div></div>
+          <div class="bit-cell reserved" data-layer="meta"><div class="bit-pos">6</div><div class="bit-val off">1</div><div class="bit-name">Res.</div></div>
+          <div class="bit-cell reserved" data-layer="meta"><div class="bit-pos">7</div><div class="bit-val off">1</div><div class="bit-name">Res.</div></div>
+          <div class="bit-cell reserved" data-layer="meta"><div class="bit-pos">8</div><div class="bit-val off">1</div><div class="bit-name">Res.</div></div>
+        </div>
+      </div>
+
+      <table class="data-table">
+        <thead><tr><th>Bit</th><th>Signal Slot</th><th>0 Meaning</th><th>1 Meaning</th></tr></thead>
+        <tbody>
+          <tr><td><code>1</code></td><td>P4</td><td>Slot P4 inactive</td><td>P4 enhancement data present in stream</td></tr>
+          <tr><td><code>2</code></td><td>P5</td><td>Slot P5 inactive</td><td>P5 enhancement data present in stream</td></tr>
+          <tr><td><code>3</code></td><td>P6</td><td>Slot P6 inactive</td><td>P6 enhancement data present in stream</td></tr>
+          <tr><td><code>4</code></td><td>P7</td><td>Slot P7 inactive</td><td>P7 enhancement data present in stream</td></tr>
+          <tr><td><code>5</code></td><td>P8</td><td>Slot P8 inactive</td><td>P8 enhancement data present in stream</td></tr>
+          <tr><td><code>6–8</code></td><td>Reserved</td><td colspan="2">Must be 111. A receiver detecting any other pattern should raise a protocol warning.</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- §9 LAYER 1 -->
+    <section id="layer1">
+      <div class="section-num">§ 09</div>
+      <h2>Layer 1 — Session Header</h2>
+      <p>The 64-bit (8-byte) session identity block. Carries protocol version, permissions, sender identity, sub-entity, and a CRC-15 integrity check.</p>
+
+      <div class="bit-display">
+        <div class="bit-display-label">Layer 1 — 64 bits total</div>
+        <div class="bit-cells">
+          <div class="bit-cell mode" data-layer="l1"><div class="bit-pos">1</div><div class="bit-val on">1</div><div class="bit-name">SOH</div></div>
+          <div class="bit-cell mode" data-layer="l1"><div class="bit-pos">2</div><div class="bit-val">·</div><div class="bit-name">WireVer</div></div>
+          <div class="bit-cell mode w2" data-layer="l1"><div class="bit-pos">3–4</div><div class="bit-val">DD</div><div class="bit-name">Domain</div></div>
+          <div class="bit-cell mode w4" data-layer="l1"><div class="bit-pos">5–8</div><div class="bit-val">PPPP</div><div class="bit-name">Perms</div></div>
+          <div class="bit-cell mode" data-layer="l1"><div class="bit-pos">9</div><div class="bit-val">·</div><div class="bit-name">SplitOrd</div></div>
+          <div class="bit-cell identity w2" data-layer="l1"><div class="bit-pos">10–11</div><div class="bit-val">SS</div><div class="bit-name">SenderSplit</div></div>
+          <div class="bit-cell enhance" data-layer="l1"><div class="bit-pos">12</div><div class="bit-val">·</div><div class="bit-name">SesEnh</div></div>
+          <div class="bit-cell identity w32" data-layer="l1"><div class="bit-pos">13–44</div><div class="bit-val">SENDER ID</div><div class="bit-name">32-bit Sender Identity</div></div>
+          <div class="bit-cell identity w5" data-layer="l1"><div class="bit-pos">45–49</div><div class="bit-val">SUBENT</div><div class="bit-name">Sub-Entity ID</div></div>
+          <div class="bit-cell checksum w15" data-layer="l1"><div class="bit-pos">50–64</div><div class="bit-val">CRC–15</div><div class="bit-name">Integrity Check</div></div>
+        </div>
+        <div class="bit-legend">
+          <div class="legend-item"><div class="legend-swatch mode"></div>Mode/Control</div>
+          <div class="legend-item"><div class="legend-swatch identity"></div>Identity</div>
+          <div class="legend-item"><div class="legend-swatch enhance"></div>Session Enhancement</div>
+          <div class="legend-item"><div class="legend-swatch checksum"></div>CRC-15 Checksum</div>
+        </div>
+      </div>
+
+      <table class="data-table">
+        <thead><tr><th>Bits</th><th>Field</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td><code>1</code></td><td>SOH</td><td>Start of Header. Always 1. A receiver detecting SOH=0 treats the frame as corrupt.</td></tr>
+          <tr><td><code>2</code></td><td>Wire Format Version</td><td>0 = v2.0 encoding. 1 = reserved for future wire format revision.</td></tr>
+          <tr><td><code>3–4</code></td><td>Domain</td><td>00 = General. 01 = Financial (BitLedger). 10 = Control. 11 = Extended (domain byte follows).</td></tr>
+          <tr><td><code>5–8</code></td><td>Core Permissions</td><td>Four permission flags: Write, Delegate, Compound, Administrative. Each independently grantable.</td></tr>
+          <tr><td><code>9</code></td><td>Split Order Default</td><td>0 = MSB first (big-endian split). 1 = LSB first. Applies to multi-byte value splits.</td></tr>
+          <tr><td><code>10–11</code></td><td>Sender ID Split Mode</td><td>Selects how the 32-bit Sender ID is logically partitioned. See §10.</td></tr>
+          <tr><td><code>12</code></td><td>Session Enhancement Flag</td><td><span class="tag-new">v2.0</span> When 1, a Session Configuration Extension Byte follows Layer 1 (displaced from earlier positions). Formerly Opposing Convention bit.</td></tr>
+          <tr><td><code>13–44</code></td><td>Sender ID</td><td>32-bit primary identity. Interpretation controlled by Split Mode (bits 10–11).</td></tr>
+          <tr><td><code>45–49</code></td><td>Sub-Entity ID</td><td>5-bit secondary identifier within the Sender ID space. 0 = no sub-entity. 1–31 = sub-entity index.</td></tr>
+          <tr><td><code>50–64</code></td><td>CRC-15</td><td>15-bit cyclic redundancy check over all preceding Layer 1 bits (1–49). Polynomial: x^15+x+1.</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Session Configuration Extension Byte <span class="tag-new">v2.0</span></h3>
+      <p>Present when Layer 1 bit 12 = 1. Follows immediately after Layer 1 (or after System Context Extension if also present).</p>
+
+      <table class="data-table">
+        <thead><tr><th>Bits</th><th>Field</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td><code>1–2</code></td><td>Nesting Level Code</td><td>00 = flat, 01 = level 1 nested, 10 = level 2 nested, 11 = level 3 nested</td></tr>
+          <tr><td><code>3</code></td><td>Opposing Convention</td><td>1 = opposing account convention active for this session (displaced from Layer 1 bit 12 in v1.x)</td></tr>
+          <tr><td><code>4</code></td><td>Compound Mode Active</td><td>1 = compound transaction mode enabled for this session</td></tr>
+          <tr><td><code>5</code></td><td>BL Block Optional</td><td>1 = BitLedger accounting block is optional (not required on every record)</td></tr>
+          <tr><td><code>6–8</code></td><td>Reserved</td><td>Must be 000</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Layer 1 Requirement Matrix</h3>
+      <table class="data-table">
+        <thead><tr><th>Scenario</th><th>L1 Required?</th><th>Reason</th></tr></thead>
+        <tbody>
+          <tr><td>Record mode (bit 1 = 1)</td><td>Always</td><td>Record components require identity attribution</td></tr>
+          <tr><td>Wave, category 1001 (Data Transfer)</td><td>Always</td><td>Data payload requires authenticated source</td></tr>
+          <tr><td>Wave, category 1010 (Configuration)</td><td>Always</td><td>Configuration requires authority verification</td></tr>
+          <tr><td>Wave, category 1100/1101/1110 (v2.0)</td><td>Always</td><td>Financial, Identity, Control signals require attribution</td></tr>
+          <tr><td>Wave, category 1111 (Extended)</td><td>Always</td><td>Extended categories require full identity context</td></tr>
+          <tr><td>Wave, category 0100 (Alert)</td><td>Recommended</td><td>Alert source should be verifiable; allowed absent in latency-critical deployments</td></tr>
+          <tr><td>Wave, category 0111 (Sync)</td><td>Recommended</td><td>Time reference authority should be identified</td></tr>
+          <tr><td>Wave, category 0001 (Status)</td><td>Optional</td><td>Broadcast status may be anonymous</td></tr>
+          <tr><td>Wave, category 0010 (Command)</td><td>Optional</td><td>Broadcast commands valid; directed commands need L1</td></tr>
+          <tr><td>Wave, category 0011 (Query)</td><td>Optional</td><td>Anonymous query permitted; response attribution via L1</td></tr>
+          <tr><td>Wave, category 1000 (Discovery)</td><td>Optional</td><td>Broadcast discovery by nature is unauthenticated</td></tr>
+          <tr><td>Wave, category 0000 (Pure Signal)</td><td>Never</td><td>Pure signals carry no semantic payload requiring attribution</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- §10 IDENTITY -->
+    <section id="identity">
+      <div class="section-num">§ 10</div>
+      <h2>Identity System</h2>
+      <p>BitPads v2.0 uses a three-level coordinate system for sender identification: the 32-bit Sender ID, the 5-bit Sub-Entity ID, and an optional System Context Extension for additional routing context.</p>
+
+      <h3>Split Mode Table (Layer 1 bits 10–11)</h3>
+      <table class="data-table">
+        <thead><tr><th>Code</th><th>Mode</th><th>Bit Partition</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td><code>00</code></td><td>Flat 32-bit</td><td>32 undivided</td><td>Single monolithic ID. Suitable for small networks with a flat addressing scheme.</td></tr>
+          <tr><td><code>01</code></td><td>16 / 16</td><td>16 + 16</td><td>High 16 bits: network/group ID. Low 16 bits: device ID within group. 65,536 groups × 65,536 devices.</td></tr>
+          <tr><td><code>10</code></td><td>8 / 8 / 16</td><td>8 + 8 + 16</td><td>Region (8) + Zone (8) + Device (16). Hierarchical three-tier addressing.</td></tr>
+          <tr><td><code>11</code></td><td>Custom</td><td>Profile-defined</td><td>The active protocol profile defines the partition. The System Context Extension may carry the partition descriptor.</td></tr>
+        </tbody>
+      </table>
+
+      <h3>System Context Extension Block</h3>
+      <p>Present when Meta Byte 1 bit 2 = 1 (Record mode). The extension always follows Layer 1. Its size depends on the context type declared in its first byte:</p>
+
+      <table class="data-table">
+        <thead><tr><th>Case</th><th>Size</th><th>Contents</th></tr></thead>
+        <tbody>
+          <tr><td>Type 00 — Routing</td><td>2 bytes</td><td>Byte 1: type + flags. Byte 2: routing context code. Used to add network-layer routing context to a session.</td></tr>
+          <tr><td>Type 01 — Extended Identity</td><td>5 bytes</td><td>Byte 1: type + flags. Bytes 2–5: 32-bit extended identity or cross-system reference. Used when a 32-bit Sender ID is insufficient for cross-domain addressing.</td></tr>
+          <tr><td>Type 10 — Version Context</td><td>4 bytes</td><td>Byte 1: type + flags. Bytes 2–4: protocol profile version triplet (major, minor, patch). Allows version negotiation within a session.</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- §11 VALUE BLOCK -->
+    <section id="value-block">
+      <div class="section-num">§ 11</div>
+      <h2>Value Block &amp; Setup Byte</h2>
+      <p>The Value Block encodes a non-negative integer using the BitPads split formula. The Setup Byte (optional, announced by Meta Byte 2 bit 7) specifies encoding parameters.</p>
+
+      <h3>Value Tiers</h3>
+      <table class="data-table">
+        <thead><tr><th>Tier</th><th>Width</th><th>Max N</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td>Tier 1</td><td>8 bits</td><td>255</td><td>Micro values — status codes, small counts, short time offsets</td></tr>
+          <tr><td>Tier 2</td><td>16 bits</td><td>65,535</td><td>Small values — quantities, low-range financial, short identifiers</td></tr>
+          <tr><td><strong>Tier 3 (DEFAULT)</strong></td><td>24 bits</td><td>16,777,215</td><td>Standard values — the default for all general-purpose records</td></tr>
+          <tr><td>Tier 4</td><td>32 bits</td><td>4,294,967,295</td><td>Large values — high-range financial, large quantities, timestamps</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Setup Byte Fields</h3>
+      <table class="data-table">
+        <thead><tr><th>Bits</th><th>Field</th><th>Values</th></tr></thead>
+        <tbody>
+          <tr><td><code>1–2</code></td><td>Value Tier</td><td>00 = Tier 1, 01 = Tier 2, 10 = Tier 3 (default), 11 = Tier 4</td></tr>
+          <tr><td><code>3–4</code></td><td>Scaling Factor</td><td>00 = ×1, 01 = ×10, 10 = ×100, 11 = ×1000 (further scales via extended Setup)</td></tr>
+          <tr><td><code>5–6</code></td><td>Decimal Position</td><td>00 = integer, 01 = 1 dp, 10 = 2 dp, 11 = 3 dp</td></tr>
+          <tr><td><code>7</code></td><td>Context Source</td><td>0 = inline (this Setup Byte), 1 = inherit from session-level Setup</td></tr>
+          <tr><td><code>8</code></td><td>Rounding Convention</td><td>0 = round half up, 1 = round half to even (banker's rounding)</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Value Encoding Formula</h3>
+      <div class="formula">
+        <div><span class="f-name">N</span> = <span class="f-var">A</span> × 2<sup><span class="f-var">S</span></sup> + <span class="f-var">r</span></div>
+        <div class="f-note">N = stored integer &nbsp;|&nbsp; A = multiplicand &nbsp;|&nbsp; S = split (default 8) &nbsp;|&nbsp; r = remainder (0 ≤ r &lt; 2^S)</div>
+        <div class="f-note">Decoded: V_raw = N / (SF × 10^D) &nbsp;|&nbsp; SF = scaling factor &nbsp;|&nbsp; D = decimal position</div>
+      </div>
+
+      <div class="calculator" id="v2-calc">
+        <div class="calc-title">Value Encoding Calculator</div>
+        <div class="calc-fields">
+          <div class="calc-field">
+            <label>Real Value</label>
+            <input type="number" id="vc-real" value="1250.75" step="any">
+          </div>
+          <div class="calc-field">
+            <label>Scaling Factor (SF)</label>
+            <select id="vc-sf">
+              <option value="1">×1 (no scale)</option>
+              <option value="10">×10</option>
+              <option value="100" selected>×100</option>
+              <option value="1000">×1000</option>
+              <option value="10000">×10000</option>
+              <option value="100000">×100000</option>
+              <option value="1000000">×1000000</option>
+            </select>
+          </div>
+          <div class="calc-field">
+            <label>Decimal Position (D)</label>
+            <select id="vc-d">
+              <option value="0">0 — integer</option>
+              <option value="1">1 — tenths</option>
+              <option value="2" selected>2 — hundredths</option>
+              <option value="3">3 — thousandths</option>
+              <option value="4">4</option>
+              <option value="5">5</option>
+              <option value="6">6</option>
+            </select>
+          </div>
+          <div class="calc-field">
+            <label>Split S (default 8)</label>
+            <select id="vc-s">
+              <option value="4">4</option>
+              <option value="8" selected>8 (default)</option>
+              <option value="16">16</option>
+            </select>
+          </div>
+        </div>
+        <div class="calc-output" id="vc-out">
+          <div class="calc-line"><span class="cl">N (stored integer)</span><span class="cv" id="vc-N">—</span></div>
+          <div class="calc-line"><span class="cl">A (multiplicand)</span><span class="cv" id="vc-A">—</span></div>
+          <div class="calc-line"><span class="cl">r (remainder)</span><span class="cv" id="vc-r">—</span></div>
+          <hr class="calc-divider">
+          <div class="calc-line"><span class="cl">Value Tier</span><span class="cv" id="vc-tier">—</span></div>
+          <div class="calc-line"><span class="cl">Hex Bytes</span><span class="cb" id="vc-hex">—</span></div>
+          <div class="calc-line"><span class="cl">Binary</span><span class="cb" id="vc-bin">—</span></div>
+          <div class="calc-line"><span class="cl">Decoded Verify</span><span class="cv" id="vc-dec">—</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- §12 TIME -->
+    <section id="time-system">
+      <div class="section-num">§ 12</div>
+      <h2>Time System</h2>
+      <p>Time encoding tier is selected by bits 5–6 of Meta Byte 2. A time field is only present in the byte stream when Role C bit 6 = 1 AND Meta Byte 2 bits 5–6 ≠ 00.</p>
+
+      <h3>Tier 1 — 8-bit Session Offset</h3>
+      <p>A single byte (0–255) expressing time as an unsigned integer offset from the session epoch. The unit is profile-defined (commonly: seconds, minutes, or 100ms ticks). Maximum range at 1-second resolution: 4 minutes 15 seconds. At 1-minute resolution: 4 hours 15 minutes.</p>
+
+      <div class="bit-display">
+        <div class="bit-display-label">Tier 1 Time Field — 8 bits</div>
+        <div class="bit-cells">
+          <div class="bit-cell time-f w8" data-layer="meta"><div class="bit-pos">1–8</div><div class="bit-val">TTTTTTTT</div><div class="bit-name">Unsigned Offset (0–255)</div></div>
+        </div>
+      </div>
+
+      <h3>Tier 2 — Time Block</h3>
+      <p>A full structured time block for when Tier 1 range is insufficient. The Time Block Header byte controls the size and format of the timestamp that follows.</p>
+
+      <table class="data-table">
+        <thead><tr><th>Bits</th><th>Field</th><th>Values</th></tr></thead>
+        <tbody>
+          <tr><td><code>1–2</code></td><td>Timestamp Format</td><td>00 = 16-bit offset, 01 = 32-bit Unix epoch, 10 = 48-bit extended, 11 = profile-defined</td></tr>
+          <tr><td><code>3–4</code></td><td>Resolution</td><td>00 = seconds, 01 = milliseconds, 10 = microseconds, 11 = nanoseconds</td></tr>
+          <tr><td><code>5</code></td><td>Timezone Present</td><td>1 = a timezone offset byte follows the timestamp</td></tr>
+          <tr><td><code>6</code></td><td>Duration Present</td><td>1 = a duration field of the same format and resolution follows</td></tr>
+          <tr><td><code>7–8</code></td><td>Reserved</td><td>00</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- §13 TASK & NOTE -->
+    <section id="task-note">
+      <div class="section-num">§ 13</div>
+      <h2>Task &amp; Note Components</h2>
+
+      <h3>Task Short Form (8 bits)</h3>
+      <p>A single byte encoding a task instruction. Present when Role C bit 7 = 1.</p>
+
+      <div class="bit-display">
+        <div class="bit-display-label">Task Byte — 8 bits</div>
+        <div class="bit-cells">
+          <div class="bit-cell task-f w4" data-layer="meta"><div class="bit-pos">1–4</div><div class="bit-val">CCCC</div><div class="bit-name">Category (16 values)</div></div>
+          <div class="bit-cell task-f w2" data-layer="meta"><div class="bit-pos">5–6</div><div class="bit-val">PP</div><div class="bit-name">Priority</div></div>
+          <div class="bit-cell task-f" data-layer="meta"><div class="bit-pos">7</div><div class="bit-val">·</div><div class="bit-name">Target Spec.</div></div>
+          <div class="bit-cell task-f" data-layer="meta"><div class="bit-pos">8</div><div class="bit-val">·</div><div class="bit-name">Timing Spec.</div></div>
+        </div>
+      </div>
+
+      <table class="data-table">
+        <thead><tr><th>Code</th><th>Task Category</th><th>Code</th><th>Task Category</th></tr></thead>
+        <tbody>
+          <tr><td><code>0000</code></td><td>Execute</td><td><code>1000</code></td><td>Approve</td></tr>
+          <tr><td><code>0001</code></td><td>Acknowledge</td><td><code>1001</code></td><td>Reject</td></tr>
+          <tr><td><code>0010</code></td><td>Request</td><td><code>1010</code></td><td>Transfer</td></tr>
+          <tr><td><code>0011</code></td><td>Cancel / Abort</td><td><code>1011</code></td><td>Hold</td></tr>
+          <tr><td><code>0100</code></td><td>Schedule</td><td><code>1100</code></td><td>Resume</td></tr>
+          <tr><td><code>0101</code></td><td>Delegate</td><td><code>1101</code></td><td>Close</td></tr>
+          <tr><td><code>0110</code></td><td>Monitor</td><td><code>1110</code></td><td>Correction</td></tr>
+          <tr><td><code>0111</code></td><td>Alert</td><td><code>1111</code></td><td>Extended (next byte)</td></tr>
+        </tbody>
+      </table>
+
+      <p><strong>Priority (bits 5–6):</strong> 00 = Normal, 01 = Elevated, 10 = High, 11 = Critical.</p>
+      <p><strong>Target Specified (bit 7):</strong> When 1, a target identity byte or bytes follow the task byte, specifying which sub-entity the task is directed at.</p>
+      <p><strong>Timing Specified (bit 8):</strong> When 1, a Tier 1 time byte follows (after target if present) specifying when the task should execute.</p>
+
+      <h3>Note Component</h3>
+      <p>A variable-length text or binary note. Present when Role C bit 8 = 1. Always begins with a Note Header byte.</p>
+
+      <table class="data-table">
+        <thead><tr><th>Bits</th><th>Field</th><th>Values</th></tr></thead>
+        <tbody>
+          <tr><td><code>1–2</code></td><td>Encoding Type</td><td>00 = ASCII/UTF-8 text, 01 = Binary Pictography (nibble stream), 10 = Binary blob, 11 = Profile-defined</td></tr>
+          <tr><td><code>3–4</code></td><td>Language / Codebook</td><td>00 = default/neutral, 01 = codebook A, 10 = codebook B, 11 = extended (codebook byte follows)</td></tr>
+          <tr><td><code>5–8</code></td><td>Length Field</td><td>0000 = next byte is length, 0001–1110 = length in bytes (1–14), 1111 = extended length (2 bytes follow)</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Binary Pictography</h3>
+      <p>A compact symbol encoding scheme using a 4-bit nibble per symbol. A codebook maps each 4-bit code (0000–1111) to a domain-specific glyph or status icon. Four symbols fit in 2 bytes.</p>
+
+      <div class="printout">
+        <div class="ph">── BINARY PICTOGRAPHY EXAMPLE ──</div>
+        <div><span class="pl">Nibble  </span><span class="pv">0001</span><span class="pc"> → Status: OK</span></div>
+        <div><span class="pl">Nibble  </span><span class="pv">0010</span><span class="pc"> → Status: Warning</span></div>
+        <div><span class="pl">Nibble  </span><span class="pv">0011</span><span class="pc"> → Status: Error</span></div>
+        <div><span class="pl">Nibble  </span><span class="pv">0100</span><span class="pc"> → Status: Offline</span></div>
+        <div><span class="pl">Stream  </span><span class="pb">0001 0010 | 0011 0100</span></div>
+        <div><span class="pl">Bytes   </span><span class="pv">0x12 0x34</span><span class="pc"> (4 status reports in 2 bytes)</span></div>
+      </div>
+    </section>
+
+    <!-- §14 COMPONENT ORDER -->
+    <section id="component-order">
+      <div class="section-num">§ 14</div>
+      <h2>Component Order &amp; Decoder Tree</h2>
+      <p>All BitPads v2.0 Record mode transmissions follow a strict component sequence. Decoders must parse in this order.</p>
+
+      <table class="data-table">
+        <thead><tr><th>Position</th><th>Component</th><th>Condition</th><th>Size</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td>Meta Byte 1</td><td>Always</td><td>1 byte</td></tr>
+          <tr><td>2</td><td>Meta Byte 2</td><td>Record mode (M1 bit 1 = 1)</td><td>1 byte</td></tr>
+          <tr class="change-new"><td>3 <span class="tag-new">v2.0</span></td><td>Signal Slot Presence Byte</td><td>M2 bit 8 = 1</td><td>1 byte</td></tr>
+          <tr><td>4</td><td>Layer 1</td><td>Required per matrix (§9)</td><td>8 bytes</td></tr>
+          <tr class="change-new"><td>5 <span class="tag-new">v2.0</span></td><td>Session Config Extension</td><td>L1 bit 12 = 1</td><td>1 byte</td></tr>
+          <tr><td>6</td><td>System Context Extension</td><td>M1 bit 2 = 1 (Record)</td><td>2, 4, or 5 bytes</td></tr>
+          <tr><td>7</td><td>Setup Byte</td><td>M2 bit 7 = 1</td><td>1 byte</td></tr>
+          <tr><td>8</td><td>Value Block</td><td>M1 bit 5 = 1 (Role C)</td><td>1–4 bytes (tier)</td></tr>
+          <tr><td>9</td><td>Time Field</td><td>M1 bit 6 = 1 AND M2 bits 5–6 ≠ 00</td><td>1 byte (T1) or variable (T2)</td></tr>
+          <tr><td>10</td><td>Task Block</td><td>M1 bit 7 = 1 (Role C)</td><td>1–3 bytes</td></tr>
+          <tr><td>11</td><td>Note Block</td><td>M1 bit 8 = 1 (Role C)</td><td>1 + N bytes</td></tr>
+          <tr><td>12</td><td>Enhancement Module</td><td>Active signal slots per SSPB</td><td>Variable per slot</td></tr>
+          <tr><td>13</td><td>Extension Bytes</td><td>Profile-defined chain</td><td>Variable</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Decoder Decision Tree</h3>
+      <div class="decoder-tree">
+<span class="dt-c">// BitPads v2.0 Decoder Decision Tree</span>
+<span class="dt-c">// Read Meta Byte 1 first — it controls all subsequent parsing</span>
+
+READ meta1
+IF meta1.bit1 == 0: <span class="dt-c">// WAVE MODE</span>
+  IF meta1.bit4 == 0: <span class="dt-c">// Role A — Basic Treatment</span>
+    priority   = meta1.bit5
+    cipher     = meta1.bit6  <span class="dt-c">// v2.0: cipher, not ACK</span>
+    ext_flags  = meta1.bit7
+    profile    = meta1.bit8
+    IF meta1.bit2 == 1: EXPECT_ACK_RESPONSE
+  ELSE: <span class="dt-c">// Role B — Category Mode</span>
+    category = meta1.bits[5..8]
+    IF category == 1111: READ ext_category_byte
+    IF layer1_required(category): READ layer1[64 bits], VERIFY crc15
+  DONE — wave parsed
+
+IF meta1.bit1 == 1: <span class="dt-c">// RECORD MODE</span>
+  READ meta2
+  IF meta2.bit8 == 1: <span class="dt-c">// v2.0 Signal Slot Presence</span>
+    READ signal_slot_presence_byte
+    active_slots = sspb.bits[1..5]
+  READ layer1[64 bits]
+  VERIFY layer1.crc15
+  IF layer1.bit12 == 1: <span class="dt-c">// v2.0 Session Config Extension</span>
+    READ session_config_extension_byte
+  IF meta1.bit2 == 1: <span class="dt-c">// System Context Extension</span>
+    READ sysctx_type_byte
+    READ sysctx_body[size(type)]
+  IF meta2.bit7 == 1: <span class="dt-c">// Setup Byte</span>
+    READ setup_byte
+    tier = setup.bits[1..2]
+    sf   = setup.bits[3..4]
+    dp   = setup.bits[5..6]
+  IF meta1.bit5 == 1: <span class="dt-c">// Value Block (Role C)</span>
+    READ value_block[tier_bytes(tier)]
+    N = decode_value(value_block)
+    V = N / (sf * 10^dp)
+  IF meta1.bit6 == 1 AND meta2.bits[5..6] != 00: <span class="dt-c">// Time</span>
+    IF meta2.bits[5..6] == 01 OR 10: READ tier1_time[8 bits]
+    IF meta2.bits[5..6] == 11: READ tier2_time_block[variable]
+  IF meta1.bit7 == 1: <span class="dt-c">// Task Block (Role C)</span>
+    READ task_byte
+    IF task_byte.bit7 == 1: READ target_id
+    IF task_byte.bit8 == 1: READ task_time[8 bits]
+  IF meta1.bit8 == 1: <span class="dt-c">// Note Block (Role C)</span>
+    READ note_header_byte
+    READ note_body[note_header.length]
+  FOR each active_slot in active_slots: <span class="dt-c">// Enhancement Modules</span>
+    READ slot_data[slot.size]
+  DONE — record parsed
+      </div>
+    </section>
+
+    <!-- §15 FOOTPRINTS -->
+    <section id="footprints">
+      <div class="section-num">§ 15</div>
+      <h2>Transmission Footprints</h2>
+
+      <h3>Baseline Footprints</h3>
+      <div class="footprint-grid">
+        <div class="fp-cell"><div class="fp-label">Pure Signal</div><div class="fp-bytes">1</div><div class="fp-unit">byte</div><div class="fp-desc">Single Meta Byte 1, no Layer 1, no payload</div></div>
+        <div class="fp-cell"><div class="fp-label">Wave + Layer 1</div><div class="fp-bytes">9</div><div class="fp-unit">bytes</div><div class="fp-desc">Meta Byte 1 (1) + Layer 1 (8)</div></div>
+        <div class="fp-cell"><div class="fp-label">Minimal Record</div><div class="fp-bytes">10</div><div class="fp-unit">bytes</div><div class="fp-desc">M1 (1) + M2 (1) + L1 (8)</div></div>
+        <div class="fp-cell"><div class="fp-label">Record + Value</div><div class="fp-bytes">13</div><div class="fp-unit">bytes</div><div class="fp-desc">M1+M2+L1 (10) + Setup (1) + Tier 3 Value (3) — default</div></div>
+        <div class="fp-cell"><div class="fp-label">Record + Value + Time</div><div class="fp-bytes">14</div><div class="fp-unit">bytes</div><div class="fp-desc">13 bytes + Tier 1 Time (1)</div></div>
+        <div class="fp-cell"><div class="fp-label">Full Record</div><div class="fp-bytes">18</div><div class="fp-unit">bytes</div><div class="fp-desc">M1+M2+L1 + Setup + Value + Time + Task + Note header</div></div>
+      </div>
+
+      <h3>Enhancement Overhead</h3>
+      <table class="data-table">
+        <thead><tr><th>Addition</th><th>Overhead</th><th>Condition</th></tr></thead>
+        <tbody>
+          <tr><td>Signal Slot Presence Byte</td><td>+1 byte</td><td>M2 bit 8 = 1</td></tr>
+          <tr><td>Session Config Extension</td><td>+1 byte</td><td>L1 bit 12 = 1</td></tr>
+          <tr><td>System Context Extension (Routing)</td><td>+2 bytes</td><td>M1 bit 2 = 1, type 00</td></tr>
+          <tr><td>System Context Extension (Extended ID)</td><td>+5 bytes</td><td>M1 bit 2 = 1, type 01</td></tr>
+          <tr><td>Tier 2 Time Block (32-bit Unix)</td><td>+5 bytes</td><td>M2 bits 5–6 = 11, format 01</td></tr>
+          <tr><td>Task with Target + Timing</td><td>+3 bytes</td><td>Task byte, target byte, time byte</td></tr>
+          <tr><td>Note (short, 8 chars UTF-8)</td><td>+10 bytes</td><td>Note header + 8 content bytes + null</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- §16 CHANGES -->
+    <section id="changes">
+      <div class="section-num">§ 16</div>
+      <h2>v2.0 Change Summary</h2>
+      <p>All changes from v1.x to v2.0. Breaking changes are marked. Additive changes are backward-compatible when the new bits were previously Reserved = 0.</p>
+
+      <table class="data-table">
+        <thead><tr><th>Change</th><th>Location</th><th>Type</th><th>Detail</th></tr></thead>
+        <tbody>
+          <tr class="change-new"><td>Signal Slot Presence Byte added</td><td>Meta Byte 2 bit 8</td><td>Additive</td><td>Previously Reserved=1. Now activates Signal Slot Presence Byte when set. Old receivers ignoring this bit are unaffected if they also ignore the new byte.</td></tr>
+          <tr class="change-new"><td>Session Config Extension added</td><td>Layer 1 bit 12</td><td>Breaking (partial)</td><td>Bit 12 was Opposing Convention flag. Now triggers Session Config Extension Byte. Opposing Convention moved inside the extension byte (bit 3).</td></tr>
+          <tr><td>Opposing Convention displaced</td><td>L1 bit 12 → SCE bit 3</td><td>Breaking</td><td>Implementations using L1 bit 12 directly as Opposing Convention must update to read SCE bit 3.</td></tr>
+          <tr><td>Compound Mode displaced</td><td>Various → SCE bit 4</td><td>Breaking</td><td>Compound Mode Active now resides in Session Config Extension bit 4.</td></tr>
+          <tr><td>BL Block Optional displaced</td><td>Various → SCE bit 5</td><td>Breaking</td><td>BitLedger Block Optional now resides in Session Config Extension bit 5.</td></tr>
+          <tr><td>BitLedger Context Ctrl removed</td><td>Formerly separate byte</td><td>Breaking</td><td>Replaced by Session Config Extension Byte. All three flags now share one byte.</td></tr>
+          <tr><td>Role A bit 6 corrected</td><td>Meta Byte 1 bit 6 (Role A)</td><td>Clarification</td><td>Formally assigned as Cipher Active. Previously documented as ACK in some v1.x references. No wire change — a correction to the specification text.</td></tr>
+          <tr><td>Categories 1100/1101/1110 assigned</td><td>Meta Byte 1 bits 5–8 (Role B)</td><td>Additive</td><td>Formerly "Mission Specific A/B/C" placeholders. Now formally: Financial Signal, Identity Signal, Control Signal.</td></tr>
+          <tr><td>Component ordering updated</td><td>Positions 3 and 5</td><td>Additive</td><td>SSPB inserted at position 3. Session Config Extension inserted at position 5. All prior positions shifted accordingly.</td></tr>
+          <tr><td>Decoder tree updated</td><td>§14</td><td>Additive</td><td>Two new branches: SSPB read on M2.bit8=1, SCE read on L1.bit12=1.</td></tr>
+          <tr><td>Footprints updated</td><td>§15</td><td>Informational</td><td>New minimum footprints documented for all new optional bytes.</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+  </main>
+</div>
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div><div class="footer-group-label">Protocol</div><ul class="footer-links"><li><a href="bitpads-v2.html">BitPads v2</a></li><li><a href="bitledger.html">BitLedger v3</a></li><li><a href="universal-domain.html">Universal Domain</a></li><li><a href="compound-mode.html">Compound Mode</a></li></ul></div>
+    <div><div class="footer-group-label">Enhancement</div><ul class="footer-links"><li><a href="enhancement-grammar.html">Grammar &amp; Signal Slots</a></li><li><a href="enhancement-commands.html">Commands &amp; Context</a></li><li><a href="enhancement-telegraph-1.html">Telegraph Emulation I</a></li><li><a href="enhancement-telegraph-2.html">Telegraph Emulation II</a></li><li><a href="enhancement-nesting.html">Nesting &amp; Overhead</a></li></ul></div>
+    <div><div class="footer-group-label">Resources</div><ul class="footer-links"><li><a href="engineering.html">Engineering</a></li><li><a href="guide.html">Guide</a></li><li><a href="cli.html">CLI</a></li><li><a href="reference.html">Reference</a></li></ul></div>
+    <div class="footer-copy">BitPads Protocol v2.0<br>BitLedger Protocol v3.0<br>© BABB</div>
+  </div>
+</footer>
+
+<script>
+/* ── TOC scroll spy ── */
+const secs = document.querySelectorAll('section[id]');
+const tocAs = document.querySelectorAll('.toc a');
+const io = new IntersectionObserver(es => {
+  es.forEach(e => { if (e.isIntersecting) { tocAs.forEach(a => a.classList.remove('active')); const a = document.querySelector(`.toc a[href="#${e.target.id}"]`); if (a) a.classList.add('active'); } });
+}, { rootMargin: '-15% 0px -70% 0px' });
+secs.forEach(s => io.observe(s));
+
+/* ── Expandable rows ── */
+document.querySelectorAll('tr.xrow').forEach(row => {
+  row.addEventListener('click', () => {
+    const did = row.dataset.drawer; const drawer = document.getElementById(did);
+    if (!drawer) return;
+    const open = drawer.classList.contains('open');
+    document.querySelectorAll('tr.xdrawer.open').forEach(d => { d.classList.remove('open'); d.previousElementSibling?.classList.remove('open'); });
+    if (!open) { drawer.classList.add('open'); row.classList.add('open'); }
+  });
+});
+
+/* ── Value Calculator ── */
+function vcCalc() {
+  const real = parseFloat(document.getElementById('vc-real').value) || 0;
+  const sf   = parseInt(document.getElementById('vc-sf').value) || 1;
+  const d    = parseInt(document.getElementById('vc-d').value) || 0;
+  const S    = parseInt(document.getElementById('vc-s').value) || 8;
+  const N    = Math.round(real * sf * Math.pow(10, d));
+  const pow  = Math.pow(2, S);
+  const A    = Math.floor(N / pow);
+  const r    = N % pow;
+  const decoded = N / (sf * Math.pow(10, d));
+  let tier, tierBytes;
+  if (N <= 255)        { tier = 'Tier 1 (8-bit)';  tierBytes = 1; }
+  else if (N <= 65535) { tier = 'Tier 2 (16-bit)'; tierBytes = 2; }
+  else if (N <= 16777215) { tier = 'Tier 3 (24-bit) — default'; tierBytes = 3; }
+  else                 { tier = 'Tier 4 (32-bit)'; tierBytes = 4; }
+  // Build hex
+  let hexBytes = '';
+  for (let i = tierBytes - 1; i >= 0; i--) {
+    hexBytes += '0x' + ((N >> (i*8)) & 0xFF).toString(16).padStart(2,'0').toUpperCase() + ' ';
+  }
+  // Build binary (24-bit for display)
+  const binStr = N.toString(2).padStart(tierBytes * 8, '0').replace(/(.{4})/g, '$1 ').trim();
+  document.getElementById('vc-N').textContent    = N.toLocaleString();
+  document.getElementById('vc-A').textContent    = A.toLocaleString();
+  document.getElementById('vc-r').textContent    = r.toLocaleString();
+  document.getElementById('vc-tier').textContent = tier;
+  document.getElementById('vc-hex').textContent  = hexBytes.trim();
+  document.getElementById('vc-bin').textContent  = binStr;
+  document.getElementById('vc-dec').textContent  = decoded.toFixed(d) + ' (verify: ' + (Math.abs(decoded - real) < 0.000001 ? 'EXACT' : 'ROUNDED') + ')';
+}
+['vc-real','vc-sf','vc-d','vc-s'].forEach(id => document.getElementById(id).addEventListener('input', vcCalc));
+vcCalc();
+</script>
+</body>
+</html>

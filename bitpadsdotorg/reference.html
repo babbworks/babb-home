@@ -1,0 +1,1175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Reference &amp; Glossary — BitPads Documentation</title>
+<link rel="stylesheet" href="bp-style.css">
+<style>
+/* ── Reference-page specifics ── */
+.ref-intro { padding: 52px 0 0; border-top: none; }
+.ref-intro p.lead { max-width: 62ch; }
+
+/* Quick-stat grid overrides */
+.stat-grid.stat-grid-4 {
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+/* Glossary dl */
+.glossary-section { margin: 0 0 36px; }
+.glossary-section h3 {
+  font-family: var(--display); font-weight: 700;
+  font-size: 26px; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--nasa-blue);
+  border-bottom: 2px solid var(--nasa-blue);
+  padding-bottom: 6px; margin: 32px 0 12px;
+}
+dl.glossary { margin: 0; }
+dl.glossary dt {
+  font-family: var(--display); font-weight: 700;
+  font-size: 15px; letter-spacing: 0.04em;
+  text-transform: uppercase; color: var(--ink);
+  margin: 16px 0 2px;
+}
+dl.glossary dd {
+  margin: 0 0 0 0;
+  font-size: 13.5px; color: var(--ink-soft);
+  line-height: 1.55; max-width: 70ch;
+  padding-left: 14px;
+  border-left: 2px solid var(--rule-soft);
+}
+dl.glossary dd code { font-size: 11.5px; }
+
+/* Matrix grid for scaling table */
+.matrix-wrap { overflow-x: auto; margin: 20px 0; }
+.matrix-table {
+  border-collapse: collapse;
+  font-family: var(--mono);
+  font-size: 11px;
+  white-space: nowrap;
+}
+.matrix-table th, .matrix-table td {
+  padding: 7px 11px;
+  border: 1px solid var(--rule-soft);
+  text-align: right;
+}
+.matrix-table th {
+  background: var(--bg-soft);
+  color: var(--ink-soft);
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  border-bottom-color: var(--nasa-blue);
+}
+.matrix-table th:first-child,
+.matrix-table td:first-child {
+  text-align: left;
+  color: var(--nasa-blue);
+  font-weight: 700;
+  background: var(--bg-soft);
+  border-right-color: var(--nasa-blue);
+}
+.matrix-table tr:hover td { background: oklch(0.97 0.003 220); }
+.matrix-table .hi { color: var(--nasa-blue); font-weight: 700; }
+
+/* CRC reference card */
+.crc-card {
+  background: var(--bg-dark);
+  border-left: 3px solid var(--nasa-gold);
+  padding: 22px 28px; margin: 20px 0;
+  font-family: var(--mono); font-size: 12px;
+  line-height: 1.9; color: #99B8D4;
+}
+.crc-card .crc-h { color: var(--nasa-gold); font-size: 9px; text-transform: uppercase; letter-spacing: 0.14em; margin-bottom: 10px; }
+.crc-card .crc-key { color: #FC8C6A; }
+.crc-card .crc-val { color: #7ECEF4; }
+.crc-card .crc-ok  { color: #6AC87E; }
+.crc-card .crc-sep { color: var(--nasa-gold); }
+
+/* Section eyebrow + heading tightening on ref page */
+section.ref-sec { padding: 44px 0; border-top: 1px solid var(--rule); }
+section.ref-sec:first-of-type { border-top: none; padding-top: 0; }
+
+/* Bit-field color bands in tables */
+.band-mode { border-left: 3px solid var(--bit-mode) !important; }
+.band-data { border-left: 3px solid var(--bit-data) !important; }
+.band-identity { border-left: 3px solid var(--bit-identity) !important; }
+.band-checksum { border-left: 3px solid var(--bit-checksum) !important; }
+.band-account { border-left: 3px solid var(--bit-account) !important; }
+.band-flag { border-left: 3px solid var(--bit-flag) !important; }
+.band-reserved { border-left: 3px solid var(--bit-reserved) !important; }
+.band-enhance { border-left: 3px solid var(--bit-enhance) !important; }
+
+/* Code pill */
+.pill {
+  display: inline-block;
+  font-family: var(--mono); font-size: 10px;
+  background: var(--bg-soft); border: 1px solid var(--rule);
+  padding: 1px 6px; border-radius: 2px;
+  color: var(--nasa-blue); letter-spacing: 0.04em;
+}
+
+/* Tier table emphasis */
+.tier-default td { background: oklch(0.96 0.008 220); font-weight: 500; }
+
+/* Legend strip */
+.field-legend {
+  display: flex; flex-wrap: wrap; gap: 6px 16px;
+  margin: 10px 0 6px;
+  font-family: var(--mono); font-size: 9px;
+  text-transform: uppercase; letter-spacing: 0.07em;
+  color: var(--ink-soft);
+}
+.fl-item { display: flex; align-items: center; gap: 5px; }
+.fl-swatch {
+  width: 10px; height: 10px; border-radius: 1px; flex-shrink: 0;
+}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="index.html">
+      <span class="brand-mark">BP</span>
+      <span class="brand-name">BitPads Protocol</span>
+    </a>
+    <nav class="topnav">
+      <a href="overview.html">Overview</a>
+      <a href="bitpads-v2.html">BitPads v2</a>
+      <a href="bitledger.html" class="active">BitLedger</a>
+      <a href="universal-domain.html">Universal Domain</a>
+      <div class="nav-group">
+        <a href="enhancement-grammar.html">Enhancement</a>
+        <div class="nav-dropdown">
+          <a href="enhancement-grammar.html">Grammar &amp; Signal Slots</a>
+          <a href="enhancement-commands.html">Commands &amp; Context</a>
+          <a href="enhancement-telegraph-1.html">Telegraph Emulation I</a>
+          <a href="enhancement-telegraph-2.html">Telegraph Emulation II</a>
+          <a href="enhancement-nesting.html">Nesting &amp; Overhead</a>
+        </div>
+      </div>
+      <a href="compound-mode.html">Compound Mode</a>
+      <a href="engineering.html">Engineering</a>
+      <a href="guide.html">Guide</a>
+      <a href="cli.html">CLI</a>
+      <a href="reference.html">Reference</a>
+    </nav>
+  </div>
+
+</header><header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="index.html">
+      <span class="brand-mark">BP</span>
+      <span class="brand-name">BitPads Protocol</span>
+    </a>
+    <nav class="topnav">
+      <a href="overview.html">Overview</a>
+      <a href="bitpads-v2.html">BitPads v2</a>
+      <a href="bitledger.html" class="active">BitLedger</a>
+      <a href="universal-domain.html">Universal Domain</a>
+      <div class="nav-group">
+        <a href="enhancement-grammar.html">Enhancement</a>
+        <div class="nav-dropdown">
+          <a href="enhancement-grammar.html">Grammar &amp; Signal Slots</a>
+          <a href="enhancement-commands.html">Commands &amp; Context</a>
+          <a href="enhancement-telegraph-1.html">Telegraph Emulation I</a>
+          <a href="enhancement-telegraph-2.html">Telegraph Emulation II</a>
+          <a href="enhancement-nesting.html">Nesting &amp; Overhead</a>
+        </div>
+      </div>
+      <a href="compound-mode.html">Compound Mode</a>
+      <a href="engineering.html">Engineering</a>
+      <a href="guide.html">Guide</a>
+      <a href="cli.html">CLI</a>
+      <a href="reference.html">Reference</a>
+    </nav>
+  </div>
+</header>
+
+<div class="page">
+  <aside class="sidebar">
+    <p class="toc-label">On This Page</p>
+    <ul class="toc">
+      <li><a href="#quick-reference" class="active">Quick Reference</a></li>
+      <li><a href="#meta-byte-1">Meta Byte 1</a></li>
+      <li><a href="#wave-categories">Wave Categories</a></li>
+      <li><a href="#layer-1-fields">Layer 1 Fields</a></li>
+      <li><a href="#layer-2-fields">Layer 2 Fields</a></li>
+      <li><a href="#layer-3-fields">Layer 3 Fields</a></li>
+      <li><a href="#account-pairs">Account Pairs</a></li>
+      <li><a href="#flow-archetypes">Flow Archetypes</a></li>
+      <li><a href="#signal-slots">Signal Slots</a></li>
+      <li><a href="#value-tiers">Value Tiers</a></li>
+      <li><a href="#scaling-matrix">Scaling Matrix</a></li>
+      <li><a href="#crc-reference">CRC-15 Reference</a></li>
+      <li><a href="#glossary">Glossary</a></li>
+    </ul>
+  </aside>
+
+  <main>
+
+    <!-- ── INTRO ── -->
+    <section id="quick-reference" class="ref-sec" style="padding-top:0; border-top:none;">
+      <p class="eyebrow">Unified Reference — BitPads Protocol Family</p>
+      <h1 style="font-size:clamp(36px,5vw,72px); margin-bottom:18px;">Reference<br>&amp; Glossary</h1>
+      <p class="lead">Constants, field maps, category tables, signal slot positions, value tiers, the CRC-15 reference card, and the complete alphabetical glossary — all protocol documents in one page.</p>
+
+      <h2 style="margin-top:36px;">At a Glance</h2>
+      <div class="stat-grid stat-grid-4">
+        <div class="stat-cell">
+          <div class="stat-val">1B</div>
+          <div class="stat-unit">Pure Signal</div>
+          <p class="stat-desc">Single Meta byte. The byte is the entire transmission. Minimum possible footprint.</p>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-val">4B</div>
+          <div class="stat-unit">Anonymous Wave</div>
+          <p class="stat-desc">Meta byte + 3-byte Tier 3 value block. Lightweight value without session identity.</p>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-val">13–29B</div>
+          <div class="stat-unit">Record</div>
+          <p class="stat-desc">Meta bytes + Layer 1 + optional value, time, task, note components. Fully identified.</p>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-val">22B+</div>
+          <div class="stat-unit">Full BitLedger</div>
+          <p class="stat-desc">Record + Layer 2 batch header + Layer 3 40-bit double-entry accounting record.</p>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-val">v2.0</div>
+          <div class="stat-unit">BitPads</div>
+          <p class="stat-desc">Outermost meta layer. Wave, Record modes. 16 Wave categories. Enhancement sub-protocol.</p>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-val">v3.0</div>
+          <div class="stat-unit">BitLedger</div>
+          <p class="stat-desc">Core financial protocol. 40 bits per double-entry transaction. CRC-15 session integrity.</p>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-val">v1.0</div>
+          <div class="stat-unit">Universal Domain</div>
+          <p class="stat-desc">Engineering domain extension. 16 flow archetypes. Any conserved scalar in any system.</p>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-val">v2.0</div>
+          <div class="stat-unit">Enhancement</div>
+          <p class="stat-desc">C0 Enhancement Grammar. 13 signal slot positions. 29+4 agreed C0 controls. Nesting.</p>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-val">0x4001</div>
+          <div class="stat-unit">CRC-15 Polynomial</div>
+          <p class="stat-desc">Generator: x¹⁵ + x + 1. Applied over Layer 1 bits 1–49. 15-bit remainder.</p>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-val">4,294,967,295</div>
+          <div class="stat-unit">Max Sender ID</div>
+          <p class="stat-desc">Flat 32-bit space. 255 networks × 255 systems × 65,535 nodes (split mode 10).</p>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-val">~$33.5Q</div>
+          <div class="stat-unit">Max Single Record</div>
+          <p class="stat-desc">SF × 1B, D=0. 33,554,431 × 1,000,000,000 = ~$33.5 quadrillion. ~305× global GDP.</p>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-val">13</div>
+          <div class="stat-unit">Signal Slots</div>
+          <p class="stat-desc">P1–P13 spanning session, batch, record, stream, and wave layers. C0 controls at declared positions.</p>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-val">33</div>
+          <div class="stat-unit">C0 Controls</div>
+          <p class="stat-desc">29 unconditional + 4 conditional (non-text channel required). Full C0 block coverage.</p>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-val">40</div>
+          <div class="stat-unit">Bits per Transaction</div>
+          <p class="stat-desc">Complete double-entry record: value, direction, status, account pair, rounding, extension flag.</p>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-val">16</div>
+          <div class="stat-unit">Flow Archetypes</div>
+          <p class="stat-desc">Universal relationship types covering every canonical flow in any conserved-scalar system.</p>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-val">99.997%</div>
+          <div class="stat-unit">Error Detection</div>
+          <p class="stat-desc">CRC-15 detects 100% of burst errors ≤15 bits. 99.997% probability above 15 bits.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── META BYTE 1 ── -->
+    <section id="meta-byte-1" class="ref-sec">
+      <p class="eyebrow">Bit-Position Reference</p>
+      <h2>Meta Byte 1</h2>
+      <p>Meta byte 1 is present at the start of every BitPads transmission without exception. Bits 5–8 serve three different roles (Role A, B, C) depending on the mode bit (bit 1) and treatment switch (bit 4).</p>
+
+      <div class="field-legend">
+        <div class="fl-item"><span class="fl-swatch" style="background:var(--bit-mode)"></span> Mode / Control</div>
+        <div class="fl-item"><span class="fl-swatch" style="background:var(--bit-data)"></span> Content / Role flags</div>
+        <div class="fl-item"><span class="fl-swatch" style="background:var(--bit-enhance)"></span> Enhancement</div>
+      </div>
+
+      <h3>Bits 1–4 — Universal (all modes)</h3>
+      <table class="data-table">
+        <thead>
+          <tr><th>Bit</th><th>Field</th><th>Wave Mode (bit 1 = 0)</th><th>Record Mode (bit 1 = 1)</th></tr>
+        </thead>
+        <tbody>
+          <tr class="band-mode"><td><code>1</code></td><td>BitPad Mode</td><td>0 = Wave mode. Layer 1 not required unless category demands it.</td><td>1 = Record mode. Meta byte 2 follows immediately. Layer 1 always expected.</td></tr>
+          <tr class="band-mode"><td><code>2</code></td><td>ACK Req / SysCtx</td><td>1 = ACK request. Single byte with only bit 2 = 1 is the universal pulse (0x40).</td><td>1 = System Context Extension block follows Layer 1.</td></tr>
+          <tr class="band-mode"><td><code>3</code></td><td>Continuation / Fragment</td><td>0 = Complete, self-contained. 1 = Fragment — receiver accumulates until bit 3 = 0.</td><td>Same meaning. Universal across Wave and Record.</td></tr>
+          <tr class="band-mode"><td><code>4</code></td><td>Treatment Switch</td><td>0 = Basic treatment — bits 5–8 are Role A descriptors. 1 = Category mode — bits 5–8 are 4-bit category code (Role B).</td><td>Ignored in Record mode. Role C always applies.</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Bits 5–8 — Role A: Wave Basic Treatment (bit 1 = 0, bit 4 = 0)</h3>
+      <table class="data-table">
+        <thead>
+          <tr><th>Bit</th><th>Field</th><th>0</th><th>1</th></tr>
+        </thead>
+        <tbody>
+          <tr class="band-data"><td><code>5</code></td><td>Priority Flag</td><td>Normal priority — receiver processes in queue order.</td><td>Elevated priority — receiver processes before lower-priority pending items.</td></tr>
+          <tr class="band-data"><td><code>6</code></td><td>Cipher Active</td><td>Plain stream. No rolling codebook shift.</td><td>Stream category obscuration active via rolling codebook. Codebook shifted from session baseline. Not a cryptographic guarantee.</td></tr>
+          <tr class="band-data"><td><code>7</code></td><td>Extended Flags</td><td>No extension. Standard Wave descriptors only.</td><td>Descriptor extension byte follows Meta byte 1 before content. Carries Wave-layer signal slot declarations (P12/P13).</td></tr>
+          <tr class="band-data"><td><code>8</code></td><td>Profile Defined</td><td>Standard protocol behaviour.</td><td>Profile-specific behaviour declared at session open applies to this transmission.</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Bits 5–8 — Role B: Wave Category Mode (bit 1 = 0, bit 4 = 1)</h3>
+      <p>See <a href="#wave-categories">Wave Categories</a> section below for all 16 codes <code>0000–1111</code>.</p>
+
+      <h3>Bits 5–8 — Role C: Record Mode Component Expect Flags (bit 1 = 1)</h3>
+      <table class="data-table">
+        <thead>
+          <tr><th>Bit</th><th>Field</th><th>0</th><th>1</th></tr>
+        </thead>
+        <tbody>
+          <tr class="band-data"><td><code>5</code></td><td>Value Present</td><td>No value block in this record.</td><td>Value block follows. Triggers Setup byte check (Meta byte 2 bit 7), then value block at declared tier.</td></tr>
+          <tr class="band-data"><td><code>6</code></td><td>Time Present</td><td>No time field.</td><td>Time field follows Value block. Tier and reference declared in Meta byte 2 bits 5–6.</td></tr>
+          <tr class="band-data"><td><code>7</code></td><td>Task Present</td><td>No task block.</td><td>Task short form (8 bits) follows Time. May include extension bytes for target and timing.</td></tr>
+          <tr class="band-data"><td><code>8</code></td><td>Note Present</td><td>No note block.</td><td>Note block follows Task. Note header declares encoding, language, and length.</td></tr>
+        </tbody>
+      </table>
+
+      <div class="notice">
+        <p><strong>Pure Signal:</strong> <code>0x40 = 0100 0000</code> — Wave mode (bit 1=0), ACK Request (bit 2=1), complete (bit 3=0), basic treatment (bit 4=0), no flags (bits 5–8=0000). Meaning: <em>I am here. Acknowledge me.</em> Response: ACK control record <code>0x31</code>.</p>
+      </div>
+    </section>
+
+    <!-- ── WAVE CATEGORIES ── -->
+    <section id="wave-categories" class="ref-sec">
+      <p class="eyebrow">Role B — Bits 5–8</p>
+      <h2>Wave Categories</h2>
+      <p>All 16 category codes active when Meta byte 1 bit 1 = 0 (Wave mode) and bit 4 = 1 (Category mode). Categories 1100, 1101, and 1110 are formally assigned in v2.0 via the Enhancement Sub-Protocol.</p>
+
+      <table class="data-table">
+        <thead>
+          <tr><th>Code</th><th>Category</th><th>Layer 1?</th><th>Description</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><span class="pill">0000</span></td><td>Plain Value</td><td>No (est.)</td><td>Setup byte (optional) + Value block at declared tier. Most common Wave category for sensor readings and measurements.</td></tr>
+          <tr><td><span class="pill">0001</span></td><td>Simple Message</td><td>No (est.)</td><td>1-byte length prefix + content. UTF-8 or declared encoding. Length-prefixed text or short data payload.</td></tr>
+          <tr><td><span class="pill">0010</span></td><td>Status / Log</td><td>No (est.)</td><td>Status code or length prefix + log content. Status update, state report, or diagnostic log entry.</td></tr>
+          <tr><td><span class="pill">0011</span></td><td>Command / Request</td><td>No (est.)</td><td>Task short form (1 byte) + optional extensions. Single command or request without formal identity overhead.</td></tr>
+          <tr><td><span class="pill">0100</span></td><td>Basic Record</td><td>YES</td><td>Layer 1 + optional Layer 2 + value + optional time. Structured value record with sender identity.</td></tr>
+          <tr><td><span class="pill">0101</span></td><td>Transaction + Message</td><td>YES</td><td>Layer 1 + Layer 2 + BL control + value + note. Value with narrative. Combines accounting record and message.</td></tr>
+          <tr><td><span class="pill">0110</span></td><td>Rich Log Entry</td><td>YES</td><td>Layer 1 + all four components (value, time, task, note). Full record with all optional fields. Comprehensive audit entry.</td></tr>
+          <tr><td><span class="pill">0111</span></td><td>Priority Alert</td><td>YES</td><td>Layer 1 + value + task. Priority override. Elevated-priority record requiring immediate receiver action.</td></tr>
+          <tr><td><span class="pill">1000</span></td><td>Text Stream</td><td>Session</td><td>Stream-length prefix + UTF-8 bytes. Continuous text channel. Identity established at stream open via Layer 1.</td></tr>
+          <tr><td><span class="pill">1001</span></td><td>Flag / Archetype Stream</td><td>Session</td><td>Stream-Open control + length + packed flags. BitLedger archetype stream. Meta byte 2 bits 1–4 carry active archetype.</td></tr>
+          <tr><td><span class="pill">1010</span></td><td>Variable Field Stream</td><td>Session</td><td>Stream-Open + length-prefixed fields. Structured field stream with schema-declared layout.</td></tr>
+          <tr><td><span class="pill">1011</span></td><td>Binary Blob</td><td>Session</td><td>Length prefix + raw binary. Unstructured binary data channel. No interpretation of content by protocol layer.</td></tr>
+          <tr style="background:oklch(0.97 0.006 140)"><td><span class="pill">1100</span></td><td>Compact Command</td><td>No (est.)</td><td><strong>New v2.0.</strong> Command byte sequence. Enhancement grammar active. Upper 3 bits = class, lower 5 bits = code. Discrete command queue.</td></tr>
+          <tr style="background:oklch(0.97 0.006 140)"><td><span class="pill">1101</span></td><td>Context Declaration</td><td>No</td><td><strong>New v2.0.</strong> Context Declaration Block 1–4 bytes. Dynamic context management. Standalone Wave or in-band stream mechanism.</td></tr>
+          <tr style="background:oklch(0.97 0.006 140)"><td><span class="pill">1110</span></td><td>Telegraph Emulation</td><td>Session</td><td><strong>New v2.0.</strong> Full C0 Enhancement Grammar active for stream duration. Every byte: upper 3 bits = flags, lower 5 bits = C0 code. Legacy compatible.</td></tr>
+          <tr><td><span class="pill">1111</span></td><td>Extended Category</td><td>Depends</td><td>Next byte = 8-bit extended category code. Provides 256 additional categories beyond the 16 primary codes.</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- ── LAYER 1 FIELDS ── -->
+    <section id="layer-1-fields" class="ref-sec">
+      <p class="eyebrow">Session Initialisation — 64 bits / 8 bytes</p>
+      <h2>Layer 1 Field Map</h2>
+      <p>Transmitted once at session open. Establishes sender identity, permissions, session defaults, domain, wire format version, and the CRC-15 integrity checksum. All subsequent transmissions inherit this context.</p>
+
+      <div class="field-legend">
+        <div class="fl-item"><span class="fl-swatch" style="background:var(--bit-mode)"></span> Control / framing</div>
+        <div class="fl-item"><span class="fl-swatch" style="background:var(--bit-flag)"></span> Session defaults</div>
+        <div class="fl-item"><span class="fl-swatch" style="background:var(--bit-identity)"></span> Identity fields</div>
+        <div class="fl-item"><span class="fl-swatch" style="background:var(--bit-checksum)"></span> CRC-15 integrity</div>
+        <div class="fl-item"><span class="fl-swatch" style="background:var(--bit-enhance)"></span> Enhancement flag</div>
+      </div>
+
+      <table class="data-table">
+        <thead>
+          <tr><th>Byte(s)</th><th>Bits</th><th>Field</th><th>Description</th></tr>
+        </thead>
+        <tbody>
+          <tr class="band-mode"><td>0, partial</td><td>1</td><td>SOH Marker</td><td>Always 1. Self-framing bootstrap anchor. In IDLE state, byte <code>0x01</code> unconditionally opens Layer 1 read. The sole context-free signal in the protocol.</td></tr>
+          <tr class="band-mode"><td>0, partial</td><td>2</td><td>Wire Format Version</td><td>0 = Wire format version 1 (current). 1 = Non-standard. Version declaration control byte follows Layer 1 before any content.</td></tr>
+          <tr class="band-flag"><td>0, partial</td><td>3–4</td><td>Domain</td><td>00 = Financial (default, backward compatible). 01 = Engineering (physical flow, Universal Domain). 10 = Hybrid (both matrices active). 11 = Custom (domain extension block follows Layer 1).</td></tr>
+          <tr class="band-flag"><td>0–partial 1</td><td>5–8</td><td>Permissions</td><td>Bit 5: Read / Observe. Bit 6: Write / Actuate. Bit 7: Correct / Override. Bit 8: Represent / Proxy. All four must be set appropriately before records are accepted.</td></tr>
+          <tr class="band-flag"><td>1, partial</td><td>9</td><td>Split Order Default</td><td>0 = Multiplicand first (value then quantity). 1 = Multiplier first (quantity then value). Session default for value encoding split order.</td></tr>
+          <tr class="band-flag"><td>1, partial</td><td>10–11</td><td>Sender ID Split Mode</td><td>00 = Flat 32-bit Node ID (4.29B nodes). 01 = 16/16 split (System + Node). 10 = 8/8/16 split (Network + System + Node). 11 = Custom — System Context Extension declares boundaries.</td></tr>
+          <tr class="band-enhance"><td>1, partial</td><td>12</td><td>Session Enhancement Flag</td><td><strong>Updated v2.0.</strong> 0 = No C0 Enhancement Grammar (default). 1 = C0 Enhancement Grammar active session-wide. All 13 signal slot positions P1–P13 available. Triggers Session Configuration Extension byte.</td></tr>
+          <tr class="band-identity"><td>1–4, partial 5</td><td>13–44</td><td>Sender ID</td><td>32-bit unique sender identifier. Interpreted per bits 10–11 split mode. Flat: 4,294,967,295 distinct senders. 8/8/16: 255 networks × 255 systems × 65,535 nodes.</td></tr>
+          <tr class="band-identity"><td>5, partial</td><td>45–49</td><td>Sub-Entity ID</td><td>5 bits. 31 sub-divisions within sender. Department, sub-system, or sub-node. Mirrors the Entity ID field in Layer 2 for standard transmissions.</td></tr>
+          <tr class="band-checksum"><td>6–7</td><td>50–64</td><td>CRC-15 Checksum</td><td>15-bit CRC over bits 1–49. Polynomial x¹⁵ + x + 1. Zero remainder = session accepted. Non-zero = NACK and session rejection. See <a href="#crc-reference">CRC-15 Reference</a>.</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Session Configuration Extension Byte</h3>
+      <p>Present when Layer 1 bit 12 = 1 (Session Enhancement active) or when the implementation declares non-default opposing convention. Follows Layer 1 immediately, before the first batch header.</p>
+      <table class="data-table">
+        <thead>
+          <tr><th>Bits</th><th>Field</th><th>Description</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>1–2</td><td>Nesting Level Code</td><td>00 = Flat only. 01 = Depth 2. 10 = Depth 4. 11 = Extended — Nesting Declaration Extension byte follows.</td></tr>
+          <tr><td>3</td><td>Opposing Convention</td><td>Moved from Layer 1 bit 12. 0 = Opposing account inferred from relationship pair and direction. 1 = Opposing always transmitted explicitly in extension byte on every record.</td></tr>
+          <tr><td>4</td><td>Compound Mode Active</td><td>0 = Off. 1 = 1111 compound continuation markers valid in this session.</td></tr>
+          <tr><td>5</td><td>BitLedger Block Optional</td><td>0 = BitLedger accounting block always present. 1 = Optional — record may omit it.</td></tr>
+          <tr><td>6–8</td><td>Reserved</td><td>Transmit as 1.</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Signal Slot Presence Byte</h3>
+      <p>Present when Meta byte 2 bit 8 = 1. Follows Meta byte 2, before Layer 1. Declares which of the five record-layer signal slots (P4–P8) are active.</p>
+      <table class="data-table">
+        <thead>
+          <tr><th>Bit</th><th>Field</th><th>1 = Active</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>1</td><td>P4 Pre-Value</td><td>Signal slot active before Value block. Decoder reads enhanced C0 byte(s) before the value.</td></tr>
+          <tr><td>2</td><td>P5 Post-Value</td><td>Signal slot active after Value block, before Time field.</td></tr>
+          <tr><td>3</td><td>P6 Post-Time</td><td>Signal slot active after Time field, before Task block.</td></tr>
+          <tr><td>4</td><td>P7 Post-Task</td><td>Signal slot active after Task block, before Note block.</td></tr>
+          <tr><td>5</td><td>P8 Post-Record</td><td>Signal slot active after final component. The record close signal position.</td></tr>
+          <tr><td>6–8</td><td>Reserved</td><td>Transmit as 1. Reserved for future slot positions P14–P16.</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- ── LAYER 2 FIELDS ── -->
+    <section id="layer-2-fields" class="ref-sec">
+      <p class="eyebrow">Batch Header — 48 bits / 6 bytes</p>
+      <h2>Layer 2 Field Map</h2>
+      <p>Transmitted once before each batch of transaction records. Establishes the decoding context that every record in the batch inherits. When all values match session defaults, a single 8-bit control byte (type 110, payload 1111) replaces the entire 48-bit header.</p>
+
+      <table class="data-table">
+        <thead>
+          <tr><th>Byte(s)</th><th>Bits</th><th>Field</th><th>Description</th></tr>
+        </thead>
+        <tbody>
+          <tr class="band-mode"><td>0, partial</td><td>1–2</td><td>Transmission Type</td><td>01 = Pre-converted. 10 = Copy from sender. 11 = For represented entity. 00 = INVALID (guaranteed protocol error signal — no valid Layer 2 begins with zero first byte).</td></tr>
+          <tr class="band-data"><td>0, partial 1</td><td>3–9</td><td>Scaling Factor (SF)</td><td>7-bit index (0–127). Denomination multiplier. Always multiplies upward — never used for sub-unit precision. Index 0 = ×1, index 1 = ×10, …, index 9 = ×1,000,000,000. See <a href="#scaling-matrix">Scaling Matrix</a>.</td></tr>
+          <tr class="band-data"><td>1, partial</td><td>10–13</td><td>Optimal Split</td><td>4-bit. Number of bits allocated to Multiplier in Layer 3 value block when bit 32 of a record = 1. Default = 8, giving 17-bit Multiplicand and 8-bit Multiplier.</td></tr>
+          <tr class="band-data"><td>1–2, partial</td><td>14–16</td><td>Decimal Position (DP)</td><td>000 = integer (D=0). 001 = 1 place. 010 = 2 places (standard banking). 011 = 3 places. 100 = 4 places (forex pip). 101 = 5 places. 110 = 6 places (crypto). 111 = declared in extension byte.</td></tr>
+          <tr class="band-flag"><td>2, partial</td><td>17</td><td>Enquiry Bell</td><td>1 = Sender requests acknowledgement of this batch before transmitting the next. Receiver must respond with ACK control record before sender proceeds.</td></tr>
+          <tr class="band-flag"><td>2, partial</td><td>18</td><td>Acknowledge Bell</td><td>1 = Receiver confirms successful receipt and validation of the previous batch. Clears any pending Enquiry state.</td></tr>
+          <tr class="band-flag"><td>2–3</td><td>19–22</td><td>Group Separator</td><td>4 bits. 15 group identifiers. Accounting periods, quarters, or organisational divisions. Mission phases in engineering mode.</td></tr>
+          <tr class="band-flag"><td>3, partial</td><td>23–27</td><td>Record Separator</td><td>5 bits. 31 identifiers. In compound transaction mode, the current Record Separator value is the implicit identity of the compound group.</td></tr>
+          <tr class="band-flag"><td>3, partial</td><td>28–30</td><td>File Separator</td><td>3 bits. 7 file identifiers. Associates batches with logical file structures. System boundary crossings in engineering mode.</td></tr>
+          <tr class="band-identity"><td>3–4, partial</td><td>31–35</td><td>Entity ID</td><td>5 bits. Identifies sub-entity to which this batch is attributed. In standard mode matches Layer 1 Sub-Entity ID. In represented entity mode (Transmission Type 11) identifies the represented party.</td></tr>
+          <tr class="band-identity"><td>4, partial 5</td><td>36–41</td><td>Currency / Quantity Type Code</td><td>6 bits. 64 codes. Financial mode: currency index (USD, EUR, etc.). Engineering mode: Quantity Type Code (mass, energy, data, pressure, etc.). 000000 = session default.</td></tr>
+          <tr class="band-data"><td>5, partial</td><td>42–45</td><td>Rounding Balance</td><td>4-bit sign-magnitude. 0000 = batch exactly balanced. High bit = sign (0 = rounded up, 1 = rounded down). Lower 3 bits = magnitude in precision units (1–7). 1000 = escape (see batch-close control record).</td></tr>
+          <tr class="band-flag"><td>5, partial</td><td>46–47</td><td>Compound Prefix</td><td>00 = No compound records. 01 = Up to 3 compound groups. 10 = Up to 7 compound groups. 11 = Unlimited compound groups.</td></tr>
+          <tr class="band-reserved"><td>5</td><td>48</td><td>Reserved</td><td>Transmit as 1. Ensures final byte of Layer 2 is never all zeros. Reserved for future protocol versions.</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- ── LAYER 3 FIELDS ── -->
+    <section id="layer-3-fields" class="ref-sec">
+      <p class="eyebrow">Transaction Record — 40 bits / 5 bytes</p>
+      <h2>Layer 3 Field Map</h2>
+      <p>The 40-bit record carries the monetary or physical value plus full double-entry accounting classification. Bits 29–30 are mirrored in bits 37–38 as a cross-layer error detection mechanism. A mismatch is a protocol error — the record is rejected before any posting occurs.</p>
+
+      <div class="field-legend">
+        <div class="fl-item"><span class="fl-swatch" style="background:var(--bit-data)"></span> Value block (Set A, bits 1–25)</div>
+        <div class="fl-item"><span class="fl-swatch" style="background:var(--bit-flag)"></span> Flag bits (bits 26–32)</div>
+        <div class="fl-item"><span class="fl-swatch" style="background:var(--bit-account)"></span> Accounting block (bits 33–40)</div>
+      </div>
+
+      <table class="data-table">
+        <thead>
+          <tr><th>Bits</th><th>Field</th><th>Description</th></tr>
+        </thead>
+        <tbody>
+          <tr class="band-data"><td>1–17</td><td>Multiplicand (A)</td><td>Upper 17 bits of value block at default Optimal Split = 8. When bit 32 = 1 (Quantity Present): price per unit. When bit 32 = 0: upper component of flat 25-bit integer A in formula N = A × 2^S + r.</td></tr>
+          <tr class="band-data"><td>18–25</td><td>Multiplier (r)</td><td>Lower 8 bits of value block at default Optimal Split = 8. When bit 32 = 1: unit quantity. When bit 32 = 0: lower remainder r in formula N = A × 2^S + r. Max N = 33,554,431.</td></tr>
+          <tr class="band-flag"><td>26</td><td>Rounding Flag</td><td>0 = Value is exact. Bit 27 must be 0. 1 = Value is rounded — the stored integer approximates the true value. Encoder must set this flag whenever rounding occurs.</td></tr>
+          <tr class="band-flag"><td>27</td><td>Rounding Direction</td><td>Meaningful only when bit 26 = 1. 0 = Rounded down (floor) — true value ≥ decoded value. 1 = Rounded up (ceiling) — true value ≤ decoded value. State 01 (bit 26=0, bit 27=1) is INVALID — malformed record.</td></tr>
+          <tr class="band-flag"><td>28</td><td>Split Order</td><td>0 = Follow session default split order (Layer 1 bit 9). 1 = Reverse session default for this record only. No separate Setup Signal required.</td></tr>
+          <tr class="band-flag"><td>29</td><td>Direction (Plus/Minus)</td><td>0 = In — value being received. 1 = Out — value being disbursed. <strong>Must equal bit 37 (Cross-layer validation rule 1).</strong></td></tr>
+          <tr class="band-flag"><td>30</td><td>Status (Past/Future)</td><td>0 = Settled — cash basis. 1 = Accrued / anticipated — accrual basis. <strong>Must equal bit 38 (Cross-layer validation rule 2).</strong></td></tr>
+          <tr class="band-flag"><td>31</td><td>Debit / Credit</td><td>0 = Credit side. 1 = Debit side. Used with account pair to resolve which account takes the debit and which takes the credit.</td></tr>
+          <tr class="band-flag"><td>32</td><td>Quantity Present</td><td>0 = All 25 bits are a flat total value. Quantity implicitly 1. 1 = Optimal Split active. Upper bits = price per unit, lower bits = quantity. When bit 32 = 1, Optimal Split is always taken from Layer 2.</td></tr>
+          <tr class="band-account"><td>33–36</td><td>Account Pair / Flow Archetype</td><td>4 bits. Financial mode: account pair code (14 valid pairs, 1110 = correction, 1111 = compound continuation). Engineering mode: universal flow archetype (16 codes). See <a href="#account-pairs">Account Pairs</a> and <a href="#flow-archetypes">Flow Archetypes</a>.</td></tr>
+          <tr class="band-account"><td>37</td><td>Direction</td><td>0 = In, receiving side primary. 1 = Out, disbursing side primary. <strong>Must equal bit 29.</strong> Cross-layer validation rule 1.</td></tr>
+          <tr class="band-account"><td>38</td><td>Status</td><td>0 = Paid, settled, cash basis. 1 = Debt, accrued, not yet settled. Both sides share the same status. <strong>Must equal bit 30.</strong> Cross-layer validation rule 2.</td></tr>
+          <tr class="band-account"><td>39</td><td>Completeness</td><td>0 = Full settlement, transaction complete. 1 = Partial — more follows. In a 1111 continuation record: 1 = more continuations follow, 0 = this is the final record in the compound group.</td></tr>
+          <tr class="band-account"><td>40</td><td>Extension Flag</td><td>0 = Record complete. 1 = Extension byte follows. Used for quantity, subcategory, currency override, timestamp, opposing account, or precision anchor. Extension bytes are chainable via bit 8 of each.</td></tr>
+        </tbody>
+      </table>
+
+      <div class="notice">
+        <p><strong>Cross-layer validation:</strong> bit 29 = bit 37 (Direction); bit 30 = bit 38 (Status); bit 26 = 0 implies bit 27 = 0 (Rounding). Any violation is a protocol error — record rejected, NACK sent. These three rules are independent error detection layers requiring zero additional bits.</p>
+      </div>
+    </section>
+
+    <!-- ── ACCOUNT PAIRS ── -->
+    <section id="account-pairs" class="ref-sec">
+      <p class="eyebrow">Layer 3 Bits 33–36 — Financial Domain</p>
+      <h2>Account Pairs</h2>
+      <p>In Financial domain (Layer 1 bits 3–4 = <code>00</code>), the 4-bit pair field encodes both account categories involved in a double-entry transaction. 14 valid accounting pairs, 1 correction code, and the compound continuation marker.</p>
+
+      <table class="data-table">
+        <thead>
+          <tr><th>Code</th><th>Account Pair</th><th>Direction In (0) — Primary</th><th>Direction Out (1) — Primary</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><span class="pill">0000</span></td><td>Op Expense / Asset</td><td>Expense receives goods or service</td><td>Expense reversal, return to supplier</td></tr>
+          <tr><td><span class="pill">0001</span></td><td>Op Expense / Liability</td><td>Expense incurred on credit</td><td>Liability reduces, expense reversed</td></tr>
+          <tr><td><span class="pill">0010</span></td><td>Non-Op Expense / Asset</td><td>Non-core expense from asset</td><td>Non-core expense reversal</td></tr>
+          <tr><td><span class="pill">0011</span></td><td>Non-Op Expense / Liability</td><td>Non-core expense on credit</td><td>Non-core liability reduces</td></tr>
+          <tr><td><span class="pill">0100</span></td><td>Op Income / Asset</td><td>Revenue received as asset</td><td>Revenue reversed, asset returned</td></tr>
+          <tr><td><span class="pill">0101</span></td><td>Op Income / Liability</td><td>Revenue earned, not yet received</td><td>Earned revenue reversed</td></tr>
+          <tr><td><span class="pill">0110</span></td><td>Non-Op Income / Asset</td><td>One-time income received</td><td>One-time income reversed</td></tr>
+          <tr><td><span class="pill">0111</span></td><td>Non-Op Income / Liability</td><td>One-time income earned on credit</td><td>Credit income reversed</td></tr>
+          <tr><td><span class="pill">1000</span></td><td>Asset / Liability</td><td>Asset acquired on credit</td><td>Liability repaid from asset</td></tr>
+          <tr><td><span class="pill">1001</span></td><td>Asset / Equity</td><td>Owner contributes asset</td><td>Asset distributed to owner</td></tr>
+          <tr><td><span class="pill">1010</span></td><td>Liability / Equity</td><td>Equity converts to liability</td><td>Liability converts to equity</td></tr>
+          <tr><td><span class="pill">1011</span></td><td>Asset / Asset</td><td>Asset received — internal transfer</td><td>Asset disbursed — internal transfer</td></tr>
+          <tr><td><span class="pill">1100</span></td><td>Liability / Liability</td><td>Liability assumed from third party</td><td>Liability transferred to third party</td></tr>
+          <tr><td><span class="pill">1101</span></td><td>Equity / Equity</td><td>Equity reallocated in</td><td>Equity reallocated out</td></tr>
+          <tr style="background:oklch(0.97 0.004 30)"><td><span class="pill">1110</span></td><td>Correction / Netting</td><td colspan="2">Inference suspended. Used for void or correction entries. Direction and status flags carry no directional accounting meaning.</td></tr>
+          <tr style="background:oklch(0.97 0.004 30)"><td><span class="pill">1111</span></td><td>Compound Continuation</td><td colspan="2">Links this record to the immediately preceding compound group. All other bits function normally. Preceding record must have Completeness = 1.</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- ── FLOW ARCHETYPES ── -->
+    <section id="flow-archetypes" class="ref-sec">
+      <p class="eyebrow">Layer 3 Bits 33–36 — Engineering / Universal Domain</p>
+      <h2>Universal Flow Archetypes</h2>
+      <p>In Engineering domain (Layer 1 bits 3–4 = <code>01</code>) and Hybrid domain (<code>10</code>), the same 4-bit pair field encodes the flow relationship archetype between any two nodes. 16 codes cover every canonical directional flow in any conserved-scalar system — financial, physical, or relational.</p>
+
+      <table class="data-table">
+        <thead>
+          <tr><th>Code</th><th>Archetype</th><th>Canonical Meaning</th><th>Engineering Example</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><span class="pill">0000</span></td><td>Source to Sink</td><td>Direct one-way transfer of a conserved quantity between two nodes</td><td>Fuel tank to thruster. Battery to payload. Buffer to output queue.</td></tr>
+          <tr><td><span class="pill">0001</span></td><td>Parent to Child</td><td>Hierarchical allocation from superior to subordinate node</td><td>Mission control allocating power budget to rover subsystem.</td></tr>
+          <tr><td><span class="pill">0010</span></td><td>Debtor to Creditor</td><td>Obligation incurred — quantity owed, not yet transferred</td><td>Satellite A owes 5 kWh to Satellite B. Component delivery pending.</td></tr>
+          <tr><td><span class="pill">0011</span></td><td>Mutual Exchange</td><td>Balanced bilateral trade between peer nodes</td><td>Energy swap between two satellites. Bandwidth-for-compute barter.</td></tr>
+          <tr><td><span class="pill">0100</span></td><td>Loss / Dissipation</td><td>Quantity leaves the tracked system entirely</td><td>Heat loss to space. Signal attenuation. Evaporation. Entropy.</td></tr>
+          <tr><td><span class="pill">0101</span></td><td>Generation / Input</td><td>Quantity enters the tracked system from outside</td><td>Solar panel generating power. Resupply docking. Sensor data ingress.</td></tr>
+          <tr><td><span class="pill">0110</span></td><td>Reservation / Escrow</td><td>Quantity committed but not yet moved — locked for future use</td><td>Power reserved for emergency burn. Bandwidth allocation pending.</td></tr>
+          <tr><td><span class="pill">0111</span></td><td>Repayment / Return</td><td>Fulfilling or reversing a prior obligation or reservation</td><td>Returning borrowed power. Restoring reserved bandwidth. Refund.</td></tr>
+          <tr><td><span class="pill">1000</span></td><td>Transformation</td><td>Quantity changes form within the same node</td><td>Chemical to kinetic energy (combustion). Raw to processed data.</td></tr>
+          <tr><td><span class="pill">1001</span></td><td>Distribution</td><td>One source node flows to multiple sink nodes</td><td>Power bus distributing to multiple subsystems. Packet multicast.</td></tr>
+          <tr><td><span class="pill">1010</span></td><td>Aggregation</td><td>Multiple source nodes flow to one sink node</td><td>Multiple sensors feeding one processor. Tributaries to main store.</td></tr>
+          <tr><td><span class="pill">1011</span></td><td>Internal Transfer</td><td>Movement within the same entity between sub-nodes</td><td>Tank A to Tank B within spacecraft. Cache to register file.</td></tr>
+          <tr><td><span class="pill">1100</span></td><td>Obligation Transfer</td><td>Debt or liability reassigned between creditor nodes</td><td>Re-routing a power debt to another satellite. Subcontracting.</td></tr>
+          <tr><td><span class="pill">1101</span></td><td>State Commit</td><td>Snapshot of current balance — no flow, a logged state</td><td>End-of-phase resource inventory. Checkpoint. Calibration baseline.</td></tr>
+          <tr style="background:oklch(0.97 0.004 30)"><td><span class="pill">1110</span></td><td>Correction / Void</td><td>Inference suspended. Correcting a prior record.</td><td>Telemetry correction. Sensor recalibration. Record amendment.</td></tr>
+          <tr style="background:oklch(0.97 0.004 30)"><td><span class="pill">1111</span></td><td>Compound Continuation</td><td>This record continues a preceding compound group.</td><td>Multi-stage burn. Simultaneous resource flows in one event.</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- ── SIGNAL SLOTS ── -->
+    <section id="signal-slots" class="ref-sec">
+      <p class="eyebrow">Enhancement Sub-Protocol — C0 Grammar</p>
+      <h2>Signal Slots P1–P13</h2>
+      <p>Signal slots are declared positions within the BitPads transmission structure where enhanced C0 bytes appear. The decoder knows slot positions from the Signal Slot Presence byte and the active category — no byte-level type field is needed. Position IS the declaration.</p>
+
+      <p>Each enhanced C0 byte carries a 3-bit flag matrix in its upper bits: <strong>Bit 1 = Priority (A)</strong>, <strong>Bit 2 = Acknowledge Request (B)</strong>, <strong>Bit 3 = Continuation (C)</strong>. Lower 5 bits carry the C0 code identity (values 0–31).</p>
+
+      <table class="data-table">
+        <thead>
+          <tr><th>Slot</th><th>Layer Context</th><th>Position in Transmission</th><th>What It Marks</th><th>Declared By</th></tr>
+        </thead>
+        <tbody>
+          <tr style="border-left:3px solid var(--layer-1)"><td><strong>P1</strong></td><td>Session</td><td>After SOH bit, before Layer 1 remainder</td><td>Session character declaration. Sub-session open when combined with Continuation flag.</td><td>Session Enhancement Flag (Layer 1 bit 12 = 1)</td></tr>
+          <tr style="border-left:3px solid var(--layer-1)"><td><strong>P2</strong></td><td>Session</td><td>After Layer 1 complete, before Layer 2</td><td>Pre-batch boundary. Priority batch announce, parameter update preceding batch.</td><td>Session Enhancement Flag</td></tr>
+          <tr style="border-left:3px solid var(--layer-1)"><td><strong>P3</strong></td><td>Session</td><td>After last record, before session close</td><td>Clean session close. Session suspend or confirmed termination.</td><td>Session Enhancement Flag</td></tr>
+          <tr style="border-left:3px solid var(--layer-meta)"><td><strong>P4</strong></td><td>Record</td><td>Before Value block</td><td>Pre-value signal. Alert that value is significant. Parameter update before value read.</td><td>Signal Slot Presence byte bit 1</td></tr>
+          <tr style="border-left:3px solid var(--layer-meta)"><td><strong>P5</strong></td><td>Record</td><td>After Value block, before Time field</td><td>Post-value unit separator. Value receipt confirmation. Boundary between value and time.</td><td>Signal Slot Presence byte bit 2</td></tr>
+          <tr style="border-left:3px solid var(--layer-meta)"><td><strong>P6</strong></td><td>Record</td><td>After Time field, before Task block</td><td>Time noted boundary. Sync point between time and action. Mode shift for task context.</td><td>Signal Slot Presence byte bit 3</td></tr>
+          <tr style="border-left:3px solid var(--layer-meta)"><td><strong>P7</strong></td><td>Record</td><td>After Task block, before Note block</td><td>Pre-note signal. Note content begins. Mode shift for note encoding (SO/SI codebook shifts).</td><td>Signal Slot Presence byte bit 4</td></tr>
+          <tr style="border-left:3px solid var(--layer-meta)"><td><strong>P8</strong></td><td>Record</td><td>After final component (Post-Record)</td><td>Record close signal. ETX+ACK = most important form — urgent record requiring confirmation.</td><td>Signal Slot Presence byte bit 5</td></tr>
+          <tr style="border-left:3px solid var(--layer-2)"><td><strong>P9</strong></td><td>Stream</td><td>After Meta byte 1, before stream content</td><td>Stream open. Sub-stream within stream. Urgent stream open with priority flag.</td><td>Stream category (always present for 1110, 1100)</td></tr>
+          <tr style="border-left:3px solid var(--layer-2)"><td><strong>P10</strong></td><td>Stream</td><td>Before each stream unit (when declared)</td><td>Per-unit heartbeat. Record boundary between units. Cancel previous unit.</td><td>Bit in Stream-Open Control byte</td></tr>
+          <tr style="border-left:3px solid var(--layer-2)"><td><strong>P11</strong></td><td>Stream</td><td>After last stream byte</td><td>Stream close. Confirmed stream complete. Block ends with more blocks following.</td><td>Length-based (after Nth byte) or terminator (EOT byte)</td></tr>
+          <tr style="border-left:3px solid var(--layer-3)"><td><strong>P12</strong></td><td>Wave</td><td>After Meta byte 1, before Wave content</td><td>Wave content begins. Pre-announce. Urgent content with priority flag.</td><td>Meta byte 1 bit 7 = 1 (Extended Flags) + descriptor extension byte</td></tr>
+          <tr style="border-left:3px solid var(--layer-3)"><td><strong>P13</strong></td><td>Wave</td><td>After Wave content</td><td>Wave content complete. ETX+ACK = confirmed Wave delivery. More Waves following.</td><td>Meta byte 1 bit 7 = 1 + descriptor extension byte</td></tr>
+        </tbody>
+      </table>
+
+      <div class="notice">
+        <p><strong>Continuation chaining:</strong> When Flag C (bit 3) = 1, the decoder reads further enhanced C0 bytes at the same slot position until it reads a byte with C = 0. The sequence does not push the parser stack — it is repetition at one position, not structural nesting. Maximum sequence length per slot is policy-configured (default 8).</p>
+      </div>
+    </section>
+
+    <!-- ── VALUE TIERS ── -->
+    <section id="value-tiers" class="ref-sec">
+      <p class="eyebrow">Value Encoding</p>
+      <h2>Value Tiers</h2>
+      <p>The Value block encodes any conserved scalar quantity as a whole integer using formula <code>N = A × 2^S + r</code>. Four tiers control the bit width. Tier 3 is the default — no Setup byte required. Tiers 1, 2, and 4 require explicit tier declaration via the Setup byte (Meta byte 2 bit 7 = 1).</p>
+
+      <table class="data-table">
+        <thead>
+          <tr><th>Tier</th><th>Bits (A + r)</th><th>Max Integer N</th><th>Max Value at SF ×1, D=2</th><th>Max Value at SF ×1B, D=2</th><th>Setup Byte?</th><th>When to Use</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>T1</td><td>8 total</td><td>255</td><td>$2.55</td><td>$2,550,000,000</td><td>YES (code 00)</td><td>Status codes, counts, deep-space IoT — every byte counts</td></tr>
+          <tr><td>T2</td><td>16 total</td><td>65,535</td><td>$655.35</td><td>$655,350,000,000</td><td>YES (code 01)</td><td>Small measurements, local sensor values, simple records</td></tr>
+          <tr class="tier-default"><td><strong>T3 (DEFAULT)</strong></td><td>24 total (17+8 at S=8)</td><td>16,777,215</td><td>$167,772.15</td><td>$167,772,150,000,000</td><td>No (omit byte)</td><td>General purpose. Assumed when no Setup byte present.</td></tr>
+          <tr><td>T4</td><td>32 total</td><td>4,294,967,295</td><td>$42,949,672.95</td><td>~$43 trillion</td><td>YES (code 11)</td><td>Extended range, large assets, high-volume physical quantities</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Setup Byte Fields (when Meta byte 2 bit 7 = 1)</h3>
+      <table class="data-table">
+        <thead>
+          <tr><th>Bits</th><th>Field</th><th>Values</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>1–2</td><td>Value Tier</td><td>00 = Tier 1 (8-bit) · 01 = Tier 2 (16-bit) · 10 = Tier 3 (24-bit, explicit) · 11 = Tier 4 (32-bit)</td></tr>
+          <tr><td>3–4</td><td>Scaling Factor</td><td>00 = ×1 · 01 = ×1,000 · 10 = ×1,000,000 · 11 = ×1,000,000,000</td></tr>
+          <tr><td>5–6</td><td>Decimal Position</td><td>00 = 0 places · 01 = 2 places (standard) · 10 = 4 places · 11 = declared in extension byte</td></tr>
+          <tr><td>7</td><td>Context Source</td><td>0 = Override Layer 2 for this record · 1 = Standalone (no Layer 2 active)</td></tr>
+          <tr><td>8</td><td>Rounding Convention</td><td>0 = Account-type rounding (liability up, asset down) · 1 = Round to nearest (physical quantities)</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- ── SCALING MATRIX ── -->
+    <section id="scaling-matrix" class="ref-sec">
+      <p class="eyebrow">Layer 2 — SF × DP Grid</p>
+      <h2>Scaling Matrix</h2>
+      <p>Maximum expressible value at each Scaling Factor (SF) and Decimal Position (DP) combination. Formula: <code>Max = 33,554,431 × SF / 10^DP</code>. Precision Step = <code>SF / 10^DP</code>. All values are exact integer multiples of the precision step — no gaps within a band. Diagonal symmetry: increasing SF by one power of 10 while increasing DP by 1 produces identical range and precision.</p>
+
+      <div class="matrix-wrap">
+        <table class="matrix-table">
+          <thead>
+            <tr>
+              <th>SF Index</th>
+              <th>Scaling Factor</th>
+              <th>D=0 (integer)</th>
+              <th>D=1</th>
+              <th>D=2 (std)</th>
+              <th>D=3</th>
+              <th>D=4 (pip)</th>
+              <th>D=5</th>
+              <th>D=6 (crypto)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>0</td><td>×1</td><td>33,554,431</td><td>3,355,443.1</td><td class="hi">335,544.31</td><td>33,554.431</td><td>3,355.4431</td><td>335.54431</td><td>33.554431</td></tr>
+            <tr><td>1</td><td>×10</td><td>335,544,310</td><td>33,554,431</td><td class="hi">3,355,443.10</td><td>335,544.31</td><td>33,554.431</td><td>3,355.4431</td><td>335.54431</td></tr>
+            <tr><td>2</td><td>×100</td><td>3,355,443,100</td><td>335,544,310</td><td class="hi">33,554,431</td><td>3,355,443.1</td><td>335,544.31</td><td>33,554.431</td><td>3,355.4431</td></tr>
+            <tr><td>3</td><td>×1,000</td><td>33,554,431,000</td><td>3,355,443,100</td><td class="hi">335,544,310</td><td>33,554,431</td><td>3,355,443.1</td><td>335,544.31</td><td>33,554.431</td></tr>
+            <tr><td>4</td><td>×10,000</td><td>335,544,310,000</td><td>33,554,431,000</td><td class="hi">3,355,443,100</td><td>335,544,310</td><td>33,554,431</td><td>3,355,443.1</td><td>335,544.31</td></tr>
+            <tr><td>5</td><td>×100,000</td><td>3.355 trillion</td><td>335,544,310,000</td><td class="hi">33,554,431,000</td><td>3,355,443,100</td><td>335,544,310</td><td>33,554,431</td><td>3,355,443.1</td></tr>
+            <tr><td>6</td><td>×1,000,000</td><td>33.554 trillion</td><td>3.355 trillion</td><td class="hi">335,544,310,000</td><td>33,554,431,000</td><td>3,355,443,100</td><td>335,544,310</td><td>33,554,431</td></tr>
+            <tr><td>7</td><td>×10,000,000</td><td>335.5 trillion</td><td>33.554 trillion</td><td class="hi">3.355 trillion</td><td>335,544,310,000</td><td>33,554,431,000</td><td>3,355,443,100</td><td>335,544,310</td></tr>
+            <tr><td>8</td><td>×100,000,000</td><td>3,355 trillion</td><td>335.5 trillion</td><td class="hi">33.554 trillion</td><td>3.355 trillion</td><td>335,544,310,000</td><td>33,554,431,000</td><td>3,355,443,100</td></tr>
+            <tr><td>9</td><td>×1,000,000,000</td><td>33,554 trillion</td><td>3,355 trillion</td><td class="hi">335.5 trillion</td><td>33.554 trillion</td><td>3.355 trillion</td><td>335,544,310,000</td><td>33,554,431,000</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="small soft" style="margin-top:8px;">Highlighted column (D=2) is the standard banking / retail precision band. The D=2 diagonal holds the most common financial configurations. SF ×1 D=2 = standard retail. SF ×100 D=2 = large corporate. SF ×1,000,000,000 D=2 = reserve banking (step $10,000,000).</p>
+
+      <h3>Canonical Encoder Selection Rule</h3>
+      <div class="formula">
+        <span class="f-name">Step 1:</span> Choose the <span class="f-var">lowest SF</span> that keeps stored integer N ≤ 33,554,431<br>
+        <span class="f-name">Step 2:</span> Set <span class="f-var">D</span> to match the required precision of the input value<br>
+        <span class="f-name">Step 3:</span> If multiple SF/D combinations produce identical results, use the one with the lowest SF index<br>
+        <span class="f-note">Equivalent example: SF ×1 D=2 ≡ SF ×10 D=3 ≡ SF ×100 D=4 (same range and step). Use SF ×1 D=2.</span>
+      </div>
+    </section>
+
+    <!-- ── CRC-15 REFERENCE ── -->
+    <section id="crc-reference" class="ref-sec">
+      <p class="eyebrow">Session Integrity</p>
+      <h2>CRC-15 Reference Card</h2>
+      <p>The CRC-15 checksum validates the 49-bit session payload (Layer 1 bits 1–49) before any records are processed. A corrupt session header would cause every subsequent record to be decoded against wrong identity, permissions, or defaults.</p>
+
+      <div class="crc-card">
+        <div class="crc-h">CRC-15 Reference — BitLedger Protocol v3.0 § 2.3</div>
+        <div><span class="crc-key">Generator polynomial    </span><span class="crc-val">x¹⁵ + x + 1</span></div>
+        <div><span class="crc-key">Hex representation      </span><span class="crc-val">0x8003  (with MSB position implied as bit 15)</span></div>
+        <div><span class="crc-key">Common shorthand        </span><span class="crc-val">0x4001  (right-shifted, MSB omitted convention)</span></div>
+        <div><span class="crc-key">Binary                  </span><span class="crc-val">1000 0000 0000 0011</span></div>
+        <div class="crc-sep">────────────────────────────────────────────────</div>
+        <div><span class="crc-key">Scope                   </span><span class="crc-val">Layer 1 bits 1–49 (49-bit session payload)</span></div>
+        <div><span class="crc-key">Checksum size           </span><span class="crc-val">15 bits, appended as Layer 1 bits 50–64</span></div>
+        <div><span class="crc-key">Total Layer 1 block     </span><span class="crc-val">64 bits / 8 bytes</span></div>
+        <div class="crc-sep">────────────────────────────────────────────────</div>
+        <div><span class="crc-key">Encoder step            </span><span class="crc-val">Append 15 zero bits to 49-bit payload → XOR shift loop → 15-bit remainder R → transmit bits 1–49 + R</span></div>
+        <div><span class="crc-key">Decoder step            </span><span class="crc-val">Run CRC-15 over all 64 received bits. Result = 0x0000 → valid. Non-zero → NACK, reject, request retransmit.</span></div>
+        <div class="crc-sep">────────────────────────────────────────────────</div>
+        <div><span class="crc-key">Single-bit errors       </span><span class="crc-ok">100% detection — all single-bit flips without exception</span></div>
+        <div><span class="crc-key">Double-bit errors       </span><span class="crc-ok">100% detection — all two-bit error combinations</span></div>
+        <div><span class="crc-key">Odd-count errors        </span><span class="crc-ok">100% detection — any odd number of flipped bits</span></div>
+        <div><span class="crc-key">Burst errors ≤15 bits   </span><span class="crc-ok">100% detection — any contiguous error sequence of 15 bits or fewer</span></div>
+        <div><span class="crc-key">Burst errors &gt;15 bits </span><span class="crc-val">99.997% detection — probability of undetected error is 2⁻¹⁵</span></div>
+        <div class="crc-sep">────────────────────────────────────────────────</div>
+        <div><span class="crc-key">Implementation cost     </span><span class="crc-val">~150–200 XOR shift cycles for 49-bit payload at 1 MHz = 0.2 ms. Hardware CRC: single instruction cycle.</span></div>
+        <div><span class="crc-key">Applies also to         </span><span class="crc-val">Cross-layer validation (bits 29=37, 30=38) and invalid rounding state (bit 26=0, bit 27=1) provide additional per-record error layers at zero bit cost.</span></div>
+      </div>
+    </section>
+
+    <!-- ── GLOSSARY ── -->
+    <section id="glossary" class="ref-sec">
+      <p class="eyebrow">All Protocol Documents</p>
+      <h2>Glossary</h2>
+      <p>Alphabetical definitions drawn from BitPads Protocol v2.0, BitLedger Protocol v3.0, Universal Domain v1.0, and Enhancement Sub-Protocol v2.0. Cross-references are noted where a term has a precise counterpart in another document or domain.</p>
+
+      <!-- A -->
+      <div class="glossary-section">
+        <h3>A</h3>
+        <dl class="glossary">
+          <dt>Account Pair</dt>
+          <dd>4-bit code in Layer 3 bits 33–36 encoding both account categories in a double-entry transaction. 14 valid pairs (0000–1101), one correction code (1110), and the compound continuation marker (1111). In Engineering domain the same field carries the Flow Archetype. Source: BitLedger v3.0 § 6.1.</dd>
+
+          <dt>ACK (Acknowledge)</dt>
+          <dd>C0 control code 6 (0x06). Confirmation signal and receipt confirmation. In Wave mode, bit 2 of Meta byte 1 = 1 constitutes an ACK request (the universal pulse). Enhanced form: ACK-flag + C0 code ACK = <code>0x46</code>. Also: control record type 011 (payload bit 5 = 0). Source: BitPads v2.0 § 2.2; BitLedger v3.0 § 8.</dd>
+
+          <dt>Aggregation (archetype)</dt>
+          <dd>Universal flow archetype code <code>1010</code>. Multiple source nodes flowing into one sink node. Engineering examples: multiple sensors feeding one processor, tributaries flowing to a main store. Source: Universal Domain v1.0 § 3.1.</dd>
+
+          <dt>Anonymous Value Wave</dt>
+          <dd>A Wave transmission in an established session that carries a value without Layer 1 session identity overhead. Minimum 4 bytes: Meta byte 1 (category 0000) + 3-byte Tier 3 value block. Layer 1 is not required because identity was established at session open. Source: BitPads v2.0 § 11.1.</dd>
+        </dl>
+      </div>
+
+      <!-- B -->
+      <div class="glossary-section">
+        <h3>B</h3>
+        <dl class="glossary">
+          <dt>Batch</dt>
+          <dd>A group of Layer 3 transaction records prefixed by a Layer 2 Set B batch header (or a short-form control byte when all values match session defaults). All records in a batch inherit the denomination, precision, currency, and entity context declared in the batch header. Source: BitLedger v3.0 § 3.</dd>
+
+          <dt>Binary Pictography</dt>
+          <dd>Encoding of rich semantic content in compact nibble streams (4 bits per symbol) decoded through a shared 16-entry codebook declared at session open. Note encoding type 10. The Sumerian principle — minimal mark, rich shared meaning — applied to binary data transmission. Mid-stream codebook shifts use SO/SI signals in the P7 slot. Source: BitPads v2.0 § 8.2.1.</dd>
+
+          <dt>BitLedger</dt>
+          <dd>The core binary financial transmission protocol of the BitPads family. Encodes a complete double-entry accounting transaction in 40 bits. Three layers: Layer 1 (64-bit session), Layer 2 (48-bit batch header), Layer 3 (40-bit record). CRC-15 session integrity. Current version: v3.0. Source: BitLedger Protocol v3.0.</dd>
+
+          <dt>BitLedger Block</dt>
+          <dd>Bits 33–40 of every Layer 3 record. The complete double-entry accounting classification: account pair / flow archetype (4 bits), direction, status, completeness, extension flag. When Session Config Extension byte bit 5 = 1, this block is optional per record. Source: BitLedger v3.0 § 6.</dd>
+
+          <dt>BitPads</dt>
+          <dd>The outermost layer of the protocol family. Defines the Meta byte architecture that wraps all transmissions — Pure Signal through full BitLedger records. Wave and Record modes. 16 Wave categories. The Enhancement Sub-Protocol attaches as a module. Current version: v2.0. Source: BitPads Protocol v2.0.</dd>
+
+          <dt>Burst Error</dt>
+          <dd>A contiguous sequence of corrupted bits in a transmission. CRC-15 detects all burst errors of 15 bits or fewer with 100% probability. Burst errors exceeding 15 bits are detected with probability (1 − 2⁻¹⁵) ≈ 99.997%. Source: BitLedger v3.0 § 2.3.</dd>
+        </dl>
+      </div>
+
+      <!-- C -->
+      <div class="glossary-section">
+        <h3>C</h3>
+        <dl class="glossary">
+          <dt>C0 Controls</dt>
+          <dd>The 32 Unicode control characters U+0000–U+001F. Their lower 5 bits form the C0 code space. BitPads reclaims the 3 upper bits of each 8-bit byte at signal slot positions as a flag matrix (Priority, ACK Request, Continuation). 29 controls are unconditional; 4 (LF, HT, VT, FF) require non-text channel declaration. Source: Enhancement Sub-Protocol v2.0 § 4.</dd>
+
+          <dt>C0 Enhancement Grammar</dt>
+          <dd>The mechanism by which C0 controls carry 3-bit flag matrices at declared signal slot positions. The five-plus-three split: bits 1–3 = flags (Priority, ACK Request, Continuation), bits 4–8 = C0 code identity. The hardware knows the position is a signal slot and applies the split unconditionally. Source: Enhancement Sub-Protocol v2.0 § 5.</dd>
+
+          <dt>C0 Enhancement Module</dt>
+          <dd>The optional microservice module providing industrial-strength signalling via C0 Enhancement Grammar and signal slot architecture. Activatable at session, batch, category, record, or inline scope. Present only when needed; costs nothing when absent. Source: Enhancement Sub-Protocol v2.0 § 1.</dd>
+
+          <dt>Category</dt>
+          <dd>The 4-bit code in Meta byte 1 bits 5–8 (Role B) when bit 1 = 0 (Wave mode) and bit 4 = 1 (Category mode). 16 codes (0000–1111) determine content structure and Layer 1 requirement. Categories 1100, 1101, and 1110 are new in v2.0. Source: BitPads v2.0 § 2.3.</dd>
+
+          <dt>Compact Command (category 1100)</dt>
+          <dd>Wave category <code>1100</code>. Formally assigned in v2.0. Command byte sequence with Enhancement Grammar active. Upper 3 bits of each byte = command class, lower 5 bits = command code. Discrete command queue. Does not require Layer 1 in an established session. Source: BitPads v2.0 § 2.3; Enhancement Sub-Protocol v2.0 § 11.</dd>
+
+          <dt>Completeness bit</dt>
+          <dd>Layer 3 bit 39. 0 = Full settlement, transaction complete. 1 = Partial — more records follow. In a 1111 continuation record: 1 = more continuations follow, 0 = this is the final record in the compound group. The transition from 1 to 0 is the compound close signal. Source: BitLedger v3.0 § 6.</dd>
+
+          <dt>Compound Mode</dt>
+          <dd>Session mode where multiple Layer 3 records are linked into one logical accounting event via the 1111 continuation marker. Activated by Layer 1 bit 11 = 1 (in v3.0) or Session Config Extension byte bit 4 = 1 (in v2.0). The batch Compound Prefix (Layer 2 bits 46–47) further scopes compound mode per batch. Source: BitLedger v3.0 § 7.</dd>
+
+          <dt>Conservation Invariant</dt>
+          <dd>The requirement that the sum of all signed flow values in a valid batch equals zero. The mathematical foundation shared by double-entry accounting (∑Debits = ∑Credits), Kirchhoff's Current Law (∑I_in = ∑I_out), and BitLedger batch validation. Enforced at the wire level before the application processes a single record. Source: Universal Domain v1.0 § 1.</dd>
+
+          <dt>Context Declaration (category 1101)</dt>
+          <dd>Wave category <code>1101</code>. Formally assigned in v2.0. Dynamic context management. Context Declaration Block 1–4 bytes. Can be used as a standalone Wave or as an in-band stream mechanism. Does not require Layer 1. Source: BitPads v2.0 § 2.3; Enhancement Sub-Protocol v2.0 § 12.</dd>
+
+          <dt>Continuation (flag C)</dt>
+          <dd>Flag C = bit 3 of an enhanced C0 byte. When set (C = 1), more enhanced C0 bytes follow at the same signal slot position. The decoder reads until C = 0. Creates variable-length signal sequences without opening a new nesting level or pushing the parser stack. Source: Enhancement Sub-Protocol v2.0 § 5.2.</dd>
+
+          <dt>Continuation marker</dt>
+          <dd>Meta byte 1 bit 3 = 1 indicates that this transmission is a fragment — more BitPads transmissions for the same logical unit follow. Universal across Wave and Record modes. Unrelated to the 1111 compound continuation used in Layer 3. Source: BitPads v2.0 § 2.1.</dd>
+
+          <dt>Control Record</dt>
+          <dd>8-bit record beginning with a leading 0 bit. Structure: <code>0 [TTT] [PPPP]</code>. Type TTT (3 bits) determines function; payload PPPP (4 bits) carries the value. Eight types: SF change (000), currency change (001), batch close (010), ACK/NACK (011), compound group open (100), optimal split update (101), Layer 2 short-form (110), reserved (111). Source: BitLedger v3.0 § 8.</dd>
+
+          <dt>CRC-15</dt>
+          <dd>Cyclic Redundancy Check using 15-bit generator polynomial x¹⁵ + x + 1. Applied over Layer 1 bits 1–49. Zero remainder = session accepted. Non-zero = NACK and session rejection. Detects 100% of single-bit, double-bit, odd-count, and ≤15-bit burst errors. See <a href="#crc-reference">CRC-15 Reference Card</a>. Source: BitLedger v3.0 § 2.3.</dd>
+        </dl>
+      </div>
+
+      <!-- D -->
+      <div class="glossary-section">
+        <h3>D</h3>
+        <dl class="glossary">
+          <dt>Decimal Position (DP)</dt>
+          <dd>3-bit Layer 2 field (bits 14–16) declaring the number of decimal places applied after the Scaling Factor. 000 = integer, 010 = 2 places (standard banking/retail), 100 = 4 places (forex pip), 110 = 6 places (cryptocurrency). Formula: Real Value = (N × SF) / 10^DP. Source: BitLedger v3.0 § 3.3.</dd>
+
+          <dt>Direction bit</dt>
+          <dd>Layer 3 bit 29. 0 = Plus / In — value is being received. 1 = Minus / Out — value is being disbursed. Must equal Layer 3 bit 37 (BitLedger block direction). Mismatch is a protocol error — cross-layer validation rule 1. Source: BitLedger v3.0 § 5.</dd>
+
+          <dt>Domain bits</dt>
+          <dd>Layer 1 bits 3–4. 00 = Financial (monetary double-entry, default). 01 = Engineering (physical flow, Universal Domain). 10 = Hybrid (both matrices active). 11 = Custom (domain declared in extension block following Layer 1). Source: Universal Domain v1.0 § 2.</dd>
+
+          <dt>Double-entry accounting</dt>
+          <dd>The principle that every transaction records a quantity leaving one account and arriving at another, such that the sum of all signed flows equals zero. Formalised by Luca Pacioli (1494), practised by Venetian merchants before that. BitLedger enforces this invariant at the encoding level — a record that violates it is a protocol error. Source: BitLedger v3.0 § 1.1.</dd>
+        </dl>
+      </div>
+
+      <!-- E -->
+      <div class="glossary-section">
+        <h3>E</h3>
+        <dl class="glossary">
+          <dt>Enhancement Flag</dt>
+          <dd>Layer 1 bit 12 in BitPads v2.0 (the Session Enhancement Flag). When 1, C0 Enhancement Grammar is active session-wide. All 13 signal slot positions P1–P13 are available. Triggers the Session Configuration Extension byte. Reassigned from Opposing Convention in v2.0. Source: BitPads v2.0 § 4.1.</dd>
+
+          <dt>Enhancement Grammar</dt>
+          <dd>See C0 Enhancement Grammar. The five-plus-three bit split applied at signal slot positions: upper 3 bits = flag matrix, lower 5 bits = C0 code identity. Source: Enhancement Sub-Protocol v2.0 § 5.1.</dd>
+        </dl>
+      </div>
+
+      <!-- F -->
+      <div class="glossary-section">
+        <h3>F</h3>
+        <dl class="glossary">
+          <dt>Flag bits</dt>
+          <dd>Layer 3 bits 26–32. Seven flag bits qualify the value block: Rounding Flag (26), Rounding Direction (27), Split Order (28), Direction (29), Status (30), Debit/Credit (31), Quantity Present (32). Bits 29 and 30 are mirrored in the BitLedger block for cross-layer validation. Source: BitLedger v3.0 § 5.</dd>
+
+          <dt>Flow Archetype</dt>
+          <dd>One of 16 canonical relationship types encoded in the 4-bit pair field when operating in Engineering or Hybrid domain. Defines the directional flow semantics between two nodes in any conserved-scalar system. Codes 0000–1111; 1110 = correction, 1111 = compound continuation. Source: Universal Domain v1.0 § 3.1.</dd>
+
+          <dt>Fragment bit</dt>
+          <dd>Meta byte 1 bit 3. When 1, this transmission is a fragment of a larger logical unit — more transmissions follow. When 0, the transmission is self-contained. Universal across Wave and Record modes. Source: BitPads v2.0 § 2.1.</dd>
+        </dl>
+      </div>
+
+      <!-- G -->
+      <div class="glossary-section">
+        <h3>G</h3>
+        <dl class="glossary">
+          <dt>Generation (archetype)</dt>
+          <dd>Universal flow archetype code <code>0101</code> (Generation / Input). A quantity enters the tracked system from outside — from an environment source. Engineering examples: solar panel generating power, resupply docking, sensor data ingress. Source: Universal Domain v1.0 § 3.1.</dd>
+        </dl>
+      </div>
+
+      <!-- H -->
+      <div class="glossary-section">
+        <h3>H</h3>
+        <dl class="glossary">
+          <dt>Heartbeat</dt>
+          <dd>A Pure Signal transmission used to confirm a sender's presence without transmitting data. The single byte <code>0x40</code> (Wave, ACK Request) is the universal heartbeat / pulse. The receiver responds with ACK control record <code>0x31</code>. Source: BitPads v2.0 § 2.5.</dd>
+
+          <dt>Hybrid domain</dt>
+          <dd>Session domain declared by Layer 1 bits 3–4 = <code>10</code>. Both financial account pair semantics and engineering flow archetype semantics are active simultaneously. A single batch can contain financial and physical records. The debit/credit flag (bit 31) and extension byte provide per-record disambiguation. Source: Universal Domain v1.0 § 12.3.</dd>
+        </dl>
+      </div>
+
+      <!-- I -->
+      <div class="glossary-section">
+        <h3>I</h3>
+        <dl class="glossary">
+          <dt>Industrial Strength Level</dt>
+          <dd>A scope classification for C0 Enhancement Grammar activation: Level 0 = no enhancement; Level 1 = session-wide flag only; Level 2 = session + pre-batch signals; Level 3 = record-layer slots; Level 4 = stream-layer slots; Level 5 = all 13 slots active. Overhead increases with level. Break-even analysis by level is in Enhancement Sub-Protocol § 15.3. Source: Enhancement Sub-Protocol v2.0 § 15.</dd>
+
+          <dt>Internal Transfer (archetype)</dt>
+          <dd>Universal flow archetype code <code>1011</code>. Movement of a conserved quantity within the same entity between sub-nodes. Engineering examples: Tank A to Tank B within a spacecraft, data moving from cache to register file. Source: Universal Domain v1.0 § 3.1.</dd>
+        </dl>
+      </div>
+
+      <!-- K -->
+      <div class="glossary-section">
+        <h3>K</h3>
+        <dl class="glossary">
+          <dt>Kirchhoff's Current Law</dt>
+          <dd>The circuit law stating that the sum of all currents entering a node equals the sum of all currents leaving: ∑(I_in) − ∑(I_out) = 0. Structurally identical to the BitLedger conservation invariant — both are statements of a conservation law applied to a flow network. The algebraic form is the same as double-entry accounting applied to current rather than money. Source: Universal Domain v1.0 § 1.</dd>
+        </dl>
+      </div>
+
+      <!-- L -->
+      <div class="glossary-section">
+        <h3>L</h3>
+        <dl class="glossary">
+          <dt>Layer 1</dt>
+          <dd>The 64-bit session initialisation block. Transmitted once at session open. Carries: SOH marker (1), wire format version (1), domain (2), permissions (4), session defaults (4), sender ID (32), sub-entity ID (5), CRC-15 (15). All subsequent records in the session inherit this context. Source: BitLedger v3.0 § 2.</dd>
+
+          <dt>Layer 2</dt>
+          <dd>The 48-bit Set B batch header. Transmitted once before each batch. Carries: transmission type, scaling factor, optimal split, decimal position, bells, separators, entity ID, currency/quantity type code, rounding balance, compound prefix, reserved. Can be replaced by a single control byte (type 110) when all values match session defaults. Source: BitLedger v3.0 § 3.</dd>
+
+          <dt>Layer 3</dt>
+          <dd>The 40-bit transaction record (Set A). Every double-entry accounting or physical flow event. Value block (bits 1–32) + BitLedger accounting block (bits 33–40). Three independent error detection layers: CRC-15 (session level), cross-layer validation (bits 29=37, 30=38), invalid rounding state. Source: BitLedger v3.0 § 4–6.</dd>
+        </dl>
+      </div>
+
+      <!-- M -->
+      <div class="glossary-section">
+        <h3>M</h3>
+        <dl class="glossary">
+          <dt>Meta byte 1</dt>
+          <dd>The first byte of every BitPads transmission, without exception. 8-bit universal table of contents: mode (bit 1), ACK/SysCtx (bit 2), continuation (bit 3), treatment switch (bit 4), content field bits 5–8 (Role A, B, or C depending on bits 1 and 4). Source: BitPads v2.0 § 2.</dd>
+
+          <dt>Meta byte 2</dt>
+          <dd>The second byte in every Record mode transmission, immediately after Meta byte 1. Carries: archetype / sub-type bits 1–4, time reference selector bits 5–6, setup byte present (bit 7), signal slot presence (bit 8 — updated in v2.0 from Reserved). Source: BitPads v2.0 § 3.</dd>
+
+          <dt>Mode bit</dt>
+          <dd>Meta byte 1 bit 1. 0 = Wave mode (lightweight, no Layer 1 required in established session). 1 = Record mode (full BitPad — Meta byte 2, Layer 1, and components follow). Source: BitPads v2.0 § 2.1.</dd>
+
+          <dt>Multiplicand</dt>
+          <dd>The upper bits of Layer 3 value block. When bit 32 = 0 (flat value): upper component A of the formula N = A × 2^S + r. When bit 32 = 1 (Quantity Present): price per unit. At default Optimal Split of 8: 17 bits wide. Source: BitLedger v3.0 § 4.1.</dd>
+
+          <dt>Multiplier</dt>
+          <dd>The lower bits of Layer 3 value block. When bit 32 = 0: lower remainder r in formula N = A × 2^S + r. When bit 32 = 1: unit quantity. At default Optimal Split of 8: 8 bits wide (values 0–255). Source: BitLedger v3.0 § 4.1.</dd>
+        </dl>
+      </div>
+
+      <!-- N -->
+      <div class="glossary-section">
+        <h3>N</h3>
+        <dl class="glossary">
+          <dt>NASM (Nesting Architecture State Machine)</dt>
+          <dd>The formal parser state machine governing nested sequence handling in the Enhancement Sub-Protocol. States: IDLE → Layer 1 Read → Session Active → Wave / Record substates. Stack push/pop at component escalation and sub-session boundaries. Source: Enhancement Sub-Protocol v2.0 § 2.7.</dd>
+
+          <dt>Nesting Level</dt>
+          <dd>The depth of parser stack pushes within a session. Declared in Session Config Extension byte bits 1–2: 00 = flat (no nesting), 01 = depth 2, 10 = depth 4, 11 = extended (Nesting Declaration Extension byte follows). Source: BitPads v2.0 § 4.3.</dd>
+        </dl>
+      </div>
+
+      <!-- O -->
+      <div class="glossary-section">
+        <h3>O</h3>
+        <dl class="glossary">
+          <dt>Opposing Convention</dt>
+          <dd>Session default controlling whether the opposing account in a double-entry pair is always transmitted explicitly (in an extension byte) or inferred from the account pair code and direction bit. Moved from Layer 1 bit 12 (v1.0) to Session Config Extension byte bit 3 (v2.0). Source: BitPads v2.0 § 4.3.</dd>
+
+          <dt>Optimal Split</dt>
+          <dd>4-bit Layer 2 field (bits 10–13). The number of bits allocated to the Multiplier (lower field) in Layer 3's 25-bit value block when bit 32 = 1. Default = 8, giving 17-bit Multiplicand and 8-bit Multiplier. When bit 32 = 1, Optimal Split is always taken from Layer 2. Source: BitLedger v3.0 § 4.2.</dd>
+        </dl>
+      </div>
+
+      <!-- P -->
+      <div class="glossary-section">
+        <h3>P</h3>
+        <dl class="glossary">
+          <dt>Parser stack</dt>
+          <dd>Fixed-size LIFO structure of ParserStateFrame objects required for nested sequence handling in the Enhancement Sub-Protocol. Maximum depth = min(hardware_max, policy_max, negotiated_max). Pushed at component escalation (field 101) or sub-session open. Popped when nested structure closes. Source: Enhancement Sub-Protocol v2.0 § 8.</dd>
+
+          <dt>Priority flag</dt>
+          <dd>Enhancement flag A, bit 1 of an enhanced C0 byte. When 1, the receiver processes the signal before lower-priority pending items. Applies only to the specific signal in which it appears. Can be combined with Acknowledge Request and Continuation flags. Source: Enhancement Sub-Protocol v2.0 § 5.2.</dd>
+
+          <dt>Pure Signal</dt>
+          <dd>A BitPads transmission consisting of Meta byte 1 alone — 8 bits, 1 byte. The entire message is in the meta byte. The universal heartbeat, pulse request, and status beacon. Most common form: <code>0x40</code> = Wave, ACK Request, complete, basic, no flags. Source: BitPads v2.0 § 2.5.</dd>
+        </dl>
+      </div>
+
+      <!-- Q -->
+      <div class="glossary-section">
+        <h3>Q</h3>
+        <dl class="glossary">
+          <dt>Quantity Type Code (QTC)</dt>
+          <dd>In Engineering domain (Layer 1 bits 3–4 = <code>01</code>), the 6-bit field at Layer 2 bits 36–41 is reinterpreted as a Quantity Type Code rather than a currency index. 64 codes seeded with physical unit categories: 1 = mass (grams), 2 = energy (watt-hours), 3 = data (KB), 4 = pressure (mbar), 5 = temperature delta, 6 = time duration (ms), 7 = charge (mAh), 8 = thrust (mN), 9 = bandwidth (kbps), 10 = signal strength, and more. Source: Universal Domain v1.0 § 4.1.</dd>
+        </dl>
+      </div>
+
+      <!-- R -->
+      <div class="glossary-section">
+        <h3>R</h3>
+        <dl class="glossary">
+          <dt>Record mode</dt>
+          <dd>Meta byte 1 bit 1 = 1. Full BitPad transmission. Meta byte 2 follows immediately. Layer 1 always expected. Optional components declared via Role C bits 5–8 of Meta byte 1 (Value, Time, Task, Note). Source: BitPads v2.0 § 2.1.</dd>
+
+          <dt>Rounding Balance</dt>
+          <dd>4-bit sign-magnitude field at Layer 2 bits 42–45. Net rounding adjustment for the batch. 0000 = exactly balanced. High bit = sign (0 = rounded up, 1 = rounded down). Lower 3 bits = magnitude in minimum precision units (1–7). 1000 = escape — see batch-close control record. In engineering mode, a non-zero rounding balance may signal a conservation violation. Source: BitLedger v3.0 § 3.4.</dd>
+
+          <dt>Rounding signal</dt>
+          <dd>Bits 26–27 of Layer 3 form a two-bit rounding signal: 00 = exact, 10 = rounded down (floor), 11 = rounded up (ceiling), 01 = PROTOCOL ERROR (malformed record — reject before posting). Source: BitLedger v3.0 § 5.1.</dd>
+        </dl>
+      </div>
+
+      <!-- S -->
+      <div class="glossary-section">
+        <h3>S</h3>
+        <dl class="glossary">
+          <dt>Scaling Factor (SF)</dt>
+          <dd>7-bit Layer 2 field (bits 3–9). Magnitude multiplier applied to all decoded values in a batch. Always multiplies upward — never used for decimal precision (that is Decimal Position). Index 0 = ×1, index 1 = ×10, …, index 9 = ×1,000,000,000. Source: BitLedger v3.0 § 3.2.</dd>
+
+          <dt>Sender ID</dt>
+          <dd>32-bit Layer 1 field (bits 13–44). Unique sender identifier supporting 4,294,967,295 distinct senders. Interpreted per the Sender ID Split Mode (bits 10–11): flat 32-bit, 16/16 system+node, or 8/8/16 network+system+node. Source: BitLedger v3.0 § 2.1.</dd>
+
+          <dt>Session</dt>
+          <dd>A continuous transmission context initiated by a Layer 1 block. All records within a session inherit the sender identity, permissions, domain, and session defaults from Layer 1. A session ends with EOT or a new Layer 1 (session reset). Source: BitLedger v3.0 § 2.</dd>
+
+          <dt>Session Config Extension</dt>
+          <dd>New in BitPads v2.0. Conditional byte following Layer 1 when bit 12 = 1 or opposing convention is non-default. Carries: Nesting Level Code (bits 1–2), Opposing Convention (bit 3), Compound Mode Active (bit 4), BitLedger Block Optional (bit 5), Reserved (bits 6–8 = 111). Replaces the v1.0 BitLedger Context Control byte. Source: BitPads v2.0 § 4.3.</dd>
+
+          <dt>Signal Slot</dt>
+          <dd>A declared position within the BitPads transmission structure where the decoder expects enhanced C0 bytes. 13 positions P1–P13 spanning session, record, stream, and wave layers. The slot position is the declaration — no byte-level type field is needed. Enhanced C0 interpretation is applied at slot positions and never at content positions. Source: Enhancement Sub-Protocol v2.0 § 6.</dd>
+
+          <dt>Signal Slot Presence byte</dt>
+          <dd>Conditional byte at position 3 in the Record mode component sequence. Present when Meta byte 2 bit 8 = 1. Bits 1–5 declare which of P4–P8 are active in this record. Bits 6–8 = Reserved (transmit as 1). When Meta byte 2 bit 8 = 0 (the common case), this byte is absent and the sequence proceeds directly from Meta byte 2 to Layer 1. Source: BitPads v2.0 § 3.3.</dd>
+
+          <dt>SOH (Start of Header)</dt>
+          <dd>Bit 1 of Layer 1, always 1. Self-framing bootstrap anchor. In IDLE state, byte <code>0x01</code> unconditionally opens Layer 1 read. The sole context-free signal in the protocol — no preamble or sync sequence needed. Source: BitLedger v3.0 § 2.1.</dd>
+
+          <dt>Source-to-Sink (archetype)</dt>
+          <dd>Universal flow archetype code <code>0000</code>. Direct one-way transfer of a conserved quantity between two nodes. The most fundamental flow type. Engineering examples: fuel tank to thruster, battery to payload, buffer to output queue. Source: Universal Domain v1.0 § 3.1.</dd>
+
+          <dt>Split Order</dt>
+          <dd>Declared in Layer 1 bit 9 as a session default. Whether the Multiplicand or Multiplier field transmits first within the value block. Layer 3 bit 28 confirms or reverses the session default per record without a separate Setup signal. Source: BitLedger v3.0 § 2.2.</dd>
+
+          <dt>Status bit</dt>
+          <dd>Layer 3 bit 30. 0 = Settled / cash basis — transaction is past. 1 = Accrued / anticipated — transaction is future (debt or obligation). Must equal bit 38 (BitLedger block status). Cross-layer validation rule 2. Source: BitLedger v3.0 § 5.</dd>
+
+          <dt>Sub-Entity ID</dt>
+          <dd>5-bit Layer 1 field (bits 45–49). 31 sub-divisions within the sender. Department, sub-system, or sub-node. Mirrors the Entity ID field in Layer 2 for standard transmissions. Source: BitLedger v3.0 § 2.1.</dd>
+        </dl>
+      </div>
+
+      <!-- T -->
+      <div class="glossary-section">
+        <h3>T</h3>
+        <dl class="glossary">
+          <dt>Telegraph Emulation (category 1110)</dt>
+          <dd>Wave category <code>1110</code>. Formally assigned in v2.0. Full C0 Enhancement Grammar active for the stream duration. Every byte: upper 3 bits = flag matrix, lower 5 bits = C0 code identity. Legacy receivers see standard C0 controls; BitPads receivers decode flag matrices. Requires Layer 1 if no prior session. Source: BitPads v2.0 § 2.3; Enhancement Sub-Protocol v2.0 § 13.</dd>
+
+          <dt>Tier (value encoding)</dt>
+          <dd>One of four bit-width configurations for the Layer 3 value block: Tier 1 (8 bits, max 255), Tier 2 (16 bits, max 65,535), Tier 3 (24 bits, max 16,777,215 — default, no Setup byte), Tier 4 (32 bits, max 4,294,967,295). See <a href="#value-tiers">Value Tiers</a>. Source: BitPads v2.0 § 6.1.</dd>
+
+          <dt>Transformation (archetype)</dt>
+          <dd>Universal flow archetype code <code>1000</code>. A conserved quantity changes form within the same node. Engineering examples: chemical to kinetic energy during combustion, raw sensor data to processed data. Source: Universal Domain v1.0 § 3.1.</dd>
+
+          <dt>Transmission spectrum</dt>
+          <dd>The four BitPads frame types sharing one Meta byte architecture: Pure Signal (1 byte), Wave (2–6 bytes), Record (13–29 bytes), Full BitLedger (22+ bytes). Every transmission begins with Meta byte 1. Complexity and capability attach on demand at exact cost. Source: BitPads v2.0 § 1.2.</dd>
+        </dl>
+      </div>
+
+      <!-- U -->
+      <div class="glossary-section">
+        <h3>U</h3>
+        <dl class="glossary">
+          <dt>Universal Domain</dt>
+          <dd>The generalised domain extension of BitLedger that allows the same 40-bit record structure to carry any conserved scalar quantity in any engineered system — kilograms, watt-hours, data packets, obligations — without changing the wire format. Declared by Layer 1 bits 3–4 = <code>01</code> (Engineering) or <code>10</code> (Hybrid). Current version: v1.0. Source: Universal Domain v1.0.</dd>
+        </dl>
+      </div>
+
+      <!-- V -->
+      <div class="glossary-section">
+        <h3>V</h3>
+        <dl class="glossary">
+          <dt>Value block</dt>
+          <dd>Layer 3 bits 1–25. A 25-bit field encoding any non-negative integer from 0 to 33,554,431 using the formula N = A × 2^S + r. Combined with Layer 2 Scaling Factor and Decimal Position to produce the real value. Also the generic term for any value-carrying component in BitPads (including the variable-width Tier 1–4 blocks). Source: BitLedger v3.0 § 4.</dd>
+
+          <dt>Value encoding formula</dt>
+          <dd><code>N = A × 2^S + r</code> where S = Optimal Split from Layer 2, A = floor(N / 2^S), r = N mod 2^S. Combines with Layer 2 context: Real Value = (N × SF) / 10^DP. Gapless coverage: every integer 0–33,554,431 is reachable without gaps. Source: BitLedger v3.0 § 4.2.</dd>
+        </dl>
+      </div>
+
+      <!-- W -->
+      <div class="glossary-section">
+        <h3>W</h3>
+        <dl class="glossary">
+          <dt>Wave mode</dt>
+          <dd>Meta byte 1 bit 1 = 0. Lightweight transmission mode. No Layer 1 required in an established session. 16 categories (0000–1111) covering plain values, messages, status, commands, streams, and Enhancement categories. Suitable for sensor readings, heartbeats, status updates, and commands without formal accounting overhead. Source: BitPads v2.0 § 2.1.</dd>
+
+          <dt>Wire Format Version</dt>
+          <dd>Layer 1 bit 2. 0 = Wire format version 1 (current — all records as specified in Protocol v3.0). 1 = Non-standard version. When bit 2 = 1, a version declaration control byte (type 101, version payload) follows Layer 1 before any content. Source: Universal Domain v1.0 § 2.1.</dd>
+        </dl>
+      </div>
+
+    </section>
+
+  </main>
+</div>
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div>
+      <div class="footer-group-label">Protocol</div>
+      <ul class="footer-links">
+        <li><a href="bitpads-v2.html">BitPads v2</a></li>
+        <li><a href="bitledger.html">BitLedger v3</a></li>
+        <li><a href="universal-domain.html">Universal Domain</a></li>
+        <li><a href="compound-mode.html">Compound Mode</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-group-label">Enhancement</div>
+      <ul class="footer-links">
+        <li><a href="enhancement-grammar.html">Grammar &amp; Signal Slots</a></li>
+        <li><a href="enhancement-commands.html">Commands &amp; Context</a></li>
+        <li><a href="enhancement-telegraph-1.html">Telegraph Emulation I</a></li>
+        <li><a href="enhancement-telegraph-2.html">Telegraph Emulation II</a></li>
+        <li><a href="enhancement-nesting.html">Nesting &amp; Overhead</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-group-label">Resources</div>
+      <ul class="footer-links">
+        <li><a href="engineering.html">Engineering Applications</a></li>
+        <li><a href="guide.html">Implementation Guide</a></li>
+        <li><a href="cli.html">CLI Tools</a></li>
+        <li><a href="reference.html">Reference &amp; Glossary</a></li>
+      </ul>
+    </div>
+    <div class="footer-copy">
+      BitPads Protocol v2.0<br>
+      BitLedger Protocol v3.0<br>
+      Universal Domain v1.0<br>
+      &copy; BABB
+    </div>
+  </div>
+</footer>
+
+<script>
+// TOC active state via IntersectionObserver
+const secs = document.querySelectorAll('section[id]');
+const tocAs = document.querySelectorAll('.toc a');
+const io = new IntersectionObserver(es => {
+  es.forEach(e => {
+    if (e.isIntersecting) {
+      tocAs.forEach(a => a.classList.remove('active'));
+      const a = document.querySelector(`.toc a[href="#${e.target.id}"]`);
+      if (a) a.classList.add('active');
+    }
+  });
+}, { rootMargin: '-15% 0px -70% 0px' });
+secs.forEach(s => io.observe(s));
+
+// Expandable table rows (shared pattern)
+document.querySelectorAll('tr.xrow').forEach(row => {
+  row.addEventListener('click', () => {
+    const did = row.dataset.drawer;
+    const drawer = document.getElementById(did);
+    if (!drawer) return;
+    const open = drawer.classList.contains('open');
+    document.querySelectorAll('tr.xdrawer.open').forEach(d => {
+      d.classList.remove('open');
+      d.previousElementSibling?.classList.remove('open');
+    });
+    if (!open) { drawer.classList.add('open'); row.classList.add('open'); }
+  });
+});
+</script>
+</body>
+</html>

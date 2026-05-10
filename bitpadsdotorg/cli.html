@@ -1,0 +1,1212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BitPads CLI Tools — bitpads-tools Assembly CLI</title>
+<link rel="stylesheet" href="bp-style.css">
+<style>
+/* ── CLI page specific ── */
+.checklist {
+  list-style: none; padding: 0; margin: 14px 0;
+}
+.checklist li {
+  font-family: var(--mono); font-size: 13px;
+  padding: 7px 0;
+  border-bottom: 1px solid var(--rule-soft);
+  color: var(--ink-soft);
+  display: flex; align-items: baseline; gap: 10px;
+  line-height: 1.5;
+}
+.checklist li::before {
+  content: '✓';
+  color: var(--nasa-teal); font-weight: 700;
+  flex-shrink: 0;
+}
+.gaps-list {
+  list-style: none; padding: 0; margin: 0;
+}
+.gaps-list li {
+  font-size: 13.5px; color: var(--ink-soft);
+  padding: 7px 0; border-bottom: 1px solid var(--rule-soft);
+  display: flex; align-items: baseline; gap: 10px;
+}
+.gaps-list li::before {
+  content: '○';
+  font-family: var(--mono); font-size: 11px;
+  color: var(--nasa-gold); flex-shrink: 0;
+}
+
+.pipeline {
+  margin: 20px 0;
+}
+.pipeline-row {
+  display: flex; align-items: stretch; gap: 0;
+  margin-bottom: 3px;
+}
+.pipe-node {
+  background: var(--bg-panel);
+  border: 1px solid var(--rule);
+  padding: 12px 18px; flex: 1;
+  font-family: var(--mono); font-size: 11px;
+  color: var(--ink-soft);
+}
+.pipe-node .pn-label {
+  font-family: var(--display); font-weight: 600;
+  font-size: 13px; text-transform: uppercase;
+  letter-spacing: 0.05em; color: var(--ink);
+  margin-bottom: 3px;
+}
+.pipe-node .pn-detail {
+  font-size: 10px; color: var(--ink-faint);
+  line-height: 1.4;
+}
+.pipe-arrow {
+  display: flex; align-items: center;
+  padding: 0 8px;
+  font-family: var(--mono); font-size: 18px;
+  color: var(--nasa-blue);
+}
+
+.flag-group {
+  margin-bottom: 32px;
+}
+.flag-group-label {
+  font-family: var(--mono); font-size: 9px;
+  text-transform: uppercase; letter-spacing: 0.14em;
+  color: var(--nasa-red); margin-bottom: 8px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--rule);
+}
+
+.tier-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1px; background: var(--rule);
+  border: 1px solid var(--rule); margin: 20px 0;
+}
+.tier-cell {
+  background: var(--bg-panel); padding: 20px;
+}
+.tier-num {
+  font-family: var(--mono); font-size: 9px;
+  text-transform: uppercase; letter-spacing: 0.12em;
+  color: var(--nasa-red); margin-bottom: 6px;
+}
+.tier-range {
+  font-family: var(--display); font-weight: 700;
+  font-size: 18px; margin-bottom: 4px;
+}
+.tier-desc {
+  font-size: 12px; color: var(--ink-soft);
+  line-height: 1.5; margin-bottom: 8px;
+}
+.tier-flags {
+  font-family: var(--mono); font-size: 10px;
+  color: var(--nasa-blue);
+}
+
+.dir-tree {
+  background: var(--bg-dark); color: #A8C4E0;
+  font-family: var(--mono); font-size: 12px;
+  line-height: 2; padding: 20px 24px;
+  margin: 16px 0; border-left: 3px solid var(--nasa-teal);
+  overflow-x: auto;
+}
+.dir-tree .dt-dir  { color: #7ECEF4; }
+.dir-tree .dt-asm  { color: #E8C56A; }
+.dir-tree .dt-obj  { color: var(--ink-faint); font-size: 10px; }
+.dir-tree .dt-inc  { color: #6AC87E; }
+.dir-tree .dt-note { color: #8898AA; font-size: 10px; }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="index.html">
+      <span class="brand-mark">BP</span>
+      <span class="brand-name">BitPads Protocol</span>
+    </a>
+    <nav class="topnav">
+      <a href="overview.html">Overview</a>
+      <a href="bitpads-v2.html">BitPads v2</a>
+      <a href="bitledger.html" class="active">BitLedger</a>
+      <a href="universal-domain.html">Universal Domain</a>
+      <div class="nav-group">
+        <a href="enhancement-grammar.html">Enhancement</a>
+        <div class="nav-dropdown">
+          <a href="enhancement-grammar.html">Grammar &amp; Signal Slots</a>
+          <a href="enhancement-commands.html">Commands &amp; Context</a>
+          <a href="enhancement-telegraph-1.html">Telegraph Emulation I</a>
+          <a href="enhancement-telegraph-2.html">Telegraph Emulation II</a>
+          <a href="enhancement-nesting.html">Nesting &amp; Overhead</a>
+        </div>
+      </div>
+      <a href="compound-mode.html">Compound Mode</a>
+      <a href="engineering.html">Engineering</a>
+      <a href="guide.html">Guide</a>
+      <a href="cli.html">CLI</a>
+      <a href="reference.html">Reference</a>
+    </nav>
+  </div>
+</header>
+
+<div class="page">
+  <aside class="sidebar">
+    <p class="toc-label">On This Page</p>
+    <ul class="toc">
+      <li><a href="#overview" class="active">Overview</a></li>
+      <li><a href="#architecture">Architecture</a></li>
+      <li><a href="#frame-types">Frame Types</a></li>
+      <li><a href="#commands">Commands &amp; Flags</a></li>
+      <li><a href="#what-works">What Works</a></li>
+      <li><a href="#known-gaps">Known Gaps</a></li>
+      <li><a href="#output-formats">Output Formats</a></li>
+      <li><a href="#value-encoding">Value Encoding</a></li>
+      <li><a href="#crc15">CRC-15 Implementation</a></li>
+      <li><a href="#roadmap">Roadmap</a></li>
+    </ul>
+  </aside>
+
+  <main>
+
+    <!-- ── OVERVIEW ── -->
+    <section id="overview">
+      <p class="eyebrow">bitpads-tools · x86-64 NASM Assembly</p>
+      <h1>CLI<br>Tools</h1>
+      <p class="pullquote">Hand-assembled x86-64. No C runtime. Direct kernel syscalls. Provable protocol conformance at the instruction level.</p>
+      <p class="lead">The <code>bitpads-tools</code> CLI is a command-line encoder written in hand-assembled x86-64 NASM assembly. It produces <code>.bp</code> binary frame files that conform to the BitPads Protocol v2.0 specification — Pure Signal, Wave, Record, and BitLedger frames across all four protocol layers.</p>
+
+      <p>The design philosophy is aggressive minimalism. There is no C runtime, no standard library, no heap allocation, no external dependencies. The tool issues <code>write</code>, <code>open</code>, <code>close</code>, and <code>exit</code> syscalls directly through the kernel ABI. Every byte in the output buffer was put there by explicit instruction. This makes the binary's protocol conformance provable at the instruction level rather than inferred through a stack of library calls.</p>
+
+      <p>The 256-byte context block is stack-allocated at startup and freed on exit. No memory management is required. No garbage collector runs. The encoder populates fields in the context block from parsed CLI flags, routes to the appropriate frame builder, and the builder writes bytes sequentially into a stack-allocated output buffer. The resulting bytes go to a file, to stdout, or are discarded in dry-run mode. There is no post-processing step.</p>
+
+      <div class="notice">
+        <p><strong>Why NASM:</strong> Writing the encoder at the instruction level means every byte written to the output buffer is a deliberate, auditable act. There is no intermediate representation that could silently misalign a field, pad a struct, or reorder bytes. The bit positions in the output match the specification because the code that writes them was written to match the specification, and there is no compiler between the specification and the output.</p>
+      </div>
+
+      <div class="notice warn">
+        <p><strong>Current platform:</strong> The macOS CLI (<code>assemblycli/</code>) is functional and produces conformant frames for all four frame types. A Linux port (<code>linux_assembly_cli/</code>) has been assembled to ELF64 but has not yet been linked or run on a Linux machine.</p>
+      </div>
+    </section>
+
+    <!-- ── ARCHITECTURE ── -->
+    <section id="architecture">
+      <p class="eyebrow">Internal Design</p>
+      <h2>Architecture</h2>
+
+      <h3>The 256-Byte Context Block</h3>
+      <p>All state for a single frame assembly operation lives in a 256-byte context block allocated on the stack at entry. The block is a flat structure — no linked lists, no dynamic allocation, no pointers to the heap. CLI flag parsing writes field values into named offsets within the block. The dispatcher reads those offsets to decide which frame builder to call. Each component builder reads from the context block and writes bytes directly to the output buffer.</p>
+      <p>The context block contains: frame type selector, Meta byte 1 and 2 field values, Layer 1 sender identity words, domain and permission bits, Layer 2 batch header fields (currency, scaling, precision, rounding mode), Layer 3 value mantissa and shift, account pair, direction and status flags, optional time block fields (T1S and T2 formats), task code and action nibble, note byte count, signal slot presence byte, and output routing selector (file / stdout / dry-run).</p>
+
+      <h3>Frame Assembly Pipeline</h3>
+
+      <div class="pipeline">
+        <div class="pipeline-row">
+          <div class="pipe-node">
+            <div class="pn-label">CLI Parse</div>
+            <div class="pn-detail"><code>cli_parse.asm</code> — reads argv, populates context block fields</div>
+          </div>
+          <div class="pipe-arrow">→</div>
+          <div class="pipe-node">
+            <div class="pn-label">Dispatch</div>
+            <div class="pn-detail"><code>dispatch.asm</code> — reads frame type selector, routes to builder</div>
+          </div>
+          <div class="pipe-arrow">→</div>
+          <div class="pipe-node">
+            <div class="pn-label">Frame Builder</div>
+            <div class="pn-detail"><code>build_signal / wave / record / ledger.asm</code></div>
+          </div>
+        </div>
+        <div class="pipeline-row">
+          <div class="pipe-node">
+            <div class="pn-label">Meta Layers</div>
+            <div class="pn-detail"><code>meta1.asm</code> + <code>meta2.asm</code> — construct Meta bytes 1 and 2</div>
+          </div>
+          <div class="pipe-arrow">→</div>
+          <div class="pipe-node">
+            <div class="pn-label">Layer Builders</div>
+            <div class="pn-detail"><code>layer1 / layer2 / layer3.asm</code> — L1 identity, L2 batch, L3 record</div>
+          </div>
+          <div class="pipe-arrow">→</div>
+          <div class="pipe-node">
+            <div class="pn-label">Components</div>
+            <div class="pn-detail"><code>value / time_comp / task / note / setup.asm</code></div>
+          </div>
+        </div>
+        <div class="pipeline-row">
+          <div class="pipe-node">
+            <div class="pn-label">CRC-15</div>
+            <div class="pn-detail"><code>crc15.asm</code> — polynomial x^15 + x + 1 over session payload</div>
+          </div>
+          <div class="pipe-arrow">→</div>
+          <div class="pipe-node">
+            <div class="pn-label">Enhancement</div>
+            <div class="pn-detail"><code>c0gram / signals / cmd1100 / ctx1101 / tel1110.asm</code></div>
+          </div>
+          <div class="pipe-arrow">→</div>
+          <div class="pipe-node">
+            <div class="pn-label">I/O</div>
+            <div class="pn-detail"><code>fileio.asm</code> + <code>hexdump.asm</code> — write syscall, dry-run hex</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="printout">
+        <div class="ph">─────────────────────────────────────────────────────────────</div>
+        <div class="ph"> FRAME ASSEMBLY PIPELINE — STACK-ONLY DATA FLOW</div>
+        <div class="ph">─────────────────────────────────────────────────────────────</div>
+        <div><span class="pl"> argv[]          </span><span class="pv">→ cli_parse.asm  </span><span class="pc">writes fields into ctx[0..255]</span></div>
+        <div><span class="pl"> ctx[frame_type] </span><span class="pv">→ dispatch.asm   </span><span class="pc">selects builder routine</span></div>
+        <div><span class="pl"> builder routine </span><span class="pv">→ meta1.asm      </span><span class="pc">writes byte 0 of output buf</span></div>
+        <div><span class="pl">                </span><span class="pv">→ meta2.asm      </span><span class="pc">writes byte 1 (Record/Ledger only)</span></div>
+        <div><span class="pl">                </span><span class="pv">→ layer1.asm     </span><span class="pc">writes 8 bytes — identity + CRC-15</span></div>
+        <div><span class="pl">                </span><span class="pv">→ layer2.asm     </span><span class="pc">writes 6 bytes — batch header</span></div>
+        <div><span class="pl">                </span><span class="pv">→ components     </span><span class="pc">value, time, task, note — if present</span></div>
+        <div><span class="pl">                </span><span class="pv">→ layer3.asm     </span><span class="pc">writes 5 bytes — 40-bit BitLedger record</span></div>
+        <div><span class="pl"> outbuf[0..N]   </span><span class="pv">→ fileio.asm     </span><span class="pc">write() syscall or hexdump to stdout</span></div>
+        <div class="ph">─────────────────────────────────────────────────────────────</div>
+        <div><span class="pc"> No heap. No malloc. No post-processing. No intermediate file.</span></div>
+        <div><span class="pc"> Context block: 256 bytes on the stack. Output buffer: stack.</span></div>
+        <div class="ph">─────────────────────────────────────────────────────────────</div>
+      </div>
+
+      <h3>Directory Structure — <code>assemblycli/</code></h3>
+      <div class="dir-tree">
+        <div><span class="dt-dir">assemblycli/</span></div>
+        <div>&nbsp; <span class="dt-asm">main.asm</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="dt-note">entry point, stack frame, context block init, exit syscall</span></div>
+        <div>&nbsp; <span class="dt-asm">cli_parse.asm</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="dt-note">argv walker — maps flag strings to context block offsets</span></div>
+        <div>&nbsp; <span class="dt-asm">dispatch.asm</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="dt-note">frame type router — calls appropriate build_*.asm</span></div>
+        <div>&nbsp; <span class="dt-dir">include/</span></div>
+        <div>&nbsp;&nbsp;&nbsp; <span class="dt-inc">bitpads.inc</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="dt-note">context block offsets, protocol constants, field masks</span></div>
+        <div>&nbsp;&nbsp;&nbsp; <span class="dt-inc">macros.inc</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="dt-note">NASM macros for common byte-write and bit-shift patterns</span></div>
+        <div>&nbsp;&nbsp;&nbsp; <span class="dt-inc">syscall.inc</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="dt-note">macOS syscall numbers (write=4, open=5, close=6, exit=1)</span></div>
+        <div>&nbsp; <span class="dt-dir">src/builders/</span></div>
+        <div>&nbsp;&nbsp;&nbsp; <span class="dt-asm">build_signal.asm</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="dt-note">Pure Signal — 1-byte frame from Meta byte 1</span></div>
+        <div>&nbsp;&nbsp;&nbsp; <span class="dt-asm">build_wave.asm</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="dt-note">Wave — 2–4 byte frame, 16 category dispatch</span></div>
+        <div>&nbsp;&nbsp;&nbsp; <span class="dt-asm">build_record.asm</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="dt-note">Record — 13–29 bytes, optional component chain</span></div>
+        <div>&nbsp;&nbsp;&nbsp; <span class="dt-asm">build_ledger.asm</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="dt-note">BitLedger — full double-entry frame, 22+ bytes</span></div>
+        <div>&nbsp; <span class="dt-dir">src/layers/</span></div>
+        <div>&nbsp;&nbsp;&nbsp; <span class="dt-asm">meta1.asm</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="dt-note">Meta byte 1 — mode, ACK, continuation, treatment, flags</span></div>
+        <div>&nbsp;&nbsp;&nbsp; <span class="dt-asm">meta2.asm</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="dt-note">Meta byte 2 — domain, permissions, record flags</span></div>
+        <div>&nbsp;&nbsp;&nbsp; <span class="dt-asm">layer1.asm</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="dt-note">8-byte session header — sender ID, CRC-15 embed</span></div>
+        <div>&nbsp;&nbsp;&nbsp; <span class="dt-asm">layer2.asm</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="dt-note">6-byte batch header — currency, scaling, precision</span></div>
+        <div>&nbsp;&nbsp;&nbsp; <span class="dt-asm">layer3.asm</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="dt-note">5-byte BitLedger record — 40-bit double-entry</span></div>
+        <div>&nbsp; <span class="dt-dir">src/components/</span></div>
+        <div>&nbsp;&nbsp;&nbsp; <span class="dt-asm">value.asm</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="dt-note">value encoding — A × 2^S + r mantissa/shift packing</span></div>
+        <div>&nbsp;&nbsp;&nbsp; <span class="dt-asm">time_comp.asm</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="dt-note">T1S (3-byte) and T2 (4-byte) time block builders</span></div>
+        <div>&nbsp;&nbsp;&nbsp; <span class="dt-asm">task.asm</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="dt-note">2-byte task component — task code + action nibble</span></div>
+        <div>&nbsp;&nbsp;&nbsp; <span class="dt-asm">note.asm</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="dt-note">variable-length note block — byte count + data</span></div>
+        <div>&nbsp;&nbsp;&nbsp; <span class="dt-asm">setup.asm</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="dt-note">Session Config Extension — compound, BL block, nesting</span></div>
+        <div>&nbsp; <span class="dt-dir">src/crypto/</span></div>
+        <div>&nbsp;&nbsp;&nbsp; <span class="dt-asm">crc15.asm</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="dt-note">CRC-15 — polynomial x^15+x+1, register-based bit iterator</span></div>
+        <div>&nbsp; <span class="dt-dir">src/io/</span></div>
+        <div>&nbsp;&nbsp;&nbsp; <span class="dt-asm">fileio.asm</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="dt-note">open/write/close syscalls, stdout routing</span></div>
+        <div>&nbsp;&nbsp;&nbsp; <span class="dt-asm">hexdump.asm</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="dt-note">hex-formatted dry-run output to stdout</span></div>
+        <div>&nbsp; <span class="dt-dir">src/enhancement/</span></div>
+        <div>&nbsp;&nbsp;&nbsp; <span class="dt-asm">c0gram.asm</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="dt-note">C0 Enhancement Grammar — base flag-byte builder</span></div>
+        <div>&nbsp;&nbsp;&nbsp; <span class="dt-asm">signals.asm</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="dt-note">signal slot presence byte — P1–P13 position flags</span></div>
+        <div>&nbsp;&nbsp;&nbsp; <span class="dt-asm">cmd1100.asm</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="dt-note">category 1100 — compact command wave builder</span></div>
+        <div>&nbsp;&nbsp;&nbsp; <span class="dt-asm">ctx1101.asm</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="dt-note">category 1101 — context declaration wave builder</span></div>
+        <div>&nbsp;&nbsp;&nbsp; <span class="dt-asm">tel1110.asm</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="dt-note">category 1110 — telegraph emulation wave builder</span></div>
+      </div>
+    </section>
+
+    <!-- ── FRAME TYPES ── -->
+    <section id="frame-types">
+      <p class="eyebrow">Output Specification</p>
+      <h2>Frame Types</h2>
+      <p>The CLI produces four frame types. Every frame begins with Meta byte 1. Mode, content type, and enhancement state are declared in that byte before the receiver processes anything else. A Pure Signal closes immediately; a BitLedger frame carries five independent protocol layers.</p>
+
+      <!-- Pure Signal -->
+      <h3>Pure Signal — 1 Byte</h3>
+      <p>Meta byte 1 alone. The byte is the entire message. No session, no preamble, no continuation. Used for heartbeats, ACK requests, status pulses, and priority alerts. Bit 1 = 0 selects Wave mode; the frame closes after the single byte when the continuation bits declare none.</p>
+
+      <div class="bit-display">
+        <div class="bit-display-label">Pure Signal — 0x40 — Wave mode, ACK request, basic treatment</div>
+        <div class="bit-cells">
+          <div class="bit-cell mode" data-layer="meta" data-tooltip="Bit 1: 0 = Wave mode">
+            <span class="bit-pos">1</span>
+            <span class="bit-val off">0</span>
+            <span class="bit-name">Wave<br>Mode</span>
+          </div>
+          <div class="bit-cell mode" data-layer="meta" data-tooltip="Bit 2: 1 = ACK Request">
+            <span class="bit-pos">2</span>
+            <span class="bit-val on">1</span>
+            <span class="bit-name">ACK<br>Req</span>
+          </div>
+          <div class="bit-cell mode" data-layer="meta" data-tooltip="Bit 3: 0 = no continuation">
+            <span class="bit-pos">3</span>
+            <span class="bit-val off">0</span>
+            <span class="bit-name">Cont<br>None</span>
+          </div>
+          <div class="bit-cell mode" data-layer="meta" data-tooltip="Bit 4: 0 = basic treatment, Role A flags active">
+            <span class="bit-pos">4</span>
+            <span class="bit-val off">0</span>
+            <span class="bit-name">Basic<br>Treat</span>
+          </div>
+          <div class="bit-cell data" data-layer="meta" data-tooltip="Bit 5 (Role A): Priority. 0 = normal.">
+            <span class="bit-pos">5</span>
+            <span class="bit-val off">0</span>
+            <span class="bit-name">Priority</span>
+          </div>
+          <div class="bit-cell data" data-layer="meta" data-tooltip="Bit 6 (Role A): Cipher. 0 = plain.">
+            <span class="bit-pos">6</span>
+            <span class="bit-val off">0</span>
+            <span class="bit-name">Cipher</span>
+          </div>
+          <div class="bit-cell data" data-layer="meta" data-tooltip="Bit 7 (Role A): Extended Flags. 0 = none.">
+            <span class="bit-pos">7</span>
+            <span class="bit-val off">0</span>
+            <span class="bit-name">Ext<br>Flags</span>
+          </div>
+          <div class="bit-cell data" data-layer="meta" data-tooltip="Bit 8 (Role A): Profile Defined. 0 = standard.">
+            <span class="bit-pos">8</span>
+            <span class="bit-val off">0</span>
+            <span class="bit-name">Profile</span>
+          </div>
+        </div>
+        <div class="bit-legend">
+          <span class="legend-item"><span class="legend-swatch mode"></span> Mode / Control</span>
+          <span class="legend-item"><span class="legend-swatch data"></span> Content — Role A</span>
+        </div>
+      </div>
+
+      <!-- Wave -->
+      <h3>Wave — 2–4 Bytes</h3>
+      <p>Meta byte 1 plus a wave category byte (Wave byte) and, for categories 0100–0111, a Layer 1 value byte. Sixteen category codes spanning plain values, messages, status signals, commands, and stream opens. No identity overhead. No session Layer 1 required for basic categories. The CLI builds the wave category byte from the 4-bit category nibble and the wave content nibble.</p>
+
+      <div class="bit-display">
+        <div class="bit-display-label">Wave Frame — Meta byte 1 + Wave category byte</div>
+        <div class="bit-cells">
+          <div class="bit-cell mode" data-layer="meta" data-tooltip="Bit 1: 0 = Wave mode">
+            <span class="bit-pos">1</span>
+            <span class="bit-val off">0</span>
+            <span class="bit-name">Wave<br>Mode</span>
+          </div>
+          <div class="bit-cell mode" data-layer="meta" data-tooltip="Bit 2: wave control">
+            <span class="bit-pos">2</span>
+            <span class="bit-val off">0</span>
+            <span class="bit-name">Control</span>
+          </div>
+          <div class="bit-cell mode" data-layer="meta" data-tooltip="Bits 3-4: continuation / treatment">
+            <span class="bit-pos">3-4</span>
+            <span class="bit-val off">00</span>
+            <span class="bit-name">Cont<br>Treat</span>
+          </div>
+          <div class="bit-cell data" data-layer="meta" data-tooltip="Bits 5-8: Role A flags">
+            <span class="bit-pos">5-8</span>
+            <span class="bit-val off">0000</span>
+            <span class="bit-name">Role A<br>Flags</span>
+          </div>
+          <div class="bit-cell data" data-layer="meta" data-tooltip="Wave byte bits 1-4: category code — 0000 plain val, 1100 command, 1101 context, 1110 telegraph">
+            <span class="bit-pos">W1-4</span>
+            <span class="bit-val on">CAT</span>
+            <span class="bit-name">Category<br>Nibble</span>
+          </div>
+          <div class="bit-cell data" data-layer="meta" data-tooltip="Wave byte bits 5-8: content nibble — meaning varies by category">
+            <span class="bit-pos">W5-8</span>
+            <span class="bit-val on">CNT</span>
+            <span class="bit-name">Content<br>Nibble</span>
+          </div>
+        </div>
+        <div class="bit-legend">
+          <span class="legend-item"><span class="legend-swatch mode"></span> Mode / Control</span>
+          <span class="legend-item"><span class="legend-swatch data"></span> Wave Content</span>
+        </div>
+      </div>
+
+      <!-- Record -->
+      <h3>Record — 13–29 Bytes</h3>
+      <p>Both Meta bytes plus Layer 1 (8 bytes of session identity with embedded CRC-15) plus optional components attached on demand: a value block, a time block (T1S at 3 bytes or T2 at 4 bytes), a task block (2 bytes), and a note block (variable). Each optional component is declared by a presence bit in Meta byte 2. The minimal fully-identified record is 13 bytes; the full form with all four optional components is 29 bytes.</p>
+
+      <div class="bit-display">
+        <div class="bit-display-label">Record Frame — Meta 1 + Meta 2 + Layer 1 (8 bytes) + optional components</div>
+        <div class="bit-cells">
+          <div class="bit-cell mode" data-layer="meta" data-tooltip="Meta byte 1, bit 1: 1 = Record mode">
+            <span class="bit-pos">M1.1</span>
+            <span class="bit-val on">1</span>
+            <span class="bit-name">Record<br>Mode</span>
+          </div>
+          <div class="bit-cell mode" data-layer="meta" data-tooltip="Meta byte 1, bits 2-8: ACK, continuation, treatment, Role A/B flags">
+            <span class="bit-pos">M1.2-8</span>
+            <span class="bit-val">...</span>
+            <span class="bit-name">Meta 1<br>Flags</span>
+          </div>
+          <div class="bit-cell mode" data-layer="meta" data-tooltip="Meta byte 2: domain, permissions, component presence bits">
+            <span class="bit-pos">M2</span>
+            <span class="bit-val">...</span>
+            <span class="bit-name">Meta 2<br>Context</span>
+          </div>
+          <div class="bit-cell identity" data-layer="l1" data-tooltip="Layer 1: 8 bytes — sender ID (32 bits), domain (4 bits), permissions (4 bits), CRC-15 (15 bits), reserved (1 bit)">
+            <span class="bit-pos">L1</span>
+            <span class="bit-val on">8B</span>
+            <span class="bit-name">Identity<br>+ CRC-15</span>
+          </div>
+          <div class="bit-cell data" data-layer="l1" data-tooltip="Value component: present if Meta 2 value-present bit = 1. Encodes N = A × 2^S + r.">
+            <span class="bit-pos">VAL?</span>
+            <span class="bit-val">V</span>
+            <span class="bit-name">Value<br>(opt)</span>
+          </div>
+          <div class="bit-cell time-f" data-layer="l1" data-tooltip="Time component: T1S = 3 bytes (Unix seconds compressed), T2 = 4 bytes with sub-second precision">
+            <span class="bit-pos">TIME?</span>
+            <span class="bit-val">T</span>
+            <span class="bit-name">Time<br>(opt)</span>
+          </div>
+          <div class="bit-cell task-f" data-layer="l1" data-tooltip="Task component: 2 bytes. 8-bit task code + 4-bit action + 4-bit sub-action">
+            <span class="bit-pos">TASK?</span>
+            <span class="bit-val">T</span>
+            <span class="bit-name">Task<br>(opt)</span>
+          </div>
+          <div class="bit-cell data" data-layer="l1" data-tooltip="Note block: length-prefixed, variable. Up to 255 bytes of annotation.">
+            <span class="bit-pos">NOTE?</span>
+            <span class="bit-val">N</span>
+            <span class="bit-name">Note<br>(opt)</span>
+          </div>
+        </div>
+        <div class="bit-legend">
+          <span class="legend-item"><span class="legend-swatch mode"></span> Mode / Control</span>
+          <span class="legend-item"><span class="legend-swatch identity"></span> Identity / Session (L1)</span>
+          <span class="legend-item"><span class="legend-swatch data"></span> Content / Value</span>
+          <span class="legend-item"><span class="legend-swatch time-f"></span> Time Fields</span>
+          <span class="legend-item"><span class="legend-swatch task-f"></span> Task / Action</span>
+        </div>
+      </div>
+
+      <!-- BitLedger -->
+      <h3>BitLedger — 22+ Bytes</h3>
+      <p>The complete double-entry frame. Meta bytes 1 and 2, Layer 1 (identity + CRC-15), Layer 2 batch header (6 bytes declaring currency, scaling factor, precision defaults, separator convention, rounding balance direction), an optional Session Config Extension (1–5 bytes for compound mode, nesting level, and opposing convention), and the 5-byte Layer 3 BitLedger record. Conservation is enforced at encoding: the batch balance check runs before the first byte of Layer 3 is written.</p>
+
+      <div class="bit-display">
+        <div class="bit-display-label">BitLedger Frame — full double-entry, conservation-enforced, CRC-15 covered</div>
+        <div class="bit-cells">
+          <div class="bit-cell mode" data-layer="meta" data-tooltip="Meta byte 1 — mode, ACK, continuation, treatment, flags">
+            <span class="bit-pos">M1</span>
+            <span class="bit-val on">1B</span>
+            <span class="bit-name">Meta 1</span>
+          </div>
+          <div class="bit-cell mode" data-layer="meta" data-tooltip="Meta byte 2 — domain, permissions, layer presence, enhancement flags">
+            <span class="bit-pos">M2</span>
+            <span class="bit-val on">1B</span>
+            <span class="bit-name">Meta 2</span>
+          </div>
+          <div class="bit-cell identity" data-layer="l1" data-tooltip="Layer 1: 8 bytes — 32-bit sender ID, domain, permissions, CRC-15 over session payload">
+            <span class="bit-pos">L1</span>
+            <span class="bit-val on">8B</span>
+            <span class="bit-name">Identity<br>CRC-15</span>
+          </div>
+          <div class="bit-cell account" data-layer="l2" data-tooltip="Layer 2: 6 bytes — currency code, scaling factor D, precision P, separator, rounding balance">
+            <span class="bit-pos">L2</span>
+            <span class="bit-val on">6B</span>
+            <span class="bit-name">Batch<br>Header</span>
+          </div>
+          <div class="bit-cell checksum" data-layer="l2" data-tooltip="Session Config Extension: 1-5 bytes — compound mode flag, BL block marker, opposing convention, nesting level">
+            <span class="bit-pos">SCE?</span>
+            <span class="bit-val">1-5B</span>
+            <span class="bit-name">Session<br>Config</span>
+          </div>
+          <div class="bit-cell flag-f" data-layer="l3" data-tooltip="Layer 3 bits 1-2: direction flag (credit/debit) + completeness flag (final/provisional)">
+            <span class="bit-pos">L3.1-2</span>
+            <span class="bit-val on">DF</span>
+            <span class="bit-name">Dir<br>Flag</span>
+          </div>
+          <div class="bit-cell data" data-layer="l3" data-tooltip="Layer 3 bits 3-27: 25-bit encoded value N = A × 2^S + r">
+            <span class="bit-pos">L3.3-27</span>
+            <span class="bit-val on">N</span>
+            <span class="bit-name">Value<br>25 bits</span>
+          </div>
+          <div class="bit-cell account" data-layer="l3" data-tooltip="Layer 3 bits 28-31: account pair / flow archetype — 4-bit relationship code">
+            <span class="bit-pos">L3.28-31</span>
+            <span class="bit-val on">AP</span>
+            <span class="bit-name">Account<br>Pair</span>
+          </div>
+          <div class="bit-cell checksum" data-layer="l3" data-tooltip="Layer 3 bits 32-38: CRC-7 over the Layer 3 record itself">
+            <span class="bit-pos">L3.32-38</span>
+            <span class="bit-val on">C7</span>
+            <span class="bit-name">CRC-7<br>L3</span>
+          </div>
+          <div class="bit-cell flag-f" data-layer="l3" data-tooltip="Layer 3 bits 39-40: status bits — mirrored direction cross-check">
+            <span class="bit-pos">L3.39-40</span>
+            <span class="bit-val on">ST</span>
+            <span class="bit-name">Status<br>Bits</span>
+          </div>
+        </div>
+        <div class="bit-legend">
+          <span class="legend-item"><span class="legend-swatch mode"></span> Mode / Control</span>
+          <span class="legend-item"><span class="legend-swatch identity"></span> Identity / L1</span>
+          <span class="legend-item"><span class="legend-swatch account"></span> Account / L2 Batch</span>
+          <span class="legend-item"><span class="legend-swatch data"></span> Value (L3)</span>
+          <span class="legend-item"><span class="legend-swatch checksum"></span> Integrity / Config</span>
+          <span class="legend-item"><span class="legend-swatch flag-f"></span> Direction / Status</span>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ── COMMANDS & FLAGS ── -->
+    <section id="commands">
+      <p class="eyebrow">Invocation</p>
+      <h2>Commands &amp; Flags</h2>
+      <p>All flags set fields in the 256-byte context block before dispatch. Flags are grouped by protocol layer. Absent flags leave context block fields at their default values (zero, which produces minimal valid output for that field).</p>
+
+      <div class="flag-group">
+        <div class="flag-group-label">Frame Selection</div>
+        <table class="data-table">
+          <thead>
+            <tr><th>Flag</th><th>Values</th><th>Effect</th></tr>
+          </thead>
+          <tbody>
+            <tr class="xrow" data-drawer="dr-frame-type">
+              <td><code>--type</code> <span class="xrow-indicator">▾</span></td>
+              <td><code>signal · wave · record · ledger</code></td>
+              <td>Selects frame builder. Default: <code>signal</code></td>
+            </tr>
+            <tr class="xdrawer" id="dr-frame-type">
+              <td colspan="3">
+                <div class="xdrawer-inner">
+                  <div class="xdrawer-grid">
+                    <div class="xdrawer-section">
+                      <h5>signal</h5>
+                      <p>Calls <code>build_signal.asm</code>. Only Meta byte 1 is written. Total output: 1 byte.</p>
+                    </div>
+                    <div class="xdrawer-section">
+                      <h5>wave</h5>
+                      <p>Calls <code>build_wave.asm</code>. Meta byte 1 + wave category byte. Total: 2–4 bytes depending on category.</p>
+                    </div>
+                    <div class="xdrawer-section">
+                      <h5>record</h5>
+                      <p>Calls <code>build_record.asm</code>. Meta bytes 1+2, Layer 1, optional value/time/task/note. Total: 13–29 bytes.</p>
+                    </div>
+                    <div class="xdrawer-section">
+                      <h5>ledger</h5>
+                      <p>Calls <code>build_ledger.asm</code>. All layers including L2 batch header and L3 BitLedger record. Total: 22+ bytes.</p>
+                    </div>
+                  </div>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td><code>--output</code></td>
+              <td><code>&lt;filename.bp&gt;</code></td>
+              <td>Write frame bytes to named file. Creates or overwrites.</td>
+            </tr>
+            <tr>
+              <td><code>--stdout</code></td>
+              <td>flag</td>
+              <td>Write frame bytes to stdout (fd 1). Binary output.</td>
+            </tr>
+            <tr>
+              <td><code>--dry-run</code></td>
+              <td>flag</td>
+              <td>Route to <code>hexdump.asm</code> — print hex annotation to stdout, write nothing.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="flag-group">
+        <div class="flag-group-label">Meta Byte 1 — Mode and Control Flags</div>
+        <table class="data-table">
+          <thead>
+            <tr><th>Flag</th><th>Values</th><th>Bit Position</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>--ack</code></td>
+              <td>flag</td>
+              <td>Sets bit 2 of Meta byte 1. Requests acknowledgement from receiver.</td>
+            </tr>
+            <tr>
+              <td><code>--priority</code></td>
+              <td>flag</td>
+              <td>Sets bit 5 (Role A). Receiver enters elevated handling mode.</td>
+            </tr>
+            <tr>
+              <td><code>--cipher</code></td>
+              <td>flag</td>
+              <td>Sets bit 6 (Role A). Declares rolling codebook cipher active.</td>
+            </tr>
+            <tr>
+              <td><code>--ext-flags</code></td>
+              <td>flag</td>
+              <td>Sets bit 7 (Role A). Declares extension byte follows.</td>
+            </tr>
+            <tr>
+              <td><code>--category</code></td>
+              <td><code>0x0</code>–<code>0xF</code></td>
+              <td>Sets Wave byte category nibble (bits 1–4 of wave byte). Used with <code>--type wave</code>.</td>
+            </tr>
+            <tr>
+              <td><code>--wave-content</code></td>
+              <td><code>0x0</code>–<code>0xF</code></td>
+              <td>Sets Wave byte content nibble (bits 5–8). Meaning is category-dependent.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="flag-group">
+        <div class="flag-group-label">Layer 1 — Session Identity</div>
+        <table class="data-table">
+          <thead>
+            <tr><th>Flag</th><th>Values</th><th>Effect</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>--sender-id</code></td>
+              <td><code>0x00000001</code>–<code>0xFFFFFFFF</code></td>
+              <td>32-bit flat sender identity. Written to Layer 1 bytes 1–4.</td>
+            </tr>
+            <tr>
+              <td><code>--domain</code></td>
+              <td><code>0x0</code>–<code>0xF</code></td>
+              <td>4-bit domain selector in Layer 1. Declares financial, engineering, or custom semantic layer.</td>
+            </tr>
+            <tr>
+              <td><code>--permissions</code></td>
+              <td><code>0x0</code>–<code>0xF</code></td>
+              <td>4-bit permission field in Layer 1. Read/write/admin/stream capability mask.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="flag-group">
+        <div class="flag-group-label">Layer 2 — Batch Header (BitLedger frames)</div>
+        <table class="data-table">
+          <thead>
+            <tr><th>Flag</th><th>Values</th><th>Effect</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>--currency</code></td>
+              <td><code>0x00</code>–<code>0xFF</code></td>
+              <td>8-bit currency/unit code in Layer 2. Declares denomination for all records in the session.</td>
+            </tr>
+            <tr>
+              <td><code>--scale</code></td>
+              <td><code>0</code>–<code>15</code></td>
+              <td>4-bit scaling factor D (decimal shift). Sets the decimal position for the batch.</td>
+            </tr>
+            <tr>
+              <td><code>--precision</code></td>
+              <td><code>0</code>–<code>15</code></td>
+              <td>4-bit precision P. Minimum significant digits declared for the batch.</td>
+            </tr>
+            <tr>
+              <td><code>--round-balance</code></td>
+              <td><code>up · down · even</code></td>
+              <td>Rounding balance direction. Sets 2-bit rounding mode field in Layer 2.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="flag-group">
+        <div class="flag-group-label">Layer 3 — BitLedger Record Value and Accounting</div>
+        <table class="data-table">
+          <thead>
+            <tr><th>Flag</th><th>Values</th><th>Effect</th></tr>
+          </thead>
+          <tbody>
+            <tr class="xrow" data-drawer="dr-value-flags">
+              <td><code>--mantissa</code> <span class="xrow-indicator">▾</span></td>
+              <td><code>0</code>–<code>16383</code></td>
+              <td>Value mantissa A in the encoding formula N = A × 2^S + r</td>
+            </tr>
+            <tr class="xdrawer" id="dr-value-flags">
+              <td colspan="3">
+                <div class="xdrawer-inner">
+                  <p>The CLI packs mantissa A and shift S into the 25-bit value field of Layer 3. A is the significant integer. S is the power-of-two scale. The encoded value N = A × 2^S satisfies the conservation invariant when summed across all records in a batch.</p>
+                  <p>Use <code>--mantissa</code> with <code>--shift</code> to set both. For tier-1 (S=0), <code>--mantissa</code> alone suffices.</p>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td><code>--shift</code></td>
+              <td><code>0</code>–<code>10</code></td>
+              <td>Value shift S. Sets the power-of-two multiplier. S=0 encodes N = A exactly.</td>
+            </tr>
+            <tr>
+              <td><code>--account-pair</code></td>
+              <td><code>0x0</code>–<code>0xE</code></td>
+              <td>4-bit account pair / flow archetype in Layer 3 bits 28–31. 0xF is reserved for compound mode continuation.</td>
+            </tr>
+            <tr>
+              <td><code>--debit</code></td>
+              <td>flag</td>
+              <td>Sets direction flag in Layer 3 bit 1 to debit. Mutually exclusive with <code>--credit</code>.</td>
+            </tr>
+            <tr>
+              <td><code>--credit</code></td>
+              <td>flag</td>
+              <td>Sets direction flag in Layer 3 bit 1 to credit.</td>
+            </tr>
+            <tr>
+              <td><code>--final</code></td>
+              <td>flag</td>
+              <td>Sets completeness flag in Layer 3 bit 2. Marks record as final, not provisional.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="flag-group">
+        <div class="flag-group-label">Optional Components — Time, Task, Note</div>
+        <table class="data-table">
+          <thead>
+            <tr><th>Flag</th><th>Values</th><th>Effect</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>--time-t1s</code></td>
+              <td><code>&lt;unix-seconds&gt;</code></td>
+              <td>Adds T1S time block (3 bytes). Compressed Unix timestamp to ~2-second resolution.</td>
+            </tr>
+            <tr>
+              <td><code>--time-t2</code></td>
+              <td><code>&lt;unix-seconds&gt;</code></td>
+              <td>Adds T2 time block (4 bytes). Full Unix timestamp with sub-second precision nibble.</td>
+            </tr>
+            <tr>
+              <td><code>--task</code></td>
+              <td><code>0x00</code>–<code>0xFF</code></td>
+              <td>Adds 2-byte task component. 8-bit task code declares the class of work.</td>
+            </tr>
+            <tr>
+              <td><code>--task-action</code></td>
+              <td><code>0x0</code>–<code>0xF</code></td>
+              <td>4-bit action nibble within the task component. Verb on the task code.</td>
+            </tr>
+            <tr>
+              <td><code>--note</code></td>
+              <td><code>&lt;bytes&gt;</code></td>
+              <td>Appends note block. Length-prefixed variable bytes of annotation.</td>
+            </tr>
+            <tr>
+              <td><code>--signal-slots</code></td>
+              <td><code>0x00</code>–<code>0xFF</code></td>
+              <td>Sets signal slot presence byte (P1–P8 active flags). Enhancement C0 bytes at declared positions.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Example Invocations</h3>
+<pre><code><span style="color:#FC8C6A;"># Pure Signal — 1 byte, ACK request</span>
+./bitpads --type signal --ack --output heartbeat.bp
+
+<span style="color:#FC8C6A;"># Wave — category 0x0 (plain value), content 0x5</span>
+./bitpads --type wave --category 0x0 --wave-content 0x5 --stdout
+
+<span style="color:#FC8C6A;"># Wave — category 0xC (compact command)</span>
+./bitpads --type wave --category 0xC --wave-content 0x1 --output cmd.bp
+
+<span style="color:#FC8C6A;"># Minimal Record — identity + value only</span>
+./bitpads --type record \
+  --sender-id 0x00010001 \
+  --domain 0x1 \
+  --mantissa 500 --shift 0 \
+  --output record-min.bp
+
+<span style="color:#FC8C6A;"># Record with time and task components</span>
+./bitpads --type record \
+  --sender-id 0x00010001 \
+  --domain 0x1 \
+  --mantissa 1250 --shift 2 \
+  --time-t2 1746748800 \
+  --task 0x07 --task-action 0x1 \
+  --output record-full.bp
+
+<span style="color:#FC8C6A;"># BitLedger frame — full double-entry</span>
+./bitpads --type ledger \
+  --sender-id 0x00010001 \
+  --domain 0x0 \
+  --currency 0x01 --scale 2 --precision 4 --round-balance even \
+  --mantissa 9999 --shift 0 \
+  --account-pair 0x1 --debit --final \
+  --output ledger.bp
+
+<span style="color:#FC8C6A;"># Dry-run — show hex annotation, write nothing</span>
+./bitpads --type ledger \
+  --sender-id 0x00010001 \
+  --mantissa 100 --shift 0 \
+  --account-pair 0x1 --credit \
+  --dry-run</code></pre>
+    </section>
+
+    <!-- ── WHAT WORKS ── -->
+    <section id="what-works">
+      <p class="eyebrow">Implementation Status</p>
+      <h2>What Works</h2>
+      <p>Taken directly from the project readme. The macOS CLI (<code>assemblycli/</code>) is functional and produces conformant output for all of the following:</p>
+
+      <ul class="checklist">
+        <li>Frame assembly for Pure Signal, Wave, Record, and BitLedger types</li>
+        <li>Layer 1 with CRC-15 embed — polynomial x^15 + x + 1 computed over session payload</li>
+        <li>Layer 2 batch headers — currency, scaling, precision, separator convention, rounding balance</li>
+        <li>Meta Byte 1 construction — mode, ACK, continuation, treatment, Role A/B flags</li>
+        <li>Meta Byte 2 construction — domain, permissions, component presence bits, enhancement flags</li>
+        <li>Value encoding across four tiers — mantissa and shift packing into 25-bit field</li>
+        <li>T1S time fields — 3-byte compressed Unix timestamp to ~2-second resolution</li>
+        <li>T2 time fields — 4-byte full timestamp with sub-second precision nibble</li>
+        <li>Task and note blocks — 2-byte task component and length-prefixed note block</li>
+        <li>C0 Enhancement Grammar signal slot presence byte — P1–P8 position flags</li>
+        <li>Telegraph, compact command, and context declaration Wave categories (1110, 1100, 1101)</li>
+        <li>File output — <code>open</code> / <code>write</code> / <code>close</code> syscalls to named <code>.bp</code> file</li>
+        <li>Stdout output — <code>write</code> syscall to fd 1, binary frame bytes</li>
+        <li>Dry-run output mode — hex-annotated dump to stdout via <code>hexdump.asm</code></li>
+      </ul>
+    </section>
+
+    <!-- ── KNOWN GAPS ── -->
+    <section id="known-gaps">
+      <p class="eyebrow">Implementation Status</p>
+      <h2>Known Gaps</h2>
+      <p>Taken directly from the project readme. These are the current open items in the implementation:</p>
+
+      <div class="notice warn">
+        <ul class="gaps-list" style="margin:0;padding:0;">
+          <li>Signal slot content bytes are declared in the presence byte but are not yet written to the output buffer — the byte is set but the slot's content follows only as a stub</li>
+          <li>The 28-byte vs 22-byte footprint discrepancy in the spec needs resolution — the path from the 22-byte irreducible minimum to the spec's cited 28-byte figure depends on which Session Config Extension sub-fields are treated as mandatory</li>
+          <li>No formal byte-level test vectors exist — conformance is verified by manual inspection of hex dumps, not automated comparison against known-good outputs</li>
+          <li>No decoder — the CLI is encode-only; there is no tool to parse a <code>.bp</code> file back into human-readable fields</li>
+          <li><code>--help</code> output is absent — there is no usage message; the flag list is documented here and in the project readme only</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ── OUTPUT FORMATS ── -->
+    <section id="output-formats">
+      <p class="eyebrow">Binary Output</p>
+      <h2>Output Formats</h2>
+
+      <h3>File Output — <code>.bp</code></h3>
+      <p>The default output mode. The CLI opens a file at the path given by <code>--output</code>, writes the frame bytes sequentially, and closes the file. The file contains raw binary — no header, no container, no framing. One frame per file in the current implementation. The receiver opens the file and reads from byte 0; the first byte is always Meta byte 1.</p>
+
+      <h3>Stdout</h3>
+      <p>With <code>--stdout</code> the CLI issues a <code>write(1, outbuf, n)</code> syscall and exits. The binary frame bytes stream to stdout. This allows the CLI to be piped into another tool or redirected to a file: <code>./bitpads --type signal --ack --stdout &gt; pulse.bp</code>.</p>
+
+      <h3>Dry-Run Mode</h3>
+      <p>With <code>--dry-run</code> the output buffer is routed to <code>hexdump.asm</code> instead of <code>fileio.asm</code>. Each byte is formatted as a two-digit hex value with a field annotation showing which protocol field it belongs to. Nothing is written to disk.</p>
+
+      <h3>Hex Dump — Pure Signal (1 byte)</h3>
+      <div class="printout">
+        <div class="ph">── DRY RUN · Pure Signal · --ack ────────────────────────────</div>
+        <div><span class="pl">Byte 00 </span><span class="pv">0x40  </span><span class="pb">0100 0000  </span><span class="pc">Meta byte 1 — Wave mode, ACK request, basic treatment</span></div>
+        <div class="ph">── END FRAME · 1 byte ───────────────────────────────────────</div>
+      </div>
+
+      <h3>Hex Dump — Minimal BitLedger Frame (22 bytes)</h3>
+      <div class="printout">
+        <div class="ph">── DRY RUN · BitLedger · sender=0x00010001 · A=100 S=0 ──────</div>
+        <div><span class="pl">Byte 00 </span><span class="pv">0x81  </span><span class="pb">1000 0001  </span><span class="pc">Meta byte 1 — Record mode, complete, basic, no ext</span></div>
+        <div><span class="pl">Byte 01 </span><span class="pv">0x10  </span><span class="pb">0001 0000  </span><span class="pc">Meta byte 2 — domain 0x1, L2 present, L3 present</span></div>
+        <div><span class="pl">Byte 02 </span><span class="pv">0x00  </span><span class="pb">0000 0000  </span><span class="pc">Layer 1 — Sender ID byte 1 (network)</span></div>
+        <div><span class="pl">Byte 03 </span><span class="pv">0x01  </span><span class="pb">0000 0001  </span><span class="pc">Layer 1 — Sender ID byte 2 (system)</span></div>
+        <div><span class="pl">Byte 04 </span><span class="pv">0x00  </span><span class="pb">0000 0000  </span><span class="pc">Layer 1 — Sender ID byte 3 (node high)</span></div>
+        <div><span class="pl">Byte 05 </span><span class="pv">0x01  </span><span class="pb">0000 0001  </span><span class="pc">Layer 1 — Sender ID byte 4 (node low)</span></div>
+        <div><span class="pl">Byte 06 </span><span class="pv">0x10  </span><span class="pb">0001 0000  </span><span class="pc">Layer 1 — domain nibble + permissions nibble</span></div>
+        <div><span class="pl">Byte 07 </span><span class="pv">0x00  </span><span class="pb">0000 0000  </span><span class="pc">Layer 1 — CRC-15 high byte (7 bits + MSB of CRC low)</span></div>
+        <div><span class="pl">Byte 08 </span><span class="pv">0xC4  </span><span class="pb">1100 0100  </span><span class="pc">Layer 1 — CRC-15 low byte + reserved 1-bit</span></div>
+        <div><span class="pl">Byte 09 </span><span class="pv">0x01  </span><span class="pb">0000 0001  </span><span class="pc">Layer 2 — currency code (0x01 = USD)</span></div>
+        <div><span class="pl">Byte 0A </span><span class="pv">0x24  </span><span class="pb">0010 0100  </span><span class="pc">Layer 2 — scale D=2, precision P=4</span></div>
+        <div><span class="pl">Byte 0B </span><span class="pv">0x00  </span><span class="pb">0000 0000  </span><span class="pc">Layer 2 — separator convention, flags</span></div>
+        <div><span class="pl">Byte 0C </span><span class="pv">0x00  </span><span class="pb">0000 0000  </span><span class="pc">Layer 2 — rounding balance + reserved</span></div>
+        <div><span class="pl">Byte 0D </span><span class="pv">0x00  </span><span class="pb">0000 0000  </span><span class="pc">Layer 2 — batch sequence high</span></div>
+        <div><span class="pl">Byte 0E </span><span class="pv">0x01  </span><span class="pb">0000 0001  </span><span class="pc">Layer 2 — batch sequence low</span></div>
+        <div><span class="pl">Byte 0F </span><span class="pv">0x02  </span><span class="pb">0000 0010  </span><span class="pc">Layer 3 byte 1 — direction=debit (bit1=1), compl=final (bit2=1), value MSB</span></div>
+        <div><span class="pl">Byte 10 </span><span class="pv">0x00  </span><span class="pb">0000 0000  </span><span class="pc">Layer 3 byte 2 — value field (N=100, packed A=100 S=0)</span></div>
+        <div><span class="pl">Byte 11 </span><span class="pv">0x64  </span><span class="pb">0110 0100  </span><span class="pc">Layer 3 byte 3 — value field low (0x64 = 100 decimal)</span></div>
+        <div><span class="pl">Byte 12 </span><span class="pv">0x10  </span><span class="pb">0001 0000  </span><span class="pc">Layer 3 byte 4 — account pair 0x1 (debit/credit), CRC-7 high</span></div>
+        <div><span class="pl">Byte 13 </span><span class="pv">0xE2  </span><span class="pb">1110 0010  </span><span class="pc">Layer 3 byte 5 — CRC-7 low + status bits (direction mirror)</span></div>
+        <div class="ph">── END FRAME · 20 bytes L1+L2+L3 + 2 Meta ──────────────────</div>
+        <div><span class="pc"> Conservation check: single-record batch, balance deferred to batch close.</span></div>
+      </div>
+    </section>
+
+    <!-- ── VALUE ENCODING ── -->
+    <section id="value-encoding">
+      <p class="eyebrow">Encoding Formula</p>
+      <h2>Value Encoding</h2>
+      <p class="lead">Every value in the protocol encodes as a scaled integer. No floating point anywhere.</p>
+
+      <p>The encoding formula is <strong>N = A × 2<sup>S</sup> + r</strong>, where A is the integer mantissa, S is the power-of-two shift, and r is the rounding remainder. The 25-bit field in Layer 3 packs A and S; r is declared separately by the rounding balance flag. Every integer from 0 to 33,554,431 (2<sup>25</sup> − 1) is exactly reachable with S = 0. For larger values, S increases the effective range at the cost of resolution.</p>
+
+      <div class="formula">
+        <span class="f-name">N</span> = <span class="f-var">A</span> × 2<sup><span class="f-var">S</span></sup> + <span class="f-var">r</span>
+        <br>
+        <span class="f-note">A = integer mantissa · S = power-of-two shift · r = rounding remainder (0 or 1, declared by flag)</span>
+      </div>
+
+      <h3>Encoding Tiers</h3>
+      <div class="tier-grid">
+        <div class="tier-cell">
+          <div class="tier-num">Tier 1</div>
+          <div class="tier-range">S = 0</div>
+          <p class="tier-desc">Exact integers. A directly encodes the value. Maximum A = 33,554,431. Use for values up to ~33.5M in the session's base denomination.</p>
+          <div class="tier-flags"><code>--mantissa 100 --shift 0</code><br>→ N = 100</div>
+        </div>
+        <div class="tier-cell">
+          <div class="tier-num">Tier 2</div>
+          <div class="tier-range">S = 1–3</div>
+          <p class="tier-desc">Small multiplier. Doubles, quadruples, or octuples A. Useful for even values where resolution in the low bit is not needed.</p>
+          <div class="tier-flags"><code>--mantissa 500 --shift 2</code><br>→ N = 2000</div>
+        </div>
+        <div class="tier-cell">
+          <div class="tier-num">Tier 3</div>
+          <div class="tier-range">S = 4–7</div>
+          <p class="tier-desc">Medium multiplier. Effective range extends to ~500M–4B. Resolution coarsens proportionally. Rounding flag becomes significant.</p>
+          <div class="tier-flags"><code>--mantissa 8191 --shift 5</code><br>→ N = 262,112</div>
+        </div>
+        <div class="tier-cell">
+          <div class="tier-num">Tier 4</div>
+          <div class="tier-range">S = 8–10</div>
+          <p class="tier-desc">Large multiplier. Maximum S = 10 gives A × 1024. At A = 32,767 and S = 10, N ≈ 33.5B. Protocol maximum for a single record.</p>
+          <div class="tier-flags"><code>--mantissa 32767 --shift 10</code><br>→ N = 33,553,408</div>
+        </div>
+      </div>
+
+      <div class="calculator">
+        <div class="calc-title">Value Encoding Calculator — N = A × 2^S + r</div>
+        <div class="calc-fields">
+          <div class="calc-field">
+            <label for="calc-a">Mantissa A (0 – 16383)</label>
+            <input type="number" id="calc-a" min="0" max="16383" value="100">
+          </div>
+          <div class="calc-field">
+            <label for="calc-s">Shift S (0 – 10)</label>
+            <input type="number" id="calc-s" min="0" max="10" value="0">
+          </div>
+          <div class="calc-field">
+            <label for="calc-r">Rounding r (0 or 1)</label>
+            <input type="number" id="calc-r" min="0" max="1" value="0">
+          </div>
+        </div>
+        <div class="calc-output">
+          <div class="calc-line">
+            <span class="cl">Formula</span>
+            <span class="cv" id="co-formula">100 × 2^0 + 0</span>
+          </div>
+          <hr class="calc-divider">
+          <div class="calc-line">
+            <span class="cl">Encoded value N</span>
+            <span class="cr" id="co-n">100</span>
+          </div>
+          <div class="calc-line">
+            <span class="cl">Hex</span>
+            <span class="cv" id="co-hex">0x00000064</span>
+          </div>
+          <div class="calc-line">
+            <span class="cl">Binary (25-bit field)</span>
+            <span class="cb" id="co-bin">0 0000 0000 0000 0110 0100</span>
+          </div>
+          <hr class="calc-divider">
+          <div class="calc-line">
+            <span class="cl">CLI flags</span>
+            <span class="cv" id="co-flags">--mantissa 100 --shift 0</span>
+          </div>
+          <div class="calc-line">
+            <span class="cl">Range check</span>
+            <span class="cv" id="co-range">Within 25-bit field</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── CRC-15 ── -->
+    <section id="crc15">
+      <p class="eyebrow">Integrity Mechanism</p>
+      <h2>CRC-15 Implementation</h2>
+      <p>The CRC-15 is computed by <code>src/crypto/crc15.asm</code> over the session payload in Layer 1. The polynomial is <strong>x<sup>15</sup> + x + 1</strong> — a degree-15 polynomial with Hamming distance 4 for frame lengths up to 32,767 bits. This polynomial detects all burst errors of 15 bits or fewer, all single-bit errors, all double-bit errors, and all errors of odd bit count.</p>
+
+      <h3>Algorithm</h3>
+      <p>The implementation is register-based with no lookup table. A 16-bit CRC register (initialised to all-ones) is loaded before the session payload bytes are processed. For each byte in the session payload, each bit is processed from MSB to LSB. On each bit: the input bit is XORed with the current MSB of the register; if the result is 1, the register is shifted left one position and XORed with the polynomial mask <code>0x8003</code> (representing x<sup>15</sup> + x + 1 in bit-reflection form); otherwise the register is shifted left only. After all payload bits are processed, the register holds the 15-bit CRC. The CRC is embedded in Layer 1 bytes 7–8 (15 bits, 1 reserved).</p>
+
+      <div class="printout">
+        <div class="ph">── CRC-15 WORKED EXAMPLE ─────────────────────────────────────</div>
+        <div><span class="pl">Polynomial    </span><span class="pv">x^15 + x + 1 = 0x8003</span></div>
+        <div><span class="pl">Init register </span><span class="pv">0x7FFF (all 15 bits set)</span></div>
+        <div class="ph">──</div>
+        <div><span class="pl">Session payload:</span></div>
+        <div><span class="pl">  Byte 0 </span><span class="pv">0x00  </span><span class="pc">sender ID network byte</span></div>
+        <div><span class="pl">  Byte 1 </span><span class="pv">0x01  </span><span class="pc">sender ID system byte</span></div>
+        <div><span class="pl">  Byte 2 </span><span class="pv">0x00  </span><span class="pc">sender ID node high</span></div>
+        <div><span class="pl">  Byte 3 </span><span class="pv">0x01  </span><span class="pc">sender ID node low</span></div>
+        <div><span class="pl">  Byte 4 </span><span class="pv">0x10  </span><span class="pc">domain + permissions nibbles</span></div>
+        <div class="ph">──</div>
+        <div><span class="pl">Processing byte 0x01 (bit 7→0):</span></div>
+        <div><span class="pv">  bit=0: MSB XOR 0 = 0 → shift left only     </span><span class="pc">CRC = 0x7FFE</span></div>
+        <div><span class="pv">  bit=0: MSB XOR 0 = 0 → shift left only     </span><span class="pc">CRC = 0x7FFC</span></div>
+        <div><span class="pv">  ...                                         </span><span class="pc">     ...</span></div>
+        <div><span class="pv">  bit=1: MSB XOR 1 = 1 → shift + XOR 0x8003  </span><span class="pc">CRC flips two bits</span></div>
+        <div class="ph">──</div>
+        <div><span class="pl">Final CRC-15   </span><span class="pv">example: 0x18C4</span></div>
+        <div><span class="pl">Layer 1 byte 7 </span><span class="pb">0 001 1000  </span><span class="pc">bits [14:8] of CRC + reserved bit (1)</span></div>
+        <div><span class="pl">Layer 1 byte 8 </span><span class="pb">1100 0100  </span><span class="pc">bits [7:0] of CRC = 0xC4</span></div>
+        <div class="ph">────────────────────────────────────────────────────────────</div>
+        <div><span class="pc"> Receiver recomputes CRC over same payload bytes.</span></div>
+        <div><span class="pc"> CRC mismatch → session rejected before L2 or L3 is processed.</span></div>
+        <div class="ph">────────────────────────────────────────────────────────────</div>
+      </div>
+
+      <div class="notice">
+        <p><strong>Why no lookup table:</strong> A table-driven CRC requires a 256-entry × 2-byte table in data memory — feasible in a standard runtime but non-trivial in a no-heap, stack-only assembly environment where memory layout is explicit. The register-based bit iterator uses two registers and a branch per bit. For sessions where the payload is 5 bytes (40 bits), the loop runs exactly 40 iterations — a fixed, auditable cost.</p>
+      </div>
+    </section>
+
+    <!-- ── ROADMAP ── -->
+    <section id="roadmap">
+      <p class="eyebrow">Development Status</p>
+      <h2>Roadmap</h2>
+      <p>The following items represent the current development boundary. Protocol specifications are versioned and stable. The implementation gaps below are implementation work, not specification changes.</p>
+
+      <div class="principles">
+        <div class="principle">
+          <div class="pr-num">01</div>
+          <div class="pr-head">Signal Slot Content Bytes</div>
+          <p class="pr-body">The signal slot presence byte is written correctly — declaring which of P1–P13 are active in this frame. The content bytes that should follow at those positions are not yet written. The gap is implementation, not specification: the slot positions and content formats are fully defined.</p>
+        </div>
+        <div class="principle">
+          <div class="pr-num">02</div>
+          <div class="pr-head">22 vs 28 Byte Footprint</div>
+          <p class="pr-body">The spec's footprint table cites 28 bytes for a full BitLedger frame. The named components sum to 22 bytes. The path to 28 runs through which Session Config Extension sub-fields (compound mode marker, nesting level declaration, opposing convention extension) are treated as mandatory for a given session configuration. This needs a normative decision in the spec before the CLI can enforce it.</p>
+        </div>
+        <div class="principle">
+          <div class="pr-num">03</div>
+          <div class="pr-head">Linux Port</div>
+          <p class="pr-body">The Linux ELF64 build (<code>linux_assembly_cli/</code>) has been assembled but not linked or executed on a Linux machine. The primary difference is the syscall convention: Linux uses <code>syscall</code> with rax/rdi/rsi/rdx registers; macOS uses the Mach trap interface. The protocol logic is identical — only the I/O layer changes.</p>
+        </div>
+        <div class="principle">
+          <div class="pr-num">04</div>
+          <div class="pr-head">--help Output</div>
+          <p class="pr-body">The CLI currently has no usage message. Running <code>./bitpads</code> without arguments produces no output. The flag documentation exists in this page and in the project readme. A <code>--help</code> flag is straightforward to add — it is a data section of ASCII bytes and a single <code>write(1, help_str, len)</code> syscall.</p>
+        </div>
+        <div class="principle">
+          <div class="pr-num">05</div>
+          <div class="pr-head">Byte-Level Test Vectors</div>
+          <p class="pr-body">No formal test vectors exist. Conformance is verified by manual inspection of <code>--dry-run</code> hex output. A test vector file — known-good hex outputs for each frame type with known inputs — would enable automated regression testing and provide a reference for decoder implementors.</p>
+        </div>
+        <div class="principle">
+          <div class="pr-num">06</div>
+          <div class="pr-head">Decoder</div>
+          <p class="pr-body">The CLI is encode-only. There is no tool to parse a <code>.bp</code> file back into human-readable fields. A decoder would complete the round-trip and enable automated conformance testing: encode a frame, decode it, compare field values to the input flags. The decoder is the natural next major component after the encoder is feature-complete.</p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div>
+      <div class="footer-group-label">Protocol</div>
+      <ul class="footer-links">
+        <li><a href="bitpads-v2.html">BitPads v2</a></li>
+        <li><a href="bitledger.html">BitLedger v3</a></li>
+        <li><a href="universal-domain.html">Universal Domain</a></li>
+        <li><a href="compound-mode.html">Compound Mode</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-group-label">Enhancement</div>
+      <ul class="footer-links">
+        <li><a href="enhancement-grammar.html">Grammar &amp; Signal Slots</a></li>
+        <li><a href="enhancement-commands.html">Commands &amp; Context</a></li>
+        <li><a href="enhancement-telegraph-1.html">Telegraph Emulation I</a></li>
+        <li><a href="enhancement-telegraph-2.html">Telegraph Emulation II</a></li>
+        <li><a href="enhancement-nesting.html">Nesting &amp; Overhead</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-group-label">Resources</div>
+      <ul class="footer-links">
+        <li><a href="engineering.html">Engineering Applications</a></li>
+        <li><a href="guide.html">Implementation Guide</a></li>
+        <li><a href="cli.html">CLI Tools</a></li>
+        <li><a href="reference.html">Reference &amp; Glossary</a></li>
+      </ul>
+    </div>
+    <div class="footer-copy">
+      BitPads Protocol v2.0<br>
+      BitLedger Protocol v3.0<br>
+      Universal Domain v1.0<br>
+      © BABB
+    </div>
+  </div>
+</footer>
+
+<script>
+// TOC active state via IntersectionObserver
+const secs = document.querySelectorAll('section[id]');
+const tocAs = document.querySelectorAll('.toc a');
+const io = new IntersectionObserver(es => {
+  es.forEach(e => {
+    if (e.isIntersecting) {
+      tocAs.forEach(a => a.classList.remove('active'));
+      const a = document.querySelector(`.toc a[href="#${e.target.id}"]`);
+      if (a) a.classList.add('active');
+    }
+  });
+}, { rootMargin: '-15% 0px -70% 0px' });
+secs.forEach(s => io.observe(s));
+
+// Expandable table rows
+document.querySelectorAll('tr.xrow').forEach(row => {
+  row.addEventListener('click', () => {
+    const did = row.dataset.drawer;
+    const drawer = document.getElementById(did);
+    if (!drawer) return;
+    const open = drawer.classList.contains('open');
+    document.querySelectorAll('tr.xdrawer.open').forEach(d => {
+      d.classList.remove('open');
+      d.previousElementSibling?.classList.remove('open');
+    });
+    if (!open) { drawer.classList.add('open'); row.classList.add('open'); }
+  });
+});
+
+// Value encoding calculator
+function updateCalc() {
+  const A = parseInt(document.getElementById('calc-a').value) || 0;
+  const S = parseInt(document.getElementById('calc-s').value) || 0;
+  const r = parseInt(document.getElementById('calc-r').value) || 0;
+
+  const aClamp = Math.min(Math.max(A, 0), 16383);
+  const sClamp = Math.min(Math.max(S, 0), 10);
+  const rClamp = Math.min(Math.max(r, 0), 1);
+
+  const N = aClamp * Math.pow(2, sClamp) + rClamp;
+  const maxVal = Math.pow(2, 25) - 1;
+  const inRange = N <= maxVal;
+
+  document.getElementById('co-formula').textContent =
+    `${aClamp} \u00d7 2^${sClamp} + ${rClamp}`;
+  document.getElementById('co-n').textContent =
+    inRange ? N.toLocaleString() : 'OVERFLOW';
+  document.getElementById('co-n').className = inRange ? 'cr' : 'ce';
+  document.getElementById('co-hex').textContent =
+    inRange ? '0x' + N.toString(16).toUpperCase().padStart(8, '0') : '---';
+  document.getElementById('co-bin').textContent = (function() {
+    if (!inRange) return '--- exceeds 25-bit field ---';
+    let b = N.toString(2).padStart(25, '0');
+    // group: 1 + 4+4+4+4+4+4 spacing
+    return b.slice(0,1) + ' ' + b.slice(1,5) + ' ' + b.slice(5,9) + ' ' +
+           b.slice(9,13) + ' ' + b.slice(13,17) + ' ' + b.slice(17,21) + ' ' + b.slice(21,25);
+  })();
+  document.getElementById('co-flags').textContent =
+    `--mantissa ${aClamp} --shift ${sClamp}` + (rClamp ? ` --round-up` : '');
+  document.getElementById('co-range').textContent =
+    inRange ? `Within 25-bit field (max ${maxVal.toLocaleString()})` : 'EXCEEDS 25-bit field — reduce A or S';
+  document.getElementById('co-range').className = inRange ? 'cv' : 'ce';
+}
+
+['calc-a','calc-s','calc-r'].forEach(id => {
+  document.getElementById(id).addEventListener('input', updateCalc);
+});
+updateCalc();
+</script>
+</body>
+</html>

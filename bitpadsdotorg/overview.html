@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BitPads Protocol — Universal Binary Communication</title>
+<link rel="stylesheet" href="bp-style.css">
+<style>
+/* Index-specific */
+.hero { padding: 72px 0 48px; }
+.hero-rule {
+  display: flex; flex-wrap: wrap; gap: 20px 40px;
+  padding-top: 28px; margin-top: 28px;
+  border-top: 1px solid var(--rule);
+  font-family: var(--mono); font-size: 11px;
+  color: var(--ink-faint);
+}
+.hero-rule dt { text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 3px; }
+.hero-rule dd { margin: 0; color: var(--ink); font-family: var(--sans); font-size: 13px; }
+
+.spectrum-vis {
+  margin: 24px 0; border: 1px solid var(--rule);
+  background: var(--bg-panel);
+  overflow: hidden;
+}
+.sv-row {
+  display: grid;
+  grid-template-columns: 140px 60px 70px 1fr;
+  border-bottom: 1px solid var(--rule-soft);
+}
+.sv-row:last-child { border-bottom: none; }
+.sv-row:first-child { background: var(--bg-soft); }
+.sv-cell { padding: 13px 16px; border-right: 1px solid var(--rule-soft); }
+.sv-cell:last-child { border-right: none; }
+.sv-type {
+  font-family: var(--display); font-weight: 700;
+  font-size: 15px; text-transform: uppercase; letter-spacing: 0.04em;
+}
+.sv-sub { font-size: 11px; color: var(--ink-faint); margin-top: 2px; font-family: var(--mono); }
+.sv-bytes {
+  font-family: var(--mono); font-weight: 700;
+  font-size: 18px; color: var(--nasa-blue);
+  display: flex; align-items: center; justify-content: center;
+}
+.sv-bits {
+  font-family: var(--mono); font-size: 10px;
+  color: var(--ink-faint); text-align: center;
+  display: flex; align-items: center; justify-content: center;
+}
+.sv-bar-wrap { display: flex; align-items: center; gap: 12px; }
+.sv-bar {
+  height: 4px; background: var(--nasa-blue); border-radius: 1px;
+  transition: width .6s;
+}
+.sv-desc { font-size: 12.5px; color: var(--ink-soft); line-height: 1.45; }
+
+.conservation-cols {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px; background: var(--rule);
+  border: 1px solid var(--rule); margin: 24px 0;
+}
+@media (max-width: 700px) { .conservation-cols { grid-template-columns: 1fr; } }
+.cons-col {
+  background: var(--bg-panel); padding: 22px 20px;
+}
+.cons-label {
+  font-family: var(--mono); font-size: 9px;
+  text-transform: uppercase; letter-spacing: 0.12em;
+  color: var(--nasa-red); margin-bottom: 10px;
+}
+.cons-eq {
+  font-family: var(--mono); font-size: 12.5px;
+  line-height: 1.9; color: var(--ink);
+  border-left: 2px solid var(--rule);
+  padding-left: 12px;
+}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="index.html">
+      <span class="brand-mark">BP</span>
+      <span class="brand-name">BitPads Protocol</span>
+    </a>
+    <nav class="topnav">
+      <a href="overview.html">Overview</a>
+      <a href="bitpads-v2.html">BitPads v2</a>
+      <a href="bitledger.html" class="active">BitLedger</a>
+      <a href="universal-domain.html">Universal Domain</a>
+      <div class="nav-group">
+        <a href="enhancement-grammar.html">Enhancement</a>
+        <div class="nav-dropdown">
+          <a href="enhancement-grammar.html">Grammar &amp; Signal Slots</a>
+          <a href="enhancement-commands.html">Commands &amp; Context</a>
+          <a href="enhancement-telegraph-1.html">Telegraph Emulation I</a>
+          <a href="enhancement-telegraph-2.html">Telegraph Emulation II</a>
+          <a href="enhancement-nesting.html">Nesting &amp; Overhead</a>
+        </div>
+      </div>
+      <a href="compound-mode.html">Compound Mode</a>
+      <a href="engineering.html">Engineering</a>
+      <a href="guide.html">Guide</a>
+      <a href="cli.html">CLI</a>
+      <a href="reference.html">Reference</a>
+    </nav>
+  </div>
+</header>
+
+<div class="page">
+  <aside class="sidebar">
+    <p class="toc-label">On This Page</p>
+    <ul class="toc">
+      <li><a href="#overview" class="active">Overview</a></li>
+      <li><a href="#pure-signal">The Pure Signal</a></li>
+      <li><a href="#spectrum">Transmission Spectrum</a></li>
+      <li><a href="#family">Protocol Family</a></li>
+      <li><a href="#principles">Design Principles</a></li>
+      <li><a href="#conservation">Conservation Invariant</a></li>
+      <li><a href="#heritage">Heritage</a></li>
+      <li><a href="#numbers">By the Numbers</a></li>
+    </ul>
+  </aside>
+
+  <main>
+
+    <!-- ── HERO ── -->
+    <section id="overview" class="hero">
+      <p class="eyebrow">BitPads Protocol v2.0 · BitLedger v3.0 · Universal Domain v1.0</p>
+      <h1>One Byte<br>to One Record</h1>
+      <p class="pullquote">From a single heartbeat byte to a fully identified, timestamped, valued, tasked civilisational record — in as few as one byte.</p>
+      <p class="lead">BitPads is the outermost layer of a binary protocol family built from first principles at the mathematical foundation of information exchange. A single Meta byte declares everything that follows before the receiver processes a single payload bit.</p>
+      <p>Every transmission begins with the same byte. The receiver reads it and knows the type, content, enhancement state, and fragment status. The common case — a Pure Signal — costs exactly one byte. Complexity attaches on demand, at exact cost proportional to what it expresses. Nothing else inflates the wire.</p>
+      <div class="hero-rule">
+        <div><dt>Core protocol</dt><dd>BitLedger v3.0 — 40 bits per transaction</dd></div>
+        <div><dt>Outer layer</dt><dd>BitPads v2.0 — Meta bytes, Wave, Record modes</dd></div>
+        <div><dt>Domain extension</dt><dd>Universal Domain v1.0 — any conserved scalar</dd></div>
+        <div><dt>Sub-protocol</dt><dd>Enhancement v2.0 — C0 grammar, signal slots, nesting</dd></div>
+      </div>
+    </section>
+
+    <!-- ── PURE SIGNAL ── -->
+    <section id="pure-signal">
+      <p class="eyebrow">Minimum Transmission</p>
+      <h2>The Pure Signal</h2>
+      <p>When Meta byte 1 is transmitted alone, the transmission closes immediately. The entire message is in eight bits. No session required. No preamble. No schema lookup.</p>
+      <p><code>0x40 = 0100 0000</code> — Wave mode, ACK request, complete, basic treatment, no flags.<br>
+      Meaning: <strong>I am here. Acknowledge me.</strong> Response: ACK control record <code>0x31</code>.</p>
+
+      <div class="bit-display">
+        <div class="bit-display-label">Meta Byte 1 — 0x40 — Pure Signal (Wave, ACK Request)</div>
+        <div class="bit-cells">
+          <div class="bit-cell mode" data-layer="meta" data-tooltip="Bit 1: 0 = Wave mode. No Layer 1 required.">
+            <span class="bit-pos">1</span>
+            <span class="bit-val off">0</span>
+            <span class="bit-name">Wave<br>Mode</span>
+          </div>
+          <div class="bit-cell mode" data-layer="meta" data-tooltip="Bit 2: 1 = ACK Request in Wave mode. Single byte with only bit 2=1 is the universal pulse.">
+            <span class="bit-pos">2</span>
+            <span class="bit-val on">1</span>
+            <span class="bit-name">ACK<br>Req</span>
+          </div>
+          <div class="bit-cell mode" data-layer="meta" data-tooltip="Bit 3: 0 = Complete, self-contained. No continuation follows.">
+            <span class="bit-pos">3</span>
+            <span class="bit-val off">0</span>
+            <span class="bit-name">Cont.<br>None</span>
+          </div>
+          <div class="bit-cell mode" data-layer="meta" data-tooltip="Bit 4: 0 = Basic treatment. Bits 5-8 are Role A descriptors.">
+            <span class="bit-pos">4</span>
+            <span class="bit-val off">0</span>
+            <span class="bit-name">Basic<br>Treat.</span>
+          </div>
+          <div class="bit-cell data" data-layer="meta" data-tooltip="Bit 5 (Role A): Priority flag. 0 = Normal priority.">
+            <span class="bit-pos">5</span>
+            <span class="bit-val off">0</span>
+            <span class="bit-name">Priority</span>
+          </div>
+          <div class="bit-cell data" data-layer="meta" data-tooltip="Bit 6 (Role A): Cipher Active. 0 = Plain stream. No rolling codebook shift.">
+            <span class="bit-pos">6</span>
+            <span class="bit-val off">0</span>
+            <span class="bit-name">Cipher</span>
+          </div>
+          <div class="bit-cell data" data-layer="meta" data-tooltip="Bit 7 (Role A): Extended Flags. 0 = No extension byte follows.">
+            <span class="bit-pos">7</span>
+            <span class="bit-val off">0</span>
+            <span class="bit-name">Ext.<br>Flags</span>
+          </div>
+          <div class="bit-cell data" data-layer="meta" data-tooltip="Bit 8 (Role A): Profile Defined. 0 = Standard protocol behaviour.">
+            <span class="bit-pos">8</span>
+            <span class="bit-val off">0</span>
+            <span class="bit-name">Profile</span>
+          </div>
+        </div>
+        <div class="bit-legend">
+          <span class="legend-item"><span class="legend-swatch mode"></span> Mode / Control</span>
+          <span class="legend-item"><span class="legend-swatch data"></span> Content Field — Role A</span>
+          <span class="legend-item" style="margin-left:12px;color:var(--ink-faint);">Hover cells for field detail · Bottom strip = layer</span>
+        </div>
+      </div>
+
+      <div class="printout">
+        <div class="ph">────────────────────────────────────────</div>
+        <div class="ph"> TRANSMISSION: PURE SIGNAL</div>
+        <div class="ph">────────────────────────────────────────</div>
+        <div><span class="pl">Hex          </span><span class="pv">0x40</span></div>
+        <div><span class="pl">Binary       </span><span class="pb">0 1 0 0   0 0 0 0</span></div>
+        <div><span class="pl">Mode         </span><span class="pv">Wave (bit 1 = 0)</span></div>
+        <div><span class="pl">ACK Request  </span><span class="pv">YES (bit 2 = 1)</span></div>
+        <div><span class="pl">Continuation </span><span class="pv">None — complete (bit 3 = 0)</span></div>
+        <div><span class="pl">Treatment    </span><span class="pv">Basic — Role A flags active (bit 4 = 0)</span></div>
+        <div><span class="pl">Role A bits  </span><span class="pv">0000 — no priority, plain stream, no ext, standard</span></div>
+        <div class="ph">────────────────────────────────────────</div>
+        <div><span class="pl">Meaning      </span><span class="pg">I am here. Acknowledge me.</span></div>
+        <div><span class="pl">Response     </span><span class="pv">ACK control record 0x31 (two-byte verified handshake)</span></div>
+        <div class="ph">────────────────────────────────────────</div>
+      </div>
+      <p class="small soft" style="margin-top:8px;">A second pure signal: <code>0x0F = 0000 1111</code> — Wave, no ACK, complete, category mode, Priority Alert (1111). Meaning: priority alert incoming, receiver enters elevated mode.</p>
+    </section>
+
+    <!-- ── TRANSMISSION SPECTRUM ── -->
+    <section id="spectrum">
+      <p class="eyebrow">Architecture</p>
+      <h2>The Transmission Spectrum</h2>
+      <p>Four frame types share one Meta byte architecture. Every transmission begins with the same byte. The receiver determines type, enhancement state, and fragment status from that single byte before processing payload. Size and capability attach on demand.</p>
+
+      <div class="spectrum-vis">
+        <div class="sv-row">
+          <div class="sv-cell"><span class="mono faint small upper">Type</span></div>
+          <div class="sv-cell"><span class="mono faint small upper">Min</span></div>
+          <div class="sv-cell"><span class="mono faint small upper">Bits</span></div>
+          <div class="sv-cell"><span class="mono faint small upper">Description</span></div>
+        </div>
+        <div class="sv-row">
+          <div class="sv-cell">
+            <div class="sv-type">Pure Signal</div>
+            <div class="sv-sub">Heartbeat · ACK · Pulse</div>
+          </div>
+          <div class="sv-cell sv-bytes">1</div>
+          <div class="sv-cell sv-bits">8</div>
+          <div class="sv-cell">
+            <div class="sv-bar-wrap">
+              <div class="sv-bar" style="width:2%;"></div>
+            </div>
+            <div class="sv-desc">Single Meta byte. The byte IS the message. Status beacon, ACK request, presence pulse, priority alert.</div>
+          </div>
+        </div>
+        <div class="sv-row">
+          <div class="sv-cell">
+            <div class="sv-type">Wave</div>
+            <div class="sv-sub">Value · Status · Command · Stream</div>
+          </div>
+          <div class="sv-cell sv-bytes">2</div>
+          <div class="sv-cell sv-bits">16–48</div>
+          <div class="sv-cell">
+            <div class="sv-bar-wrap">
+              <div class="sv-bar" style="width:12%;"></div>
+            </div>
+            <div class="sv-desc">Meta byte plus lightweight content. 16 categories covering plain values, messages, status, commands, and stream opens. Layer 1 only required for categories 0100–0111.</div>
+          </div>
+        </div>
+        <div class="sv-row">
+          <div class="sv-cell">
+            <div class="sv-type">Record</div>
+            <div class="sv-sub">Identified · Timestamped · Logged</div>
+          </div>
+          <div class="sv-cell sv-bytes">13</div>
+          <div class="sv-cell sv-bits">104–232</div>
+          <div class="sv-cell">
+            <div class="sv-bar-wrap">
+              <div class="sv-bar" style="width:52%;"></div>
+            </div>
+            <div class="sv-desc">Both Meta bytes plus Layer 1 identity and optional Value, Time, Task, Note components. Formal identity. CRC-15 integrity. Attach only what the record needs.</div>
+          </div>
+        </div>
+        <div class="sv-row">
+          <div class="sv-cell">
+            <div class="sv-type">Full BitLedger</div>
+            <div class="sv-sub">Double-Entry · Conservation-Verified</div>
+          </div>
+          <div class="sv-cell sv-bytes">22+</div>
+          <div class="sv-cell sv-bits">224+</div>
+          <div class="sv-cell">
+            <div class="sv-bar-wrap">
+              <div class="sv-bar" style="width:100%;"></div>
+            </div>
+            <div class="sv-desc">Record with complete BitLedger double-entry accounting. Meta bytes, Layer 1, Layer 2 batch header, Session Config Extension, Layer 3 record. Conservation enforced at encoding.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── PROTOCOL FAMILY ── -->
+    <section id="family">
+      <p class="eyebrow">Document Family</p>
+      <h2>Five Specifications</h2>
+      <p>The BitPads protocol family is defined across five documents. The wire format authority is BitLedger v3. BitPads v2 wraps it. The Enhancement Sub-Protocol extends it. The Universal Domain generalises it. The Compound Mode Design Note documents a critical architectural decision and its tradeoffs.</p>
+
+      <div class="proto-grid">
+        <a class="proto-card" href="bitpads-v2.html">
+          <div class="pc-num">Outermost Layer</div>
+          <div class="pc-title">BitPads Protocol v2.0</div>
+          <div class="pc-sub">Universal 8-bit meta layer</div>
+          <p class="pc-desc">Meta bytes 1 &amp; 2, Wave and Record modes, 16 Wave categories, component sequence, decoder state machine. One byte to forty-four.</p>
+        </a>
+        <a class="proto-card" href="enhancement-grammar.html">
+          <div class="pc-num">Sub-Protocol</div>
+          <div class="pc-title">Enhancement Sub-Protocol v2.0</div>
+          <div class="pc-sub">C0 grammar · Signal slots P1–P13 · Nesting</div>
+          <p class="pc-desc">Industrial-strength signalling. Categories 1100, 1101, 1110. Binary pictography. Rolling codebook. Parser stack. 29+4 agreed C0 controls.</p>
+        </a>
+        <a class="proto-card" href="bitledger.html">
+          <div class="pc-num">Core Protocol</div>
+          <div class="pc-title">BitLedger Protocol v3.0</div>
+          <div class="pc-sub">40 bits per double-entry transaction</div>
+          <p class="pc-desc">Binary-native financial protocol. Every bit carries defined meaning. Three independent error detection layers per 40-bit record. CRC-15 session integrity.</p>
+        </a>
+        <a class="proto-card" href="universal-domain.html">
+          <div class="pc-num">Domain Extension</div>
+          <div class="pc-title">Universal Domain v1.0</div>
+          <div class="pc-sub">Any conserved scalar in any system</div>
+          <p class="pc-desc">The same 40-bit record carries kilograms, watt-hours, data packets, and obligations. 16 universal flow archetypes. Wire format byte-for-byte identical to financial mode.</p>
+        </a>
+        <a class="proto-card" href="compound-mode.html">
+          <div class="pc-num">Design Note</div>
+          <div class="pc-title">Compound Mode</div>
+          <div class="pc-sub">1111 marker · v1→v2 tradeoff</div>
+          <p class="pc-desc">The 1111 continuation marker links records into one logical event. Documents the session-level compound flag, per-batch ceiling, and the v2 architectural tradeoff.</p>
+        </a>
+      </div>
+    </section>
+
+    <!-- ── DESIGN PRINCIPLES ── -->
+    <section id="principles">
+      <p class="eyebrow">Architecture</p>
+      <h2>Design Principles</h2>
+      <div class="principles">
+        <div class="principle">
+          <div class="pr-num">01</div>
+          <div class="pr-head">Every bit carries meaning</div>
+          <p class="pr-body">No field in any layer is zero-padded or structurally unused. Reserved bits transmit as 1 to prevent zeroed trailing bytes. The protocol contains no waste by construction.</p>
+        </div>
+        <div class="principle">
+          <div class="pr-num">02</div>
+          <div class="pr-head">Microservices at the wire level</div>
+          <p class="pr-body">System bytes carry only invariant, load-bearing logic. Everything else is a module. Signal slots, Setup bytes, Time blocks, Task components — zero cost when absent.</p>
+        </div>
+        <div class="principle">
+          <div class="pr-num">03</div>
+          <div class="pr-head">Defaults cost nothing</div>
+          <p class="pr-body">The most common transaction uses 40 bits with no extension bytes. Complexity attaches on demand. The 4-byte anonymous Wave and the 44-byte fully-specified Record share the same Meta byte architecture.</p>
+        </div>
+        <div class="principle">
+          <div class="pr-num">04</div>
+          <div class="pr-head">Accounting integrity at encoding</div>
+          <p class="pr-body">Double-entry rules enforced by cross-layer flag redundancy. Mismatches are protocol errors. Three independent error detectors per 40-bit record. No separate checksum field required.</p>
+        </div>
+        <div class="principle">
+          <div class="pr-num">05</div>
+          <div class="pr-head">Self-framing session open</div>
+          <p class="pr-body">SOH leading 1-bit triggers protocol without preamble or sync sequence. In IDLE state, byte 0x01 unconditionally opens Layer 1 read. The sole context-free signal in the protocol.</p>
+        </div>
+        <div class="principle">
+          <div class="pr-num">06</div>
+          <div class="pr-head">8-bit block discipline</div>
+          <p class="pr-body">All layers are exact multiples of 8 bits. No layer ends with trailing zero bits. Every byte boundary is intentional. The encoding is clean at every level of abstraction.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── CONSERVATION INVARIANT ── -->
+    <section id="conservation">
+      <p class="eyebrow">First Principles</p>
+      <h2>The Conservation Invariant</h2>
+      <p class="lead">Every meaningful exchange of value between entities is a conservation law. BitLedger encodes this invariant at the wire level, not the application level.</p>
+      <p>Double-entry accounting is not a bookkeeping convention — it is a conservation law. Every transaction records a quantity leaving one account and arriving at another. The sum of all signed flows in any valid set of entries is zero. This is the same algebraic invariant that governs current flow in electrical networks, mass balance in chemical processes, and momentum transfer in mechanical systems.</p>
+
+      <div class="conservation-cols">
+        <div class="cons-col">
+          <div class="cons-label">Kirchhoff's Current Law</div>
+          <div class="cons-eq">∑(I_in) − ∑(I_out) = 0<br><br>Sum of all currents<br>entering a node equals<br>sum of all leaving.<br><br>Electrical networks.</div>
+        </div>
+        <div class="cons-col">
+          <div class="cons-label">Double-Entry Accounting</div>
+          <div class="cons-eq">∑(Debits) = ∑(Credits)<br><br>∑(+V<sub>i</sub>) + ∑(−V<sub>i</sub>) = 0<br><br>Same invariant applied<br>to monetary quantities.<br>Venetian merchants, 1494.</div>
+        </div>
+        <div class="cons-col">
+          <div class="cons-label">BitLedger Batch</div>
+          <div class="cons-eq">∑(signed flows) = 0<br>(mod precision step)<br><br>Enforced at the wire level<br>before the application<br>processes a single record.</div>
+        </div>
+      </div>
+
+      <p>These three statements are the same conservation principle expressed in different domains. Any system governed by a conservation law is therefore a natural candidate for BitLedger records — not as an approximation, but as an exact fit. The wire format does not change across domains. What changes is the semantic interpretation of two fields: the 4-bit relationship matrix and the 6-bit quantity type code.</p>
+
+      <div class="notice">
+        <p><strong>Universal Domain consequence:</strong> The same 40-bit record that encodes a financial transaction encodes 450 kg of propellant flowing from Tank Assembly to Main Engine Thruster Array — because both are applications of the same conservation law. A satellite constellation settling power debts between nodes is doing double-entry accounting on watt-hours.</p>
+      </div>
+    </section>
+
+    <!-- ── HERITAGE ── -->
+    <section id="heritage">
+      <p class="eyebrow">Design Heritage</p>
+      <h2>5,000 Years of Communication</h2>
+      <div class="timeline">
+        <div class="tl-item">
+          <div class="tl-year">c. 3000 BCE</div>
+          <div class="tl-event">Sumerian Clay Tokens</div>
+          <p class="tl-desc">The first accounting systems used compact marks whose meaning expanded through shared context. The mark was minimal; the codebook was in the reader's knowledge. BitPads Binary Pictography is this principle implemented in nibble streams: four bits per symbol, sixteen semantic concepts per codebook, richness held in shared context.</p>
+        </div>
+        <div class="tl-item">
+          <div class="tl-year">1870</div>
+          <div class="tl-event">Baudot Telegraph Code — Five Bits</div>
+          <p class="tl-desc">The atom of binary communication. Every standard that followed — Murray, ASCII, ISO 6429, Unicode — preserved the 5-bit C0 space and left the three upper bits structurally available. 155 years of protocol evolution never claimed them. BitPads Enhancement Grammar reclaims all three as a universal flag matrix: Priority, Acknowledge Request, Continuation.</p>
+        </div>
+        <div class="tl-item">
+          <div class="tl-year">1494</div>
+          <div class="tl-event">Luca Pacioli — Double-Entry Accounting</div>
+          <p class="tl-desc">Formalised what Venetian merchants already practised: every transaction has two sides and the sides must balance. BitLedger enforces this invariant at the encoding level. The conservation law is structural, not procedural — a corrupt record that violates the invariant is rejected before it reaches the application.</p>
+        </div>
+        <div class="tl-item">
+          <div class="tl-year">1845</div>
+          <div class="tl-event">Kirchhoff's Current Law</div>
+          <p class="tl-desc">The sum of currents at any node equals zero. Structurally identical to double-entry balance. BitLedger's Universal Domain recognises this explicitly: financial accounting and physical conservation are the same algebra applied to different quantities. The protocol enforces both with the same 40 bits.</p>
+        </div>
+        <div class="tl-item">
+          <div class="tl-year">Present</div>
+          <div class="tl-event">BitPads Protocol v2.0</div>
+          <p class="tl-desc">One protocol family. Five documents. A complete binary transmission standard from Pure Signal to fully annotated civilisational record. Conservation enforced at the wire. Every bit earns its position. From deep-space telemetry to high-frequency industrial control without format changes.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── NUMBERS ── -->
+    <section id="numbers">
+      <p class="eyebrow">At a Glance</p>
+      <h2>Protocol by the Numbers</h2>
+      <div class="stat-grid">
+        <div class="stat-cell">
+          <div class="stat-val">1</div>
+          <div class="stat-unit">byte minimum</div>
+          <p class="stat-desc">A complete transmission. The Pure Signal is a single Meta byte. The byte is the message.</p>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-val">40</div>
+          <div class="stat-unit">bits per transaction</div>
+          <p class="stat-desc">A complete double-entry accounting record. Both sides, full classification, direction, status, value.</p>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-val">13</div>
+          <div class="stat-unit">signal slot positions</div>
+          <p class="stat-desc">P1 through P13 spanning session, batch, record, and stream boundaries. Enhancement C0 bytes at declared positions.</p>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-val">16</div>
+          <div class="stat-unit">flow archetypes</div>
+          <p class="stat-desc">Universal relationship types for any canonical flow between any two entities in any engineered system.</p>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-val">~$33.5Q</div>
+          <div class="stat-unit">max single record</div>
+          <p class="stat-desc">Maximum expressible value in a single 40-bit BitLedger record. ~305× global GDP. At D=2, SF×1B.</p>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-val">4.29B</div>
+          <div class="stat-unit">unique sender IDs</div>
+          <p class="stat-desc">Flat 32-bit space. 3-level split: 255 networks × 255 systems × 65,535 nodes — 4.2B addressable sub-nodes.</p>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-val">100%</div>
+          <div class="stat-unit">burst error detection</div>
+          <p class="stat-desc">CRC-15 detects all burst errors ≤15 bits. All single-bit, double-bit, and odd-count errors. 99.997% above 15 bits.</p>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-val">512</div>
+          <div class="stat-unit">bytes / 100 transactions</div>
+          <p class="stat-desc">Compared to ~80,000 bytes in JSON. Reduction is structural, not compressive. No decompression step.</p>
+        </div>
+      </div>
+
+      <h3>Format Comparison</h3>
+      <div style="background:var(--bg-panel);border:1px solid var(--rule);padding:22px 24px;margin-top:8px;">
+        <h4>100 Transactions — Wire Size</h4>
+        <div style="font-family:var(--mono);font-size:12.5px;line-height:2.4;">
+          <div style="display:flex;align-items:center;gap:12px;">
+            <span style="display:inline-block;min-width:160px;color:var(--nasa-blue);font-weight:700;">BitLedger</span>
+            <span style="display:inline-block;width:6px;height:10px;background:var(--nasa-blue);"></span>
+            <span style="color:var(--ink-faint);">~512 bytes</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;">
+            <span style="display:inline-block;min-width:160px;color:var(--ink-soft);">Fixed binary</span>
+            <span style="display:inline-block;width:35px;height:10px;background:var(--ink-soft);opacity:0.4;"></span>
+            <span style="color:var(--ink-faint);">~3,000 bytes</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;">
+            <span style="display:inline-block;min-width:160px;color:var(--ink-soft);">MessagePack</span>
+            <span style="display:inline-block;width:70px;height:10px;background:var(--ink-soft);opacity:0.3;"></span>
+            <span style="color:var(--ink-faint);">~6,000 bytes</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;">
+            <span style="display:inline-block;min-width:160px;color:var(--ink-faint);">CSV</span>
+            <span style="display:inline-block;width:175px;height:10px;background:var(--ink-faint);opacity:0.25;"></span>
+            <span style="color:var(--ink-faint);">~15,000 bytes</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;">
+            <span style="display:inline-block;min-width:160px;color:var(--ink-faint);">JSON</span>
+            <span style="display:inline-block;width:320px;height:10px;background:var(--ink-faint);opacity:0.2;"></span>
+            <span style="color:var(--ink-faint);">~80,000 bytes</span>
+          </div>
+        </div>
+        <p class="small soft" style="margin:14px 0 0;font-family:var(--mono);">The reduction is structural, not compressive. No decompression step. No schema lookup. Fixed bit positions. The decoder reads and the record is decoded.</p>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div>
+      <div class="footer-group-label">Protocol</div>
+      <ul class="footer-links">
+        <li><a href="bitpads-v2.html">BitPads v2</a></li>
+        <li><a href="bitledger.html">BitLedger v3</a></li>
+        <li><a href="universal-domain.html">Universal Domain</a></li>
+        <li><a href="compound-mode.html">Compound Mode</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-group-label">Enhancement</div>
+      <ul class="footer-links">
+        <li><a href="enhancement-grammar.html">Grammar &amp; Signal Slots</a></li>
+        <li><a href="enhancement-commands.html">Commands &amp; Context</a></li>
+        <li><a href="enhancement-telegraph-1.html">Telegraph Emulation I</a></li>
+        <li><a href="enhancement-telegraph-2.html">Telegraph Emulation II</a></li>
+        <li><a href="enhancement-nesting.html">Nesting &amp; Overhead</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-group-label">Resources</div>
+      <ul class="footer-links">
+        <li><a href="engineering.html">Engineering Applications</a></li>
+        <li><a href="guide.html">Implementation Guide</a></li>
+        <li><a href="cli.html">CLI Tools</a></li>
+        <li><a href="reference.html">Reference &amp; Glossary</a></li>
+      </ul>
+    </div>
+    <div class="footer-copy">
+      BitPads Protocol v2.0<br>
+      BitLedger Protocol v3.0<br>
+      Universal Domain v1.0<br>
+      © BABB
+    </div>
+  </div>
+</footer>
+
+<script>
+// TOC active state
+const secs = document.querySelectorAll('section[id]');
+const tocAs = document.querySelectorAll('.toc a');
+const io = new IntersectionObserver(es => {
+  es.forEach(e => {
+    if (e.isIntersecting) {
+      tocAs.forEach(a => a.classList.remove('active'));
+      const a = document.querySelector(`.toc a[href="#${e.target.id}"]`);
+      if (a) a.classList.add('active');
+    }
+  });
+}, { rootMargin: '-15% 0px -70% 0px' });
+secs.forEach(s => io.observe(s));
+
+// Expandable table rows
+document.querySelectorAll('tr.xrow').forEach(row => {
+  row.addEventListener('click', () => {
+    const did = row.dataset.drawer;
+    const drawer = document.getElementById(did);
+    if (!drawer) return;
+    const open = drawer.classList.contains('open');
+    document.querySelectorAll('tr.xdrawer.open').forEach(d => {
+      d.classList.remove('open');
+      d.previousElementSibling?.classList.remove('open');
+    });
+    if (!open) { drawer.classList.add('open'); row.classList.add('open'); }
+  });
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,1188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Engineering Applications — BitPads Protocol</title>
+<link rel="stylesheet" href="bp-style.css">
+<style>
+/* Engineering-page-specific */
+.eng-hero { padding: 72px 0 48px; }
+.eng-hero-rule {
+  display: flex; flex-wrap: wrap; gap: 20px 40px;
+  padding-top: 28px; margin-top: 28px;
+  border-top: 1px solid var(--rule);
+  font-family: var(--mono); font-size: 11px;
+  color: var(--ink-faint);
+}
+.eng-hero-rule dt { text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 3px; }
+.eng-hero-rule dd { margin: 0; color: var(--ink); font-family: var(--sans); font-size: 13px; }
+
+/* Domain table */
+.domain-table {
+  width: 100%; border-collapse: collapse;
+  margin: 20px 0; font-size: 13px;
+}
+.domain-table th {
+  font-family: var(--mono); font-size: 9px;
+  text-transform: uppercase; letter-spacing: 0.1em;
+  color: var(--ink-soft); text-align: left;
+  padding: 9px 14px;
+  background: var(--bg-soft);
+  border-bottom: 2px solid var(--nasa-blue);
+}
+.domain-table td {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--rule-soft);
+  vertical-align: top; line-height: 1.45;
+  font-family: var(--mono); font-size: 12px;
+}
+.domain-table tr.eng-row td { background: #EBF5F0; }
+.domain-table td.domain-label { font-weight: 700; color: var(--nasa-blue); }
+
+/* Deployment scenario cards */
+.dep-scenario {
+  border: 1px solid var(--rule);
+  background: var(--bg-panel);
+  margin: 20px 0;
+}
+.dep-header {
+  display: grid;
+  grid-template-columns: 80px 1fr auto;
+  gap: 0;
+  border-bottom: 1px solid var(--rule);
+  align-items: center;
+}
+.dep-num {
+  background: var(--nasa-blue);
+  color: white;
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 22px;
+  padding: 18px 16px;
+  text-align: center;
+  letter-spacing: 0.04em;
+  align-self: stretch;
+  display: flex; align-items: center; justify-content: center;
+}
+.dep-head {
+  padding: 16px 20px;
+}
+.dep-context {
+  font-family: var(--mono); font-size: 9px;
+  text-transform: uppercase; letter-spacing: 0.1em;
+  color: var(--nasa-red); margin-bottom: 4px;
+}
+.dep-title {
+  font-family: var(--display); font-weight: 700;
+  font-size: 22px; text-transform: uppercase;
+  letter-spacing: 0.04em; color: var(--ink);
+}
+.dep-badge {
+  padding: 16px 20px; text-align: right;
+}
+.dep-bytes {
+  font-family: var(--mono); font-size: 11px;
+  color: var(--nasa-gold);
+}
+.dep-body { padding: 22px 24px; }
+.dep-body p { font-size: 14px; }
+
+/* Param grid */
+.param-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1px; background: var(--rule);
+  border: 1px solid var(--rule);
+  margin: 16px 0;
+}
+.param-cell {
+  background: var(--bg-soft);
+  padding: 14px 16px;
+}
+.param-label {
+  font-family: var(--mono); font-size: 9px;
+  text-transform: uppercase; letter-spacing: 0.1em;
+  color: var(--ink-faint); margin-bottom: 5px;
+}
+.param-val {
+  font-family: var(--mono); font-size: 13px;
+  color: var(--ink); font-weight: 700;
+}
+.param-note {
+  font-size: 11px; color: var(--ink-soft);
+  margin-top: 3px; font-family: var(--sans);
+}
+
+/* Archetype tag */
+.archetype-tag {
+  display: inline-block;
+  font-family: var(--mono); font-size: 10px;
+  background: var(--bg-dark); color: var(--nasa-gold);
+  padding: 3px 8px; margin: 2px;
+  border-left: 2px solid var(--nasa-gold);
+}
+
+/* Conservation box */
+.conservation-box {
+  background: var(--bg-dark);
+  border-left: 4px solid var(--nasa-teal);
+  padding: 16px 20px; margin: 16px 0;
+  font-family: var(--mono); font-size: 12px;
+  color: #7ECEF4; line-height: 2;
+}
+.conservation-box .cb-label {
+  color: var(--nasa-gold); font-size: 9px;
+  text-transform: uppercase; letter-spacing: 0.12em;
+  margin-bottom: 8px; display: block;
+}
+
+/* Checklist table */
+.checklist-table {
+  width: 100%; border-collapse: collapse;
+  margin: 20px 0; font-size: 13px;
+}
+.checklist-table th {
+  font-family: var(--mono); font-size: 9px;
+  text-transform: uppercase; letter-spacing: 0.1em;
+  color: var(--ink-soft); text-align: left;
+  padding: 9px 14px;
+  background: var(--bg-soft);
+  border-bottom: 2px solid var(--nasa-blue);
+}
+.checklist-table td {
+  padding: 11px 14px;
+  border-bottom: 1px solid var(--rule-soft);
+  vertical-align: top; line-height: 1.5;
+}
+.checklist-table td:first-child {
+  font-family: var(--mono); font-size: 12px;
+  color: var(--nasa-blue); font-weight: 700;
+  white-space: nowrap;
+}
+.checklist-table td.check-step {
+  font-family: var(--mono); font-size: 10px;
+  text-transform: uppercase; letter-spacing: 0.08em;
+  color: var(--ink-faint);
+}
+.checklist-table td.check-desc {
+  font-size: 13px; color: var(--ink-soft);
+}
+.checklist-table td.check-concrete {
+  font-family: var(--mono); font-size: 11px;
+  color: var(--ink-soft);
+}
+
+/* Bandwidth comparison bars */
+.bw-compare { margin: 20px 0; }
+.bw-row {
+  display: flex; align-items: center; gap: 12px;
+  margin-bottom: 10px;
+}
+.bw-label {
+  min-width: 180px; font-family: var(--mono); font-size: 11px;
+  color: var(--ink-soft); flex-shrink: 0;
+}
+.bw-bar-wrap { flex: 1; display: flex; align-items: center; gap: 10px; }
+.bw-bar { height: 6px; background: var(--nasa-blue); border-radius: 1px; }
+.bw-bar.alt { background: var(--ink-faint); opacity: 0.3; }
+.bw-val { font-family: var(--mono); font-size: 11px; color: var(--ink-faint); white-space: nowrap; }
+
+/* Compound record chain */
+.compound-chain {
+  display: flex; flex-direction: column; gap: 0;
+  border: 1px solid var(--rule); margin: 16px 0;
+}
+.compound-leg {
+  display: grid;
+  grid-template-columns: 60px 1fr;
+  border-bottom: 1px solid var(--rule-soft);
+}
+.compound-leg:last-child { border-bottom: none; }
+.leg-num {
+  background: var(--bg-soft);
+  font-family: var(--mono); font-size: 11px;
+  font-weight: 700; color: var(--nasa-blue);
+  display: flex; align-items: center; justify-content: center;
+  border-right: 1px solid var(--rule-soft);
+  padding: 14px 8px; text-align: center;
+}
+.leg-body { padding: 14px 18px; }
+.leg-label {
+  font-family: var(--mono); font-size: 9px;
+  text-transform: uppercase; letter-spacing: 0.1em;
+  color: var(--nasa-red); margin-bottom: 5px;
+}
+.leg-desc { font-size: 13px; color: var(--ink-soft); line-height: 1.5; }
+.leg-hex { font-family: var(--mono); font-size: 11px; color: var(--nasa-gold); margin-top: 5px; }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="index.html">
+      <span class="brand-mark">BP</span>
+      <span class="brand-name">BitPads Protocol</span>
+    </a>
+    <nav class="topnav">
+      <a href="overview.html">Overview</a>
+      <a href="bitpads-v2.html">BitPads v2</a>
+      <a href="bitledger.html" class="active">BitLedger</a>
+      <a href="universal-domain.html">Universal Domain</a>
+      <div class="nav-group">
+        <a href="enhancement-grammar.html">Enhancement</a>
+        <div class="nav-dropdown">
+          <a href="enhancement-grammar.html">Grammar &amp; Signal Slots</a>
+          <a href="enhancement-commands.html">Commands &amp; Context</a>
+          <a href="enhancement-telegraph-1.html">Telegraph Emulation I</a>
+          <a href="enhancement-telegraph-2.html">Telegraph Emulation II</a>
+          <a href="enhancement-nesting.html">Nesting &amp; Overhead</a>
+        </div>
+      </div>
+      <a href="compound-mode.html">Compound Mode</a>
+      <a href="engineering.html">Engineering</a>
+      <a href="guide.html">Guide</a>
+      <a href="cli.html">CLI</a>
+      <a href="reference.html">Reference</a>
+    </nav>
+  </div>
+</header>
+
+<div class="page">
+  <aside class="sidebar">
+    <p class="toc-label">On This Page</p>
+    <ul class="toc">
+      <li><a href="#why-engineering" class="active">Why Engineering</a></li>
+      <li><a href="#domain-encoding">Domain Encoding</a></li>
+      <li><a href="#propellant">Spacecraft Propellant</a></li>
+      <li><a href="#eclss">Life Support (ECLSS)</a></li>
+      <li><a href="#power-settlement">Satellite Power</a></li>
+      <li><a href="#factory">Factory Material Balance</a></li>
+      <li><a href="#iot">IoT Resource Networks</a></li>
+      <li><a href="#mars">Mars Colony Supply Chain</a></li>
+      <li><a href="#checklist">Implementation Checklist</a></li>
+    </ul>
+  </aside>
+
+  <main>
+
+    <!-- ── HERO ── -->
+    <section id="why-engineering" class="eng-hero">
+      <p class="eyebrow">BitLedger Universal Domain v1.0 · Engineering Applications</p>
+      <h1>The Same<br>Algebra</h1>
+      <p class="pullquote">Financial accounting and physical conservation are not analogous. They are identical. The wire format does not change. The mathematics does not change. Only the labels change.</p>
+
+      <p>Kirchhoff's current law states that the sum of all currents entering a node equals the sum of all currents leaving it. Double-entry accounting states that the sum of all debits equals the sum of all credits. These are not analogous laws — they are the same conservation invariant written in different notation. The algebra is identical. An engineer applying BitLedger to propellant tracking is using the same encoder, the same CRC-15 verification, the same cross-layer validation, and the same batch conservation check as a bank settling interbank transfers. The mathematical substrate is shared.</p>
+
+      <p>The Universal Domain specification formalises this identity. Layer 1 bits 3–4 carry a 2-bit domain code. When those bits read <code>01</code>, the receiver switches from financial account pairs to 16 universal flow archetypes — but the 40-bit record structure is byte-for-byte identical. The value encoding formula <code>N = A × 2^S + r</code> does not change. The CRC-15 polynomial does not change. The cross-layer validation rules (bit 29 = bit 37, bit 30 = bit 38) do not change. What changes is the semantic interpretation of the 4-bit archetype field and the 6-bit quantity type code. Everything else is domain-agnostic by construction. An engineer who has written a BitLedger encoder for propellant mass accounting has simultaneously written an encoder that will work, without modification, for watt-hours, kilograms of steel coil, litres of water, or any other conserved scalar — because all of them obey the same invariant the encoder already enforces.</p>
+
+      <div class="eng-hero-rule">
+        <div><dt>Domain bits</dt><dd>Layer 1 bits 3–4 = 01 → Engineering</dd></div>
+        <div><dt>Record size</dt><dd>40 bits / 5 bytes — identical to financial</dd></div>
+        <div><dt>Archetypes</dt><dd>16 universal flow types replace 14 account pairs</dd></div>
+        <div><dt>Quantity type</dt><dd>6-bit code replaces currency index (64 codes)</dd></div>
+        <div><dt>Conservation</dt><dd>Sum of signed flows = 0, enforced at wire level</dd></div>
+      </div>
+    </section>
+
+    <!-- ── DOMAIN ENCODING ── -->
+    <section id="domain-encoding">
+      <p class="eyebrow">Wire Format</p>
+      <h2>Domain Encoding</h2>
+
+      <p>The receiver learns the session domain in the first four bits it processes. Bit 1 is always 1 (SOH — session open). Bits 2–4 carry the wire format version and domain. By the time four bits have been read, the decoder knows which semantic layer to load. No preamble. No schema negotiation.</p>
+
+      <table class="domain-table">
+        <thead>
+          <tr>
+            <th>Bits 2–4</th>
+            <th>Domain</th>
+            <th>Account field interpretation</th>
+            <th>Quantity field</th>
+            <th>Note</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="domain-label"><code>0 00</code></td>
+            <td>Financial</td>
+            <td>Account pair codes — 14 financial pairs</td>
+            <td>Currency index (USD, EUR…)</td>
+            <td>Default. Backward compatible.</td>
+          </tr>
+          <tr class="eng-row">
+            <td class="domain-label"><code>0 01</code></td>
+            <td>Engineering</td>
+            <td>Flow archetypes — 16 universal types</td>
+            <td>Quantity type code (mass, energy…)</td>
+            <td>This document.</td>
+          </tr>
+          <tr>
+            <td class="domain-label"><code>0 10</code></td>
+            <td>Hybrid</td>
+            <td>Both matrices active per record</td>
+            <td>Context-dependent per record</td>
+            <td>Financial + physical in one session.</td>
+          </tr>
+          <tr>
+            <td class="domain-label"><code>0 11</code></td>
+            <td>Custom</td>
+            <td>Declared in extension block after Layer 1</td>
+            <td>Declared in extension block</td>
+            <td>Receiver waits for extension before batches.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p>The bit display below shows a complete Layer 1 session header with domain bits 3–4 set to <code>01</code> (Engineering domain). The session is opened by a node with a 32-bit Sender ID; all subsequent records in this session are interpreted using flow archetypes and quantity type codes, not currency pairs.</p>
+
+      <div class="bit-display">
+        <div class="bit-display-label">Layer 1 Session Header — Engineering Domain (bits 3–4 = 01) — first 8 bits shown</div>
+        <div class="bit-cells">
+          <div class="bit-cell mode" data-layer="l1" data-tooltip="Bit 1: Always 1. SOH marker. Unconditionally opens Layer 1 read in IDLE state.">
+            <span class="bit-pos">1</span>
+            <span class="bit-val on">1</span>
+            <span class="bit-name">SOH</span>
+          </div>
+          <div class="bit-cell reserved" data-layer="l1" data-tooltip="Bit 2: Wire format version. 0 = version 1 (current). 1 = version signal, control byte follows.">
+            <span class="bit-pos">2</span>
+            <span class="bit-val off">0</span>
+            <span class="bit-name">Ver</span>
+          </div>
+          <div class="bit-cell account" data-layer="l1" data-tooltip="Bit 3: Domain bit MSB. Combined with bit 4: 01 = Engineering domain.">
+            <span class="bit-pos">3</span>
+            <span class="bit-val off">0</span>
+            <span class="bit-name">Dom<br>MSB</span>
+          </div>
+          <div class="bit-cell account" data-layer="l1" data-tooltip="Bit 4: Domain bit LSB. 01 = Engineering. Receiver loads flow archetypes and quantity type table.">
+            <span class="bit-pos">4</span>
+            <span class="bit-val on">1</span>
+            <span class="bit-name">Dom<br>LSB</span>
+          </div>
+          <div class="bit-cell mode" data-layer="l1" data-tooltip="Bit 5: Observe permission. Engineering equivalent of Read — node may log flows it observes.">
+            <span class="bit-pos">5</span>
+            <span class="bit-val on">1</span>
+            <span class="bit-name">Observe</span>
+          </div>
+          <div class="bit-cell mode" data-layer="l1" data-tooltip="Bit 6: Actuate permission. Engineering equivalent of Write — node may command physical changes.">
+            <span class="bit-pos">6</span>
+            <span class="bit-val on">1</span>
+            <span class="bit-name">Actuate</span>
+          </div>
+          <div class="bit-cell mode" data-layer="l1" data-tooltip="Bit 7: Override permission. Engineering equivalent of Correct — node may void or amend records.">
+            <span class="bit-pos">7</span>
+            <span class="bit-val off">0</span>
+            <span class="bit-name">Override</span>
+          </div>
+          <div class="bit-cell mode" data-layer="l1" data-tooltip="Bit 8: Proxy permission. Node may transmit on behalf of a node it relays for (no direct link).">
+            <span class="bit-pos">8</span>
+            <span class="bit-val off">0</span>
+            <span class="bit-name">Proxy</span>
+          </div>
+        </div>
+        <div class="bit-legend">
+          <span class="legend-item"><span class="legend-swatch mode"></span> Mode / Permission</span>
+          <span class="legend-item"><span class="legend-swatch account"></span> Domain Declaration</span>
+          <span class="legend-item"><span class="legend-swatch reserved"></span> Version Flag</span>
+          <span class="legend-item" style="margin-left:12px;color:var(--ink-faint);">Bits 3–4 = 01 → Engineering domain active for entire session</span>
+        </div>
+      </div>
+
+      <p>Switching the domain from Financial (<code>00</code>) to Engineering (<code>01</code>) changes exactly two things in the decoder: the label set for the 4-bit pair field (14 financial account pairs → 16 universal archetypes), and the label set for the 6-bit quantity type field (currency index → physical unit category). The 40-bit record structure, the value encoding formula, the CRC-15, and the conservation invariant check are all identical. An implementer who has built a financial BitLedger encoder changes two lookup tables to deploy in engineering mode. Every other component — value encoder, batch close handler, cross-layer validator, CRC computer — is reused without modification.</p>
+
+      <div class="notice">
+        <p><strong>The 16 universal flow archetypes</strong> cover the complete vocabulary of directional flow semantics in any man-made system: Source-to-Sink (0000), Parent-to-Child (0001), Debtor-to-Creditor (0010), Mutual Exchange (0011), Loss/Dissipation (0100), Generation/Input (0101), Reservation/Escrow (0110), Repayment/Return (0111), Transformation (1000), Distribution (1001), Aggregation (1010), Internal Transfer (1011), Obligation Transfer (1100), State Commit (1101), Correction/Void (1110), Compound Continuation (1111). Every flow in the worked examples below maps to one of these 16 codes.</p>
+      </div>
+    </section>
+
+    <!-- ── SPACECRAFT PROPELLANT ── -->
+    <section id="propellant">
+      <p class="eyebrow">Deployment Scenario 1</p>
+      <h2>Spacecraft Propellant Management</h2>
+
+      <div class="dep-scenario">
+        <div class="dep-header">
+          <div class="dep-num">01</div>
+          <div class="dep-head">
+            <div class="dep-context">Aerospace · Propulsion Subsystem</div>
+            <div class="dep-title">Orion-Class Service Module — Bi-Propellant Tracking</div>
+          </div>
+          <div class="dep-badge">
+            <div class="dep-bytes">5 bytes / burn record</div>
+            <div class="dep-bytes" style="color:var(--ink-faint);font-size:9px;margin-top:3px;">JSON: ~450 bytes / burn</div>
+          </div>
+        </div>
+        <div class="dep-body">
+          <p><strong>System context.</strong> An Orion-class service module carries a bi-propellant system: Monomethylhydrazine (MMH) fuel and Nitrogen Tetroxide (NTO) oxidiser, two tanks each propellant, feeding 16 attitude control thrusters plus one orbital manoeuvre engine (OME). Each burn event records propellant leaving a specific tank and arriving at a specific thruster manifold. The burn is logged the moment it occurs — not post-processed from a telemetry stream.</p>
+
+          <div class="param-grid">
+            <div class="param-cell">
+              <div class="param-label">Domain bits (L1 3–4)</div>
+              <div class="param-val"><code>01</code> Engineering</div>
+              <div class="param-note">Loads flow archetype table</div>
+            </div>
+            <div class="param-cell">
+              <div class="param-label">Flow archetype</div>
+              <div class="param-val"><code>0000</code> Source-to-Sink</div>
+              <div class="param-note">Tank → thruster manifold</div>
+            </div>
+            <div class="param-cell">
+              <div class="param-label">Quantity type (L2 bits 36–41)</div>
+              <div class="param-val"><code>001</code> Mass · grams</div>
+              <div class="param-note">SF=×1000, D=0 → kg precision</div>
+            </div>
+            <div class="param-cell">
+              <div class="param-label">Precision step</div>
+              <div class="param-val">1 gram</div>
+              <div class="param-note">D=0, natural unit = g</div>
+            </div>
+            <div class="param-cell">
+              <div class="param-label">Node identity (Sender ID)</div>
+              <div class="param-val">32-bit space</div>
+              <div class="param-note">8-bit subsystem · 8-bit tank · 16-bit thruster</div>
+            </div>
+            <div class="param-cell">
+              <div class="param-label">Session scope</div>
+              <div class="param-val">Mission phase</div>
+              <div class="param-note">Ascent / transit / orbital insertion</div>
+            </div>
+          </div>
+
+          <p><strong>Encoding a 450 g attitude control burn.</strong> MMH tank 1 fires thruster 7 for 450 ms, consuming 450 g of propellant. The encoding uses Quantity Type 1 (mass, grams), Scaling Factor ×1 (raw grams), Decimal Position 0 (integer gram precision).</p>
+
+          <div class="formula">
+            <div><span class="f-name">Target value:</span>  <span class="f-var">N</span> = 450 (grams, integer)</div>
+            <div><span class="f-name">Shift select:</span>  <span class="f-var">S</span> = 8  →  A = floor(450 / 256) = <span class="f-val">1</span></div>
+            <div><span class="f-name">Remainder:</span>     <span class="f-var">r</span> = 450 mod 256 = <span class="f-val">194</span></div>
+            <div><span class="f-name">Verify:</span>        (1 × 256) + 194 = <span class="f-val">450</span> ✓ exact</div>
+            <div><span class="f-note">For a 450 kg burn: N=450,000, S=8, A=floor(450,000/256)=1,757, r=88 → verify: 1,757×256+88=450,000 ✓</span></div>
+          </div>
+
+          <div class="printout">
+            <div class="ph">────────────────────────────────────────────────────────</div>
+            <div class="ph"> BITLEDGER FLOW RECORD — PROPELLANT BURN</div>
+            <div class="ph"> Session: Artemis IV / Propulsion Sub (node 03)</div>
+            <div class="ph"> Batch: Phase 02 / Event 007 / Unit: grams (mass)</div>
+            <div class="ph">────────────────────────────────────────────────────────</div>
+            <div><span class="pl">Layer 1 bits 3–4  </span><span class="pb">0 1</span><span class="pc">  → Engineering domain active</span></div>
+            <div><span class="pl">                  </span></div>
+            <div class="ph"> RECORD BITS 1–40 (5 bytes = 40 bits)</div>
+            <div class="ph">────────────────────────────────────────────────────────</div>
+            <div><span class="pl">Bits  1–17 (A)    </span><span class="pb">0 0000 0000 0000 0001</span><span class="pc">  A=1</span></div>
+            <div><span class="pl">Bits 18–25 (r)    </span><span class="pb">1100 0010</span><span class="pc">            r=194 (0xC2)</span></div>
+            <div><span class="pl">Bit  26 (exact)   </span><span class="pb">0</span><span class="pc">                    exact — no rounding</span></div>
+            <div><span class="pl">Bit  27 (rnd dir) </span><span class="pb">0</span><span class="pc">                    must be 0 when bit 26=0</span></div>
+            <div><span class="pl">Bit  28 (reserved)</span><span class="pb">0</span><span class="pc">                    transmit as 0</span></div>
+            <div><span class="pl">Bit  29 (dir/out) </span><span class="pb">1</span><span class="pc">                    OUT — propellant leaves tank</span></div>
+            <div><span class="pl">Bit  30 (settled) </span><span class="pb">0</span><span class="pc">                    PAID — burn complete</span></div>
+            <div><span class="pl">Bit  31 (debit)   </span><span class="pb">1</span><span class="pc">                    DEBIT — tank account debited</span></div>
+            <div><span class="pl">Bit  32 (compound)</span><span class="pb">0</span><span class="pc">                    flat value — simple record</span></div>
+            <div><span class="pl">Bits 33–36 (arch) </span><span class="pb">0000</span><span class="pc">                 Source-to-Sink — tank → thruster</span></div>
+            <div><span class="pl">Bit  37 (dir echo)</span><span class="pb">1</span><span class="pc">                    OUT — matches bit 29 ✓ VALID</span></div>
+            <div><span class="pl">Bit  38 (stl echo)</span><span class="pb">0</span><span class="pc">                    PAID — matches bit 30 ✓ VALID</span></div>
+            <div><span class="pl">Bit  39 (complete) </span><span class="pb">0</span><span class="pc">                   FULL — no continuation</span></div>
+            <div><span class="pl">Bit  40 (ext byte) </span><span class="pb">0</span><span class="pc">                   no extension byte</span></div>
+            <div class="ph">────────────────────────────────────────────────────────</div>
+            <div><span class="pl">FLOW OUT          </span><span class="pv">MMH Tank 1           g    450</span></div>
+            <div><span class="pl">FLOW IN           </span><span class="pv">Thruster 7 Manifold  g    450</span></div>
+            <div class="ph">────────────────────────────────────────────────────────</div>
+            <div><span class="pl">Archetype         </span><span class="pv">Source-to-Sink (0000) — direct transfer</span></div>
+            <div><span class="pl">Status            </span><span class="pg">Settled — quantity transferred and logged</span></div>
+            <div><span class="pl">Cross-layer check </span><span class="pg">PASS — bit29=bit37, bit30=bit38</span></div>
+            <div><span class="pl">Wire size         </span><span class="pv">5 bytes (Layer 3 record only)</span></div>
+            <div class="ph">────────────────────────────────────────────────────────</div>
+          </div>
+
+          <p><strong>Conservation check.</strong> A session batch covers one mission phase. At batch close, the conservation invariant requires: sum of all FLOW OUT from all tanks + sum of all FLOW IN to all thrusters = 0 (signed). If the OME consumes 180 kg and 16 attitude thrusters together consume 12 kg over the phase, those 192 kg must appear as FLOW IN to propulsion components. Tank levels at phase end = tank levels at phase start − 192 kg. Any discrepancy is a non-zero Rounding Balance in Layer 2 — the protocol flags it before mission planning software reads a single record.</p>
+
+          <div class="conservation-box">
+            <span class="cb-label">Cosmic Ray Fault Scenario — Bit 29 Flip</span>
+            <div>Nominal:   bit29=1 (OUT) · bit37=1 (OUT) · cross-layer: PASS</div>
+            <div>Corrupted: bit29=0 (IN)  · bit37=1 (OUT) · cross-layer: FAIL</div>
+            <div>&nbsp;</div>
+            <div>Without BitLedger: transport CRC passes (single-bit undetected)</div>
+            <div>  → propellant recorded as ARRIVING at tank instead of leaving</div>
+            <div>  → mass balance error propagates silently into mission planning</div>
+            <div>&nbsp;</div>
+            <div>With BitLedger: bit29 ≠ bit37 → cross-layer validation FAILS immediately</div>
+            <div>  → record rejected before posting → NACK sent → retransmit requested</div>
+            <div>  → mass balance preserved</div>
+          </div>
+
+          <div class="bw-compare">
+            <div class="bw-row">
+              <span class="bw-label">BitLedger (100 burns/day)</span>
+              <div class="bw-bar-wrap">
+                <div class="bw-bar" style="width:3px;"></div>
+                <span class="bw-val">500 bytes</span>
+              </div>
+            </div>
+            <div class="bw-row">
+              <span class="bw-label">JSON equivalent</span>
+              <div class="bw-bar-wrap">
+                <div class="bw-bar alt" style="width:270px;"></div>
+                <span class="bw-val">~45,000 bytes</span>
+              </div>
+            </div>
+          </div>
+          <p class="small soft">The reduction is structural. No decompression step. The decoder reads fixed bit positions and the record is decoded. On a deep-space link where bandwidth is measured in bits per second, 500 bytes vs 45,000 bytes is an operational constraint, not a convenience.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── ECLSS ── -->
+    <section id="eclss">
+      <p class="eyebrow">Deployment Scenario 2</p>
+      <h2>Environmental Control &amp; Life Support</h2>
+
+      <div class="dep-scenario">
+        <div class="dep-header">
+          <div class="dep-num">02</div>
+          <div class="dep-head">
+            <div class="dep-context">Aerospace · Life Support Systems</div>
+            <div class="dep-title">ISS-Equivalent ECLSS — Atmosphere &amp; Water Recovery</div>
+          </div>
+          <div class="dep-badge">
+            <div class="dep-bytes">5 bytes / flow record</div>
+            <div class="dep-bytes" style="color:var(--ink-faint);font-size:9px;margin-top:3px;">1-byte alert signal possible</div>
+          </div>
+        </div>
+        <div class="dep-body">
+          <p><strong>System context.</strong> An ISS-equivalent ECLSS tracks three primary flows simultaneously: O₂ generation from the Oxygen Generation Assembly (OGA), CO₂ removal via the Carbon Dioxide Removal Assembly (CDRA), and water recovery through the Water Recovery System (WRS). Each process is governed by a different flow archetype. Multiple archetypes operate in the same session batch — this is the default operating mode for real life support systems, not an edge case.</p>
+
+          <div class="param-grid">
+            <div class="param-cell">
+              <div class="param-label">O₂ Generation archetype</div>
+              <div class="param-val"><code>0101</code> Generation</div>
+              <div class="param-note">Input from outside tracked system (electrolysis of water → O₂)</div>
+            </div>
+            <div class="param-cell">
+              <div class="param-label">Crew metabolic archetype</div>
+              <div class="param-val"><code>0100</code> Loss/Dissipation</div>
+              <div class="param-note">O₂ consumed; CO₂ exits to CDRA</div>
+            </div>
+            <div class="param-cell">
+              <div class="param-label">Water recovery archetype</div>
+              <div class="param-val"><code>1000</code> Transformation</div>
+              <div class="param-note">Waste water → potable water (form changes, mass conserved)</div>
+            </div>
+            <div class="param-cell">
+              <div class="param-label">Quantity type: atmosphere</div>
+              <div class="param-val"><code>004</code> Pressure</div>
+              <div class="param-note">mbar · D=1 · step=0.1 mbar</div>
+            </div>
+          </div>
+
+          <p><strong>Single 5-byte record: O₂ partial pressure delta in one breathing cycle.</strong> The OGA generates enough O₂ to raise cabin partial pressure by 1.4 mbar (14 encoded at D=1, mbar × 10). This records one OGA output cycle — approximately 5 minutes of generation at nominal rate.</p>
+
+          <div class="printout">
+            <div class="ph">────────────────────────────────────────────────────────</div>
+            <div class="ph"> BITLEDGER FLOW RECORD — O₂ GENERATION CYCLE</div>
+            <div class="ph"> Session: ECLSS / OGA Subsystem (node 11)</div>
+            <div class="ph"> Batch: Cycle 1440 / Unit: pressure (mbar × 10)</div>
+            <div class="ph">────────────────────────────────────────────────────────</div>
+            <div><span class="pl">Quantity type     </span><span class="pv">004 (Pressure, mbar, D=1) · step = 0.1 mbar</span></div>
+            <div><span class="pl">Target value      </span><span class="pv">1.4 mbar → N = 14 (mbar × 10)</span></div>
+            <div><span class="pl">Encoding          </span><span class="pv">S=8 · A=0 · r=14 · exact</span></div>
+            <div><span class="pl">                  </span></div>
+            <div><span class="pl">Bits  1–17 (A)    </span><span class="pb">0 0000 0000 0000 0000</span><span class="pc">  A=0</span></div>
+            <div><span class="pl">Bits 18–25 (r)    </span><span class="pb">0000 1110</span><span class="pc">            r=14</span></div>
+            <div><span class="pl">Bit  26 (exact)   </span><span class="pb">0</span><span class="pc">                    exact</span></div>
+            <div><span class="pl">Bit  27           </span><span class="pb">0</span></div>
+            <div><span class="pl">Bit  28           </span><span class="pb">0</span></div>
+            <div><span class="pl">Bit  29 (dir)     </span><span class="pb">0</span><span class="pc">                    IN — pressure entering cabin atmosphere</span></div>
+            <div><span class="pl">Bit  30 (settled) </span><span class="pb">0</span><span class="pc">                    PAID — complete cycle</span></div>
+            <div><span class="pl">Bit  31           </span><span class="pb">0</span></div>
+            <div><span class="pl">Bit  32           </span><span class="pb">0</span></div>
+            <div><span class="pl">Bits 33–36 (arch) </span><span class="pb">0101</span><span class="pc">                 Generation/Input — OGA produces O₂</span></div>
+            <div><span class="pl">Bit  37 (echo)    </span><span class="pb">0</span><span class="pc">                    IN — matches bit 29 ✓ VALID</span></div>
+            <div><span class="pl">Bit  38 (echo)    </span><span class="pb">0</span><span class="pc">                    PAID — matches bit 30 ✓ VALID</span></div>
+            <div><span class="pl">Bit  39           </span><span class="pb">0</span><span class="pc">                    FULL</span></div>
+            <div><span class="pl">Bit  40           </span><span class="pb">0</span><span class="pc">                    no extension</span></div>
+            <div class="ph">────────────────────────────────────────────────────────</div>
+            <div><span class="pl">FLOW IN           </span><span class="pv">Cabin Atmosphere     mbar  +1.4</span></div>
+            <div><span class="pl">FLOW OUT          </span><span class="pv">OGA Output Node      mbar  +1.4</span><span class="pc">  (environment source)</span></div>
+            <div class="ph">────────────────────────────────────────────────────────</div>
+            <div><span class="pl">Status            </span><span class="pg">Settled</span></div>
+          </div>
+
+          <p><strong>Conservation invariant for atmosphere management.</strong> Across any closed batch period, the conservation invariant reads: O₂ generated = O₂ consumed by crew + O₂ stored in tank + O₂ lost to any detected leak. This is not a software check written in mission software — it is enforced by the protocol structure before the ECLSS controller processes a single record. A non-zero Rounding Balance at batch close is the signal that the atmosphere budget is not balanced. This detects leaks, sensor faults, and OGA malfunctions at the protocol layer.</p>
+
+          <div class="conservation-box">
+            <span class="cb-label">ECLSS Conservation Invariant — Per Batch</span>
+            <div>O₂_generated   (archetype 0101, FLOW IN to cabin)      = +Σ(OGA records)</div>
+            <div>O₂_consumed    (archetype 0100, FLOW OUT to null node)  = −Σ(metabolic records)</div>
+            <div>O₂_stored      (archetype 0110, FLOW OUT to O₂ tank)    = −Σ(storage records)</div>
+            <div>&nbsp;</div>
+            <div>Invariant:  Σ(signed flows) = 0</div>
+            <div>Violation:  Rounding Balance ≠ 0  →  leak, fault, or sensor error flagged</div>
+          </div>
+
+          <p><strong>CO₂ alert via Wave frame.</strong> When the CO₂ partial pressure crosses a threshold (above 5.3 mbar in the CDRA intake), the CDRA controller does not wait to assemble a full 5-byte record. It transmits a 4-byte Wave frame declaring Zone = CDRA, reading = 5.8 mbar, alert type = CO₂-HIGH. The receiver is in elevated alert mode before the full record is assembled. This is the Wave category in action — the full record follows as audit trail, but the alert arrives in a single Wave frame.</p>
+
+          <div class="printout">
+            <div class="ph"> CO₂ THRESHOLD ALERT — WAVE FRAME (4 bytes)</div>
+            <div><span class="pl">Meta byte 1  </span><span class="pv">0x0F</span><span class="pc">  = Wave · no ACK · complete · category mode · Priority Alert (1111)</span></div>
+            <div><span class="pl">Category     </span><span class="pv">1111</span><span class="pc">  Priority Alert — receiver enters elevated mode immediately</span></div>
+            <div><span class="pl">Payload      </span><span class="pv">Zone: CDRA · Reading: 58 (5.8 mbar × 10) · Type: CO₂-HIGH</span></div>
+            <div><span class="pl">Latency      </span><span class="pv">4 bytes transmitted before full record assembled</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── SATELLITE POWER SETTLEMENT ── -->
+    <section id="power-settlement">
+      <p class="eyebrow">Deployment Scenario 3</p>
+      <h2>Satellite Power Settlement</h2>
+
+      <div class="dep-scenario">
+        <div class="dep-header">
+          <div class="dep-num">03</div>
+          <div class="dep-head">
+            <div class="dep-context">Aerospace · Constellation Operations</div>
+            <div class="dep-title">40-Satellite LEO Constellation — Power Obligation Settlement</div>
+          </div>
+          <div class="dep-badge">
+            <div class="dep-bytes">15 bytes / compound transfer</div>
+            <div class="dep-bytes" style="color:var(--ink-faint);font-size:9px;margin-top:3px;">3-record chain, 92-min session</div>
+          </div>
+        </div>
+        <div class="dep-body">
+          <p><strong>System context.</strong> A 40-satellite LEO constellation operates a power-sharing agreement. During eclipse periods (36 minutes per 92-minute orbit), eclipse-phase satellites draw power from battery stores. Sunlit satellites accumulate solar generation credit. The constellation settles these power obligations continuously — each orbital pass is one BitLedger session. The session covers all 40 satellites' records under a single CRC-15.</p>
+
+          <div class="param-grid">
+            <div class="param-cell">
+              <div class="param-label">Obligation archetype</div>
+              <div class="param-val"><code>0010</code> Debtor-to-Creditor</div>
+              <div class="param-note">Eclipse satellite owes sunlit satellite</div>
+            </div>
+            <div class="param-cell">
+              <div class="param-label">Settlement archetype</div>
+              <div class="param-val"><code>0111</code> Repayment/Return</div>
+              <div class="param-note">Prior obligation fulfilled on sunlit pass</div>
+            </div>
+            <div class="param-cell">
+              <div class="param-label">Quantity type</div>
+              <div class="param-val"><code>002</code> Energy · Wh</div>
+              <div class="param-note">SF=×1, D=1 · step=0.1 Wh</div>
+            </div>
+            <div class="param-cell">
+              <div class="param-label">Session scope</div>
+              <div class="param-val">One orbital pass</div>
+              <div class="param-note">92 minutes · all 40 satellites</div>
+            </div>
+          </div>
+
+          <p><strong>Multi-leg compound transfer.</strong> Satellite A (eclipse, node 01) cannot transmit directly to Satellite B (sunlit, node 12). It routes through Relay Satellite C (node 07). This three-leg transfer — A records obligation, relay acknowledges routing, B records receipt — is one logical transaction. The compound continuation marker <code>1111</code> links all three records. The 1111 code in the archetype field means "this record continues the preceding compound group." Together they are one event.</p>
+
+          <div class="compound-chain">
+            <div class="compound-leg">
+              <div class="leg-num">LEG<br>1/3</div>
+              <div class="leg-body">
+                <div class="leg-label">Record 1 — Obligation Incurred</div>
+                <div class="leg-desc">Satellite A (node 01) records 12,847.50 Wh drawn from Satellite B reserve. Archetype 0010 (Debtor-to-Creditor). Status: Debt (bit 30=1). Compound continuation active (bit 39=1, partial).</div>
+                <div class="leg-hex">Encoding: N=1,284,750 · A=5,018 · r=142 · Verify: 5,018×256+142=1,284,750/100=12,847.50 Wh ✓</div>
+              </div>
+            </div>
+            <div class="compound-leg">
+              <div class="leg-num">LEG<br>2/3</div>
+              <div class="leg-body">
+                <div class="leg-label">Record 2 — Relay Routing (Continuation 1111)</div>
+                <div class="leg-desc">Relay Satellite C (node 07) records forwarding of obligation from A to B. Archetype 1111 (Compound Continuation). Sub-type bits 37–38 = 00 (standard linked entry). This record has no independent conservation value — it is part of the compound event.</div>
+                <div class="leg-hex">Bits 33–36: 1111 · Bits 37–38: 00 · Bit 39: 1 (partial, leg 3 follows)</div>
+              </div>
+            </div>
+            <div class="compound-leg">
+              <div class="leg-num">LEG<br>3/3</div>
+              <div class="leg-body">
+                <div class="leg-label">Record 3 — Receipt Confirmed (Continuation 1111)</div>
+                <div class="leg-desc">Satellite B (node 12) records receipt of 12,847.50 Wh obligation from A via relay C. Archetype 1111 (Compound Continuation). Sub-type bits 37–38 = 00. Bit 39=0 (FULL — compound event closed). CRC-15 covers all three records plus the full session.</div>
+                <div class="leg-hex">Bits 33–36: 1111 · Bits 37–38: 00 · Bit 39: 0 (FULL — compound closed)</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="printout">
+            <div class="ph">────────────────────────────────────────────────────────</div>
+            <div class="ph"> COMPOUND POWER TRANSFER — 3-RECORD CHAIN</div>
+            <div class="ph"> Session: Constellation Ops / Pass 1842 (node 01)</div>
+            <div class="ph"> CRC-15 covers all 40 satellites in this orbital pass</div>
+            <div class="ph">────────────────────────────────────────────────────────</div>
+            <div><span class="pl">Record 1 (5 bytes)</span><span class="pv">  Archetype 0010 · Debt · Partial (1 of 3)</span></div>
+            <div><span class="pl">  FLOW OUT         </span><span class="pv">Sat-B Power Reserve    Wh   12,847.50</span></div>
+            <div><span class="pl">  FLOW IN          </span><span class="pv">Sat-A Draw Account     Wh   12,847.50</span></div>
+            <div><span class="pl">  Status           </span><span class="pv">Debt — obligation recorded, not yet settled</span></div>
+            <div class="ph">  ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─</div>
+            <div><span class="pl">Record 2 (5 bytes)</span><span class="pv">  Archetype 1111 · Relay routing · Partial (2 of 3)</span></div>
+            <div><span class="pl">  FLOW OUT         </span><span class="pv">Relay-C Forward Buffer  Wh   12,847.50</span></div>
+            <div><span class="pl">  FLOW IN          </span><span class="pv">Sat-B Incoming Queue    Wh   12,847.50</span></div>
+            <div><span class="pl">  Sub-type         </span><span class="pv">Standard linked (bits 37–38 = 00)</span></div>
+            <div class="ph">  ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─</div>
+            <div><span class="pl">Record 3 (5 bytes)</span><span class="pv">  Archetype 1111 · Receipt confirmed · FULL (3 of 3)</span></div>
+            <div><span class="pl">  FLOW OUT         </span><span class="pv">Sat-B Confirmation Node Wh   12,847.50</span></div>
+            <div><span class="pl">  FLOW IN          </span><span class="pv">Sat-A Obligation Ledger Wh   12,847.50</span></div>
+            <div><span class="pl">  Compound closed  </span><span class="pg">Bit 39=0 · FULL · event complete</span></div>
+            <div class="ph">────────────────────────────────────────────────────────</div>
+            <div><span class="pl">Total wire cost   </span><span class="pv">15 bytes for 3-leg compound transfer</span></div>
+            <div><span class="pl">Session coverage  </span><span class="pv">All 40 satellites · CRC-15 verifies entire pass</span></div>
+            <div><span class="pl">Bandwidth         </span><span class="pv">40 satellites × ~5 records × 5 bytes = 1,000 bytes / pass</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── FACTORY FLOOR ── -->
+    <section id="factory">
+      <p class="eyebrow">Deployment Scenario 4</p>
+      <h2>Factory Floor Material Balance</h2>
+
+      <div class="dep-scenario">
+        <div class="dep-header">
+          <div class="dep-num">04</div>
+          <div class="dep-head">
+            <div class="dep-context">Manufacturing · Automotive Stamping</div>
+            <div class="dep-title">Steel Coil to Door Panel — 5-Station Material Tracking</div>
+          </div>
+          <div class="dep-badge">
+            <div class="dep-bytes">50,000 bytes / shift</div>
+            <div class="dep-bytes" style="color:var(--ink-faint);font-size:9px;margin-top:3px;">JSON: ~40MB / shift</div>
+          </div>
+        </div>
+        <div class="dep-body">
+          <p><strong>System context.</strong> An automotive stamping plant processes steel coil stock through five stations: Uncoil, Blank, Draw, Trim, and Pierce. Each station receives material from the prior station, transforms it, and passes the output forward. Scrap is generated at Blank (skeleton offcuts), Trim (edge waste), and Pierce (slug waste). Every station-to-station transfer is one BitLedger record. Every scrap event is the Rounding Balance field — the protocol has an explicit field for the net conservation error, which is exactly what scrap is.</p>
+
+          <div class="param-grid">
+            <div class="param-cell">
+              <div class="param-label">Station receive archetype</div>
+              <div class="param-val"><code>0000</code> Source-to-Sink</div>
+              <div class="param-note">Prior station → current station buffer</div>
+            </div>
+            <div class="param-cell">
+              <div class="param-label">Transformation archetype</div>
+              <div class="param-val"><code>1000</code> Transformation</div>
+              <div class="param-note">Steel coil → blank (form changes, mass conserved)</div>
+            </div>
+            <div class="param-cell">
+              <div class="param-label">Scrap handling</div>
+              <div class="param-val">Rounding Balance field</div>
+              <div class="param-note">Layer 2 field — explicit protocol-level scrap register</div>
+            </div>
+            <div class="param-cell">
+              <div class="param-label">Quantity type</div>
+              <div class="param-val"><code>001</code> Mass · grams</div>
+              <div class="param-note">SF=×1000, D=0 → kg resolution</div>
+            </div>
+          </div>
+
+          <p><strong>Station 2 (Blank): coil input to blank output.</strong> Station 2 receives 850 kg of steel coil from the uncoiler, blanks it into door panel blanks. Output = 781 kg of blanks. Scrap = 69 kg of skeleton offcuts. The conservation check: 850 kg in − 781 kg out − 69 kg scrap = 0. The 69 kg scrap appears in the Rounding Balance field of the Layer 2 batch header for this station's batch. The MES receives a record that has already verified its own conservation before it arrived.</p>
+
+          <div class="printout">
+            <div class="ph">────────────────────────────────────────────────────────</div>
+            <div class="ph"> BITLEDGER FLOW RECORD — STATION 2 BLANK OPERATION</div>
+            <div class="ph"> Session: Stamping Line A / Blank Station (node 02)</div>
+            <div class="ph"> Batch: Shift 14 / Coil Lot 2847 / Unit: grams (mass)</div>
+            <div class="ph">────────────────────────────────────────────────────────</div>
+            <div><span class="pl">Quantity type     </span><span class="pv">001 (Mass, g) · SF=×1000 · D=0</span></div>
+            <div class="ph">                          </div>
+            <div class="ph"> RECORD A — Coil input to blank station (Source-to-Sink)</div>
+            <div><span class="pl">Archetype         </span><span class="pv">0000 Source-to-Sink</span></div>
+            <div><span class="pl">Target            </span><span class="pv">850 kg = N=850,000 g</span></div>
+            <div><span class="pl">Encoding          </span><span class="pv">S=8 · A=3,320 · r=192</span></div>
+            <div><span class="pl">Verify            </span><span class="pg">3,320×256+192=849,792+208... </span><span class="pc">recalc: A=floor(850,000/256)=3,320, r=850,000−3,320×256=850,000−849,920=80</span></div>
+            <div><span class="pl">Corrected         </span><span class="pg">A=3,320 · r=80 · verify: 3,320×256+80=850,000 ✓</span></div>
+            <div><span class="pl">FLOW OUT          </span><span class="pv">Uncoiler Output Buffer    g    850,000</span></div>
+            <div><span class="pl">FLOW IN           </span><span class="pv">Blank Station Input Queue g    850,000</span></div>
+            <div class="ph">  ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─</div>
+            <div class="ph"> RECORD B — Blank output to draw station (Transformation + Source-to-Sink)</div>
+            <div><span class="pl">Archetype         </span><span class="pv">1000 Transformation (blanking process)</span></div>
+            <div><span class="pl">Output            </span><span class="pv">781 kg blanks = N=781,000 g</span></div>
+            <div><span class="pl">Encoding          </span><span class="pv">S=8 · A=3,050 · r=200</span></div>
+            <div><span class="pl">Verify            </span><span class="pg">3,050×256+200=780,800+200=781,000 ✓</span></div>
+            <div><span class="pl">FLOW OUT          </span><span class="pv">Blank Station (steel coil form)    g    781,000</span></div>
+            <div><span class="pl">FLOW IN           </span><span class="pv">Blank Station (door blank form)    g    781,000</span></div>
+            <div class="ph">────────────────────────────────────────────────────────</div>
+            <div><span class="pl">Layer 2 Rounding  </span><span class="pv">Balance = 69,000 g = 69 kg skeleton scrap</span></div>
+            <div><span class="pl">Conservation check</span><span class="pg">850,000 in − 781,000 out − 69,000 scrap = 0 ✓</span></div>
+            <div><span class="pl">MES decision      </span><span class="pg">PASS — batch accepted before MES reads first record</span></div>
+            <div class="ph">────────────────────────────────────────────────────────</div>
+          </div>
+
+          <p>If the scrap weight reported by the Blank station's scale disagrees with the difference between input and output records, the conservation check fails before the batch reaches the MES. The discrepancy is flagged at the wire level — no separate reconciliation run is required. At 10,000 parts per shift, the complete material tracking log is 50,000 bytes of BitLedger records (10,000 parts × 5 records/part chain × 1 byte overhead average). The JSON equivalent of the same event data is approximately 40MB.</p>
+
+          <div class="bw-compare">
+            <div class="bw-row">
+              <span class="bw-label">BitLedger (10K parts/shift)</span>
+              <div class="bw-bar-wrap">
+                <div class="bw-bar" style="width:6px;"></div>
+                <span class="bw-val">50,000 bytes</span>
+              </div>
+            </div>
+            <div class="bw-row">
+              <span class="bw-label">JSON equivalent</span>
+              <div class="bw-bar-wrap">
+                <div class="bw-bar alt" style="width:280px;"></div>
+                <span class="bw-val">~40,000,000 bytes</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── IoT ── -->
+    <section id="iot">
+      <p class="eyebrow">Deployment Scenario 5</p>
+      <h2>IoT Resource Networks</h2>
+
+      <div class="dep-scenario">
+        <div class="dep-header">
+          <div class="dep-num">05</div>
+          <div class="dep-head">
+            <div class="dep-context">Infrastructure · Smart Building</div>
+            <div class="dep-title">200-Sensor Building — Energy, Water &amp; HVAC Zone Accounting</div>
+          </div>
+          <div class="dep-badge">
+            <div class="dep-bytes">2,600 bytes / hour</div>
+            <div class="dep-bytes" style="color:var(--ink-faint);font-size:9px;margin-top:3px;">JSON: ~320,000 bytes / hour</div>
+          </div>
+        </div>
+        <div class="dep-body">
+          <p><strong>System context.</strong> A 200-sensor smart building tracks energy consumption, water flow, and HVAC delivery across 40 zones. Each sensor operates on a three-tier transmission schedule: 1-byte Pure Signal heartbeat every 60 seconds for liveness; 4-byte Wave frame for threshold alerts; full 5-byte BitLedger record once per hour for formal accounting. The protocol tier is selected by the sensor's state — normal operation needs only the heartbeat; anomalies escalate to Wave or Record automatically.</p>
+
+          <div class="param-grid">
+            <div class="param-cell">
+              <div class="param-label">Heartbeat (1 byte)</div>
+              <div class="param-val"><code>0x40</code> Pure Signal</div>
+              <div class="param-note">Wave · ACK req · zone reporting in</div>
+            </div>
+            <div class="param-cell">
+              <div class="param-label">Threshold alert (4 bytes)</div>
+              <div class="param-val">Wave frame · cat 1111</div>
+              <div class="param-note">Zone · reading · alert type</div>
+            </div>
+            <div class="param-cell">
+              <div class="param-label">Hourly record (5 bytes)</div>
+              <div class="param-val">Full BitLedger record</div>
+              <div class="param-note">T1S timestamp · conservation checked</div>
+            </div>
+            <div class="param-cell">
+              <div class="param-label">Context Declaration</div>
+              <div class="param-val">Category 1101</div>
+              <div class="param-note">One declaration → 50 records inherit context</div>
+            </div>
+          </div>
+
+          <p><strong>Heartbeat protocol.</strong> Each sensor transmits <code>0x40</code> every 60 seconds. This is Meta byte 1 alone: Wave mode, ACK request, complete, basic treatment, no flags. One byte declares "I am here, acknowledge me." At 200 sensors, heartbeat traffic is 200 bytes per minute — 12,000 bytes per hour — across the entire building liveness network. The building controller knows within 60 seconds if any sensor has dropped.</p>
+
+          <p><strong>Enhancement Grammar context declaration.</strong> Before transmitting 50 zone-B energy records, the HVAC controller transmits one Category 1101 Context Declaration Enhancement byte. This declares the context — Zone-B, Energy, HVAC — once. The 50 subsequent records inherit that context without re-stating it in each record. This is the Enhancement Grammar's context accumulation mechanism: declare once, apply to the entire subsequent block. The 50 records cost 250 bytes instead of the 350 bytes they would cost if each record included a full zone declaration.</p>
+
+          <div class="printout">
+            <div class="ph">────────────────────────────────────────────────────────</div>
+            <div class="ph"> BANDWIDTH ACCOUNTING — 200-SENSOR BUILDING</div>
+            <div class="ph"> Per-hour transmission budget</div>
+            <div class="ph">────────────────────────────────────────────────────────</div>
+            <div><span class="pl">Heartbeat (1B/60s) </span><span class="pv">200 sensors × 60 pulses/hr = 12,000 bytes/hr</span></div>
+            <div><span class="pl">Hourly record (5B) </span><span class="pv">200 sensors × 1 record/hr × 5 bytes = 1,000 bytes/hr</span></div>
+            <div><span class="pl">Context Decls (1B) </span><span class="pv">4 declarations (energy/water/HVAC/power) = 4 bytes/hr</span></div>
+            <div><span class="pl">Wave alerts (4B)   </span><span class="pv">Variable — 10 alerts/hr typical = 40 bytes/hr</span></div>
+            <div class="ph">                   ─────────────────────────────────</div>
+            <div><span class="pl">Total              </span><span class="pg">~13,044 bytes/hr (liveness + accounting + alerts)</span></div>
+            <div><span class="pl">Full records only  </span><span class="pv">200 × 13 bytes (with timestamp) = 2,600 bytes/hr</span></div>
+            <div class="ph">────────────────────────────────────────────────────────</div>
+            <div><span class="pl">JSON equivalent    </span><span class="pe">~320,000 bytes/hr (same event data)</span></div>
+            <div><span class="pl">Reduction factor   </span><span class="pg">~123× (structural, not compressive)</span></div>
+            <div class="ph">────────────────────────────────────────────────────────</div>
+          </div>
+
+          <p><strong>Anomaly records with T1S timestamp.</strong> When an energy sensor records an anomaly — consumption spike, sudden drop — it transmits a full BitLedger record with a T1S time component (Unix epoch seconds, 4 bytes). The T1S block attaches to the record via the component sequence in BitPads v2: Meta byte 2 declares the Time component present, and the 4-byte T1S block follows immediately after the Layer 3 record. Total anomaly record: 13 bytes (Meta 1 + Meta 2 + Layer 1 session header omitted on continuation + Layer 3 + T1S). The exact timestamp is preserved for maintenance correlation without any separate logging system.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── MARS COLONY ── -->
+    <section id="mars">
+      <p class="eyebrow">Deployment Scenario 6</p>
+      <h2>Mars Colony Supply Chain</h2>
+
+      <div class="dep-scenario">
+        <div class="dep-header">
+          <div class="dep-num">06</div>
+          <div class="dep-head">
+            <div class="dep-context">Deep Space · Autonomous Operations</div>
+            <div class="dep-title">100-Person Mars Settlement — 8-Module Habitat Supply Chain</div>
+          </div>
+          <div class="dep-badge">
+            <div class="dep-bytes">500 bytes / daily batch</div>
+            <div class="dep-bytes" style="color:var(--ink-faint);font-size:9px;margin-top:3px;">Fits single radio packet</div>
+          </div>
+        </div>
+        <div class="dep-body">
+          <p><strong>The fundamental problem.</strong> Earth-to-Mars communication latency is 7 to 30 minutes one-way depending on orbital position. Every supply chain decision — O₂ generation rate, food ration allocation, water recovery priority, spare part scheduling — must be made locally. There is no Earth-side database query with a 20-minute turnaround. The conservation enforcement must live in the colony. The protocol must work without a network connection to its originating authority.</p>
+
+          <p>BitLedger is the on-colony ledger. The same 40-bit records that enforce conservation on a terrestrial factory floor enforce conservation in Habitat Module 4. The invariant does not require a server. It is structural — a record that violates conservation is rejected at encoding time, before it reaches the habitat management system, whether or not Mars is in conjunction with Earth.</p>
+
+          <div class="param-grid">
+            <div class="param-cell">
+              <div class="param-label">Sender ID structure</div>
+              <div class="param-val">32-bit / 8+6+18 split</div>
+              <div class="param-note">8 bits habitat module · 6 bits supply category · 18 bits item ID</div>
+            </div>
+            <div class="param-cell">
+              <div class="param-label">Inter-module archetype</div>
+              <div class="param-val"><code>0000</code> Source-to-Sink</div>
+              <div class="param-note">Module 3 O₂ to Module 7 habitat</div>
+            </div>
+            <div class="param-cell">
+              <div class="param-label">Resupply archetype</div>
+              <div class="param-val"><code>0101</code> Generation/Input</div>
+              <div class="param-note">Earth shipment enters colony system</div>
+            </div>
+            <div class="param-cell">
+              <div class="param-label">Domain</div>
+              <div class="param-val"><code>0 10</code> Hybrid</div>
+              <div class="param-note">Physical mass + USD-equivalent Earth cost in same session</div>
+            </div>
+          </div>
+
+          <p><strong>Identity encoding for 8 habitat modules.</strong> The 32-bit Sender ID encodes the full addressing hierarchy in a single field. Bits 31–24: habitat module (0–7, 3 bits used). Bits 23–18: supply category (O₂=0, H₂O=1, Food=2, Power=3, Parts=4, Medical=5). Bits 17–0: individual item ID within category (up to 262,143 distinct items per category per module). All 8 modules × 6 categories × 262,143 items = 12.6 million addressable supply items within the 32-bit sender space.</p>
+
+          <p><strong>Hybrid domain: physical and financial in one session.</strong> When domain bits 3–4 = <code>10</code> (Hybrid), the session contains both physical flow records and financial obligation records. A resupply shipment from Earth has physical mass (tracked with archetype 0101, quantity type 1, grams) and financial cost (tracked with Debtor-to-Creditor archetype, currency code USD, per-kg launch cost). One session covers both the physical inventory update and the mission cost accounting. The decoder distinguishes record type by the archetype code — physical archetypes and financial account pair codes occupy non-overlapping ranges in the hybrid interpretation.</p>
+
+          <div class="printout">
+            <div class="ph">────────────────────────────────────────────────────────</div>
+            <div class="ph"> MARS COLONY DAILY SUPPLY BATCH — EXAMPLE SUMMARY</div>
+            <div class="ph"> Session: Colony Sol 847 / Habitat 4 (node 0x41000001)</div>
+            <div class="ph"> Domain: Hybrid (bits 3–4 = 10)</div>
+            <div class="ph">────────────────────────────────────────────────────────</div>
+            <div><span class="pl">Record  1–12   </span><span class="pv">O₂ inter-module transfers (archetype 0000)</span></div>
+            <div><span class="pl">Record 13–20   </span><span class="pv">H₂O recovery cycles (archetype 1000 Transformation)</span></div>
+            <div><span class="pl">Record 21–35   </span><span class="pv">Food ration allocations (archetype 0001 Parent-to-Child)</span></div>
+            <div><span class="pl">Record 36–50   </span><span class="pv">Power distribution (archetype 1001 Distribution)</span></div>
+            <div><span class="pl">Record 51–78   </span><span class="pv">Parts reservations (archetype 0110 Reservation/Escrow)</span></div>
+            <div><span class="pl">Record 79–88   </span><span class="pv">Medical supply draws (archetype 0000 Source-to-Sink)</span></div>
+            <div><span class="pl">Record 89–96   </span><span class="pv">Earth resupply receipt (archetype 0101 Generation/Input)</span></div>
+            <div><span class="pl">Record 97–100  </span><span class="pv">Financial obligations for resupply (USD cost accounting)</span></div>
+            <div class="ph">────────────────────────────────────────────────────────</div>
+            <div><span class="pl">Total records  </span><span class="pv">100 records × 5 bytes = 500 bytes</span></div>
+            <div><span class="pl">Radio packet   </span><span class="pg">Fits single 512-byte CCSDS packet to Earth</span></div>
+            <div><span class="pl">Conservation   </span><span class="pg">All 6 supply categories checked before transmission</span></div>
+            <div><span class="pl">Earth latency  </span><span class="pv">7–30 min — irrelevant: conservation enforced locally</span></div>
+            <div class="ph">────────────────────────────────────────────────────────</div>
+          </div>
+
+          <p>All 16 flow archetypes are active in a Mars colony deployment. Internal module transfers use Source-to-Sink. Crew ration allocations use Parent-to-Child. Borrowed supplies between modules use Debtor-to-Creditor. Atmosphere recycling uses Transformation. Earth shipments use Generation/Input. Emergency reserves use Reservation/Escrow. Resupply debt from prior shipments uses Repayment/Return. This is not a contrived mapping — it is the natural vocabulary of any complex supply chain, and the 16 archetypes were derived from exactly this class of system.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── IMPLEMENTATION CHECKLIST ── -->
+    <section id="checklist">
+      <p class="eyebrow">Implementation Reference</p>
+      <h2>Implementation Checklist</h2>
+      <p>What a real engineering team needs to deploy BitLedger Universal Domain. These are not aspirational steps — each is a specific configuration decision with a specific bit field that carries it on the wire.</p>
+
+      <table class="checklist-table">
+        <thead>
+          <tr>
+            <th>Step</th>
+            <th>Task</th>
+            <th>Specific Action</th>
+            <th>Wire Location</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="check-step">01</td>
+            <td class="check-desc"><strong>Set domain bits.</strong> Engineering domain must be declared in Layer 1 before any records are transmitted.</td>
+            <td class="check-concrete">Set Layer 1 bits 3–4 = <code>01</code>. Bit 2 = <code>0</code> (version 1). Full opening 4 bits: SOH=1, ver=0, dom=01.</td>
+            <td class="check-concrete">L1 bits 2–4</td>
+          </tr>
+          <tr>
+            <td class="check-step">02</td>
+            <td class="check-desc"><strong>Select flow archetypes.</strong> Map each canonical relationship in your system to one of the 16 universal archetypes. Every flow your system tracks must have an archetype assignment before encoding begins.</td>
+            <td class="check-concrete">Document: source flows → 0000, obligation flows → 0010, generation events → 0101, transformation processes → 1000, compound multi-resource events → 1111.</td>
+            <td class="check-concrete">L3 bits 33–36</td>
+          </tr>
+          <tr>
+            <td class="check-step">03</td>
+            <td class="check-desc"><strong>Choose Quantity Type Code.</strong> Select the 6-bit index for your primary conserved scalar. If your system tracks multiple quantity types in one session, plan the control byte sequence for switching.</td>
+            <td class="check-concrete">Mass=001, Energy=002, Pressure=004, Thrust=008. For mixed batches: control byte <code>0 001 QQQQ</code> switches quantity type to index QQQQ between records.</td>
+            <td class="check-concrete">L2 bits 36–41</td>
+          </tr>
+          <tr>
+            <td class="check-step">04</td>
+            <td class="check-desc"><strong>Set Scaling Factor and Decimal Position.</strong> Choose the SF and D that give you the precision step your instruments require. Precision step = 1 unit / 10^D.</td>
+            <td class="check-concrete">Mass in grams, integer: SF=×1, D=0. Mass in kg, integer: SF=×1000, D=0. Energy in Wh to 0.01 precision: SF=×1, D=2. Encode: N = value × 10^D / SF.</td>
+            <td class="check-concrete">L2 Scaling Factor · Decimal Position</td>
+          </tr>
+          <tr>
+            <td class="check-step">05</td>
+            <td class="check-desc"><strong>Implement CRC-15 on Layer 1.</strong> The CRC-15 covers the complete Layer 1 block (sender identity, permissions, domain, session defaults). It is computed once per session open and verified once per session accept.</td>
+            <td class="check-concrete">Polynomial: x^15 + x + 1. Input: Layer 1 bytes excluding the 15-bit CRC field itself. Embed result in L1 CRC field. Reject session if CRC fails on receive.</td>
+            <td class="check-concrete">L1 CRC-15 field (15 bits)</td>
+          </tr>
+          <tr>
+            <td class="check-step">06</td>
+            <td class="check-desc"><strong>Implement conservation check at batch close.</strong> At every batch close control record, verify: sum of all signed flow values in the batch = 0 (within Rounding Balance tolerance).</td>
+            <td class="check-concrete">Maintain running signed sum. Positive for FLOW IN (bit 29=0), negative for FLOW OUT (bit 29=1). At close: if |sum| &gt; Rounding Balance × precision step, reject batch.</td>
+            <td class="check-concrete">L2 Rounding Balance + batch close control record</td>
+          </tr>
+          <tr>
+            <td class="check-step">07</td>
+            <td class="check-desc"><strong>Implement cross-layer validation.</strong> Every record carries direction and status flags in two locations. Disagreement is a protocol error detectable without a separate checksum field.</td>
+            <td class="check-concrete">On every received record: verify bit 29 = bit 37. Verify bit 30 = bit 38. Verify: NOT (bit 26=0 AND bit 27=1) — invalid rounding state. Any failure → reject record, NACK.</td>
+            <td class="check-concrete">L3 bits 29, 30, 37, 38, 26, 27</td>
+          </tr>
+          <tr>
+            <td class="check-step">08</td>
+            <td class="check-desc"><strong>Choose signal slot positions for alerts.</strong> If your system needs sub-record alert signalling (threshold crossing, emergency status), assign Enhancement signal slot positions P1–P13 for alert bytes.</td>
+            <td class="check-concrete">P1 = session open enhancement (priority escalation). P5 = batch-boundary alert. P9 = record-level signal. Declare active slots in Layer 1 Setup byte. Wave frame (4 bytes) for immediate alerts without a full record.</td>
+            <td class="check-concrete">L1 Setup byte · Enhancement signal slots P1–P13</td>
+          </tr>
+          <tr>
+            <td class="check-step">09</td>
+            <td class="check-desc"><strong>Plan compound mode if needed.</strong> Any event that simultaneously affects multiple resource types (a burn consuming propellant and generating thermal load) requires compound mode. Declare it at session open.</td>
+            <td class="check-concrete">Set L1 bit 11 = 1 (compound mode active for session). First record: bit 39=1 (partial). Subsequent records: archetype bits 33–36 = 1111. Final record: bit 39=0 (full). Sub-type in bits 37–38.</td>
+            <td class="check-concrete">L1 bit 11 · L3 bits 33–36, 37–38, 39</td>
+          </tr>
+          <tr>
+            <td class="check-step">10</td>
+            <td class="check-desc"><strong>Optionally add Enhancement Grammar.</strong> For systems with typed status events (sensor categories, zone declarations, phase transitions), use Category 1101 Context Declaration to set context once per block of similar records.</td>
+            <td class="check-concrete">Transmit Category 1101 Enhancement byte before each block of records sharing the same context. Receivers update their context register. Subsequent records omit redundant context fields. Net saving: 1 byte per record in declared scope.</td>
+            <td class="check-concrete">Wave category 1101 · Enhancement sub-protocol</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="notice">
+        <p><strong>Transport compatibility.</strong> BitLedger records are transport-agnostic. The 40-bit record is a self-contained payload that carries inside any transport without modification: CCSDS (spacecraft telemetry), DTN Bundle Protocol (deep space delay-tolerant networking), MQTT (IoT edge), raw RF (point-to-point embedded), or Ethernet/UDP (factory floor). The transport handles routing. BitLedger handles semantic integrity. The CRC-15 validates the session on reconnect regardless of how long the link was interrupted.</p>
+      </div>
+
+      <h3>Format Comparison by Deployment</h3>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>System</th>
+            <th>Volume</th>
+            <th>BitLedger</th>
+            <th>JSON equivalent</th>
+            <th>Reduction</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Spacecraft propellant (100 burns/day)</td>
+            <td>100 records</td>
+            <td><code>500 bytes</code></td>
+            <td>~45,000 bytes</td>
+            <td>90×</td>
+          </tr>
+          <tr>
+            <td>Satellite constellation (40 sats / pass)</td>
+            <td>~200 records / pass</td>
+            <td><code>1,000 bytes</code></td>
+            <td>~90,000 bytes</td>
+            <td>90×</td>
+          </tr>
+          <tr>
+            <td>Factory stamping line (10K parts / shift)</td>
+            <td>50,000 records</td>
+            <td><code>50,000 bytes</code></td>
+            <td>~40,000,000 bytes</td>
+            <td>800×</td>
+          </tr>
+          <tr>
+            <td>Smart building (200 sensors / hour)</td>
+            <td>200 records + 12K heartbeats</td>
+            <td><code>~13,000 bytes</code></td>
+            <td>~320,000 bytes</td>
+            <td>~25×</td>
+          </tr>
+          <tr>
+            <td>Mars colony daily batch</td>
+            <td>100 records</td>
+            <td><code>500 bytes</code></td>
+            <td>~80,000 bytes</td>
+            <td>160×</td>
+          </tr>
+        </tbody>
+      </table>
+      <p class="small soft">The reduction is structural, not compressive. No decompression step. No schema lookup. The decoder reads fixed bit positions. On any link constrained by bandwidth, latency, or power — which describes every deployment above — the encoding density is an operational requirement, not an optimisation.</p>
+    </section>
+
+  </main>
+</div>
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div>
+      <div class="footer-group-label">Protocol</div>
+      <ul class="footer-links">
+        <li><a href="bitpads-v2.html">BitPads v2</a></li>
+        <li><a href="bitledger.html">BitLedger v3</a></li>
+        <li><a href="universal-domain.html">Universal Domain</a></li>
+        <li><a href="compound-mode.html">Compound Mode</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-group-label">Enhancement</div>
+      <ul class="footer-links">
+        <li><a href="enhancement-grammar.html">Grammar &amp; Signal Slots</a></li>
+        <li><a href="enhancement-commands.html">Commands &amp; Context</a></li>
+        <li><a href="enhancement-telegraph-1.html">Telegraph Emulation I</a></li>
+        <li><a href="enhancement-telegraph-2.html">Telegraph Emulation II</a></li>
+        <li><a href="enhancement-nesting.html">Nesting &amp; Overhead</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-group-label">Resources</div>
+      <ul class="footer-links">
+        <li><a href="engineering.html">Engineering Applications</a></li>
+        <li><a href="guide.html">Implementation Guide</a></li>
+        <li><a href="cli.html">CLI Tools</a></li>
+        <li><a href="reference.html">Reference &amp; Glossary</a></li>
+      </ul>
+    </div>
+    <div class="footer-copy">
+      BitPads Protocol v2.0<br>
+      BitLedger Protocol v3.0<br>
+      Universal Domain v1.0<br>
+      © BABB
+    </div>
+  </div>
+</footer>
+
+<script>
+// TOC active state via IntersectionObserver
+const secs = document.querySelectorAll('section[id]');
+const tocAs = document.querySelectorAll('.toc a');
+const io = new IntersectionObserver(es => {
+  es.forEach(e => {
+    if (e.isIntersecting) {
+      tocAs.forEach(a => a.classList.remove('active'));
+      const a = document.querySelector(`.toc a[href="#${e.target.id}"]`);
+      if (a) a.classList.add('active');
+    }
+  });
+}, { rootMargin: '-15% 0px -70% 0px' });
+secs.forEach(s => io.observe(s));
+
+// Expandable table rows
+document.querySelectorAll('tr.xrow').forEach(row => {
+  row.addEventListener('click', () => {
+    const did = row.dataset.drawer;
+    const drawer = document.getElementById(did);
+    if (!drawer) return;
+    const open = drawer.classList.contains('open');
+    document.querySelectorAll('tr.xdrawer.open').forEach(d => {
+      d.classList.remove('open');
+      d.previousElementSibling?.classList.remove('open');
+    });
+    if (!open) { drawer.classList.add('open'); row.classList.add('open'); }
+  });
+});
+</script>
+</body>
+</html>

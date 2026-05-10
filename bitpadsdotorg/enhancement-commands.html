@@ -1,0 +1,939 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Commands &amp; Context Declaration — BitPads Documentation</title>
+<link rel="stylesheet" href="bp-style.css">
+<style>
+/* Page-specific */
+.cmd-class-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1px; background: var(--rule);
+  border: 1px solid var(--rule); margin: 24px 0;
+}
+.cmd-class-card {
+  background: var(--bg-panel); padding: 20px;
+}
+.cmd-class-num {
+  font-family: var(--mono); font-size: 9px;
+  text-transform: uppercase; letter-spacing: 0.12em;
+  color: var(--nasa-red); margin-bottom: 6px;
+}
+.cmd-class-name {
+  font-family: var(--display); font-weight: 700;
+  font-size: 16px; text-transform: uppercase;
+  letter-spacing: 0.04em; margin: 0 0 6px;
+}
+.cmd-class-codes {
+  font-family: var(--mono); font-size: 11px;
+  color: var(--ink-soft); line-height: 1.65;
+}
+
+.scope-bar {
+  display: flex; gap: 2px; margin: 20px 0; flex-wrap: wrap;
+}
+.scope-chip {
+  font-family: var(--mono); font-size: 10px;
+  text-transform: uppercase; letter-spacing: 0.08em;
+  padding: 6px 14px;
+  background: var(--bg-panel);
+  border: 1px solid var(--rule);
+  border-top: 3px solid var(--nasa-blue);
+  color: var(--ink-soft);
+}
+.scope-chip.level-0 { border-top-color: var(--bit-reserved); }
+.scope-chip.level-1 { border-top-color: var(--bit-data); }
+.scope-chip.level-2 { border-top-color: var(--nasa-gold); }
+.scope-chip.level-3 { border-top-color: var(--bit-enhance); }
+.scope-chip.level-4 { border-top-color: var(--nasa-blue); }
+.scope-chip .sc-num { font-size: 18px; font-weight: 700; display: block; margin-bottom: 2px; color: var(--ink); }
+
+.tradeoff-table td.winner-v1 { color: var(--nasa-gold); font-weight: 600; }
+.tradeoff-table td.winner-v2 { color: var(--bit-enhance); font-weight: 600; }
+
+.byte-seq {
+  display: flex; gap: 4px; flex-wrap: wrap; margin: 14px 0;
+}
+.bseq-byte {
+  font-family: var(--mono); font-size: 11px;
+  padding: 8px 10px;
+  background: var(--bg-panel);
+  border: 1px solid var(--rule);
+  border-top: 3px solid var(--bit-mode);
+  min-width: 80px; text-align: center;
+}
+.bseq-byte.cat { border-top-color: var(--nasa-red); }
+.bseq-byte.cmd { border-top-color: var(--bit-data); }
+.bseq-byte.param { border-top-color: var(--nasa-gold); }
+.bseq-byte.ctx { border-top-color: var(--bit-enhance); }
+.bseq-byte .bs-hex { font-size: 16px; font-weight: 700; color: var(--nasa-blue); display: block; }
+.bseq-byte .bs-label { font-size: 9px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-faint); display: block; margin-top: 4px; }
+
+.grammar-worked {
+  background: var(--bg-panel);
+  border: 1px solid var(--rule);
+  border-left: 4px solid var(--nasa-teal);
+  padding: 18px 22px; margin: 18px 0;
+}
+.grammar-worked h5 {
+  font-family: var(--mono); font-size: 9px;
+  text-transform: uppercase; letter-spacing: 0.12em;
+  color: var(--nasa-teal); margin: 0 0 10px;
+}
+.grammar-worked p { font-size: 13px; margin: 0 0 8px; }
+.grammar-worked p:last-child { margin-bottom: 0; }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="index.html">
+      <span class="brand-mark">BP</span>
+      <span class="brand-name">BitPads Protocol</span>
+    </a>
+    <nav class="topnav">
+      <a href="overview.html">Overview</a>
+      <a href="bitpads-v2.html">BitPads v2</a>
+      <a href="bitledger.html" class="active">BitLedger</a>
+      <a href="universal-domain.html">Universal Domain</a>
+      <div class="nav-group">
+        <a href="enhancement-grammar.html">Enhancement</a>
+        <div class="nav-dropdown">
+          <a href="enhancement-grammar.html">Grammar &amp; Signal Slots</a>
+          <a href="enhancement-commands.html">Commands &amp; Context</a>
+          <a href="enhancement-telegraph-1.html">Telegraph Emulation I</a>
+          <a href="enhancement-telegraph-2.html">Telegraph Emulation II</a>
+          <a href="enhancement-nesting.html">Nesting &amp; Overhead</a>
+        </div>
+      </div>
+      <a href="compound-mode.html">Compound Mode</a>
+      <a href="engineering.html">Engineering</a>
+      <a href="guide.html">Guide</a>
+      <a href="cli.html">CLI</a>
+      <a href="reference.html">Reference</a>
+    </nav>
+  </div>
+</header>
+
+<div class="page">
+  <aside class="sidebar">
+    <p class="toc-label">On This Page</p>
+    <ul class="toc">
+      <li><a href="#overview" class="active">Overview</a></li>
+      <li><a href="#compact-command">Compact Command (1100)</a></li>
+      <li><a href="#context-declaration">Context Declaration (1101)</a></li>
+      <li><a href="#scope-levels">Scope Levels</a></li>
+      <li><a href="#compound-toggle">Compound Toggle</a></li>
+      <li><a href="#grammar-rules">Grammar Rules</a></li>
+      <li><a href="#sequences">Extended Sequences</a></li>
+    </ul>
+  </aside>
+
+  <main>
+
+    <!-- ── OVERVIEW ── -->
+    <section id="overview">
+      <p class="eyebrow">Enhancement Sub-Protocol v2.0 · Categories 1100 &amp; 1101</p>
+      <h2>Commands &amp; Context Declaration</h2>
+      <p class="lead">Two Wave categories added in BitPads v2.0 extend the enhancement layer with compact command sequencing and dynamic context management.</p>
+      <p>Category <strong>1100 Compact Command</strong> fills the gap between a single Wave command (Category 0011, one Task short form) and a full Record with Layer 1 overhead. It delivers discrete typed command queues in 1–3 bytes per command, using a structured 3+5 bit split to express 8 command classes and 32 codes within each class.</p>
+      <p>Category <strong>1101 Context Declaration</strong> allows the transmitter to scope interpretation context across any span from a single byte to an entire remaining session. A single declaration can switch domain, activate compound mode, override currency, or remap signal slots — without opening a new Record or Layer 1.</p>
+      <p>Both categories operate at the Wave layer. Meta byte 1 bit 1 is 0 (Wave mode), bit 4 is 1 (category mode), and bits 5–8 carry the category code 1100 or 1101. Neither requires Layer 1. Neither carries payload in the sense of a valued record.</p>
+
+      <div class="compare">
+        <div>
+          <h4>Category 1100 — Compact Command</h4>
+          <ul>
+            <li>Meta byte 1 + command byte(s)</li>
+            <li>1-byte command: 3-bit class + 5-bit code</li>
+            <li>Optional 1-byte parameter</li>
+            <li>8 classes × 32 codes = 256 base commands</li>
+            <li>Class 111 Extended adds 256 per profile</li>
+            <li>Stream closed by length, EOT, or new Meta byte</li>
+          </ul>
+        </div>
+        <div>
+          <h4>Category 1101 — Context Declaration</h4>
+          <ul>
+            <li>Meta byte 1 + declaration block (1–4 bytes)</li>
+            <li>Declaration Type byte — what is declared</li>
+            <li>Scope Level byte — how far it applies</li>
+            <li>Optional parameter bytes per type</li>
+            <li>0x07–0xFF user-defined declaration types</li>
+            <li>Session scope requires Layer 1 re-ACK</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="notice">
+        <p><strong>Wave-layer position:</strong> Category 1100 and 1101 transmissions are Wave-mode units. Meta byte 1 bits 5–8 = 1100 or 1101 with bit 4 = 1 (category mode) and bit 1 = 0 (Wave). The receiver enters parser state 3D (Compact Command) or 3E (Context Declaration) respectively.</p>
+      </div>
+    </section>
+
+    <!-- ── COMPACT COMMAND ── -->
+    <section id="compact-command">
+      <p class="eyebrow">Category 1100</p>
+      <h2>Compact Command Mode</h2>
+      <p>Compact Command Mode transmits a queue of discrete, typed commands at minimum wire cost. Each command occupies one byte in the command class + code format, with an optional second parameter byte for commands that require a value or target specifier.</p>
+
+      <h3>Command Byte — 3+5 Bit Structure</h3>
+      <p>The single command byte is divided into a 3-bit upper field carrying the command class and a 5-bit lower field carrying the command code within that class.</p>
+
+      <div class="bit-display">
+        <div class="bit-display-label">Command Byte — Category 1100 — 3+5 Split (bits 1–3 = Class, bits 4–8 = Code)</div>
+        <div class="bit-cells">
+          <div class="bit-cell mode w3" data-layer="meta" data-tooltip="Bits 1–3: Command Class. 000–111. Selects one of 8 command classes.">
+            <span class="bit-pos">1–3</span>
+            <span class="bit-val">CLS</span>
+            <span class="bit-name">Command<br>Class</span>
+          </div>
+          <div class="bit-cell data w5" data-layer="meta" data-tooltip="Bits 4–8: Command Code. 00000–11111. Selects one of 32 codes within the class.">
+            <span class="bit-pos">4–8</span>
+            <span class="bit-val">CODE</span>
+            <span class="bit-name">Command<br>Code</span>
+          </div>
+        </div>
+        <div class="bit-legend">
+          <span class="legend-item"><span class="legend-swatch mode"></span> Command Class (3 bits — 8 classes)</span>
+          <span class="legend-item"><span class="legend-swatch data"></span> Command Code (5 bits — 32 codes per class)</span>
+          <span class="legend-item" style="margin-left:12px;color:var(--ink-faint);">Total command space: 256 base codes. Class 111 extends by 256 per profile.</span>
+        </div>
+      </div>
+
+      <h3>Activation Structure</h3>
+      <div class="printout">
+        <div class="ph">────────────────────────────────────────────</div>
+        <div class="ph"> COMPACT COMMAND — CATEGORY 1100 — WIRE FORMAT</div>
+        <div class="ph">────────────────────────────────────────────</div>
+        <div><span class="pl">Meta byte 1   </span><span class="pb">0 x x 1 1100</span><span class="pc">  Wave, category mode, category 1100</span></div>
+        <div><span class="pl">              </span><span class="pc">  Bit1=0: Wave  Bit4=1: Category  Bits5-8=1100</span></div>
+        <div><span class="pl">P9 slot       </span><span class="pv">Optional — stream-open enhanced C0 byte</span></div>
+        <div><span class="pl">Length prefix </span><span class="pv">Optional — 1 byte, count of commands in queue</span></div>
+        <div><span class="pl">Command bytes </span><span class="pv">1–3 bytes each: [class+code] [parameter?]</span></div>
+        <div><span class="pl">P11 slot      </span><span class="pv">Stream-close signal (ETX, EOT, ETB+Continuation...)</span></div>
+        <div class="ph">────────────────────────────────────────────</div>
+        <div><span class="pl">Close trigger </span><span class="pv">Length exhausted OR 0x04 EOT OR new Meta byte</span></div>
+        <div class="ph">────────────────────────────────────────────</div>
+      </div>
+
+      <h3>The 8 Command Classes</h3>
+      <p>Classes 000 through 110 are standard. Class 111 is Extended — the next byte carries an 8-bit command code giving 256 additional commands per domain profile.</p>
+
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Class (bits 1–3)</th>
+            <th>Name</th>
+            <th>Key Codes (bits 4–8)</th>
+            <th>Parameter Byte</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="xrow" data-drawer="d-000">
+            <td><code>000</code> <span class="xrow-indicator">▾</span></td>
+            <td>System Control</td>
+            <td><code>00001</code>=NOP/Ping · <code>00010</code>=Reset · <code>00011</code>=Sync · <code>00100</code>=Checkpoint save · <code>00101</code>=Checkpoint restore · <code>00110</code>=Mode shift · <code>00111</code>=Status request</td>
+            <td>Code-dependent (Mode shift: target mode byte)</td>
+          </tr>
+          <tr class="xdrawer" id="d-000">
+            <td colspan="4">
+              <div class="xdrawer-inner">
+                <div class="xdrawer-grid">
+                  <div class="xdrawer-section">
+                    <h5>Separator Codes</h5>
+                    <p>Codes <code>11100</code>–<code>11111</code> map to FS/GS/RS/US separator advances — a 1-byte alternative to Layer 2 separator retransmission on ultra-low-bandwidth links.</p>
+                  </div>
+                  <div class="xdrawer-section">
+                    <h5>Parameter Convention</h5>
+                    <p>NOP/Ping, Reset, Sync, Checkpoint save/restore: no parameter byte.<br>Mode shift: 1 parameter byte (target mode index).<br>Status request: 1 optional parameter (status type selector).</p>
+                  </div>
+                </div>
+              </div>
+            </td>
+          </tr>
+          <tr class="xrow" data-drawer="d-001">
+            <td><code>001</code> <span class="xrow-indicator">▾</span></td>
+            <td>Execute</td>
+            <td><code>00001</code>=Start · <code>00010</code>=Stop · <code>00011</code>=Pause · <code>00100</code>=Resume · <code>00101</code>=Abort · <code>00110</code>=Complete · <code>00111</code>=Retry · <code>01000</code>=Fire/Actuate · <code>01001</code>=Release · <code>01010</code>=Lock · <code>01011</code>=Unlock · <code>01100</code>=Open · <code>01101</code>=Close · <code>01110</code>=Toggle · <code>01111</code>=Cycle</td>
+            <td>Most Execute codes take no parameter. Fire/Actuate may carry a 1-byte actuator target ID.</td>
+          </tr>
+          <tr class="xdrawer" id="d-001">
+            <td colspan="4">
+              <div class="xdrawer-inner">
+                <div class="xdrawer-grid">
+                  <div class="xdrawer-section">
+                    <h5>Typical Usage</h5>
+                    <p>Execute commands drive physical or logical state machines. Start/Stop/Pause/Resume are the standard lifecycle quartet. Abort and Retry are the error-path pair. Fire and Actuate address physical effectors.</p>
+                  </div>
+                  <div class="xdrawer-section">
+                    <h5>Parameter Convention</h5>
+                    <p>Standalone codes (Start, Stop, Pause, Resume, Abort, Complete, Retry): no parameter byte.<br>Fire/Actuate, Open, Close: optional 1-byte target specifier when the session has multiple actuator sub-entities.</p>
+                  </div>
+                </div>
+              </div>
+            </td>
+          </tr>
+          <tr class="xrow" data-drawer="d-010">
+            <td><code>010</code> <span class="xrow-indicator">▾</span></td>
+            <td>Query</td>
+            <td><code>00001</code>=Status · <code>00010</code>=Health · <code>00011</code>=Position · <code>00100</code>=Velocity · <code>00101</code>=Temperature · <code>00110</code>=Pressure · <code>00111</code>=Power · <code>01000</code>=Fuel · <code>01001</code>=Battery · <code>01010</code>=Signal · <code>01011</code>=Error count · <code>01100</code>=Queue depth · <code>01101</code>=Uptime · <code>01110</code>=Version · <code>01111</code>=Identity</td>
+            <td>Query codes return data. Response carries a Category 1100 (class 000, code 00111 Status) command with parameter byte = result value, or a full Record when value requires Layer 2 precision.</td>
+          </tr>
+          <tr class="xdrawer" id="d-010">
+            <td colspan="4">
+              <div class="xdrawer-inner">
+                <div class="xdrawer-grid">
+                  <div class="xdrawer-section">
+                    <h5>Query Response Pattern</h5>
+                    <p>Query byte triggers a response. The response is a Category 1100 Status command with the queried value in the parameter byte (for 8-bit values) or a full BitPads Record for precision-sensitive measurements.</p>
+                  </div>
+                  <div class="xdrawer-section">
+                    <h5>Engineering Queries</h5>
+                    <p>Position, Velocity, Temperature, Pressure, Power, Fuel, Battery, Signal — these map directly to Universal Domain physical quantities. The query code is more compact than a full Layer 3 request record for non-critical polling.</p>
+                  </div>
+                </div>
+              </div>
+            </td>
+          </tr>
+          <tr class="xrow" data-drawer="d-011">
+            <td><code>011</code> <span class="xrow-indicator">▾</span></td>
+            <td>Configure</td>
+            <td><code>00001</code>=Set value · <code>00010</code>=Set threshold · <code>00011</code>=Set mode · <code>00100</code>=Set rate · <code>00101</code>=Set address · <code>00110</code>=Set codebook · <code>00111</code>=Set archetype · <code>01000</code>=Enable · <code>01001</code>=Disable · <code>01010</code>=Set SF · <code>01011</code>=Set D · <code>01100</code>=Set timeout · <code>01101</code>=Set priority · <code>01110</code>=Set encoding · <code>01111</code>=Set domain</td>
+            <td>All Configure codes take exactly 1 parameter byte (the new setting value or index).</td>
+          </tr>
+          <tr class="xdrawer" id="d-011">
+            <td colspan="4">
+              <div class="xdrawer-inner">
+                <div class="xdrawer-grid">
+                  <div class="xdrawer-section">
+                    <h5>Parameter Convention</h5>
+                    <p>Every Configure code is a 2-byte total: command byte + parameter byte. Set SF: parameter is scaling factor index (0–127). Set D: parameter is decimal position. Set codebook: parameter is codebook index (0–255). Set archetype: parameter is 4-bit archetype code in lower nibble.</p>
+                  </div>
+                  <div class="xdrawer-section">
+                    <h5>Runtime Re-configuration</h5>
+                    <p>Configure commands allow in-session parameter updates at 2 bytes each — significantly cheaper than a new Category 1101 Context Declaration block when only one parameter changes.</p>
+                  </div>
+                </div>
+              </div>
+            </td>
+          </tr>
+          <tr class="xrow" data-drawer="d-100">
+            <td><code>100</code> <span class="xrow-indicator">▾</span></td>
+            <td>Schedule</td>
+            <td><code>00001</code>=At time · <code>00010</code>=After duration · <code>00011</code>=At interval · <code>00100</code>=On trigger · <code>00101</code>=On threshold · <code>00110</code>=On sequence complete · <code>00111</code>=On error · <code>01000</code>=Cancel schedule · <code>01001</code>=Defer · <code>01010</code>=Expedite · <code>01011</code>=Set deadline</td>
+            <td>At time / After duration / At interval: 1 parameter byte (time index or offset). On-event codes: 1 parameter byte (trigger ID or threshold index).</td>
+          </tr>
+          <tr class="xdrawer" id="d-100">
+            <td colspan="4">
+              <div class="xdrawer-inner">
+                <div class="xdrawer-grid">
+                  <div class="xdrawer-section">
+                    <h5>Scheduling Model</h5>
+                    <p>Schedule commands defer execution. At time uses the session time tier to reference a timestamp. At interval repeats at the specified period. On-trigger and On-threshold register event-driven execution at the receiver — the executing side evaluates the condition.</p>
+                  </div>
+                  <div class="xdrawer-section">
+                    <h5>Parameter Convention</h5>
+                    <p>At time: 1 byte (offset from session epoch, units per Layer 2 time tier). On trigger: 1 byte (trigger source ID, 0-255). Cancel schedule: no parameter. Defer/Expedite: 1 byte (relative priority shift).</p>
+                  </div>
+                </div>
+              </div>
+            </td>
+          </tr>
+          <tr class="xrow" data-drawer="d-101">
+            <td><code>101</code> <span class="xrow-indicator">▾</span></td>
+            <td>Delegate</td>
+            <td><code>00001</code>=To node · <code>00010</code>=Broadcast · <code>00011</code>=Multicast · <code>00100</code>=Return to originator · <code>00101</code>=Proxy · <code>00110</code>=Relay · <code>00111</code>=Escalate</td>
+            <td>To node: 1 parameter byte (target node ID, low byte of 32-bit sender ID space). Broadcast and Multicast: no parameter. Relay: 1 byte (relay hop count).</td>
+          </tr>
+          <tr class="xdrawer" id="d-101">
+            <td colspan="4">
+              <div class="xdrawer-inner">
+                <div class="xdrawer-grid">
+                  <div class="xdrawer-section">
+                    <h5>Routing Model</h5>
+                    <p>Delegate commands redirect execution authority. To node targets a specific sub-entity within the session's sender ID space. Broadcast reaches all nodes in the session. Escalate passes authority up the hierarchy.</p>
+                  </div>
+                  <div class="xdrawer-section">
+                    <h5>Parameter Convention</h5>
+                    <p>To node: 1 byte (node index within current network+system, per Layer 1 split mode). Proxy: 1 byte (proxy target index). Relay: 1 byte (TTL — decremented at each hop; discard at 0).</p>
+                  </div>
+                </div>
+              </div>
+            </td>
+          </tr>
+          <tr class="xrow" data-drawer="d-110">
+            <td><code>110</code> <span class="xrow-indicator">▾</span></td>
+            <td>Conditional</td>
+            <td><code>00001</code>=If value GT · <code>00010</code>=If value LT · <code>00011</code>=If value EQ · <code>00100</code>=If state equals · <code>00101</code>=If error present · <code>00110</code>=If connected · <code>00111</code>=If timeout · <code>01000</code>=If sequence complete</td>
+            <td>All Conditional codes take 1 parameter byte (the threshold value, state code, or condition ID). The next command in the queue executes only if the condition evaluates true at the receiver.</td>
+          </tr>
+          <tr class="xdrawer" id="d-110">
+            <td colspan="4">
+              <div class="xdrawer-inner">
+                <div class="xdrawer-grid">
+                  <div class="xdrawer-section">
+                    <h5>Conditional Chaining</h5>
+                    <p>A Conditional command guards the next command in the queue. The receiver evaluates the condition; if false, the next command is skipped. Multiple conditionals may be chained — each guards the immediately following command only.</p>
+                  </div>
+                  <div class="xdrawer-section">
+                    <h5>Parameter Convention</h5>
+                    <p>If value GT/LT/EQ: 1 byte (8-bit comparison value). If state equals: 1 byte (target state code). If error present: 1 byte (error class mask). If timeout: 1 byte (elapsed threshold in session time units).</p>
+                  </div>
+                </div>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td><code>111</code></td>
+            <td>Extended</td>
+            <td><em>Next byte = 8-bit extended command code. 256 additional commands per domain profile. Profile declares the full code table at session open.</em></td>
+            <td>Profile-dependent. Extended code byte itself may declare parameter presence in its upper bit.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>Command Sequence Examples</h3>
+      <p>Three annotated sequences. Each begins with the Meta byte declaring Category 1100.</p>
+
+      <h4>Example 1 — Session Checkpoint Save (no parameter)</h4>
+      <div class="byte-seq">
+        <div class="bseq-byte cat">
+          <span class="bs-hex">0x1C</span>
+          <span class="bs-label">Meta byte 1<br>Cat 1100</span>
+        </div>
+        <div class="bseq-byte cmd">
+          <span class="bs-hex">0x04</span>
+          <span class="bs-label">Class 000<br>Code 00100</span>
+        </div>
+      </div>
+      <div class="printout">
+        <div class="ph">── SEQUENCE 1: CHECKPOINT SAVE ────────────────────────</div>
+        <div><span class="pl">BYTE 1       </span><span class="pb">0 0 0 1   1 1 0 0</span><span class="pc">  = 0x1C  Meta byte 1</span></div>
+        <div><span class="pl">             </span><span class="pc">  Bit1=0: Wave  Bit4=1: Category  Bits5-8=1100</span></div>
+        <div><span class="pl">BYTE 2       </span><span class="pb">0 0 0   0 0 1 0 0</span><span class="pc">  = 0x04  Command byte</span></div>
+        <div><span class="pl">             </span><span class="pc">  Bits1-3=000: System Control class</span></div>
+        <div><span class="pl">             </span><span class="pc">  Bits4-8=00100: Checkpoint save</span></div>
+        <div class="ph">──────────────────────────────────────────────────────</div>
+        <div><span class="pl">Total        </span><span class="pg">2 bytes. No parameter required. No Layer 1.</span></div>
+        <div><span class="pl">Effect       </span><span class="pv">Receiver saves current session state to checkpoint slot.</span></div>
+        <div><span class="pl">Close        </span><span class="pv">New Meta byte or EOT (0x04) ends command stream.</span></div>
+      </div>
+
+      <h4>Example 2 — Status Request with Parameter (status type selector)</h4>
+      <div class="byte-seq">
+        <div class="bseq-byte cat">
+          <span class="bs-hex">0x1C</span>
+          <span class="bs-label">Meta byte 1<br>Cat 1100</span>
+        </div>
+        <div class="bseq-byte cmd">
+          <span class="bs-hex">0x07</span>
+          <span class="bs-label">Class 000<br>Code 00111</span>
+        </div>
+        <div class="bseq-byte param">
+          <span class="bs-hex">0x02</span>
+          <span class="bs-label">Parameter<br>Health type</span>
+        </div>
+      </div>
+      <div class="printout">
+        <div class="ph">── SEQUENCE 2: STATUS REQUEST (HEALTH) ────────────────</div>
+        <div><span class="pl">BYTE 1       </span><span class="pb">0 0 0 1   1 1 0 0</span><span class="pc">  = 0x1C  Meta byte 1, category 1100</span></div>
+        <div><span class="pl">BYTE 2       </span><span class="pb">0 0 0   0 0 1 1 1</span><span class="pc">  = 0x07  Command byte</span></div>
+        <div><span class="pl">             </span><span class="pc">  Bits1-3=000: System Control</span></div>
+        <div><span class="pl">             </span><span class="pc">  Bits4-8=00111: Status request</span></div>
+        <div><span class="pl">BYTE 3       </span><span class="pb">0 0 0 0   0 0 1 0</span><span class="pc">  = 0x02  Parameter byte</span></div>
+        <div><span class="pl">             </span><span class="pc">  0x02 = health status type (subsystem health report)</span></div>
+        <div class="ph">──────────────────────────────────────────────────────</div>
+        <div><span class="pl">Total        </span><span class="pg">3 bytes. Parameter type 0x01=operational, 0x02=health, 0x03=error log.</span></div>
+        <div><span class="pl">Response     </span><span class="pv">Receiver transmits Category 1100 (class 000, code 00001 Status) + health byte.</span></div>
+      </div>
+
+      <h4>Example 3 — Error Report (System Control, class 000 with error class parameter)</h4>
+      <div class="byte-seq">
+        <div class="bseq-byte cat">
+          <span class="bs-hex">0x1C</span>
+          <span class="bs-label">Meta byte 1<br>Cat 1100</span>
+        </div>
+        <div class="bseq-byte cmd">
+          <span class="bs-hex">0x87</span>
+          <span class="bs-label">Class 100<br>Code 00111</span>
+        </div>
+        <div class="bseq-byte param">
+          <span class="bs-hex">0x05</span>
+          <span class="bs-label">Parameter<br>Error class</span>
+        </div>
+      </div>
+      <div class="printout">
+        <div class="ph">── SEQUENCE 3: ERROR REPORT ───────────────────────────</div>
+        <div><span class="pl">BYTE 1       </span><span class="pb">0 0 0 1   1 1 0 0</span><span class="pc">  = 0x1C  Meta byte 1, category 1100</span></div>
+        <div><span class="pl">BYTE 2       </span><span class="pb">1 0 0   0 0 1 1 1</span><span class="pc">  = 0x87  Command byte</span></div>
+        <div><span class="pl">             </span><span class="pc">  Bits1-3=100: Schedule class</span></div>
+        <div><span class="pl">             </span><span class="pc">  Bits4-8=00111: On error (trigger on error condition)</span></div>
+        <div><span class="pl">BYTE 3       </span><span class="pb">0 0 0 0   0 1 0 1</span><span class="pc">  = 0x05  Parameter byte</span></div>
+        <div><span class="pl">             </span><span class="pc">  Error class 5 = integrity violation</span></div>
+        <div class="ph">──────────────────────────────────────────────────────</div>
+        <div><span class="pl">Total        </span><span class="pg">3 bytes. Registers conditional handler at receiver: fire on class-5 error.</span></div>
+        <div><span class="pl">Effect       </span><span class="pv">Receiver activates on-error trigger for integrity violations.</span></div>
+      </div>
+    </section>
+
+    <!-- ── CONTEXT DECLARATION ── -->
+    <section id="context-declaration">
+      <p class="eyebrow">Category 1101</p>
+      <h2>Context Declaration</h2>
+      <p>Category 1101 declares interpretation context for subsequent records. A single declaration block can activate the enhancement grammar, switch the active codebook, change domain, override the currency or quantity type, set a nesting level, or remap signal slots — all scoped to a precise activation window defined by the Scope Level byte.</p>
+      <p>The receiver reads the declaration and applies the context to all records within the declared scope. No re-declaration is needed unless the context changes again.</p>
+
+      <h3>Block Structure</h3>
+      <div class="byte-seq">
+        <div class="bseq-byte cat">
+          <span class="bs-hex">0x1D</span>
+          <span class="bs-label">Meta byte 1<br>Cat 1101</span>
+        </div>
+        <div class="bseq-byte ctx">
+          <span class="bs-hex">Type</span>
+          <span class="bs-label">Decl. Type<br>byte</span>
+        </div>
+        <div class="bseq-byte param">
+          <span class="bs-hex">Scope</span>
+          <span class="bs-label">Scope Level<br>byte</span>
+        </div>
+        <div class="bseq-byte param">
+          <span class="bs-hex">[P…]</span>
+          <span class="bs-label">Optional<br>parameters</span>
+        </div>
+      </div>
+      <p class="small soft">Meta byte 1 = <code>0x1D</code> when ACK bit and continuation bit are both 0 (Wave, category 1101). The ACK bit (bit 2) and continuation bit (bit 3) may be set for confirmed or fragmented declarations.</p>
+
+      <h3>Declaration Types</h3>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Type Byte</th>
+            <th>Name</th>
+            <th>Parameter(s)</th>
+            <th>Effect</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>0x01</code></td>
+            <td>Compound Mode toggle</td>
+            <td>1 byte: <code>0x01</code>=enable, <code>0x00</code>=disable</td>
+            <td>Enables or disables compound record mode (1111 continuation marker) within the declared scope. Replaces the per-batch compound control removed in v2.</td>
+          </tr>
+          <tr>
+            <td><code>0x02</code></td>
+            <td>Codebook declaration</td>
+            <td>1 byte: codebook index (0–255)</td>
+            <td>Switches the active codebook for binary pictography and C0 enhancement interpretation. Both sender and receiver update simultaneously.</td>
+          </tr>
+          <tr>
+            <td><code>0x03</code></td>
+            <td>Domain declaration</td>
+            <td>1 byte: domain code (<code>0x00</code>=Financial, <code>0x01</code>=Engineering, <code>0x02</code>=Hybrid, <code>0x03</code>=Custom)</td>
+            <td>Switches the active domain for the declared scope. Custom domain requires additional extension byte with profile reference.</td>
+          </tr>
+          <tr>
+            <td><code>0x04</code></td>
+            <td>Currency / QTC override</td>
+            <td>1 byte: currency or quantity-type code (6-bit value, upper 2 bits reserved)</td>
+            <td>Overrides the Layer 2 currency or physical quantity type for the declared scope. Useful for mixed-denomination batches without re-opening Layer 2.</td>
+          </tr>
+          <tr>
+            <td><code>0x05</code></td>
+            <td>Nesting level declaration</td>
+            <td>1 byte: maximum nesting depth permitted in scope</td>
+            <td>Sets the parser stack depth limit for the declared scope. Receiver may NAK if requested depth exceeds hardware capacity.</td>
+          </tr>
+          <tr>
+            <td><code>0x06</code></td>
+            <td>Signal slot map override</td>
+            <td>1 byte: slot presence bitmap (P4–P8 in lower 5 bits)</td>
+            <td>Overrides the default signal slot map for the declared scope. Records in scope inherit the declared slot configuration without a per-record Signal Slot Presence byte.</td>
+          </tr>
+          <tr>
+            <td><code>0x07</code>–<code>0xFF</code></td>
+            <td>User-defined</td>
+            <td>Profile-dependent</td>
+            <td>Reserved for application-layer and deployment-specific declarations. The session profile declares valid type codes and their parameter formats at session open.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- ── SCOPE LEVELS ── -->
+    <section id="scope-levels">
+      <p class="eyebrow">Context Declaration — Scope Control</p>
+      <h2>Activation Scope Levels</h2>
+      <p>The Scope Level byte in a Category 1101 block controls precisely how far the declared context extends. Fine-grained scope control eliminates the need to re-declare context at every record boundary.</p>
+      <p>Five primary scope levels cover inline-to-session range. Scope level 0 is the surgical instrument — exactly one byte or token. Scope level 4 applies to the entire remaining session and requires no further maintenance overhead.</p>
+
+      <div class="scope-bar">
+        <div class="scope-chip level-0">
+          <span class="sc-num">0</span>
+          Inline<br><span style="font-size:9px;color:var(--ink-faint);">Next byte only</span>
+        </div>
+        <div class="scope-chip level-1">
+          <span class="sc-num">1</span>
+          Record<br><span style="font-size:9px;color:var(--ink-faint);">Next complete record</span>
+        </div>
+        <div class="scope-chip level-2">
+          <span class="sc-num">2</span>
+          Batch<br><span style="font-size:9px;color:var(--ink-faint);">Until batch close</span>
+        </div>
+        <div class="scope-chip level-3">
+          <span class="sc-num">3</span>
+          Category<br><span style="font-size:9px;color:var(--ink-faint);">All records, same category</span>
+        </div>
+        <div class="scope-chip level-4">
+          <span class="sc-num">4</span>
+          Session<br><span style="font-size:9px;color:var(--ink-faint);">Entire remaining session</span>
+        </div>
+      </div>
+
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Level</th>
+            <th>Code</th>
+            <th>Scope Boundary</th>
+            <th>Example Use</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>0 — Inline</strong></td>
+            <td><code>0x00</code></td>
+            <td>Applies to the next byte or token only. After that byte, the prior context resumes.</td>
+            <td>Single-byte codebook override: one pictogram in an alternate codebook without shifting the whole stream.</td>
+          </tr>
+          <tr>
+            <td><strong>1 — Record</strong></td>
+            <td><code>0x01</code></td>
+            <td>Applies to the next complete record (from Meta byte 1 to final component). Reverts on record close.</td>
+            <td>Currency override for a single cross-currency record within a USD batch — that one record uses EUR, all others remain USD.</td>
+          </tr>
+          <tr>
+            <td><strong>2 — Batch</strong></td>
+            <td><code>0x02</code></td>
+            <td>Applies until the next Layer 2 batch-close (ETB or EOT). All records in the batch inherit the context.</td>
+            <td>Compound mode enable for one batch of compound records, followed by disable for the next batch. The v2 compound toggle workaround (see Compound Toggle section).</td>
+          </tr>
+          <tr>
+            <td><strong>3 — Category</strong></td>
+            <td><code>0x03</code></td>
+            <td>Applies to all records of the same BitPads category for the remainder of the session, or until a new category-scope declaration supersedes it.</td>
+            <td>Declaring that all Category 0100 (Basic Record) transmissions in this session use Engineering domain archetype 0x07 (Source-Sink) without per-record annotation.</td>
+          </tr>
+          <tr>
+            <td><strong>4 — Session</strong></td>
+            <td><code>0x04</code></td>
+            <td>Applies to the entire remaining session. Cannot be reversed without a new session. Requires Layer 1 re-confirmation via ACK before taking effect globally.</td>
+            <td>Switching the entire session from Financial to Engineering domain mid-session after a mode-change command from the control station. Requires ACK handshake.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="notice">
+        <p><strong>Scope compounding:</strong> Scope levels can be layered. A session-scope codebook declaration sets the base. A batch-scope codebook override applies only within that batch and reverts on batch close. The receiver maintains a scope stack matching the parser stack. The most recently declared scope for a given field takes precedence.</p>
+      </div>
+    </section>
+
+    <!-- ── COMPOUND TOGGLE ── -->
+    <section id="compound-toggle">
+      <p class="eyebrow">Context Declaration — Practical Application</p>
+      <h2>Compound Mode Toggle via Category 1101</h2>
+      <p>BitPads v2.0 removed the per-batch compound control byte from Layer 2 in favour of a session-level compound flag. The architectural rationale was cleaner defaults and zero per-batch overhead when compound mode is always on or always off. The tradeoff: selective compound activation now requires a Category 1101 declaration.</p>
+
+      <h3>The 3-Byte Toggle Sequence</h3>
+      <p>To enable or disable compound mode for a specific batch, the sender transmits a Category 1101 Context Declaration with Declaration Type <code>0x01</code> (Compound Mode) and Scope Level <code>0x02</code> (Batch scope), followed by a parameter byte.</p>
+
+      <div class="printout">
+        <div class="ph">── COMPOUND MODE ENABLE FOR ONE BATCH ─────────────────</div>
+        <div><span class="pl">BYTE 1  </span><span class="pb">0 0 0 1   1 1 0 1</span><span class="pc">  = 0x1D  Meta byte 1</span></div>
+        <div><span class="pl">        </span><span class="pc">  Bit1=0: Wave  Bit4=1: Category  Bits5-8=1101</span></div>
+        <div><span class="pl">BYTE 2  </span><span class="pb">0 0 0 0   0 0 0 1</span><span class="pc">  = 0x01  Declaration Type: Compound Mode toggle</span></div>
+        <div><span class="pl">BYTE 3  </span><span class="pb">0 0 0 0   0 0 1 0</span><span class="pc">  = 0x02  Scope Level: Batch scope</span></div>
+        <div><span class="pl">BYTE 4  </span><span class="pb">0 0 0 0   0 0 0 1</span><span class="pc">  = 0x01  Parameter: 1 = enable</span></div>
+        <div class="ph">──────────────────────────────────────────────────────</div>
+        <div><span class="pl">Effect  </span><span class="pv">Compound mode active for the next batch. Reverts on batch close.</span></div>
+        <div><span class="pl">Disable </span><span class="pv">Same sequence with BYTE 4 = 0x00 (disable). 4 bytes total for disable.</span></div>
+        <div class="ph">──────────────────────────────────────────────────────</div>
+        <div><span class="pl">v1 cost </span><span class="pc">1 byte per batch (BL ctrl byte in Layer 2)</span></div>
+        <div><span class="pl">v2 cost </span><span class="pv">4 bytes per toggle (declaration block)</span></div>
+      </div>
+
+      <h3>Tradeoff Comparison — v1 vs v2</h3>
+      <table class="data-table tradeoff-table">
+        <thead>
+          <tr>
+            <th>Scenario</th>
+            <th>v1 Approach (per-batch BL ctrl)</th>
+            <th>v2 Approach (session flag + 1101 toggle)</th>
+            <th>Winner</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Compound always on across session</td>
+            <td>1 byte per batch (repeated overhead)</td>
+            <td>1 bit in Layer 1 (session flag, paid once)</td>
+            <td class="winner-v2">v2</td>
+          </tr>
+          <tr>
+            <td>Compound never used in session</td>
+            <td>1 byte per batch (overhead even when off)</td>
+            <td>0 bytes (flag absent = disabled)</td>
+            <td class="winner-v2">v2</td>
+          </tr>
+          <tr>
+            <td>Compound on for some batches, off for others</td>
+            <td>1 byte per batch (simple flag flip)</td>
+            <td>4 bytes per toggle (full declaration block)</td>
+            <td class="winner-v1">v1</td>
+          </tr>
+          <tr>
+            <td>Emergency compound toggle mid-session</td>
+            <td>1 byte available at any batch boundary</td>
+            <td>4-byte Category 1101 sequence required</td>
+            <td class="winner-v1">v1</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="notice warn">
+        <p><strong>Design consequence:</strong> Applications that selectively enable compound mode for specific batches pay a 4-byte overhead per toggle in v2 rather than 1 byte in v1. The v2 design prioritises the common cases (always on, always off) at the expense of the mixed case. Applications with frequent selective compound activation should declare compound mode at session level and manage the 1111 marker discipline in the application layer.</p>
+      </div>
+    </section>
+
+    <!-- ── GRAMMAR RULES ── -->
+    <section id="grammar-rules">
+      <p class="eyebrow">Context Declaration — Update Grammar</p>
+      <h2>Parameter Update Grammar</h2>
+      <p>Subsequent Context Declarations can update only changed fields without re-declaring the entire context. The update mechanism uses the Declaration Type byte with its update flag (upper bit of the type nibble set) to signal that only the specified fields are changing — all other previously declared context values remain in effect.</p>
+
+      <h3>Full Declaration vs Update Declaration</h3>
+      <div class="compare">
+        <div>
+          <h4>Full Declaration</h4>
+          <ul>
+            <li>Declares a complete context specification</li>
+            <li>All fields for the declaration type are set</li>
+            <li>Prior context for those fields is replaced</li>
+            <li>Type byte upper nibble: declaration type only</li>
+            <li>Used at scope open or after a full context change</li>
+          </ul>
+        </div>
+        <div>
+          <h4>Update Declaration</h4>
+          <ul>
+            <li>Changes only the specified fields</li>
+            <li>Unmentioned fields remain at declared values</li>
+            <li>Type byte upper bit set (update flag)</li>
+            <li>Used mid-scope to make partial changes</li>
+            <li>Cheaper than re-issuing full declaration</li>
+          </ul>
+        </div>
+      </div>
+
+      <h3>Worked Example — Session-Scope USD, Then EUR Override for One Batch</h3>
+
+      <div class="grammar-worked">
+        <h5>Step 1 — Session-open: Declare USD with D=2 for entire session</h5>
+        <p><strong>Meta byte 1</strong> (Cat 1101) + <strong>Type 0x04</strong> (Currency/QTC override) + <strong>Scope 0x04</strong> (Session scope) + <strong>Parameter 0x01</strong> (USD currency index)</p>
+        <p>Effect: All records in the session decode value blocks as USD with 2 decimal places. No per-record currency annotation needed.</p>
+      </div>
+
+      <div class="grammar-worked">
+        <h5>Step 2 — Before a specific batch: Update to EUR for batch scope only</h5>
+        <p><strong>Meta byte 1</strong> (Cat 1101) + <strong>Type 0x84</strong> (Update flag set, Currency/QTC override) + <strong>Scope 0x02</strong> (Batch scope) + <strong>Parameter 0x02</strong> (EUR currency index)</p>
+        <p>Effect: Records in this batch decode as EUR. The session-scope USD declaration is not touched — it waits beneath the batch-scope override. On batch close, currency reverts to USD automatically.</p>
+      </div>
+
+      <div class="grammar-worked">
+        <h5>Step 3 — Batch closes: session context resumes</h5>
+        <p>No declaration needed. When the batch closes (ETB or EOT), the batch-scope EUR override expires. The session-scope USD declaration re-asserts. Subsequent records resume USD decoding with zero additional bytes.</p>
+      </div>
+
+      <div class="printout">
+        <div class="ph">── FULL SEQUENCE: SESSION USD → BATCH EUR → SESSION USD ──</div>
+        <div><span class="pl">Cat1101 + 0x04 + 0x04 + 0x01   </span><span class="pv">Declare USD, session scope (4 bytes)</span></div>
+        <div><span class="pl">Layer 1, Layer 2, Records…      </span><span class="pc">USD active</span></div>
+        <div class="ph">────────────────────────────</div>
+        <div><span class="pl">Cat1101 + 0x84 + 0x02 + 0x02   </span><span class="pv">Update to EUR, batch scope (4 bytes)</span></div>
+        <div><span class="pl">Records in this batch           </span><span class="pc">EUR active</span></div>
+        <div><span class="pl">ETB (batch close)               </span><span class="pc">EUR scope expires, USD resumes</span></div>
+        <div class="ph">────────────────────────────</div>
+        <div><span class="pl">Next records…                   </span><span class="pv">USD automatically active. 0 declaration bytes.</span></div>
+        <div class="ph">──────────────────────────────────────────────────────────</div>
+        <div><span class="pl">Total overhead  </span><span class="pg">8 bytes (two declarations) for full session + one EUR batch.</span></div>
+      </div>
+    </section>
+
+    <!-- ── SEQUENCES ── -->
+    <section id="sequences">
+      <p class="eyebrow">Extended Examples</p>
+      <h2>Command &amp; Context Sequences</h2>
+      <p>Three extended sequences showing Categories 1100 and 1101 working together with Layer 1, Layer 2, and signal slots.</p>
+
+      <h3>Sequence 1 — Session Open with Domain Context</h3>
+      <p>A full session open followed by an Engineering domain context declaration at session scope, then Layer 2 batch header.</p>
+
+      <div class="printout">
+        <div class="ph">── SEQUENCE 1: SESSION OPEN + ENGINEERING DOMAIN CONTEXT ─</div>
+        <div><span class="pl">Phase 1: Session open</span></div>
+        <div><span class="pl">  B1–B8  </span><span class="pv">Layer 1 (64 bits, CRC-15 included)</span></div>
+        <div><span class="pl">          </span><span class="pc">  SOH (bit1=1), domain bits 3-4=01 (Engineering),</span></div>
+        <div><span class="pl">          </span><span class="pc">  permissions=1111, sender ID, sub-entity ID, CRC-15</span></div>
+        <div class="ph">────────────────────────────────────────</div>
+        <div><span class="pl">Phase 2: Compact command — session open</span></div>
+        <div><span class="pl">  B9     </span><span class="pb">0 0 0 1   1 1 0 0</span><span class="pc">  = 0x1C  Meta byte 1, cat 1100</span></div>
+        <div><span class="pl">  B10    </span><span class="pb">0 0 0   0 0 0 0 1</span><span class="pc">  = 0x01  Class 000 Execute, code 00001 = Start</span></div>
+        <div class="ph">────────────────────────────────────────</div>
+        <div><span class="pl">Phase 3: Context declaration — Engineering domain, session scope</span></div>
+        <div><span class="pl">  B11    </span><span class="pb">0 0 0 1   1 1 0 1</span><span class="pc">  = 0x1D  Meta byte 1, cat 1101</span></div>
+        <div><span class="pl">  B12    </span><span class="pb">0 0 0 0   0 0 1 1</span><span class="pc">  = 0x03  Decl Type: Domain declaration</span></div>
+        <div><span class="pl">  B13    </span><span class="pb">0 0 0 0   0 1 0 0</span><span class="pc">  = 0x04  Scope: Session scope</span></div>
+        <div><span class="pl">  B14    </span><span class="pb">0 0 0 0   0 0 0 1</span><span class="pc">  = 0x01  Parameter: Engineering domain</span></div>
+        <div class="ph">────────────────────────────────────────</div>
+        <div><span class="pl">Phase 4: Layer 2 Set B batch header (48 bits)</span></div>
+        <div><span class="pl">  B15–B20 </span><span class="pv">Layer 2 block — SF, D, entity, QType (engineering qty)</span></div>
+        <div class="ph">────────────────────────────────────────</div>
+        <div><span class="pl">Total setup  </span><span class="pg">20 bytes. Session and domain context established. Records follow.</span></div>
+        <div><span class="pl">Context      </span><span class="pv">Engineering domain active for entire session. No per-record annotation.</span></div>
+      </div>
+
+      <h3>Sequence 2 — Mid-Session Batch Scope Compound Toggle</h3>
+      <p>Compound mode is off by default. A batch of compound records is bracketed by Category 1101 enable/disable declarations. Three compound records follow, each linked by the 1111 continuation marker.</p>
+
+      <div class="printout">
+        <div class="ph">── SEQUENCE 2: COMPOUND BATCH WITH TOGGLE ─────────────</div>
+        <div><span class="pl">Phase 1: Enable compound for this batch</span></div>
+        <div><span class="pl">  B1  </span><span class="pb">0 0 0 1   1 1 0 1</span><span class="pc">  = 0x1D  Meta byte 1, cat 1101</span></div>
+        <div><span class="pl">  B2  </span><span class="pb">0 0 0 0   0 0 0 1</span><span class="pc">  = 0x01  Decl Type: Compound Mode toggle</span></div>
+        <div><span class="pl">  B3  </span><span class="pb">0 0 0 0   0 0 1 0</span><span class="pc">  = 0x02  Scope: Batch scope</span></div>
+        <div><span class="pl">  B4  </span><span class="pb">0 0 0 0   0 0 0 1</span><span class="pc">  = 0x01  Parameter: enable</span></div>
+        <div class="ph">────────────────────────────────────────</div>
+        <div><span class="pl">Phase 2: Layer 2 batch header</span></div>
+        <div><span class="pl">  B5–B10  </span><span class="pv">Layer 2 Set B (48 bits) — compound prefix bits 46-47 set</span></div>
+        <div class="ph">────────────────────────────────────────</div>
+        <div><span class="pl">Phase 3: Compound record sequence</span></div>
+        <div><span class="pl">  Rec 1   </span><span class="pv">Layer 3 record (40 bits) — bit 39 = 1111 (compound continues)</span></div>
+        <div><span class="pl">  Rec 2   </span><span class="pv">Layer 3 record (40 bits) — bit 39 = 1111 (compound continues)</span></div>
+        <div><span class="pl">  Rec 3   </span><span class="pv">Layer 3 record (40 bits) — bit 39 ≠ 1111 (compound closes)</span></div>
+        <div class="ph">────────────────────────────────────────</div>
+        <div><span class="pl">Phase 4: Close batch (ETB), disable compound for next batch</span></div>
+        <div><span class="pl">  ETB     </span><span class="pv">0x17  Batch close signal</span></div>
+        <div><span class="pl">  B11 </span><span class="pb">0 0 0 1   1 1 0 1</span><span class="pc">  = 0x1D  Meta byte 1, cat 1101</span></div>
+        <div><span class="pl">  B12 </span><span class="pb">0 0 0 0   0 0 0 1</span><span class="pc">  = 0x01  Decl Type: Compound Mode toggle</span></div>
+        <div><span class="pl">  B13 </span><span class="pb">0 0 0 0   0 0 1 0</span><span class="pc">  = 0x02  Scope: Batch scope</span></div>
+        <div><span class="pl">  B14 </span><span class="pb">0 0 0 0   0 0 0 0</span><span class="pc">  = 0x00  Parameter: disable</span></div>
+        <div class="ph">────────────────────────────────────────</div>
+        <div><span class="pl">Overhead </span><span class="pv">8 bytes total for compound toggle pair (enable + disable).</span></div>
+        <div><span class="pl">Records  </span><span class="pg">3 compound records, correctly linked. 1111 marker discipline enforced.</span></div>
+      </div>
+
+      <h3>Sequence 3 — Status Query and Response</h3>
+      <p>Sender issues a Query command (Category 1100, class 010, code 00001 = Status). Receiver responds with a Category 1100 System Control Status reply carrying the status value in the parameter byte.</p>
+
+      <div class="printout">
+        <div class="ph">── SEQUENCE 3: STATUS QUERY / RESPONSE ────────────────</div>
+        <div><span class="pl">SENDER — Query (3 bytes):</span></div>
+        <div class="ph">────────────────────────────────────────</div>
+        <div><span class="pl">  B1  </span><span class="pb">0 0 0 1   1 1 0 0</span><span class="pc">  = 0x1C  Meta byte 1, cat 1100</span></div>
+        <div><span class="pl">  B2  </span><span class="pb">0 1 0   0 0 0 0 1</span><span class="pc">  = 0x41  Command byte</span></div>
+        <div><span class="pl">       </span><span class="pc">  Bits1-3=010: Query class</span></div>
+        <div><span class="pl">       </span><span class="pc">  Bits4-8=00001: Status query</span></div>
+        <div><span class="pl">  B3  </span><span class="pb">0 0 0 0   0 0 0 1</span><span class="pc">  = 0x01  Parameter: operational status type</span></div>
+        <div class="ph">────────────────────────────────────────</div>
+        <div><span class="pl">RECEIVER — Response (3 bytes):</span></div>
+        <div class="ph">────────────────────────────────────────</div>
+        <div><span class="pl">  R1  </span><span class="pb">0 0 0 1   1 1 0 0</span><span class="pc">  = 0x1C  Meta byte 1, cat 1100</span></div>
+        <div><span class="pl">  R2  </span><span class="pb">0 0 0   0 0 1 1 1</span><span class="pc">  = 0x07  Command byte</span></div>
+        <div><span class="pl">       </span><span class="pc">  Bits1-3=000: System Control class</span></div>
+        <div><span class="pl">       </span><span class="pc">  Bits4-8=00111: Status report (response to query)</span></div>
+        <div><span class="pl">  R3  </span><span class="pb">0 0 0 0   0 0 0 1</span><span class="pc">  = 0x01  Status value: 0x01 = Nominal / operational</span></div>
+        <div class="ph">────────────────────────────────────────</div>
+        <div><span class="pl">Status codes   </span><span class="pv">0x01=Nominal  0x02=Degraded  0x03=Critical  0x04=Offline</span></div>
+        <div><span class="pl">Total wire     </span><span class="pg">3 bytes query + 3 bytes response = 6 bytes. No Layer 1. No Layer 2.</span></div>
+        <div><span class="pl">Comparison     </span><span class="pc">Equivalent JSON query+response: ~140 bytes. BitPads: 6 bytes.</span></div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div>
+      <div class="footer-group-label">Protocol</div>
+      <ul class="footer-links">
+        <li><a href="bitpads-v2.html">BitPads v2</a></li>
+        <li><a href="bitledger.html">BitLedger v3</a></li>
+        <li><a href="universal-domain.html">Universal Domain</a></li>
+        <li><a href="compound-mode.html">Compound Mode</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-group-label">Enhancement</div>
+      <ul class="footer-links">
+        <li><a href="enhancement-grammar.html">Grammar &amp; Signal Slots</a></li>
+        <li><a href="enhancement-commands.html">Commands &amp; Context</a></li>
+        <li><a href="enhancement-telegraph-1.html">Telegraph Emulation I</a></li>
+        <li><a href="enhancement-telegraph-2.html">Telegraph Emulation II</a></li>
+        <li><a href="enhancement-nesting.html">Nesting &amp; Overhead</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-group-label">Resources</div>
+      <ul class="footer-links">
+        <li><a href="engineering.html">Engineering Applications</a></li>
+        <li><a href="guide.html">Implementation Guide</a></li>
+        <li><a href="cli.html">CLI Tools</a></li>
+        <li><a href="reference.html">Reference &amp; Glossary</a></li>
+      </ul>
+    </div>
+    <div class="footer-copy">
+      BitPads Protocol v2.0<br>
+      BitLedger Protocol v3.0<br>
+      Universal Domain v1.0<br>
+      © BABB
+    </div>
+  </div>
+</footer>
+
+<script>
+// TOC active state
+const secs = document.querySelectorAll('section[id]');
+const tocAs = document.querySelectorAll('.toc a');
+const io = new IntersectionObserver(es => {
+  es.forEach(e => {
+    if (e.isIntersecting) {
+      tocAs.forEach(a => a.classList.remove('active'));
+      const a = document.querySelector(`.toc a[href="#${e.target.id}"]`);
+      if (a) a.classList.add('active');
+    }
+  });
+}, { rootMargin: '-15% 0px -70% 0px' });
+secs.forEach(s => io.observe(s));
+
+// Expandable table rows
+document.querySelectorAll('tr.xrow').forEach(row => {
+  row.addEventListener('click', () => {
+    const did = row.dataset.drawer;
+    const drawer = document.getElementById(did);
+    if (!drawer) return;
+    const open = drawer.classList.contains('open');
+    document.querySelectorAll('tr.xdrawer.open').forEach(d => {
+      d.classList.remove('open');
+      d.previousElementSibling?.classList.remove('open');
+    });
+    if (!open) { drawer.classList.add('open'); row.classList.add('open'); }
+  });
+});
+</script>
+</body>
+</html>

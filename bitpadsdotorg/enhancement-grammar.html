@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Enhancement Grammar &amp; Signal Slots — BitPads Documentation</title>
+<link rel="stylesheet" href="bp-style.css">
+<style>
+.lineage-table { width:100%; border-collapse:collapse; font-size:13px; margin:16px 0; }
+.lineage-table th { background:var(--bg-dark); color:#E8E4DE; font-family:var(--display);
+  font-weight:600; text-transform:uppercase; font-size:11px; letter-spacing:.07em;
+  padding:10px 12px; text-align:left; }
+.lineage-table td { padding:9px 12px; border-bottom:1px solid var(--rule-soft); }
+.lineage-table tr:hover td { background:var(--bg-soft); }
+.year-cell { font-family:var(--mono); font-weight:700; color:var(--nasa-blue); }
+.upper-status { font-size:11px; padding:3px 8px; border-radius:2px;
+  font-family:var(--mono); display:inline-block; }
+.upper-status.available { background:#E6F4EA; color:#1B5E20; }
+.upper-status.reclaimed { background:#0B3D91; color:#fff; }
+.upper-status.na { background:var(--bg-soft); color:var(--ink-faint); }
+
+.byte-split-display { display:flex; gap:2px; margin:20px 0; align-items:stretch; }
+.byte-split-group { display:flex; gap:2px; }
+.byte-split-label { font-family:var(--mono); font-size:9px; text-transform:uppercase;
+  letter-spacing:.1em; text-align:center; padding:3px 0 0;
+  border-top:2px solid currentColor; margin-top:4px; }
+.byte-split-label.enhance { color:var(--bit-enhance); }
+.byte-split-label.mode { color:var(--bit-mode); }
+
+.flag-combo-table { width:100%; border-collapse:collapse; font-size:13px; margin:16px 0; }
+.flag-combo-table th { background:var(--bg-soft); font-family:var(--display);
+  font-weight:600; text-transform:uppercase; font-size:11px; letter-spacing:.06em;
+  padding:10px 12px; text-align:left; border-bottom:2px solid var(--rule); }
+.flag-combo-table td { padding:9px 12px; border-bottom:1px solid var(--rule-soft); }
+.flag-cell { font-family:var(--mono); font-weight:700; letter-spacing:.1em; }
+.flag-p { color:var(--nasa-red); }
+.flag-a { color:var(--nasa-blue); }
+.flag-c { color:var(--bit-enhance); }
+
+.slot-diagram { margin:20px 0; border:1px solid var(--rule); overflow:hidden; }
+.slot-layer { display:flex; align-items:stretch; border-bottom:1px solid var(--rule-soft); }
+.slot-layer:last-child { border-bottom:none; }
+.slot-layer-name { width:110px; flex-shrink:0; background:var(--bg-dark);
+  color:#E8E4DE; font-family:var(--display); font-weight:600;
+  font-size:12px; text-transform:uppercase; letter-spacing:.06em;
+  display:flex; align-items:center; padding:10px 12px; }
+.slot-layer-body { flex:1; display:flex; flex-wrap:wrap; gap:6px;
+  padding:10px 12px; align-items:center; }
+.slot-tag { background:var(--bg-panel); border:1px solid var(--rule);
+  border-radius:3px; font-family:var(--mono); font-size:11px;
+  padding:4px 10px; color:var(--ink-soft); }
+.slot-tag.active { background:var(--nasa-blue); color:#fff;
+  border-color:var(--nasa-blue); font-weight:700; }
+.slot-sep { color:var(--ink-faint); font-size:12px; }
+
+.verdict-include { color:var(--bit-enhance); font-weight:700; }
+.verdict-core { color:var(--nasa-blue); font-weight:700; }
+.verdict-cond { color:var(--nasa-gold); font-weight:700; }
+.verdict-excl { color:var(--ink-faint); }
+
+.calc-byte-out { display:flex; gap:4px; margin:12px 0; flex-wrap:wrap; }
+.calc-bit-cell { width:36px; height:48px; border:1px solid var(--rule);
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  font-family:var(--mono); font-size:12px; }
+.calc-bit-cell.on { background:var(--nasa-blue); color:#fff; }
+.calc-bit-cell.off { background:var(--bg-soft); color:var(--ink-soft); }
+.calc-bit-cell.enhance-bit { border-top:3px solid var(--bit-enhance); }
+.calc-bit-cell.mode-bit { border-top:3px solid var(--bit-mode); }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="index.html">
+      <span class="brand-mark">BP</span>
+      <span class="brand-name">BitPads Protocol</span>
+    </a>
+    <nav class="topnav">
+      <a href="overview.html">Overview</a>
+      <a href="bitpads-v2.html">BitPads v2</a>
+      <a href="bitledger.html" class="active">BitLedger</a>
+      <a href="universal-domain.html">Universal Domain</a>
+      <div class="nav-group">
+        <a href="enhancement-grammar.html">Enhancement</a>
+        <div class="nav-dropdown">
+          <a href="enhancement-grammar.html">Grammar &amp; Signal Slots</a>
+          <a href="enhancement-commands.html">Commands &amp; Context</a>
+          <a href="enhancement-telegraph-1.html">Telegraph Emulation I</a>
+          <a href="enhancement-telegraph-2.html">Telegraph Emulation II</a>
+          <a href="enhancement-nesting.html">Nesting &amp; Overhead</a>
+        </div>
+      </div>
+      <a href="compound-mode.html">Compound Mode</a>
+      <a href="engineering.html">Engineering</a>
+      <a href="guide.html">Guide</a>
+      <a href="cli.html">CLI</a>
+      <a href="reference.html">Reference</a>
+    </nav>
+  </div>
+</header>
+
+<div class="page">
+  <aside class="sidebar">
+    <p class="toc-label">On This Page</p>
+    <ul class="toc">
+      <li><a href="#overview" class="active">Overview</a></li>
+      <li><a href="#baudot-lineage">Baudot Lineage</a></li>
+      <li><a href="#byte-structure">Byte Structure</a></li>
+      <li><a href="#c0-controls">C0 Controls</a></li>
+      <li><a href="#signal-slots">Signal Slots P1–P13</a></li>
+      <li><a href="#slot-presence">Slot Presence Byte</a></li>
+      <li><a href="#channel-safety">Channel Safety</a></li>
+      <li><a href="#calculator">Enhanced Byte Calculator</a></li>
+    </ul>
+  </aside>
+
+  <main>
+
+    <!-- ── OVERVIEW ── -->
+    <section id="overview">
+      <p class="eyebrow">BitPads Enhancement Sub-Protocol v2.0</p>
+      <h1>C0 Enhancement<br>Grammar</h1>
+      <p class="pullquote">Three bits. 155 years. Structurally available since Baudot's 1870 telegraph code — never claimed until now.</p>
+      <p class="lead">The 32 C0 control characters (U+0000–U+001F) occupy the lower 5 bits of any byte in the 0x00–0xFF range. The upper 3 bits — bits 6, 7, and 8 — have been structurally unused since Baudot. The C0 Enhancement Grammar reclaims them as a universal flag matrix: <strong>P</strong> (Priority), <strong>A</strong> (Acknowledge Request), <strong>C</strong> (Continuation). Any of the 29 agreed transmission controls can carry all three flags simultaneously in a single byte.</p>
+      <p>This is not a new invention. It is the claiming of an inheritance that 155 years of protocol development — Murray, ASCII, ISO 6429, Unicode — left structurally available without ever using it.</p>
+
+      <div class="hero-rule" style="display:flex;flex-wrap:wrap;gap:20px 40px;padding-top:20px;margin-top:20px;border-top:1px solid var(--rule);font-family:var(--mono);font-size:11px;color:var(--ink-faint);">
+        <div><dt style="text-transform:uppercase;letter-spacing:.1em;margin-bottom:3px;">Controls</dt><dd style="margin:0;font-family:var(--sans);font-size:13px;color:var(--ink);">29 unconditional + 4 conditional = 33 total</dd></div>
+        <div><dt style="text-transform:uppercase;letter-spacing:.1em;margin-bottom:3px;">Signal slots</dt><dd style="margin:0;font-family:var(--sans);font-size:13px;color:var(--ink);">P1–P13 spanning all transmission layers</dd></div>
+        <div><dt style="text-transform:uppercase;letter-spacing:.1em;margin-bottom:3px;">Flag combinations</dt><dd style="margin:0;font-family:var(--sans);font-size:13px;color:var(--ink);">8 states per control (2³ flag matrix)</dd></div>
+        <div><dt style="text-transform:uppercase;letter-spacing:.1em;margin-bottom:3px;">Overhead</dt><dd style="margin:0;font-family:var(--sans);font-size:13px;color:var(--ink);">1 byte (Signal Slot Presence) per session</dd></div>
+      </div>
+    </section>
+
+    <!-- ── BAUDOT LINEAGE ── -->
+    <section id="baudot-lineage">
+      <p class="eyebrow">155 Years of Available Bits</p>
+      <h2>The Baudot Lineage</h2>
+      <p>The 5-bit atom of binary communication was established by Baudot in 1870. Every subsequent standard preserved this 5-bit space as the C0 control region. The upper bits grew from N/A to group identifiers to extended characters — but the 3 bits that would become the Enhancement flag matrix were never systematically used for transmission signalling.</p>
+
+      <table class="lineage-table">
+        <thead>
+          <tr><th>Year</th><th>Standard</th><th>Bits</th><th>Lower 5 bits</th><th>Upper 3 bits</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="year-cell">1870</td>
+            <td><strong>Baudot telegraph</strong></td>
+            <td>5</td>
+            <td>32 signals. The complete alphabet of mechanical communication.</td>
+            <td><span class="upper-status na">N/A — 5-bit only</span></td>
+          </tr>
+          <tr>
+            <td class="year-cell">1899</td>
+            <td><strong>Murray code</strong></td>
+            <td>5</td>
+            <td>Standardised Baudot. 32 controls. Shift states extend the set.</td>
+            <td><span class="upper-status na">N/A — 5-bit only</span></td>
+          </tr>
+          <tr>
+            <td class="year-cell">1963</td>
+            <td><strong>ASCII</strong></td>
+            <td>7</td>
+            <td>C0 controls in positions 0–31. Murray 5-bit space is the lower 5 of 7-bit ASCII.</td>
+            <td><span class="upper-status available">Bits 6–7: group IDs (00–11)</span></td>
+          </tr>
+          <tr>
+            <td class="year-cell">1976</td>
+            <td><strong>ISO 6429 / C1</strong></td>
+            <td>8</td>
+            <td>C0 preserved at 0x00–0x1F. C1 controls added at 0x80–0x9F.</td>
+            <td><span class="upper-status available">Bit 8: Latin-1 / C1 extension</span></td>
+          </tr>
+          <tr>
+            <td class="year-cell">1991</td>
+            <td><strong>Unicode / UTF-8</strong></td>
+            <td>var.</td>
+            <td>C0 at U+0000–U+001F preserved. C1 at U+0080–U+009F.</td>
+            <td><span class="upper-status available">Multi-byte sequences above 127</span></td>
+          </tr>
+          <tr>
+            <td class="year-cell">2025</td>
+            <td><strong>BitPads Enhancement</strong></td>
+            <td>8</td>
+            <td>C0 code identity in lower 5 bits (bits 1–5).</td>
+            <td><span class="upper-status reclaimed">Bits 6–8: P · A · C flag matrix</span></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="notice">
+        <strong>The Sumerian principle.</strong> Sumerian scribes used minimal clay marks whose meaning expanded through shared context — the mark was compact, the codebook was in the reader's knowledge. Baudot's 5-bit codes used shift states as a codebook. ASCII used group bits. BitPads uses the parser state and signal slot architecture as its codebook. Minimal transmission. Rich shared interpretation. Five thousand years of the same design.
+      </div>
+    </section>
+
+    <!-- ── BYTE STRUCTURE ── -->
+    <section id="byte-structure">
+      <p class="eyebrow">The 5+3 Split</p>
+      <h2>Enhanced Byte Structure</h2>
+      <p>Every enhanced C0 byte uses a 5+3 split. The lower 5 bits (1–5) carry the C0 code identity (0–31, matching the 32 original C0 controls). The upper 3 bits (6–8) carry the P, A, C flag matrix. All three flags can be set simultaneously. Eight flag states per control.</p>
+
+      <div class="bit-display">
+        <div class="bit-display-label">Enhanced C0 Byte — 5+3 Split (example: 0xA7 = 1010 0111)</div>
+        <div class="bit-cells">
+          <div class="bit-cell enhance" data-layer="meta" data-tooltip="Bit 8 (MSB): P — Priority flag. 1 = this control requires elevated attention or precedence.">
+            <span class="bit-pos">8</span>
+            <span class="bit-val on">1</span>
+            <span class="bit-name">P<br>Priority</span>
+          </div>
+          <div class="bit-cell enhance" data-layer="meta" data-tooltip="Bit 7: A — Acknowledge Request. 1 = receiver must confirm receipt of this control.">
+            <span class="bit-pos">7</span>
+            <span class="bit-val off">0</span>
+            <span class="bit-name">A<br>Ack Req</span>
+          </div>
+          <div class="bit-cell enhance" data-layer="meta" data-tooltip="Bit 6: C — Continuation. 1 = this control is part of a multi-byte sequence.">
+            <span class="bit-pos">6</span>
+            <span class="bit-val on">1</span>
+            <span class="bit-name">C<br>Cont.</span>
+          </div>
+          <div class="bit-cell mode" data-layer="meta" data-tooltip="Bits 5–1: C0 code identity (00111 = 7 = BEL). Identifies which of the 29 agreed C0 controls this byte carries.">
+            <span class="bit-pos">5</span>
+            <span class="bit-val off">0</span>
+            <span class="bit-name">C0<br>code</span>
+          </div>
+          <div class="bit-cell mode" data-layer="meta" data-tooltip="Bit 4: C0 code continued">
+            <span class="bit-pos">4</span>
+            <span class="bit-val off">0</span>
+            <span class="bit-name">C0<br>code</span>
+          </div>
+          <div class="bit-cell mode" data-layer="meta" data-tooltip="Bit 3">
+            <span class="bit-pos">3</span>
+            <span class="bit-val on">1</span>
+            <span class="bit-name">C0<br>code</span>
+          </div>
+          <div class="bit-cell mode" data-layer="meta" data-tooltip="Bit 2">
+            <span class="bit-pos">2</span>
+            <span class="bit-val on">1</span>
+            <span class="bit-name">C0<br>code</span>
+          </div>
+          <div class="bit-cell mode" data-layer="meta" data-tooltip="Bit 1 (LSB): C0 code last bit. 00111 = 7 = BEL.">
+            <span class="bit-pos">1</span>
+            <span class="bit-val on">1</span>
+            <span class="bit-name">C0<br>code</span>
+          </div>
+        </div>
+        <div class="bit-legend">
+          <span class="legend-item"><span class="legend-swatch enhance"></span> Enhancement flags (P·A·C)</span>
+          <span class="legend-item"><span class="legend-swatch mode"></span> C0 code identity (bits 1–5)</span>
+        </div>
+      </div>
+
+      <div class="printout">
+        <div class="ph">── DECODE: 0xA7 ─────────────────────────────────────────</div>
+        <div><span class="pl">Hex    </span><span class="pv">0xA7</span></div>
+        <div><span class="pl">Binary </span><span class="pb">1 0 1 0   0 1 1 1</span></div>
+        <div><span class="pl">Bit 8  </span><span class="pv">P = 1 → Priority active</span></div>
+        <div><span class="pl">Bit 7  </span><span class="pv">A = 0 → No acknowledge request</span></div>
+        <div><span class="pl">Bit 6  </span><span class="pv">C = 1 → Continuation — more follows</span></div>
+        <div><span class="pl">Bits1-5</span><span class="pb">00111 = 7 = BEL</span></div>
+        <div class="ph">────────────────────────────────────────────────────────</div>
+        <div><span class="pl">Result </span><span class="pg">Priority BEL with Continuation</span></div>
+        <div><span class="pl">Meaning</span><span class="pv">High-priority alert; receiver must treat as urgent; a further control follows in the same slot position</span></div>
+        <div class="ph">────────────────────────────────────────────────────────</div>
+      </div>
+
+      <h3>Flag Combinations — All 8 States</h3>
+      <table class="flag-combo-table">
+        <thead>
+          <tr><th>P·A·C</th><th>Hex offset</th><th>Interpretation</th><th>Typical use</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="flag-cell"><span class="flag-p">0</span>·<span class="flag-a">0</span>·<span class="flag-c">0</span></td><td class="code-cell">+0x00</td><td>Plain control. No flags active.</td><td>Standard C0 transmission control at declared slot</td></tr>
+          <tr><td class="flag-cell"><span class="flag-p">0</span>·<span class="flag-a">0</span>·<span class="flag-c">1</span></td><td class="code-cell">+0x20</td><td>Continuation — more controls follow in this slot.</td><td>Multi-byte control sequence</td></tr>
+          <tr><td class="flag-cell"><span class="flag-p">0</span>·<span class="flag-a">1</span>·<span class="flag-c">0</span></td><td class="code-cell">+0x40</td><td>Acknowledge Request — receiver must confirm.</td><td>Handshake initiation, session critical control</td></tr>
+          <tr><td class="flag-cell"><span class="flag-p">0</span>·<span class="flag-a">1</span>·<span class="flag-c">1</span></td><td class="code-cell">+0x60</td><td>Acknowledge + Continuation.</td><td>Critical multi-byte sequence requiring confirmation</td></tr>
+          <tr><td class="flag-cell"><span class="flag-p">1</span>·<span class="flag-a">0</span>·<span class="flag-c">0</span></td><td class="code-cell">+0x80</td><td>Priority — elevated attention required.</td><td>Alert, urgent status, priority session control</td></tr>
+          <tr><td class="flag-cell"><span class="flag-p">1</span>·<span class="flag-a">0</span>·<span class="flag-c">1</span></td><td class="code-cell">+0xA0</td><td>Priority + Continuation.</td><td>Priority multi-byte control sequence</td></tr>
+          <tr><td class="flag-cell"><span class="flag-p">1</span>·<span class="flag-a">1</span>·<span class="flag-c">0</span></td><td class="code-cell">+0xC0</td><td>Priority + Acknowledge Request.</td><td>Highest-urgency single control, must be confirmed</td></tr>
+          <tr><td class="flag-cell"><span class="flag-p">1</span>·<span class="flag-a">1</span>·<span class="flag-c">1</span></td><td class="code-cell">+0xE0</td><td>All flags. Priority + Ack + Continuation.</td><td>Emergency multi-step sequence, full confirmation required</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- ── C0 CONTROLS ── -->
+    <section id="c0-controls">
+      <p class="eyebrow">The Agreed Set</p>
+      <h2>C0 Controls — 29 Unconditional + 4 Conditional</h2>
+      <p>All 32 Unicode C0 controls are assessed against three criteria: transmission role independent of text formatting; meaningful flag combinations; safe on declared enhancement channels. 29 pass unconditionally. 4 are conditional (context-dependent — require non-text channel typing). Click any row to see flags, example byte, and typical use.</p>
+
+      <table class="data-table">
+        <thead>
+          <tr><th>Code</th><th>Name</th><th>Standard Meaning</th><th>Enhancement Role</th><th>Verdict</th></tr>
+        </thead>
+        <tbody>
+          <tr class="xrow" data-target="c0-nul"><td class="code-cell">0x00</td><td>NUL</td><td>Null, filler</td><td>Typed padding / null keep-alive</td><td class="verdict-include">INCLUDE</td></tr>
+          <tr class="xdrawer" data-drawer="c0-nul"><td colspan="5"><div class="drawer-inner">
+            <strong>P/A/C:</strong> A=1 useful (acknowledge-request null = verified silence). C=1 useful (pad continuation). P=1 marginal.<br>
+            <strong>Example byte:</strong> <code>0x40</code> = A-NUL = Acknowledge Request Null (verified null, receipt required).<br>
+            <strong>Use:</strong> Keep-alive on long-gap sessions. Priority pad in time-critical streams.
+          </div></td></tr>
+
+          <tr class="xrow" data-target="c0-soh"><td class="code-cell">0x01</td><td>SOH</td><td>Start of Heading</td><td>Session open bootstrap anchor. Sub-session open in signal slot.</td><td class="verdict-core">CORE</td></tr>
+          <tr class="xdrawer" data-drawer="c0-soh"><td colspan="5"><div class="drawer-inner">
+            <strong>P/A/C:</strong> All three meaningful. P-SOH = priority session open. A-SOH = session open requiring confirmation. C-SOH = session open with continuation (more headers follow).<br>
+            <strong>Example:</strong> <code>0xC1</code> = P+A-SOH = Priority Session Open, confirm before proceeding.<br>
+            <strong>Use:</strong> At P1 (session open slot). In telegraph stream: opens an inner record context.
+          </div></td></tr>
+
+          <tr class="xrow" data-target="c0-stx"><td class="code-cell">0x02</td><td>STX</td><td>Start of Text</td><td>Content / stream open. Pre-announces payload arrival.</td><td class="verdict-core">CORE</td></tr>
+          <tr class="xdrawer" data-drawer="c0-stx"><td colspan="5"><div class="drawer-inner">
+            <strong>Use:</strong> At P7 (before Wave content) or P5 (before record body). Signals receiver to switch context to content reading.
+          </div></td></tr>
+
+          <tr class="xrow" data-target="c0-etx"><td class="code-cell">0x03</td><td>ETX</td><td>End of Text</td><td>Content / stream close. Pairs with STX.</td><td class="verdict-core">CORE</td></tr>
+          <tr class="xdrawer" data-drawer="c0-etx"><td colspan="5"><div class="drawer-inner">
+            <strong>Use:</strong> At P6 (after record body) or P8 (after Wave content). In telegraph emulation: stream close trigger alongside EOT.
+          </div></td></tr>
+
+          <tr class="xrow" data-target="c0-eot"><td class="code-cell">0x04</td><td>EOT</td><td>End of Transmission</td><td>Transmission end, batch close, session end.</td><td class="verdict-core">CORE</td></tr>
+          <tr class="xdrawer" data-drawer="c0-eot"><td colspan="5"><div class="drawer-inner">
+            <strong>Use:</strong> At P13 (session close). P-EOT = priority session end (emergency shutdown). A-EOT = session end with confirmation required. A legacy teleprinter receiving this byte closes the connection correctly — EOT is among the most legacy-compatible controls.
+          </div></td></tr>
+
+          <tr class="xrow" data-target="c0-enq"><td class="code-cell">0x05</td><td>ENQ</td><td>Enquiry</td><td>Status request, ACK request, session handshake.</td><td class="verdict-core">CORE</td></tr>
+          <tr class="xdrawer" data-drawer="c0-enq"><td colspan="5"><div class="drawer-inner">
+            <strong>Use:</strong> At P5 (before record body). Enhanced: P-ENQ = priority status query. A-ENQ = query requiring response. In a two-way handshake: ENQ triggers ACK response.
+          </div></td></tr>
+
+          <tr class="xrow" data-target="c0-ack"><td class="code-cell">0x06</td><td>ACK</td><td>Acknowledge</td><td>Positive confirmation, receipt signal.</td><td class="verdict-core">CORE</td></tr>
+          <tr class="xdrawer" data-drawer="c0-ack"><td colspan="5"><div class="drawer-inner">
+            <strong>Use:</strong> Response to A-flagged controls. At P6 (after record): confirms record receipt. P-ACK = priority acknowledgement (time-sensitive confirmation).
+          </div></td></tr>
+
+          <tr class="xrow" data-target="c0-bel"><td class="code-cell">0x07</td><td>BEL</td><td>Bell / Alert</td><td>Alert / priority notification event.</td><td class="verdict-include">INCLUDE</td></tr>
+          <tr class="xdrawer" data-drawer="c0-bel"><td colspan="5"><div class="drawer-inner">
+            <strong>Use:</strong> Alert signalling at any slot. P-BEL = critical alert requiring immediate attention. In telegraph emulation: rings the terminal bell on legacy receivers while signalling an enhanced alert event to BitPads receivers.
+          </div></td></tr>
+
+          <tr class="xrow" data-target="c0-bs"><td class="code-cell">0x08</td><td>BS</td><td>Backspace</td><td>Correction / undo in transmission context.</td><td class="verdict-include">INCLUDE</td></tr>
+          <tr class="xdrawer" data-drawer="c0-bs"><td colspan="5"><div class="drawer-inner">
+            <strong>Use:</strong> In compact command sequences: signals correction of the preceding command. A-BS = request confirmation that correction was accepted.
+          </div></td></tr>
+
+          <tr class="xrow" data-target="c0-ht"><td class="code-cell">0x09</td><td>HT</td><td>Horizontal Tab</td><td>Record separator / field separator in stream context.</td><td class="verdict-include">INCLUDE</td></tr>
+          <tr class="xdrawer" data-drawer="c0-ht"><td colspan="5"><div class="drawer-inner">
+            <strong>Use:</strong> At P11 (component boundary). Separates fields within a structured stream. Compatible with tab-separated data receivers.
+          </div></td></tr>
+
+          <tr class="xrow" data-target="c0-lf"><td class="code-cell">0x0A</td><td>LF</td><td>Line Feed</td><td>Batch boundary / record group separator.</td><td class="verdict-include">INCLUDE</td></tr>
+          <tr class="xdrawer" data-drawer="c0-lf"><td colspan="5"><div class="drawer-inner">
+            <strong>Use:</strong> At P12 (batch close). Signals end of a logical record group. Legacy terminals advance the line — BitPads receivers trigger batch conservation check.
+          </div></td></tr>
+
+          <tr class="xrow" data-target="c0-vt"><td class="code-cell">0x0B</td><td>VT</td><td>Vertical Tab</td><td>Layer boundary marker.</td><td class="verdict-include">INCLUDE</td></tr>
+          <tr class="xdrawer" data-drawer="c0-vt"><td colspan="5"><div class="drawer-inner">
+            <strong>Use:</strong> At layer transitions (P3 before L2, P4 after L2). Signals decoder to change context from session layer to batch layer.
+          </div></td></tr>
+
+          <tr class="xrow" data-target="c0-ff"><td class="code-cell">0x0C</td><td>FF</td><td>Form Feed</td><td>Session separator — new session begins.</td><td class="verdict-include">INCLUDE</td></tr>
+          <tr class="xdrawer" data-drawer="c0-ff"><td colspan="5"><div class="drawer-inner">
+            <strong>Use:</strong> Between sessions in a continuous channel. Clears session state. Legacy printers eject the page — BitPads receivers reset session context.
+          </div></td></tr>
+
+          <tr class="xrow" data-target="c0-cr"><td class="code-cell">0x0D</td><td>CR</td><td>Carriage Return</td><td>Record reset / return to record start state.</td><td class="verdict-include">INCLUDE</td></tr>
+          <tr class="xdrawer" data-drawer="c0-cr"><td colspan="5"><div class="drawer-inner">
+            <strong>Use:</strong> At record boundaries. In telegraph emulation: visible as carriage return to legacy receiver; signals record boundary to BitPads receiver.
+          </div></td></tr>
+
+          <tr class="xrow" data-target="c0-so"><td class="code-cell">0x0E</td><td>SO</td><td>Shift Out</td><td><strong>Conditional:</strong> Codebook shift — activate alternate codebook for nibble stream.</td><td class="verdict-cond">CONDITIONAL</td></tr>
+          <tr class="xdrawer" data-drawer="c0-so"><td colspan="5"><div class="drawer-inner">
+            <strong>Condition:</strong> Requires non-text channel typing (category declared as binary pictography stream). On text channels, SO has deep embedding in character set switching and is unsafe to override.<br>
+            <strong>Enhancement role:</strong> In binary pictography streams, SO triggers rolling codebook shift — the nibble stream switches to the alternate codebook until SI restores. See Telegraph Emulation II for full specification.
+          </div></td></tr>
+
+          <tr class="xrow" data-target="c0-si"><td class="code-cell">0x0F</td><td>SI</td><td>Shift In</td><td><strong>Conditional:</strong> Codebook shift — return to primary codebook.</td><td class="verdict-cond">CONDITIONAL</td></tr>
+          <tr class="xdrawer" data-drawer="c0-si"><td colspan="5"><div class="drawer-inner">
+            <strong>Condition:</strong> Same as SO — requires non-text channel. SI/SO pair governs rolling codebook shifts in binary pictography streams.
+          </div></td></tr>
+
+          <tr class="xrow" data-target="c0-dle"><td class="code-cell">0x10</td><td>DLE</td><td>Data Link Escape</td><td>Enhancement escape prefix / extension sequence initiator.</td><td class="verdict-include">INCLUDE</td></tr>
+          <tr class="xdrawer" data-drawer="c0-dle"><td colspan="5"><div class="drawer-inner">
+            <strong>Use:</strong> Prefixes extended enhancement sequences when the standard 5+3 encoding is insufficient. C-DLE = continuation (more escape bytes follow). The extension mechanism for the enhancement grammar itself.
+          </div></td></tr>
+
+          <tr class="xrow" data-target="c0-dc1"><td class="code-cell">0x11–0x14</td><td>DC1–DC4</td><td>Device Controls 1–4</td><td>Device operation controls in enhancement-declared device streams.</td><td class="verdict-include">INCLUDE</td></tr>
+          <tr class="xdrawer" data-drawer="c0-dc1"><td colspan="5"><div class="drawer-inner">
+            DC1 (XON) / DC3 (XOFF): flow control. In enhancement context: DC1=start, DC2=set parameter, DC3=pause, DC4=stop. Meaningful in controlled hardware device streams.
+          </div></td></tr>
+
+          <tr class="xrow" data-target="c0-nak"><td class="code-cell">0x15</td><td>NAK</td><td>Negative Acknowledge</td><td>Rejection signal, retransmission request.</td><td class="verdict-core">CORE</td></tr>
+          <tr class="xdrawer" data-drawer="c0-nak"><td colspan="5"><div class="drawer-inner">
+            <strong>Use:</strong> Response to A-flagged controls. P-NAK = priority rejection (emergency retransmit required). Complements ACK in the handshake system.
+          </div></td></tr>
+
+          <tr class="xrow" data-target="c0-syn"><td class="code-cell">0x16</td><td>SYN</td><td>Synchronisation</td><td>Stream synchronisation marker.</td><td class="verdict-include">INCLUDE</td></tr>
+          <tr class="xdrawer" data-drawer="c0-syn"><td colspan="5"><div class="drawer-inner">
+            <strong>Use:</strong> In continuous streams to maintain decoder synchronisation. P-SYN = priority sync (re-synchronise immediately after a gap or error).
+          </div></td></tr>
+
+          <tr class="xrow" data-target="c0-etb"><td class="code-cell">0x17</td><td>ETB</td><td>End of Transmission Block</td><td>Block boundary in structured data transmissions.</td><td class="verdict-include">INCLUDE</td></tr>
+          <tr class="xdrawer" data-drawer="c0-etb"><td colspan="5"><div class="drawer-inner">
+            <strong>Use:</strong> Closes a data block within a larger transmission. Distinct from EOT (session end) and ETX (content end) — ETB marks a physical block boundary, not a logical boundary.
+          </div></td></tr>
+
+          <tr class="xrow" data-target="c0-can"><td class="code-cell">0x18</td><td>CAN</td><td>Cancel</td><td>Record cancel — discard current record and revert.</td><td class="verdict-include">INCLUDE</td></tr>
+          <tr class="xdrawer" data-drawer="c0-can"><td colspan="5"><div class="drawer-inner">
+            <strong>Use:</strong> At P5 or P6: cancels the in-progress record. P-CAN = priority cancel (emergency record discard). The conservation check excludes cancelled records.
+          </div></td></tr>
+
+          <tr class="xrow" data-target="c0-em"><td class="code-cell">0x19</td><td>EM</td><td>End of Medium</td><td>Storage medium boundary — end of writable space.</td><td class="verdict-include">INCLUDE</td></tr>
+          <tr class="xdrawer" data-drawer="c0-em"><td colspan="5"><div class="drawer-inner">
+            <strong>Use:</strong> Signals that a physical storage boundary has been reached. Relevant in buffered transmission contexts.
+          </div></td></tr>
+
+          <tr class="xrow" data-target="c0-sub"><td class="code-cell">0x1A</td><td>SUB</td><td>Substitute</td><td>Replacement value — substituted for a missing or corrupt data element.</td><td class="verdict-include">INCLUDE</td></tr>
+          <tr class="xdrawer" data-drawer="c0-sub"><td colspan="5"><div class="drawer-inner">
+            <strong>Use:</strong> When a value field is unavailable but the record structure must be maintained. The receiver knows a substitution occurred and can log or flag the record.
+          </div></td></tr>
+
+          <tr class="xrow" data-target="c0-esc"><td class="code-cell">0x1B</td><td>ESC</td><td>Escape</td><td><strong>Conditional:</strong> Extension prefix — declares extended control or mode switch.</td><td class="verdict-cond">CONDITIONAL</td></tr>
+          <tr class="xdrawer" data-drawer="c0-esc"><td colspan="5"><div class="drawer-inner">
+            <strong>Condition:</strong> ESC has deep embedding in terminal control sequences (ANSI escape codes) and is unsafe to use generically on text or terminal channels. Permitted on declared-typed non-text enhancement channels.
+          </div></td></tr>
+
+          <tr class="xrow" data-target="c0-fs"><td class="code-cell">0x1C</td><td>FS</td><td>File Separator</td><td>Top-level grouping boundary.</td><td class="verdict-include">INCLUDE</td></tr>
+          <tr class="xdrawer" data-drawer="c0-fs"><td colspan="5"><div class="drawer-inner">
+            <strong>Use:</strong> Corresponds to the File Separator field in Layer 2 (bits 28–30). At P12 or P13: top-level file boundary marker. Legacy: separates logical files in a batch transmission.
+          </div></td></tr>
+
+          <tr class="xrow" data-target="c0-gs"><td class="code-cell">0x1D</td><td>GS</td><td>Group Separator</td><td>Group boundary — corresponds to Layer 2 Group Separator field.</td><td class="verdict-include">INCLUDE</td></tr>
+          <tr class="xdrawer" data-drawer="c0-gs"><td colspan="5"><div class="drawer-inner">
+            <strong>Use:</strong> At P12 (batch close): signals group boundary. Corresponds to Layer 2 bits 19–22 Group Separator counter.
+          </div></td></tr>
+
+          <tr class="xrow" data-target="c0-rs"><td class="code-cell">0x1E</td><td>RS</td><td>Record Separator</td><td>Record boundary — corresponds to Layer 2 Record Separator field.</td><td class="verdict-include">INCLUDE</td></tr>
+          <tr class="xdrawer" data-drawer="c0-rs"><td colspan="5"><div class="drawer-inner">
+            <strong>Use:</strong> At P6 (after record): marks record boundary. Corresponds to Layer 2 bits 23–27 Record Separator counter. In compound mode: the RS value is the implicit compound group ID.
+          </div></td></tr>
+
+          <tr class="xrow" data-target="c0-us"><td class="code-cell">0x1F</td><td>US</td><td>Unit Separator</td><td>Unit boundary — separates discrete units within a record or stream.</td><td class="verdict-include">INCLUDE</td></tr>
+          <tr class="xdrawer" data-drawer="c0-us"><td colspan="5"><div class="drawer-inner">
+            <strong>Use:</strong> At P11 (component boundary): separates components within a record (e.g. value block from time block). Fine-grained separator complementing RS and GS.
+          </div></td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- ── SIGNAL SLOTS ── -->
+    <section id="signal-slots">
+      <p class="eyebrow">13 Positions</p>
+      <h2>Signal Slot Architecture — P1 Through P13</h2>
+      <p>Thirteen declared positions span the full transmission structure. Enhanced C0 bytes occupy these declared positions — content bytes occupy content positions. The two never overlap. The decoder always knows by position which type of byte it is reading. No DLE-stuffing. No escaping. No length prefix on every control byte.</p>
+
+      <div class="slot-diagram">
+        <div class="slot-layer">
+          <div class="slot-layer-name">Session</div>
+          <div class="slot-layer-body">
+            <span class="slot-tag active">P1 — Session open (before L1)</span>
+            <span class="slot-sep">→</span>
+            <span class="slot-tag">Layer 1 (8 bytes)</span>
+            <span class="slot-sep">→</span>
+            <span class="slot-tag active">P2 — After Layer 1</span>
+            <span class="slot-sep">→</span>
+            <span class="slot-tag active">P13 — Session close</span>
+          </div>
+        </div>
+        <div class="slot-layer">
+          <div class="slot-layer-name">Batch</div>
+          <div class="slot-layer-body">
+            <span class="slot-tag active">P3 — Before Layer 2</span>
+            <span class="slot-sep">→</span>
+            <span class="slot-tag">Layer 2 (6 bytes)</span>
+            <span class="slot-sep">→</span>
+            <span class="slot-tag active">P4 — After Layer 2</span>
+            <span class="slot-sep">→</span>
+            <span class="slot-tag active">P12 — Batch close</span>
+          </div>
+        </div>
+        <div class="slot-layer">
+          <div class="slot-layer-name">Record</div>
+          <div class="slot-layer-body">
+            <span class="slot-tag active">P5 — Before record body</span>
+            <span class="slot-sep">→</span>
+            <span class="slot-tag">Layer 3 (5 bytes)</span>
+            <span class="slot-sep">→</span>
+            <span class="slot-tag active">P6 — After record body</span>
+            <span class="slot-sep">→</span>
+            <span class="slot-tag active">P11 — Component boundary</span>
+          </div>
+        </div>
+        <div class="slot-layer">
+          <div class="slot-layer-name">Wave</div>
+          <div class="slot-layer-body">
+            <span class="slot-tag active">P7 — Before Wave content</span>
+            <span class="slot-sep">→</span>
+            <span class="slot-tag">Wave content</span>
+            <span class="slot-sep">→</span>
+            <span class="slot-tag active">P8 — After Wave content</span>
+          </div>
+        </div>
+        <div class="slot-layer">
+          <div class="slot-layer-name">Stream</div>
+          <div class="slot-layer-body">
+            <span class="slot-tag active">P9 — Stream open</span>
+            <span class="slot-sep">→</span>
+            <span class="slot-tag">Stream content</span>
+            <span class="slot-sep">→</span>
+            <span class="slot-tag active">P10 — Stream close</span>
+          </div>
+        </div>
+      </div>
+
+      <table class="data-table">
+        <thead>
+          <tr><th>Slot</th><th>Layer</th><th>Position</th><th>Typical control</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="code-cell">P1</td><td>Session</td><td>Before Layer 1 header</td><td>SOH (session open), NUL (keep-alive)</td></tr>
+          <tr><td class="code-cell">P2</td><td>Session</td><td>After Layer 1 header</td><td>ACK (session accepted), NAK (CRC fail)</td></tr>
+          <tr><td class="code-cell">P3</td><td>Batch</td><td>Before Layer 2 header</td><td>STX (content start), VT (layer boundary)</td></tr>
+          <tr><td class="code-cell">P4</td><td>Batch</td><td>After Layer 2 header</td><td>ENQ (batch ready query), ACK (batch context confirmed)</td></tr>
+          <tr><td class="code-cell">P5</td><td>Record</td><td>Before record body</td><td>ENQ (record ready), BEL (priority record incoming)</td></tr>
+          <tr><td class="code-cell">P6</td><td>Record</td><td>After record body</td><td>ACK (record received), RS (record separator)</td></tr>
+          <tr><td class="code-cell">P7</td><td>Wave</td><td>Before Wave content</td><td>STX (content arriving), BEL (priority Wave)</td></tr>
+          <tr><td class="code-cell">P8</td><td>Wave</td><td>After Wave content</td><td>ETX (content end), ACK (Wave confirmed)</td></tr>
+          <tr><td class="code-cell">P9</td><td>Stream</td><td>Stream open</td><td>SOH (stream open), STX (first content block)</td></tr>
+          <tr><td class="code-cell">P10</td><td>Stream</td><td>Stream close</td><td>EOT (transmission end), ETX (content end)</td></tr>
+          <tr><td class="code-cell">P11</td><td>Record</td><td>Between components</td><td>US (unit separator), HT (field separator)</td></tr>
+          <tr><td class="code-cell">P12</td><td>Batch</td><td>Batch close</td><td>LF (batch boundary), GS (group separator), EOT</td></tr>
+          <tr><td class="code-cell">P13</td><td>Session</td><td>Session close</td><td>EOT (session end), FS (file separator)</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- ── SLOT PRESENCE ── -->
+    <section id="slot-presence">
+      <p class="eyebrow">v2.0 Addition</p>
+      <h2>Signal Slot Presence Byte</h2>
+      <p>New in v2.0. An 8-bit bitmap transmitted after Meta byte 2 when Meta byte 2 bit 8 = 1. Each bit declares whether a specific slot (P1–P8) is active in this session. The decoder reads this byte at session open and knows exactly which byte positions to expect enhanced C0 controls at. Slots P9–P13 are declared via an extension byte when needed.</p>
+
+      <div class="bit-display">
+        <div class="bit-display-label">Signal Slot Presence Byte — P1 through P8 (P1 = MSB)</div>
+        <div class="bit-cells">
+          <div class="bit-cell enhance" data-layer="meta" data-tooltip="Bit 8 (MSB): P1 active — expect enhanced C0 byte before Layer 1 (session open position).">
+            <span class="bit-pos">8</span><span class="bit-val on">1</span><span class="bit-name">P1<br>Sess open</span>
+          </div>
+          <div class="bit-cell enhance" data-layer="meta" data-tooltip="Bit 7: P2 active — expect enhanced C0 byte after Layer 1.">
+            <span class="bit-pos">7</span><span class="bit-val off">0</span><span class="bit-name">P2<br>After L1</span>
+          </div>
+          <div class="bit-cell enhance" data-layer="meta" data-tooltip="Bit 6: P3 active — expect enhanced C0 before Layer 2.">
+            <span class="bit-pos">6</span><span class="bit-val off">0</span><span class="bit-name">P3<br>Before L2</span>
+          </div>
+          <div class="bit-cell enhance" data-layer="meta" data-tooltip="Bit 5: P4 active — expect enhanced C0 after Layer 2.">
+            <span class="bit-pos">5</span><span class="bit-val off">0</span><span class="bit-name">P4<br>After L2</span>
+          </div>
+          <div class="bit-cell enhance" data-layer="meta" data-tooltip="Bit 4: P5 active — expect enhanced C0 before record body.">
+            <span class="bit-pos">4</span><span class="bit-val on">1</span><span class="bit-name">P5<br>Bef. rec.</span>
+          </div>
+          <div class="bit-cell enhance" data-layer="meta" data-tooltip="Bit 3: P6 active — expect enhanced C0 after record body.">
+            <span class="bit-pos">3</span><span class="bit-val on">1</span><span class="bit-name">P6<br>Aft. rec.</span>
+          </div>
+          <div class="bit-cell enhance" data-layer="meta" data-tooltip="Bit 2: P7 active — expect enhanced C0 before Wave content.">
+            <span class="bit-pos">2</span><span class="bit-val off">0</span><span class="bit-name">P7<br>Bef. Wave</span>
+          </div>
+          <div class="bit-cell enhance" data-layer="meta" data-tooltip="Bit 1 (LSB): P8 active — expect enhanced C0 after Wave content.">
+            <span class="bit-pos">1</span><span class="bit-val off">0</span><span class="bit-name">P8<br>Aft. Wave</span>
+          </div>
+        </div>
+        <div class="bit-legend">
+          <span class="legend-item">Example byte: <code>0x8C</code> = 1000 1100 → P1, P5, P6 active</span>
+          <span class="legend-item" style="color:var(--ink-faint);">· P9–P13 via extension byte when needed</span>
+        </div>
+      </div>
+
+      <p>With SSP byte = <code>0x8C</code> (P1, P5, P6 active), the decoder expects:</p>
+      <ol style="font-size:14px;line-height:2;">
+        <li>An enhanced C0 byte <em>before</em> Layer 1 at session open (P1)</li>
+        <li>An enhanced C0 byte <em>before</em> each record body (P5)</li>
+        <li>An enhanced C0 byte <em>after</em> each record body (P6)</li>
+      </ol>
+      <p>At all other positions, bytes are content. No ambiguity. No marker bytes in content. No length prefix on every control.</p>
+    </section>
+
+    <!-- ── CHANNEL SAFETY ── -->
+    <section id="channel-safety">
+      <p class="eyebrow">No DLE-Stuffing Required</p>
+      <h2>Channel Safety — Positional Disambiguation</h2>
+      <p>The fundamental design choice of the signal slot architecture: enhanced C0 bytes occupy <strong>declared positions</strong>, never content positions. The decoder knows which type of byte it is reading by position, not by byte value. No byte in a content region needs escaping because its value matches a control code.</p>
+
+      <div class="printout">
+        <div class="ph">── TRANSMISSION SEQUENCE (SSP = P1, P5, P6 active) ─────</div>
+        <div></div>
+        <div><span class="pe">[P1 SLOT]</span>  <span class="pv">0xC1</span>  <span class="pg">← P+A-SOH: Priority session open, confirm</span></div>
+        <div><span class="pl">Layer 1   </span>  <span class="pb">64 bits of session header (8 bytes)</span></div>
+        <div><span class="pl">Layer 2   </span>  <span class="pb">48 bits of batch header (6 bytes)</span></div>
+        <div></div>
+        <div><span class="pe">[P5 SLOT]</span>  <span class="pv">0x45</span>  <span class="pg">← A-ENQ: Record ready query (ACK required)</span></div>
+        <div><span class="pl">Layer 3   </span>  <span class="pb">40 bits of transaction record (5 bytes)</span></div>
+        <div><span class="pe">[P6 SLOT]</span>  <span class="pv">0x06</span>  <span class="pg">← ACK: Record received and validated</span></div>
+        <div></div>
+        <div><span class="pe">[P5 SLOT]</span>  <span class="pv">0x05</span>  <span class="pg">← ENQ: Next record ready</span></div>
+        <div><span class="pl">Layer 3   </span>  <span class="pb">40 bits of transaction record (5 bytes)</span></div>
+        <div><span class="pe">[P6 SLOT]</span>  <span class="pv">0x06</span>  <span class="pg">← ACK: Record received</span></div>
+        <div></div>
+        <div><span class="ph">────────────────────────────────────────────────────────</span></div>
+        <div><span class="pl">Content   </span>  <span class="pv">All bytes between slot positions are content.</span></div>
+        <div><span class="pl">Controls  </span>  <span class="pv">All controls are at declared slot positions only.</span></div>
+        <div><span class="pl">Escaping  </span>  <span class="pe">None required. No DLE-stuffing. No length prefix.</span></div>
+        <div class="ph">────────────────────────────────────────────────────────</div>
+      </div>
+    </section>
+
+    <!-- ── CALCULATOR ── -->
+    <section id="calculator">
+      <p class="eyebrow">Interactive Tool</p>
+      <h2>Enhanced Byte Calculator</h2>
+
+      <div class="calculator">
+        <div class="calc-title">C0 Enhancement Encoder</div>
+        <div class="calc-row">
+          <label class="calc-label">C0 Code (0–31)</label>
+          <input type="number" id="eb-code" class="calc-input" value="7" min="0" max="31">
+        </div>
+        <div class="calc-row" style="gap:16px;align-items:center;">
+          <label class="calc-label">Flags</label>
+          <label style="color:#E8E4DE;font-family:var(--sans);font-size:14px;display:flex;align-items:center;gap:6px;">
+            <input type="checkbox" id="eb-p" style="width:16px;height:16px;"> <span style="color:var(--nasa-red);">P</span> Priority
+          </label>
+          <label style="color:#E8E4DE;font-family:var(--sans);font-size:14px;display:flex;align-items:center;gap:6px;">
+            <input type="checkbox" id="eb-a" style="width:16px;height:16px;"> <span style="color:#7ABFFF;">A</span> Ack Request
+          </label>
+          <label style="color:#E8E4DE;font-family:var(--sans);font-size:14px;display:flex;align-items:center;gap:6px;">
+            <input type="checkbox" id="eb-c" style="width:16px;height:16px;"> <span style="color:#88DDAA;">C</span> Continuation
+          </label>
+        </div>
+        <div class="calc-output" id="eb-output">—</div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <span>BitPads Protocol Documentation</span>
+    <span>Enhancement Sub-Protocol v2.0 · BitPads v2.0 · BitLedger v3.0</span>
+  </div>
+</footer>
+
+<script>
+/* ── Expandable rows ── */
+document.querySelectorAll('.xrow').forEach(row => {
+  row.addEventListener('click', () => {
+    const id = row.dataset.target;
+    const drawer = document.querySelector(`.xdrawer[data-drawer="${id}"]`);
+    if (!drawer) return;
+    const open = drawer.classList.toggle('open');
+    row.classList.toggle('open', open);
+  });
+});
+
+/* ── TOC active state ── */
+const sections = document.querySelectorAll('section[id]');
+const tocLinks = document.querySelectorAll('.toc a');
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      tocLinks.forEach(l => l.classList.remove('active'));
+      const active = document.querySelector(`.toc a[href="#${e.target.id}"]`);
+      if (active) active.classList.add('active');
+    }
+  });
+}, { rootMargin: '-20% 0px -75% 0px' });
+sections.forEach(s => obs.observe(s));
+
+/* ── Enhanced byte calculator ── */
+const C0_NAMES = ['NUL','SOH','STX','ETX','EOT','ENQ','ACK','BEL','BS','HT','LF','VT','FF','CR','SO','SI','DLE','DC1','DC2','DC3','DC4','NAK','SYN','ETB','CAN','EM','SUB','ESC','FS','GS','RS','US'];
+function updateEB() {
+  const code = Math.min(31, Math.max(0, parseInt(document.getElementById('eb-code').value) || 0));
+  const P = document.getElementById('eb-p').checked ? 1 : 0;
+  const A = document.getElementById('eb-a').checked ? 1 : 0;
+  const C = document.getElementById('eb-c').checked ? 1 : 0;
+  const byte = (P << 7) | (A << 6) | (C << 5) | code;
+  const hex = '0x' + byte.toString(16).toUpperCase().padStart(2,'0');
+  const bin = byte.toString(2).padStart(8,'0').split('').join(' ');
+  const name = C0_NAMES[code] || '?';
+  const flags = [P?'Priority':'', A?'Ack-Request':'', C?'Continuation':''].filter(Boolean).join(' + ') || 'Plain';
+  document.getElementById('eb-output').innerHTML =
+    `${hex} = ${bin}\nC0 code: ${code} (${name})  ·  Flags: ${flags}\n` +
+    `Interpretation: ${flags} ${name}`;
+}
+['eb-code','eb-p','eb-a','eb-c'].forEach(id => {
+  const el = document.getElementById(id);
+  el.addEventListener(el.type === 'checkbox' ? 'change' : 'input', updateEB);
+});
+updateEB();
+</script>
+</body>
+</html>

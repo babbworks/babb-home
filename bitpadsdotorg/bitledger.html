@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BitLedger Protocol v3.0 — BitPads Documentation</title>
+<link rel="stylesheet" href="bp-style.css">
+<style>
+.value-tier-grid {
+  display: grid; grid-template-columns: repeat(4,1fr); gap: 1px;
+  background: var(--rule); border: 1px solid var(--rule); margin: 20px 0;
+}
+.tier-card { background: var(--bg-panel); padding: 18px 16px; }
+.tier-name { font-family: var(--display); font-size: 22px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.04em; color: var(--nasa-blue); margin-bottom: 4px; }
+.tier-formula { font-family: var(--mono); font-size: 11px; color: var(--ink-soft);
+  background: var(--bg-soft); padding: 4px 8px; margin: 8px 0; border-left: 2px solid var(--nasa-gold); }
+.tier-max { font-size: 12px; color: var(--ink-faint); }
+
+.flag-grid { margin: 16px 0; border: 1px solid var(--rule); }
+.flag-row { display: grid; grid-template-columns: 60px 120px 1fr;
+  border-bottom: 1px solid var(--rule-soft); }
+.flag-row:last-child { border-bottom: none; }
+.flag-row:first-child { background: var(--bg-soft); font-family: var(--display);
+  font-weight: 600; text-transform: uppercase; font-size: 12px; letter-spacing: 0.06em; }
+.flag-bit { padding: 10px 12px; border-right: 1px solid var(--rule-soft);
+  font-family: var(--mono); font-size: 12px; text-align: center; }
+.flag-name { padding: 10px 12px; border-right: 1px solid var(--rule-soft);
+  font-family: var(--display); font-weight: 600; font-size: 13px; }
+.flag-desc { padding: 10px 12px; font-size: 13px; color: var(--ink-soft); }
+.flag-rule { display: inline-block; background: var(--nasa-red); color: #fff;
+  font-family: var(--mono); font-size: 10px; padding: 2px 6px; border-radius: 2px; margin-left: 6px; }
+
+.forty-bit-display { margin: 20px 0; }
+.forty-row { display: flex; gap: 2px; margin-bottom: 2px; }
+.forty-label { font-family: var(--mono); font-size: 10px; color: var(--ink-faint);
+  margin-bottom: 4px; letter-spacing: 0.08em; }
+.forty-group { flex: 1; }
+.forty-group-label { font-family: var(--mono); font-size: 9px; text-transform: uppercase;
+  letter-spacing: 0.1em; text-align: center; padding: 3px 0; margin-top: 3px; }
+.forty-group-label.value { color: var(--bit-data); }
+.forty-group-label.flags { color: var(--bit-flag); }
+.forty-group-label.acct { color: var(--bit-account); }
+
+.account-table { width: 100%; border-collapse: collapse; font-size: 13px; margin: 16px 0; }
+.account-table th { background: var(--bg-soft); font-family: var(--display);
+  font-weight: 600; text-transform: uppercase; font-size: 11px; letter-spacing: 0.07em;
+  padding: 10px 12px; text-align: left; border-bottom: 2px solid var(--rule); }
+.account-table td { padding: 9px 12px; border-bottom: 1px solid var(--rule-soft); }
+.code-cell { font-family: var(--mono); font-weight: 700; color: var(--nasa-blue); }
+.pair-name { font-family: var(--sans); font-weight: 500; }
+
+.conservation-box { background: var(--bg-dark); color: #E8E4DE; font-family: var(--mono);
+  font-size: 13px; padding: 24px; margin: 20px 0; line-height: 2; border-left: 4px solid var(--nasa-gold); }
+.conservation-box .ch { color: var(--nasa-gold); font-weight: 700; }
+.conservation-box .cv { color: #7ABFFF; }
+.conservation-box .cn { color: #88DDAA; }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="index.html">
+      <span class="brand-mark">BP</span>
+      <span class="brand-name">BitPads Protocol</span>
+    </a>
+    <nav class="topnav">
+      <a href="overview.html">Overview</a>
+      <a href="bitpads-v2.html">BitPads v2</a>
+      <a href="bitledger.html" class="active">BitLedger</a>
+      <a href="universal-domain.html">Universal Domain</a>
+      <div class="nav-group">
+        <a href="enhancement-grammar.html">Enhancement</a>
+        <div class="nav-dropdown">
+          <a href="enhancement-grammar.html">Grammar &amp; Signal Slots</a>
+          <a href="enhancement-commands.html">Commands &amp; Context</a>
+          <a href="enhancement-telegraph-1.html">Telegraph Emulation I</a>
+          <a href="enhancement-telegraph-2.html">Telegraph Emulation II</a>
+          <a href="enhancement-nesting.html">Nesting &amp; Overhead</a>
+        </div>
+      </div>
+      <a href="compound-mode.html">Compound Mode</a>
+      <a href="engineering.html">Engineering</a>
+      <a href="guide.html">Guide</a>
+      <a href="cli.html">CLI</a>
+      <a href="reference.html">Reference</a>
+    </nav>
+  </div>
+</header>
+
+<div class="page">
+  <aside class="sidebar">
+    <p class="toc-label">On This Page</p>
+    <ul class="toc">
+      <li><a href="#overview" class="active">Overview</a></li>
+      <li><a href="#layer-3">Layer 3 — The Record</a></li>
+      <li><a href="#value-encoding">Value Encoding</a></li>
+      <li><a href="#flag-bits">Flag Bits</a></li>
+      <li><a href="#account-pairs">Account Pairs</a></li>
+      <li><a href="#layer-2">Layer 2 — Batch Header</a></li>
+      <li><a href="#layer-1">Layer 1 — Session Header</a></li>
+      <li><a href="#conservation">Conservation Invariant</a></li>
+      <li><a href="#control-records">Control Records</a></li>
+      <li><a href="#efficiency">Efficiency</a></li>
+    </ul>
+  </aside>
+
+  <main>
+
+    <!-- ── OVERVIEW ── -->
+    <section id="overview">
+      <p class="eyebrow">BitLedger Protocol v3.0</p>
+      <h1>40 Bits.<br>One Transaction.</h1>
+      <p class="pullquote">A complete double-entry accounting record — both sides, full classification, direction, status, value, rounding metadata, and currency — in five bytes.</p>
+      <p class="lead">BitLedger is a binary-native financial record and transmission protocol designed from first principles at the binary representation of accounting states. Every bit position carries defined meaning. No layer ends with unused zero-padded bits. The rules of double-entry accounting are enforced at the encoding level — not as a rule the application must check, but as a structural property of the wire format.</p>
+
+      <div class="proto-grid">
+        <div class="proto-card">
+          <div class="proto-layer">Layer 1</div>
+          <div class="proto-title">Session Header</div>
+          <div class="proto-bytes">8 bytes</div>
+          <div class="proto-desc">Sender ID · permissions · CRC-15 · session defaults. Once per session.</div>
+        </div>
+        <div class="proto-card">
+          <div class="proto-layer">Layer 2</div>
+          <div class="proto-title">Batch Header</div>
+          <div class="proto-bytes">6 bytes</div>
+          <div class="proto-desc">Currency · scaling · precision · rounding balance. Once per batch.</div>
+        </div>
+        <div class="proto-card">
+          <div class="proto-layer">Layer 3</div>
+          <div class="proto-title">Transaction Record</div>
+          <div class="proto-bytes">5 bytes</div>
+          <div class="proto-desc">Value block (25 bits) · flag bits (7) · accounting block (8). Per transaction.</div>
+        </div>
+        <div class="proto-card">
+          <div class="proto-layer">Control</div>
+          <div class="proto-title">Control Record</div>
+          <div class="proto-bytes">1 byte</div>
+          <div class="proto-desc">ACK · batch close · band change · session events. On demand.</div>
+        </div>
+      </div>
+
+      <div class="notice">
+        <strong>100 transactions.</strong> Layer 1 (64 bits) + Layer 2 (48 bits) + 100 × Layer 3 (40 bits) = 4,112 bits — <strong>514 bytes</strong>. A comparable JSON representation: 50,000–200,000 bytes. The reduction is structural, not compressive. No decompression step.
+      </div>
+    </section>
+
+    <!-- ── LAYER 3 ── -->
+    <section id="layer-3">
+      <p class="eyebrow">The Core Record</p>
+      <h2>Layer 3 — The 40-Bit Transaction</h2>
+      <p>Five bytes. Every bit earns its position. The 25-bit value block carries any amount from zero to $33,554,431 at base precision — scaled arbitrarily via Layer 2. Seven flag bits qualify the value and provide three independent error-detection surfaces. Eight bits carry the complete double-entry accounting classification.</p>
+
+      <div class="forty-bit-display">
+        <div class="forty-label">BITS 1–25 (VALUE BLOCK) &nbsp;·&nbsp; BITS 26–32 (FLAGS) &nbsp;·&nbsp; BITS 33–40 (ACCOUNTING)</div>
+
+        <!-- Value block row -->
+        <div class="bit-display" style="margin-bottom:4px;">
+          <div class="bit-display-label">Bits 1–25 — Value Block (25 bits)</div>
+          <div class="bit-cells" style="flex-wrap:wrap;">
+            <div class="bit-cell data" data-layer="l3" data-tooltip="Bit 1–17: Multiplicand A — upper value field (17 bits at default split S=8)">
+              <span class="bit-pos">1</span><span class="bit-val">A</span><span class="bit-name">Mult-<br>icand</span>
+            </div>
+            <div class="bit-cell data" data-layer="l3" data-tooltip="Bits 2–17: continuation of 17-bit multiplicand field">
+              <span class="bit-pos">···</span><span class="bit-val">A</span><span class="bit-name">A<br>cont.</span>
+            </div>
+            <div class="bit-cell data" data-layer="l3" data-tooltip="Bit 17: last bit of multiplicand A">
+              <span class="bit-pos">17</span><span class="bit-val">A</span><span class="bit-name">A<br>end</span>
+            </div>
+            <div class="bit-cell data" data-layer="l3" data-tooltip="Bits 18–25: Remainder r — lower 8 bits at default split (Multiplier / quantity field when bit 32=1)">
+              <span class="bit-pos">18</span><span class="bit-val">r</span><span class="bit-name">Remain-<br>der</span>
+            </div>
+            <div class="bit-cell data" data-layer="l3" data-tooltip="Bits 19–25: continuation of 8-bit remainder r">
+              <span class="bit-pos">···</span><span class="bit-val">r</span><span class="bit-name">r<br>cont.</span>
+            </div>
+            <div class="bit-cell data" data-layer="l3" data-tooltip="Bit 25: last bit of remainder r. N = A × 2^S + r">
+              <span class="bit-pos">25</span><span class="bit-val">r</span><span class="bit-name">r<br>end</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Flags row -->
+        <div class="bit-display" style="margin-bottom:4px;">
+          <div class="bit-display-label">Bits 26–32 — Flag Bits (7 bits)</div>
+          <div class="bit-cells">
+            <div class="bit-cell flag" data-layer="l3" data-tooltip="Bit 26: Rounding Flag. 0=exact value. 1=value is rounded.">
+              <span class="bit-pos">26</span><span class="bit-val">Rnd</span><span class="bit-name">Round<br>Flag</span>
+            </div>
+            <div class="bit-cell flag" data-layer="l3" data-tooltip="Bit 27: Rounding Direction. 0=rounded down. 1=rounded up. Only valid when bit 26=1. State bit26=0,bit27=1 is a protocol error.">
+              <span class="bit-pos">27</span><span class="bit-val">Dir</span><span class="bit-name">Round<br>Dir.</span>
+            </div>
+            <div class="bit-cell flag" data-layer="l3" data-tooltip="Bit 28: Split Order. 0=follow session default (Layer 1 bit 9). 1=reverse session default for this record.">
+              <span class="bit-pos">28</span><span class="bit-val">Spl</span><span class="bit-name">Split<br>Order</span>
+            </div>
+            <div class="bit-cell flag" data-layer="l3" data-tooltip="Bit 29: Direction Plus/Minus. 0=Plus (In, receiving). 1=Minus (Out, disbursing). MUST equal bit 37 — cross-layer validation rule 1.">
+              <span class="bit-pos">29</span><span class="bit-val">+/-</span><span class="bit-name">Direction<br>↕</span>
+            </div>
+            <div class="bit-cell flag" data-layer="l3" data-tooltip="Bit 30: Status Past/Future. 0=Paid (settled, cash basis). 1=Debt (accrued). MUST equal bit 38 — cross-layer validation rule 2.">
+              <span class="bit-pos">30</span><span class="bit-val">P/F</span><span class="bit-name">Status<br>P/F</span>
+            </div>
+            <div class="bit-cell flag" data-layer="l3" data-tooltip="Bit 31: Debit/Credit. 0=Credit side primary. 1=Debit side primary. Resolves which account in the pair takes the debit.">
+              <span class="bit-pos">31</span><span class="bit-val">D/C</span><span class="bit-name">Debit/<br>Credit</span>
+            </div>
+            <div class="bit-cell flag" data-layer="l3" data-tooltip="Bit 32: Quantity Present. 0=flat total value (25 bits). 1=Optimal Split active — upper bits=price/unit, lower bits=quantity.">
+              <span class="bit-pos">32</span><span class="bit-val">Qty</span><span class="bit-name">Qty<br>Present</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Accounting block row -->
+        <div class="bit-display">
+          <div class="bit-display-label">Bits 33–40 — Accounting Block (8 bits)</div>
+          <div class="bit-cells">
+            <div class="bit-cell account" data-layer="l3" data-tooltip="Bits 33–36: Account Pair. 4-bit code identifying both account categories. 14 valid pairs. 1111=compound continuation marker.">
+              <span class="bit-pos">33</span><span class="bit-val">AP</span><span class="bit-name">Acct<br>Pair</span>
+            </div>
+            <div class="bit-cell account" data-layer="l3" data-tooltip="Bits 34–36: account pair continued">
+              <span class="bit-pos">34</span><span class="bit-val">AP</span><span class="bit-name">AP<br>cont.</span>
+            </div>
+            <div class="bit-cell account" data-layer="l3" data-tooltip="Bit 35"><span class="bit-pos">35</span><span class="bit-val">AP</span><span class="bit-name">AP</span></div>
+            <div class="bit-cell account" data-layer="l3" data-tooltip="Bit 36: last bit of 4-bit account pair"><span class="bit-pos">36</span><span class="bit-val">AP</span><span class="bit-name">AP<br>end</span></div>
+            <div class="bit-cell account" data-layer="l3" data-tooltip="Bit 37: Direction. MUST equal bit 29 (cross-layer validation rule 1). Mismatch = corrupt record.">
+              <span class="bit-pos">37</span><span class="bit-val">Dir</span><span class="bit-name">Direction<br>=bit29</span>
+            </div>
+            <div class="bit-cell account" data-layer="l3" data-tooltip="Bit 38: Status. MUST equal bit 30 (cross-layer validation rule 2). Mismatch = corrupt record.">
+              <span class="bit-pos">38</span><span class="bit-val">Sts</span><span class="bit-name">Status<br>=bit30</span>
+            </div>
+            <div class="bit-cell account" data-layer="l3" data-tooltip="Bit 39: Completeness. 0=transaction complete. 1=partial, more follows. In compound mode with 1111 pair: 1=more continuations, 0=final leg.">
+              <span class="bit-pos">39</span><span class="bit-val">Cmp</span><span class="bit-name">Complete<br>-ness</span>
+            </div>
+            <div class="bit-cell account" data-layer="l3" data-tooltip="Bit 40: Extension Flag. 0=record complete. 1=extension byte follows (quantity, currency override, timestamp, opposing account…).">
+              <span class="bit-pos">40</span><span class="bit-val">Ext</span><span class="bit-name">Ext.<br>Flag</span>
+            </div>
+          </div>
+          <div class="bit-legend">
+            <span class="legend-item"><span class="legend-swatch data"></span> Value block</span>
+            <span class="legend-item"><span class="legend-swatch flag"></span> Flag bits</span>
+            <span class="legend-item"><span class="legend-swatch account"></span> Accounting block</span>
+            <span class="legend-item" style="color:var(--nasa-red);font-family:var(--mono);font-size:10px;">bit29 = bit37 &nbsp;·&nbsp; bit30 = bit38 &nbsp;·&nbsp; cross-layer validation</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── VALUE ENCODING ── -->
+    <section id="value-encoding">
+      <p class="eyebrow">25-Bit Value Block</p>
+      <h2>Value Encoding — N = A × 2<sup>S</sup> + r</h2>
+      <p>The 25-bit value block encodes any integer from 0 to 33,554,431 without gaps using the formula <code>N = A × 2^S + r</code>, where S is the Optimal Split from Layer 2 (default 8). At S=8: A occupies the upper 17 bits (0–131,071) and r occupies the lower 8 bits (0–255). The maximum N = 131,071 × 256 + 255 = 33,554,431.</p>
+
+      <div class="formula">N = A × 2<sup>S</sup> + r &nbsp;·&nbsp; A = ⌊N / 2<sup>S</sup>⌋ &nbsp;·&nbsp; r = N mod 2<sup>S</sup></div>
+
+      <p>Combined with Layer 2 Scaling Factor and Decimal Position:</p>
+      <div class="formula">Real Value = (N × Scaling Factor) / 10<sup>Decimal Position</sup></div>
+
+      <h3>Worked Examples</h3>
+
+      <div class="printout">
+        <div class="ph">── EXAMPLE 1 ─ $4.53 exact flat value ─────────────────────</div>
+        <div><span class="pl">Layer 2  </span><span class="pv">SF=×1, DP=2 (step $0.01)</span></div>
+        <div><span class="pl">Target   </span><span class="pv">$4.53 → V = 453 (integer)</span></div>
+        <div><span class="pl">Encode   </span><span class="pb">A = ⌊453/256⌋ = 1 &nbsp; r = 453 mod 256 = 197</span></div>
+        <div><span class="pl">Bits 1-17</span><span class="pb">00000000000000001 (A=1)</span></div>
+        <div><span class="pl">Bits18-25</span><span class="pb">11000101 (r=197)</span></div>
+        <div><span class="pl">Bit 26   </span><span class="pv">0 = exact (no rounding)</span></div>
+        <div><span class="pl">Decode   </span><span class="pv">N = 1×256+197 = 453 → $4.53</span></div>
+        <div class="ph">─────────────────────────────────────────────────────────────</div>
+      </div>
+
+      <div class="printout">
+        <div class="ph">── EXAMPLE 2 ─ $98,765.43 large value ──────────────────────</div>
+        <div><span class="pl">Layer 2  </span><span class="pv">SF=×1, DP=2</span></div>
+        <div><span class="pl">Target   </span><span class="pv">$98,765.43 → V = 9,876,543</span></div>
+        <div><span class="pl">Check    </span><span class="pv">9,876,543 ≤ 33,554,431 ✓</span></div>
+        <div><span class="pl">Encode   </span><span class="pb">A = ⌊9,876,543/256⌋ = 38,580 &nbsp; r = 63</span></div>
+        <div><span class="pl">Decode   </span><span class="pv">N = 38,580×256+63 = 9,876,543 → $98,765.43</span></div>
+        <div class="ph">─────────────────────────────────────────────────────────────</div>
+      </div>
+
+      <div class="printout">
+        <div class="ph">── EXAMPLE 3 ─ 24 units at $2.49 each (quantity split) ─────</div>
+        <div><span class="pl">Layer 2  </span><span class="pv">SF=×1, DP=2, Optimal Split S=8</span></div>
+        <div><span class="pl">Bit 32   </span><span class="pv">1 = Quantity Present</span></div>
+        <div><span class="pl">Encode   </span><span class="pb">A = 249 (price in cents) &nbsp; r = 24 (quantity)</span></div>
+        <div><span class="pl">Decode   </span><span class="pv">N = 249×24 = 5,976 → $59.76</span></div>
+        <div class="ph">─────────────────────────────────────────────────────────────</div>
+      </div>
+
+      <div class="printout">
+        <div class="ph">── EXAMPLE 4 ─ $2,450,000.00 large corporate ───────────────</div>
+        <div><span class="pl">Layer 2  </span><span class="pv">SF=×100, DP=2 (step=$1.00, max=$33,554,431)</span></div>
+        <div><span class="pl">Encode   </span><span class="pb">N = 2,450,000 / 100 = 24,500</span></div>
+        <div><span class="pl">         </span><span class="pb">A = ⌊24,500/256⌋ = 95 &nbsp; r = 180</span></div>
+        <div><span class="pl">Decode   </span><span class="pv">N = 95×256+180 = 24,500 → 24,500×100/100 = $2,450,000.00</span></div>
+        <div class="ph">─────────────────────────────────────────────────────────────</div>
+      </div>
+
+      <div class="printout">
+        <div class="ph">── EXAMPLE 5 ─ $1,847,293,651.37 via compound continuation ─</div>
+        <div><span class="pl">Strategy </span><span class="pv">Split across 2 records — compound mode</span></div>
+        <div class="ph">Record 1: billions component</div>
+        <div><span class="pl">Layer 2  </span><span class="pv">SF=×100,000, DP=2 (step=$1,000)</span></div>
+        <div><span class="pl">Encode   </span><span class="pb">$1,847,293,000 / 1,000 = 1,847,293</span></div>
+        <div><span class="pl">Bit 39   </span><span class="pv">1 = partial, continuation follows</span></div>
+        <div class="ph">Record 2: sub-thousand component (1111 continuation)</div>
+        <div><span class="pl">Layer 2  </span><span class="pv">SF=×1, DP=2</span></div>
+        <div><span class="pl">Encode   </span><span class="pb">$651.37 → N = 65,137</span></div>
+        <div><span class="pl">Bit 39   </span><span class="pv">0 = complete, compound closed</span></div>
+        <div><span class="pl">Sum      </span><span class="pg">$1,847,293,000.00 + $651.37 = $1,847,293,651.37 exact</span></div>
+        <div class="ph">─────────────────────────────────────────────────────────────</div>
+      </div>
+
+      <div class="calculator" style="max-width:100%;">
+        <div class="calc-title">Value Encoder — N = A × 2<sup style="font-size:9px;">S</sup> + r</div>
+
+        <div style="display:grid;grid-template-columns:1fr auto auto;gap:10px;align-items:end;margin-bottom:16px;">
+          <div>
+            <label class="calc-label" style="display:block;margin-bottom:5px;">Target value</label>
+            <input type="number" id="ve-target" class="calc-input" value="4.53" step="any" style="width:100%;font-size:20px;padding:10px 12px;">
+          </div>
+          <div>
+            <label class="calc-label" style="display:block;margin-bottom:5px;">SF ×</label>
+            <input type="number" id="ve-sf" class="calc-input" value="1" min="1" style="width:80px;" title="Scaling factor from Layer 2">
+          </div>
+          <div>
+            <label class="calc-label" style="display:block;margin-bottom:5px;">S bits</label>
+            <input type="number" id="ve-s" class="calc-input" value="8" min="1" max="24" style="width:80px;" title="Optimal split (default 8)">
+          </div>
+        </div>
+
+        <div class="calc-output" id="ve-output"></div>
+      </div>
+    </section>
+
+    <!-- ── FLAG BITS ── -->
+    <section id="flag-bits">
+      <p class="eyebrow">Bits 26–32</p>
+      <h2>Flag Bits — Seven Qualifiers</h2>
+      <p>Seven flag bits qualify the value block. Three pairs provide cross-layer error detection and accounting semantics. One invalid bit state (bit26=0, bit27=1) forms a third independent error detection layer.</p>
+
+      <div class="flag-grid">
+        <div class="flag-row">
+          <div class="flag-bit">Bit</div>
+          <div class="flag-name">Field</div>
+          <div class="flag-desc">Description</div>
+        </div>
+        <div class="flag-row">
+          <div class="flag-bit">26</div>
+          <div class="flag-name">Rounding Flag</div>
+          <div class="flag-desc">0 = exact value, no precision loss. 1 = value is rounded — bit 27 carries direction. Encoder must set this whenever rounding occurs.</div>
+        </div>
+        <div class="flag-row">
+          <div class="flag-bit">27</div>
+          <div class="flag-name">Rounding Direction</div>
+          <div class="flag-desc">Only valid when bit 26=1. 0 = rounded down (floor). 1 = rounded up (ceiling). State 01 (bit26=0, bit27=1) is a protocol error — immediately detectable.</div>
+        </div>
+        <div class="flag-row">
+          <div class="flag-bit">28</div>
+          <div class="flag-name">Split Order</div>
+          <div class="flag-desc">0 = follow session default (Layer 1 bit 9). 1 = reverse session default for this record only. No separate setup byte required.</div>
+        </div>
+        <div class="flag-row">
+          <div class="flag-bit">29</div>
+          <div class="flag-name">Direction ±</div>
+          <div class="flag-desc">0 = Plus / In — value received. 1 = Minus / Out — value disbursed. <span class="flag-rule">MUST = bit 37</span> Cross-layer validation rule 1. Mismatch → record rejected.</div>
+        </div>
+        <div class="flag-row">
+          <div class="flag-bit">30</div>
+          <div class="flag-name">Status P/F</div>
+          <div class="flag-desc">0 = Past / Paid — settled, cash basis. 1 = Future / Debt — accrued, not yet settled. <span class="flag-rule">MUST = bit 38</span> Cross-layer validation rule 2.</div>
+        </div>
+        <div class="flag-row">
+          <div class="flag-bit">31</div>
+          <div class="flag-name">Debit / Credit</div>
+          <div class="flag-desc">0 = Credit side primary. 1 = Debit side primary. Resolves which account in the pair takes the debit.</div>
+        </div>
+        <div class="flag-row">
+          <div class="flag-bit">32</div>
+          <div class="flag-name">Quantity Present</div>
+          <div class="flag-desc">0 = all 25 bits are a flat total. 1 = Optimal Split active — upper bits = price/unit, lower bits = quantity. When 1, split always taken from Layer 2.</div>
+        </div>
+      </div>
+
+      <div class="notice" style="background:#FFF5F5;border-color:var(--nasa-red);">
+        <strong>Cross-layer validation:</strong> bit 29 must equal bit 37, and bit 30 must equal bit 38. A single-bit corruption in either location is immediately detectable. Three independent error surfaces operate on every 40-bit record with no dedicated checksum field.
+      </div>
+    </section>
+
+    <!-- ── ACCOUNT PAIRS ── -->
+    <section id="account-pairs">
+      <p class="eyebrow">Bits 33–36</p>
+      <h2>Account Pair Table — All 16 Codes</h2>
+      <p>A 4-bit field encoding both sides of the double-entry. Fourteen valid pairs cover all canonical accounting relationships. Code 1110 suspends inference for correction entries. Code 1111 is the compound continuation marker (only valid when compound mode is active in the session).</p>
+
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Code</th>
+            <th>Account Pair</th>
+            <th>Direction In → Primary</th>
+            <th>Direction Out → Primary</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="xrow" data-target="ap-0000">
+            <td class="code-cell">0000</td>
+            <td class="pair-name">Op Expense / Asset</td>
+            <td>Expense receives goods or service</td>
+            <td>Expense reversal, return to supplier</td>
+          </tr>
+          <tr class="xdrawer" data-drawer="ap-0000">
+            <td colspan="4">
+              <div class="drawer-inner">
+                <strong>Typical use:</strong> Purchase of supplies, inventory receipt, service delivery.<br>
+                <div class="printout" style="margin-top:12px;">
+                  <div class="ph">── 0000 · Op Expense / Asset ─────────────────────</div>
+                  <div><span class="pl">Account pair  </span><span class="pb">0000</span></div>
+                  <div><span class="pl">Bit 31 = 1    </span><span class="pv">Debit: Op Expense</span></div>
+                  <div><span class="pl">Bit 31 = 0    </span><span class="pv">Credit: Asset (Cash or A/P)</span></div>
+                  <div><span class="pl">Example       </span><span class="pv">Office supplies $240.00</span></div>
+                  <div><span class="pl">Journal       </span><span class="pg">DR Office Supplies Exp 240.00 / CR Cash 240.00</span></div>
+                  <div class="ph">─────────────────────────────────────────────────</div>
+                </div>
+              </div>
+            </td>
+          </tr>
+          <tr class="xrow" data-target="ap-0001">
+            <td class="code-cell">0001</td>
+            <td class="pair-name">Op Expense / Liability</td>
+            <td>Expense incurred on credit</td>
+            <td>Liability reduces, expense reversed</td>
+          </tr>
+          <tr class="xdrawer" data-drawer="ap-0001">
+            <td colspan="4"><div class="drawer-inner">
+              <strong>Typical use:</strong> Accrued expenses, payroll liabilities, taxes payable.<br>
+              <div class="printout" style="margin-top:12px;">
+                <div class="ph">── 0001 · Op Expense / Liability ─────────────────</div>
+                <div><span class="pl">Example  </span><span class="pv">Payroll accrual $12,500.00</span></div>
+                <div><span class="pl">Journal  </span><span class="pg">DR Wages Expense 12,500 / CR Wages Payable 12,500</span></div>
+                <div class="ph">─────────────────────────────────────────────────</div>
+              </div>
+            </div></td>
+          </tr>
+          <tr class="xrow" data-target="ap-0010">
+            <td class="code-cell">0010</td>
+            <td class="pair-name">Non-Op Expense / Asset</td>
+            <td>Non-core expense from asset</td>
+            <td>Non-core expense reversal</td>
+          </tr>
+          <tr class="xdrawer" data-drawer="ap-0010">
+            <td colspan="4"><div class="drawer-inner">
+              <strong>Typical use:</strong> Interest expense paid from cash, one-time write-off.
+            </div></td>
+          </tr>
+          <tr class="xrow" data-target="ap-0011">
+            <td class="code-cell">0011</td>
+            <td class="pair-name">Non-Op Expense / Liability</td>
+            <td>Non-core expense on credit</td>
+            <td>Non-core liability reduces</td>
+          </tr>
+          <tr class="xdrawer" data-drawer="ap-0011">
+            <td colspan="4"><div class="drawer-inner">
+              <strong>Typical use:</strong> Interest expense accrued but not yet paid.
+            </div></td>
+          </tr>
+          <tr class="xrow" data-target="ap-0100">
+            <td class="code-cell">0100</td>
+            <td class="pair-name">Op Income / Asset</td>
+            <td>Revenue received as asset</td>
+            <td>Revenue reversed, asset returned</td>
+          </tr>
+          <tr class="xdrawer" data-drawer="ap-0100">
+            <td colspan="4"><div class="drawer-inner">
+              <strong>Typical use:</strong> Cash sale — revenue earned and cash received simultaneously.<br>
+              <div class="printout" style="margin-top:12px;">
+                <div class="ph">── 0100 · Op Income / Asset ──────────────────────</div>
+                <div><span class="pl">Example  </span><span class="pv">Cash sale $850.00</span></div>
+                <div><span class="pl">Journal  </span><span class="pg">DR Cash 850.00 / CR Sales Revenue 850.00</span></div>
+                <div class="ph">─────────────────────────────────────────────────</div>
+              </div>
+            </div></td>
+          </tr>
+          <tr class="xrow" data-target="ap-0101">
+            <td class="code-cell">0101</td>
+            <td class="pair-name">Op Income / Liability</td>
+            <td>Revenue earned, not yet received</td>
+            <td>Earned revenue reversed</td>
+          </tr>
+          <tr class="xdrawer" data-drawer="ap-0101">
+            <td colspan="4"><div class="drawer-inner">
+              <strong>Typical use:</strong> Accounts receivable — service rendered, invoice issued, payment pending.
+            </div></td>
+          </tr>
+          <tr class="xrow" data-target="ap-0110">
+            <td class="code-cell">0110</td>
+            <td class="pair-name">Non-Op Income / Asset</td>
+            <td>One-time income received</td>
+            <td>One-time income reversed</td>
+          </tr>
+          <tr class="xdrawer" data-drawer="ap-0110">
+            <td colspan="4"><div class="drawer-inner">
+              <strong>Typical use:</strong> Asset sale gain, investment return, insurance proceeds.
+            </div></td>
+          </tr>
+          <tr class="xrow" data-target="ap-0111">
+            <td class="code-cell">0111</td>
+            <td class="pair-name">Non-Op Income / Liability</td>
+            <td>One-time income earned on credit</td>
+            <td>Credit income reversed</td>
+          </tr>
+          <tr class="xdrawer" data-drawer="ap-0111">
+            <td colspan="4"><div class="drawer-inner">
+              <strong>Typical use:</strong> Deferred income, subscription revenue not yet earned.
+            </div></td>
+          </tr>
+          <tr class="xrow" data-target="ap-1000">
+            <td class="code-cell">1000</td>
+            <td class="pair-name">Asset / Liability</td>
+            <td>Asset acquired on credit</td>
+            <td>Liability repaid from asset</td>
+          </tr>
+          <tr class="xdrawer" data-drawer="ap-1000">
+            <td colspan="4"><div class="drawer-inner">
+              <strong>Typical use:</strong> Equipment purchase on credit, loan repayment.<br>
+              <div class="printout" style="margin-top:12px;">
+                <div class="ph">── 1000 · Asset / Liability ──────────────────────</div>
+                <div><span class="pl">Example  </span><span class="pv">Equipment purchase $45,000 on credit</span></div>
+                <div><span class="pl">Journal  </span><span class="pg">DR Equipment 45,000 / CR Notes Payable 45,000</span></div>
+                <div class="ph">─────────────────────────────────────────────────</div>
+              </div>
+            </div></td>
+          </tr>
+          <tr class="xrow" data-target="ap-1001">
+            <td class="code-cell">1001</td>
+            <td class="pair-name">Asset / Equity</td>
+            <td>Owner contributes asset</td>
+            <td>Asset distributed to owner</td>
+          </tr>
+          <tr class="xdrawer" data-drawer="ap-1001">
+            <td colspan="4"><div class="drawer-inner">
+              <strong>Typical use:</strong> Owner capital contribution, dividend distribution.
+            </div></td>
+          </tr>
+          <tr class="xrow" data-target="ap-1010">
+            <td class="code-cell">1010</td>
+            <td class="pair-name">Liability / Equity</td>
+            <td>Equity converts to liability</td>
+            <td>Liability converts to equity</td>
+          </tr>
+          <tr class="xdrawer" data-drawer="ap-1010">
+            <td colspan="4"><div class="drawer-inner">
+              <strong>Typical use:</strong> Convertible note conversion, debt-to-equity swap.
+            </div></td>
+          </tr>
+          <tr class="xrow" data-target="ap-1011">
+            <td class="code-cell">1011</td>
+            <td class="pair-name">Asset / Asset</td>
+            <td>Asset received — internal transfer</td>
+            <td>Asset disbursed — internal transfer</td>
+          </tr>
+          <tr class="xdrawer" data-drawer="ap-1011">
+            <td colspan="4"><div class="drawer-inner">
+              <strong>Typical use:</strong> Cash-to-investment transfer, inter-account movement.
+            </div></td>
+          </tr>
+          <tr class="xrow" data-target="ap-1100">
+            <td class="code-cell">1100</td>
+            <td class="pair-name">Suspense / Clearing</td>
+            <td>Entry to suspense pending classification</td>
+            <td>Clearing suspense after classification</td>
+          </tr>
+          <tr class="xdrawer" data-drawer="ap-1100">
+            <td colspan="4"><div class="drawer-inner">
+              <strong>Typical use:</strong> Unidentified receipts, in-transit items, pending reconciliation.
+            </div></td>
+          </tr>
+          <tr class="xrow" data-target="ap-1101">
+            <td class="code-cell">1101</td>
+            <td class="pair-name">Inter-Company</td>
+            <td>Inter-entity receivable</td>
+            <td>Inter-entity payable</td>
+          </tr>
+          <tr class="xdrawer" data-drawer="ap-1101">
+            <td colspan="4"><div class="drawer-inner">
+              <strong>Typical use:</strong> Transactions between related entities, consolidation eliminations.
+            </div></td>
+          </tr>
+          <tr class="xrow" data-target="ap-1110">
+            <td class="code-cell">1110</td>
+            <td class="pair-name">Correction / Netting</td>
+            <td>Correction entry (inference suspended)</td>
+            <td>Netting entry</td>
+          </tr>
+          <tr class="xdrawer" data-drawer="ap-1110">
+            <td colspan="4"><div class="drawer-inner">
+              <strong>Typical use:</strong> Error corrections, prior-period adjustments, netting arrangements. Account pair inference is suspended — the opposing account is explicit in an extension byte.
+            </div></td>
+          </tr>
+          <tr class="xrow" data-target="ap-1111">
+            <td class="code-cell">1111</td>
+            <td class="pair-name">Compound Continuation</td>
+            <td colspan="2">Links this record to its predecessor as part of one logical multi-leg transaction. <strong>Only valid when compound mode is active in session (Layer 1 bit 11=1) and batch Compound Prefix ≠ 00.</strong></td>
+          </tr>
+          <tr class="xdrawer" data-drawer="ap-1111">
+            <td colspan="4"><div class="drawer-inner">
+              See <a href="compound-mode.html">Compound Mode</a> for full specification of continuation sub-types and completeness semantics.
+            </div></td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- ── LAYER 2 ── -->
+    <section id="layer-2">
+      <p class="eyebrow">Batch Context</p>
+      <h2>Layer 2 — Batch Header (48 bits / 6 bytes)</h2>
+      <p>Transmitted once before each batch. Establishes the decoding context that every record in the batch inherits. No record repeats Layer 2 information. When all values match session defaults, a single control byte replaces the entire 48-bit header.</p>
+
+      <table class="data-table">
+        <thead>
+          <tr><th>Bits</th><th>Field</th><th>Values</th><th>Description</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="code-cell">1–2</td><td>Transmission Type</td><td>01–11</td><td>01=Pre-converted. 10=Copy from sender. 11=Represented entity. 00=protocol error.</td></tr>
+          <tr><td class="code-cell">3–9</td><td>Scaling Factor</td><td>0–127</td><td>Denomination multiplier. Index into powers of 10: 0=×1, 1=×10, 2=×100, 3=×1,000…</td></tr>
+          <tr><td class="code-cell">10–13</td><td>Optimal Split (S)</td><td>0–15</td><td>Bits allocated to Multiplier field. Default 8: 17-bit value + 8-bit quantity. Governs the N = A × 2^S + r formula.</td></tr>
+          <tr><td class="code-cell">14–16</td><td>Decimal Position</td><td>000–111</td><td>000=integer, 001=1dp, 010=2dp (standard), 011=3dp, 100=4dp (forex), 101=5dp, 110=6dp (crypto), 111=extension byte.</td></tr>
+          <tr><td class="code-cell">17</td><td>Enquiry Bell</td><td>0/1</td><td>1 = sender requests ACK of this batch before proceeding.</td></tr>
+          <tr><td class="code-cell">18</td><td>Acknowledge Bell</td><td>0/1</td><td>1 = receiver confirms receipt of previous batch.</td></tr>
+          <tr><td class="code-cell">19–22</td><td>Group Separator</td><td>4 bits</td><td>15 group identifiers — accounting periods, quarters, organisational divisions.</td></tr>
+          <tr><td class="code-cell">23–27</td><td>Record Separator</td><td>5 bits</td><td>31 record-group identifiers. In compound mode: current value is the implicit compound group ID.</td></tr>
+          <tr><td class="code-cell">28–30</td><td>File Separator</td><td>3 bits</td><td>7 file identifiers — associates batches with logical file structures.</td></tr>
+          <tr><td class="code-cell">31–35</td><td>Entity ID</td><td>00000–11111</td><td>Sub-entity attribution. Matches Layer 1 Sub-Entity ID in standard mode; differs in represented-entity mode.</td></tr>
+          <tr><td class="code-cell">36–41</td><td>Currency Code</td><td>000000–111111</td><td>64 codes. 000000=session default. 000001–011111=standard currencies. 100000–111110=user-defined. 111111=multi-currency.</td></tr>
+          <tr><td class="code-cell">42–45</td><td>Rounding Balance</td><td>4-bit signed</td><td>Net rounding adjustment for batch (sign-magnitude). 0000=balanced. 1000=escape (see batch-close control record).</td></tr>
+          <tr><td class="code-cell">46–47</td><td>Compound Prefix</td><td>00–11</td><td>00=no compound records. 01=up to 3 groups. 10=up to 7. 11=unlimited. Prepares receiver before first record.</td></tr>
+          <tr><td class="code-cell">48</td><td>Reserved</td><td>1</td><td>Always transmit as 1. Ensures final byte of Layer 2 is never all-zeros.</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- ── LAYER 1 ── -->
+    <section id="layer-1">
+      <p class="eyebrow">Session Identity &amp; Integrity</p>
+      <h2>Layer 1 — Session Header (64 bits / 8 bytes)</h2>
+      <p>Transmitted once at session open. Establishes sender identity, permissions, session-level defaults, and the CRC-15 checksum that protects all subsequent records. A corrupt session header would cause every record to be decoded against wrong identity or defaults — the CRC catches this at session open before any records are processed.</p>
+
+      <table class="data-table">
+        <thead>
+          <tr><th>Bits</th><th>Field</th><th>Description</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="code-cell">1</td><td>SOH Marker</td><td>Always 1. Self-framing — the leading 1 triggers protocol state in the receiver. No preamble or sync byte required.</td></tr>
+          <tr><td class="code-cell">2–4</td><td>Protocol Version</td><td>000–111. Receivers reject sessions with unsupported version codes.</td></tr>
+          <tr><td class="code-cell">5–8</td><td>Core Permissions</td><td>Bit 5: Read. Bit 6: Write. Bit 7: Correct/Amend. Bit 8: Represent third party. All four must be set appropriately before records are accepted.</td></tr>
+          <tr><td class="code-cell">9–12</td><td>Session Defaults</td><td>Bit 9: Split order default. Bit 10: Opposing account convention. Bit 11: Compound mode active. Bit 12: BitLedger block optional.</td></tr>
+          <tr><td class="code-cell">13–44</td><td>Sender ID</td><td>32-bit unique sender identifier. Supports 4,294,967,295 distinct senders. Reducible to 16 bits on closed networks.</td></tr>
+          <tr><td class="code-cell">45–49</td><td>Sub-Entity ID</td><td>31 sub-divisions per sender. In represented-entity mode, Layer 2 Entity ID intentionally differs from this field.</td></tr>
+          <tr><td class="code-cell">50–64</td><td>CRC-15 Checksum</td><td>Computed over bits 1–49. Polynomial x^15 + x + 1 (0x8003). Zero remainder = session accepted. Non-zero = session rejected, NACK sent.</td></tr>
+        </tbody>
+      </table>
+
+      <h3>CRC-15 Algorithm</h3>
+      <div class="printout">
+        <div class="ph">── CRC-15 ENCODER ────────────────────────────────────────</div>
+        <div><span class="pl">Polynomial </span><span class="pb">G = x^15 + x + 1 = 0x8003</span></div>
+        <div><span class="pl">Input      </span><span class="pv">P = bits 1–49 of Layer 1 (49-bit payload)</span></div>
+        <div class="ph"></div>
+        <div><span class="pl">Step 1     </span><span class="pv">Append 15 zero bits: W = P[1..49] + 000000000000000</span></div>
+        <div><span class="pl">Step 2     </span><span class="pv">For each bit i from 1 to 49:</span></div>
+        <div><span class="pl">           </span><span class="pb">  if leading bit of W == 1: W = W XOR (G &lt;&lt; align)</span></div>
+        <div><span class="pl">           </span><span class="pb">  shift W left by 1</span></div>
+        <div><span class="pl">Step 3     </span><span class="pv">Remainder R = final 15 bits of W</span></div>
+        <div><span class="pl">Step 4     </span><span class="pv">Transmit bits 1–49 followed by R (total 64 bits)</span></div>
+        <div class="ph"></div>
+        <div class="ph">── CRC-15 DECODER ────────────────────────────────────────</div>
+        <div><span class="pl">Step 1     </span><span class="pv">Run CRC-15 over all 64 received bits</span></div>
+        <div><span class="pl">Step 2     </span><span class="pv">Result == 0x0000 → session accepted</span></div>
+        <div><span class="pl">           </span><span class="pv">Result != 0x0000 → send NACK, reject session</span></div>
+        <div class="ph"></div>
+        <div><span class="pl">Coverage   </span><span class="pg">100% single-bit · 100% burst ≤15 bits · 99.997% other</span></div>
+        <div class="ph">─────────────────────────────────────────────────────────</div>
+      </div>
+    </section>
+
+    <!-- ── CONSERVATION ── -->
+    <section id="conservation">
+      <p class="eyebrow">The Invariant</p>
+      <h2>Conservation — The Batch Balance Check</h2>
+      <p>For every batch, the signed sum of all flows must equal zero. This is the binary wire-level expression of double-entry accounting's fundamental rule — identical in algebra to Kirchhoff's current law applied to any node. The protocol checks this before the application sees the records.</p>
+
+      <div class="conservation-box">
+        <div class="ch">CONSERVATION INVARIANT</div>
+        <div></div>
+        <div><span class="cv">batch_balance</span> = 0</div>
+        <div>for each record in batch:</div>
+        <div>  if <span class="cv">bit29</span> == 0 (Plus/In):  <span class="cv">batch_balance</span> += <span class="cn">signed_value</span></div>
+        <div>  if <span class="cv">bit29</span> == 1 (Minus/Out): <span class="cv">batch_balance</span> -= <span class="cn">signed_value</span></div>
+        <div></div>
+        <div>if <span class="cv">batch_balance</span> != 0:</div>
+        <div>  <span style="color:var(--nasa-red);">BATCH INVALID → reject, NACK, request retransmission</span></div>
+      </div>
+
+      <p>A CRC-15 catches bit-level corruption. Cross-layer validation (bit29=bit37, bit30=bit38) catches field corruption. The conservation invariant catches something neither can: <strong>phantom flows, missing records, duplicated records</strong> — logical errors that leave every individual record intact but violate the double-entry balance. Three independent detection layers, zero overhead fields.</p>
+
+      <div class="notice">
+        <strong>Kirchhoff's current law:</strong> the sum of currents at any node equals zero. Structurally identical to double-entry balance. The same algebra governs financial accounting, electrical current distribution, mass balance in chemical reactors, and propellant conservation in spacecraft. BitLedger's Universal Domain recognises this — switching the domain bits changes the semantic interpretation, not the invariant.
+      </div>
+    </section>
+
+    <!-- ── CONTROL RECORDS ── -->
+    <section id="control-records">
+      <p class="eyebrow">Session Management</p>
+      <h2>Control Records (1 byte)</h2>
+      <p>8-bit control records handle session events without inflating the record stream. Type codes 000–111 cover all standard session management events. A control record is always 1 byte.</p>
+
+      <table class="data-table">
+        <thead>
+          <tr><th>Type</th><th>Name</th><th>Purpose</th></tr>
+        </thead>
+        <tbody>
+          <tr class="xrow" data-target="ctrl-000">
+            <td class="code-cell">000</td><td>Session Open</td><td>Opens a new session context. Triggers Layer 1 header transmission.</td>
+          </tr>
+          <tr class="xdrawer" data-drawer="ctrl-000"><td colspan="3"><div class="drawer-inner">Signals the receiver to prepare for a Layer 1 session header. Self-framing via the SOH marker in Layer 1 bit 1.</div></td></tr>
+          <tr class="xrow" data-target="ctrl-001">
+            <td class="code-cell">001</td><td>Session Close</td><td>Terminates the current session. Receiver finalises conservation check.</td>
+          </tr>
+          <tr class="xdrawer" data-drawer="ctrl-001"><td colspan="3"><div class="drawer-inner">Triggers final batch balance validation. Any open compound groups are marked incomplete. Session state cleared.</div></td></tr>
+          <tr class="xrow" data-target="ctrl-010">
+            <td class="code-cell">010</td><td>Batch Open</td><td>Opens a new batch. Layer 2 header follows.</td>
+          </tr>
+          <tr class="xdrawer" data-drawer="ctrl-010"><td colspan="3"><div class="drawer-inner">Receiver prepares to receive a 48-bit Layer 2 batch header. Rounding balance resets to zero for the new batch.</div></td></tr>
+          <tr class="xrow" data-target="ctrl-011">
+            <td class="code-cell">011</td><td>Batch Close</td><td>Closes the current batch. Conservation check runs.</td>
+          </tr>
+          <tr class="xdrawer" data-drawer="ctrl-011"><td colspan="3"><div class="drawer-inner">The batch balance sum is verified. If rounding balance exceeded the 4-bit escape (1000), the batch-close payload carries the full rounding value.</div></td></tr>
+          <tr class="xrow" data-target="ctrl-100">
+            <td class="code-cell">100</td><td>ACK</td><td>Positive acknowledgement of the previous batch or record.</td>
+          </tr>
+          <tr class="xdrawer" data-drawer="ctrl-100"><td colspan="3"><div class="drawer-inner">Response to an Enquiry Bell (Layer 2 bit 17). Sender may proceed with next batch. A two-byte verified handshake when combined with Echo.</div></td></tr>
+          <tr class="xrow" data-target="ctrl-101">
+            <td class="code-cell">101</td><td>NAK / Parameter Update</td><td>Negative acknowledgement or mid-batch parameter update.</td>
+          </tr>
+          <tr class="xdrawer" data-drawer="ctrl-101"><td colspan="3"><div class="drawer-inner">When used as NAK: requests retransmission of the rejected batch. When used as parameter update: the following byte specifies which parameter changes (e.g. Optimal Split for a record group).</div></td></tr>
+          <tr class="xrow" data-target="ctrl-110">
+            <td class="code-cell">110</td><td>Status</td><td>Transmits receiver status without a full record.</td>
+          </tr>
+          <tr class="xdrawer" data-drawer="ctrl-110"><td colspan="3"><div class="drawer-inner">Used for liveness, error reporting, and mode signalling. A 1-byte status control carrying the status code in the lower 5 bits.</div></td></tr>
+          <tr class="xrow" data-target="ctrl-111">
+            <td class="code-cell">111</td><td>Custom / Extension</td>
+            <td>User-defined or future-protocol control. Extension byte follows.</td>
+          </tr>
+          <tr class="xdrawer" data-drawer="ctrl-111"><td colspan="3"><div class="drawer-inner">Reserved for application-layer extensions and future protocol versions. The following byte declares the custom control type.</div></td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- ── EFFICIENCY ── -->
+    <section id="efficiency">
+      <p class="eyebrow">Why It Matters</p>
+      <h2>Efficiency — Structural, Not Compressive</h2>
+      <p>The reduction in wire bytes is structural. No decompression. No schema lookup. The decoder reads fixed bit positions and the record is decoded. On a link measured in bits per second — a satellite uplink, an industrial serial bus, a narrowband IoT radio — this matters at a level verbose formats cannot match.</p>
+
+      <table class="data-table">
+        <thead>
+          <tr><th>Format</th><th>100 Transactions</th><th>Relative Size</th><th>Notes</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><strong>BitLedger v3</strong></td><td class="code-cell" style="color:var(--nasa-blue);">514 bytes</td><td>1×</td><td>Layer 1 + Layer 2 + 100 × 5B. No decompression.</td></tr>
+          <tr><td>Fixed binary (ISO 8583-style)</td><td class="code-cell">~3,000 bytes</td><td>5.8×</td><td>No session CRC, no conservation invariant, no double-entry semantics.</td></tr>
+          <tr><td>CSV fixed-width (ACH-style)</td><td class="code-cell">~15,000 bytes</td><td>29×</td><td>Text encoding, no per-record integrity, batch settlement only.</td></tr>
+          <tr><td>JSON</td><td class="code-cell">~80,000 bytes</td><td>155×</td><td>Schema-dependent, string parsing required, no integrity mechanism.</td></tr>
+          <tr><td>ISO 20022 XML</td><td class="code-cell">~200,000 bytes</td><td>389×</td><td>Standards-compliant but requires full XML parser. Designed for nightly settlement, not real-time low-bandwidth links.</td></tr>
+        </tbody>
+      </table>
+
+      <div class="stat-grid" style="margin-top:24px;">
+        <div class="stat-card">
+          <div class="stat-value">40</div>
+          <div class="stat-label">bits per transaction</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">3</div>
+          <div class="stat-label">independent error surfaces</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">4.29B</div>
+          <div class="stat-label">max sender IDs</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">$33.5Q</div>
+          <div class="stat-label">max value per record</div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <span>BitPads Protocol Documentation</span>
+    <span>BitLedger v3.0 · BitPads v2.0 · Universal Domain v1.0 · Enhancement v2.0</span>
+  </div>
+</footer>
+
+<script>
+/* ── Expandable rows ── */
+document.querySelectorAll('.xrow').forEach(row => {
+  row.addEventListener('click', () => {
+    const id = row.dataset.target;
+    const drawer = document.querySelector(`.xdrawer[data-drawer="${id}"]`);
+    if (!drawer) return;
+    const open = drawer.classList.toggle('open');
+    row.classList.toggle('open', open);
+  });
+});
+
+/* ── TOC active state ── */
+const sections = document.querySelectorAll('section[id]');
+const tocLinks = document.querySelectorAll('.toc a');
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      tocLinks.forEach(l => l.classList.remove('active'));
+      const active = document.querySelector(`.toc a[href="#${e.target.id}"]`);
+      if (active) active.classList.add('active');
+    }
+  });
+}, { rootMargin: '-20% 0px -75% 0px' });
+sections.forEach(s => obs.observe(s));
+
+/* ── Value encoder calculator ── */
+function updateVE() {
+  const sf  = parseInt(document.getElementById('ve-sf').value) || 1;
+  const S   = parseInt(document.getElementById('ve-s').value)  || 8;
+  const out = document.getElementById('ve-output');
+  const str = document.getElementById('ve-target').value.trim();
+  const target = parseFloat(str);
+
+  if (!str || isNaN(target)) { out.innerHTML = ''; return; }
+
+  // Auto-detect DP from typed string
+  const dot = str.indexOf('.');
+  const dp  = dot >= 0 ? str.length - dot - 1 : 0;
+
+  // Minimum representable step for these settings
+  const step = sf / Math.pow(10, dp);
+
+  const raw   = target * Math.pow(10, dp) / sf;   // true N as float
+  const N     = Math.round(raw);                    // stored integer
+  const exact = Math.abs(raw - N) < 1e-9;
+
+  // Max representable value
+  const maxVal = 33554431 * step;
+
+  if (N < 0 || N > 33554431) {
+    out.innerHTML = `<div class="calc-line"><span class="ce">Exceeds 25-bit range. Max representable: ${maxVal.toLocaleString(undefined,{maximumFractionDigits:dp})} at current SF/DP. Increase SF or use compound mode.</span></div>`;
+    return;
+  }
+
+  const pow2S   = Math.pow(2, S);
+  const A       = Math.floor(N / pow2S);
+  const r       = N % pow2S;
+  const decoded = N * step;                         // what the decoder reconstructs
+  const error   = decoded - target;                 // rounding error (signed)
+  const hexN    = '0x' + N.toString(16).toUpperCase().padStart(7,'0');
+  const binA    = A.toString(2).padStart(Math.max(1, 25 - S), '0');
+  const binR    = r.toString(2).padStart(S, '0');
+
+  const fmt = v => v.toLocaleString(undefined, {minimumFractionDigits: dp, maximumFractionDigits: dp + 2});
+
+  // Rounding section colour + message
+  let roundHTML = '';
+  if (exact) {
+    roundHTML = `
+      <div style="background:rgba(106,200,126,0.08);border-left:3px solid #6AC87E;padding:12px 16px;margin-top:4px;">
+        <div class="calc-line"><span class="cl">Bit 26 — Rounding flag</span><span class="cv" style="color:#6AC87E;font-weight:700;">0 — EXACT</span></div>
+        <div class="calc-line"><span class="cl">Bit 27 — Direction</span><span class="cv">0 — (not applicable)</span></div>
+        <div class="calc-line"><span class="cl">Decoded value</span><span class="cv" style="color:#6AC87E;">${fmt(decoded)}</span></div>
+        <div class="calc-line"><span class="cl">Error</span><span class="cv" style="color:#6AC87E;">0 — no precision loss</span></div>
+        <div class="calc-line"><span class="cl">Min step at SF×${sf} DP=${dp}</span><span class="cv">${fmt(step)}</span></div>
+      </div>`;
+  } else {
+    const roundedUp = error > 0;  // decoded > target means we rounded N up
+    const errAbs = Math.abs(error);
+    const errPct = (errAbs / Math.abs(target) * 100).toFixed(6);
+    roundHTML = `
+      <div style="background:rgba(224,96,96,0.08);border-left:3px solid #E06060;padding:12px 16px;margin-top:4px;">
+        <div class="calc-line"><span class="cl">Bit 26 — Rounding flag</span><span class="ce" style="font-weight:700;">1 — ROUNDED</span></div>
+        <div class="calc-line"><span class="cl">Bit 27 — Direction</span><span class="ce">${roundedUp ? '1 — rounded UP (ceiling)' : '0 — rounded DOWN (floor)'}</span></div>
+        <div class="calc-line"><span class="cl">Target value</span><span class="cv">${fmt(target)}</span></div>
+        <div class="calc-line"><span class="cl">Decoded value</span><span class="ce">${fmt(decoded)}</span></div>
+        <div class="calc-line"><span class="cl">Rounding error</span><span class="ce">${roundedUp ? '+' : ''}${fmt(error)} &nbsp;(${errPct}%)</span></div>
+        <div class="calc-line"><span class="cl">Min step at SF×${sf} DP=${dp}</span><span class="cv">${fmt(step)} &nbsp;← increase DP or reduce SF to shrink error</span></div>
+      </div>`;
+  }
+
+  out.innerHTML = `
+    <div class="calc-line"><span class="cl">Auto DP</span><span class="cv">${dp} decimal place${dp!==1?'s':''}</span></div>
+    <div class="calc-line"><span class="cl">Stored integer N</span><span class="cr">${N.toLocaleString()}</span><span class="cv" style="margin-left:12px;">(${hexN})</span></div>
+    <hr class="calc-divider">
+    <div class="calc-line"><span class="cl">A — bits 1–${25-S}</span><span class="cb">${binA}</span><span class="cv" style="margin-left:10px;">= ${A}</span></div>
+    <div class="calc-line"><span class="cl">r — bits ${26-S}–25</span><span class="cb">${binR}</span><span class="cv" style="margin-left:10px;">= ${r}</span></div>
+    <div class="calc-line" style="margin-top:4px;"><span class="cl">Verify</span><span class="cv">${A}×${pow2S} + ${r} = ${A*pow2S+r}</span></div>
+    <hr class="calc-divider" style="margin-top:12px;">
+    ${roundHTML}
+    <div class="calc-line" style="margin-top:10px;"><span class="cl">Max at these settings</span><span class="cv">${fmt(maxVal)}</span></div>
+  `;
+}
+['ve-target','ve-sf','ve-s'].forEach(id =>
+  document.getElementById(id).addEventListener('input', updateVE)
+);
+updateVE();
+</script>
+</body>
+</html>

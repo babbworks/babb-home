@@ -1,0 +1,970 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Compound Mode — BitPads Documentation</title>
+<link rel="stylesheet" href="bp-style.css">
+<style>
+/* ── Compound Mode page-specific ── */
+
+/* Decoder table: coloured row variants */
+.decode-table td.action-post   { color: var(--nasa-teal); font-weight: 600; }
+.decode-table td.action-hold   { color: var(--nasa-gold); font-weight: 600; }
+.decode-table td.action-close  { color: #6AC87E; font-weight: 600; }
+.decode-table td.action-cont   { color: #7ECEF4; font-weight: 600; }
+
+/* Scenario comparison table cell colours */
+.tbl-strong { color: #6AC87E; font-weight: 600; }
+.tbl-weak   { color: var(--nasa-gold); font-weight: 500; }
+.tbl-med    { color: #7ECEF4; font-weight: 500; }
+
+/* Compare table override for 4-column layout */
+.compare-4 {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  gap: 1px; background: var(--rule);
+  border: 1px solid var(--rule); margin: 20px 0;
+}
+@media (max-width: 800px) { .compare-4 { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 500px) { .compare-4 { grid-template-columns: 1fr; } }
+.compare-4 > div { background: var(--bg-panel); padding: 20px; }
+.compare-4 h4 {
+  font-family: var(--mono); font-size: 9px;
+  text-transform: uppercase; letter-spacing: 0.1em;
+  margin: 0 0 10px; color: var(--ink-faint);
+}
+.compare-4 .c4-val {
+  font-family: var(--display); font-weight: 700;
+  font-size: 22px; text-transform: uppercase;
+  color: var(--nasa-blue); margin-bottom: 6px;
+}
+.compare-4 .c4-label {
+  font-size: 12.5px; color: var(--ink-soft);
+  line-height: 1.45; margin: 0;
+}
+
+/* Layer-2 compound prefix display */
+.prefix-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1px; background: var(--rule);
+  border: 1px solid var(--rule); margin: 20px 0;
+}
+@media (max-width: 600px) { .prefix-grid { grid-template-columns: repeat(2,1fr); } }
+.prefix-cell {
+  background: var(--bg-panel); padding: 18px 14px;
+}
+.prefix-bits {
+  font-family: var(--mono); font-weight: 700;
+  font-size: 20px; color: var(--nasa-blue);
+  margin-bottom: 5px; letter-spacing: 0.1em;
+}
+.prefix-name {
+  font-family: var(--display); font-weight: 600;
+  font-size: 13px; text-transform: uppercase;
+  letter-spacing: 0.04em; margin-bottom: 6px;
+}
+.prefix-desc { font-size: 12px; color: var(--ink-soft); margin: 0; line-height: 1.4; }
+
+/* Inline note style */
+p.small.soft { max-width: 72ch; }
+
+/* Section intro lead cap */
+.intro-rule {
+  display: flex; flex-wrap: wrap; gap: 16px 32px;
+  padding: 18px 0; margin-bottom: 4px;
+  border-top: 1px solid var(--rule-soft);
+  border-bottom: 1px solid var(--rule-soft);
+  font-family: var(--mono); font-size: 11px;
+  color: var(--ink-faint);
+}
+.intro-rule dt { text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 2px; }
+.intro-rule dd { margin: 0; color: var(--ink); font-family: var(--sans); font-size: 13px; }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="index.html">
+      <span class="brand-mark">BP</span>
+      <span class="brand-name">BitPads Protocol</span>
+    </a>
+    <nav class="topnav">
+      <a href="overview.html">Overview</a>
+      <a href="bitpads-v2.html">BitPads v2</a>
+      <a href="bitledger.html" class="active">BitLedger</a>
+      <a href="universal-domain.html">Universal Domain</a>
+      <div class="nav-group">
+        <a href="enhancement-grammar.html">Enhancement</a>
+        <div class="nav-dropdown">
+          <a href="enhancement-grammar.html">Grammar &amp; Signal Slots</a>
+          <a href="enhancement-commands.html">Commands &amp; Context</a>
+          <a href="enhancement-telegraph-1.html">Telegraph Emulation I</a>
+          <a href="enhancement-telegraph-2.html">Telegraph Emulation II</a>
+          <a href="enhancement-nesting.html">Nesting &amp; Overhead</a>
+        </div>
+      </div>
+      <a href="compound-mode.html">Compound Mode</a>
+      <a href="engineering.html">Engineering</a>
+      <a href="guide.html">Guide</a>
+      <a href="cli.html">CLI</a>
+      <a href="reference.html">Reference</a>
+    </nav>
+  </div>
+</header>
+
+<div class="page">
+  <aside class="sidebar">
+    <p class="toc-label">On This Page</p>
+    <ul class="toc">
+      <li><a href="#overview" class="active">Overview</a></li>
+      <li><a href="#marker">1111 Continuation Marker</a></li>
+      <li><a href="#subtypes">Continuation Sub-Types</a></li>
+      <li><a href="#completeness">Completeness Bit</a></li>
+      <li><a href="#examples">Worked Examples</a></li>
+      <li><a href="#session-config">Session Config Extension</a></li>
+      <li><a href="#v1-vs-v2">v1 vs v2 Tradeoff</a></li>
+      <li><a href="#category-1101">Category 1101 Workaround</a></li>
+      <li><a href="#error-detection">Error Detection</a></li>
+    </ul>
+  </aside>
+
+  <main>
+
+    <!-- ── OVERVIEW ── -->
+    <section id="overview">
+      <p class="eyebrow">BitLedger v3.0 · Design Note</p>
+      <h1>Compound<br>Mode</h1>
+      <p class="pullquote">The 1111 account pair code — normally a protocol error — becomes a continuation marker that links records into one logical multi-leg transaction.</p>
+      <p class="lead">Compound mode is a session-level permission flag. When it is off, 1111 in the account pair field (bits 33–36) is an unambiguous corruption signal. When it is on, 1111 is a valid continuation marker that binds the current record to its predecessor as part of one indivisible logical event.</p>
+      <p>Real-world transactions frequently require more than one accounting entry to be described completely. A retail sale simultaneously generates revenue and removes inventory. An engine firing simultaneously consumes propellant and creates a thermal load obligation. Without compound mode the protocol cannot enforce that both records post together — or not at all. With compound mode, the wire format enforces the link.</p>
+
+      <div class="intro-rule">
+        <div><dt>Account pair 1111</dt><dd>Compound Continuation — requires compound mode ON at session level</dd></div>
+        <div><dt>Activation</dt><dd>Session Config Extension bit 4 — declared once at session open</dd></div>
+        <div><dt>Error detection</dt><dd>When OFF, 1111 is a free sentinel: any record with bits 33–36 = 1111 is unambiguously corrupt</dd></div>
+        <div><dt>Design note</dt><dd>Documents the v1→v2 tradeoff: per-batch ctrl byte removed, replaced by session-level declaration</dd></div>
+      </div>
+
+      <div class="notice">
+        <p><strong>Session-level only:</strong> Compound mode cannot be activated per-record or per-batch in standard v2 operation. It must be declared in the Session Config Extension byte at session open. The per-batch toggle capability from v1 is available via a Category 1101 Context Declaration workaround — at a cost of 3 bytes per toggle versus 1 in v1.</p>
+      </div>
+    </section>
+
+    <!-- ── 1111 CONTINUATION MARKER ── -->
+    <section id="marker">
+      <p class="eyebrow">Account Pair Field · Bits 33–36</p>
+      <h2>The 1111 Continuation Marker</h2>
+      <p>The account pair field occupies bits 33–36 of the 40-bit BitLedger Layer 3 record. It encodes one of 16 possible values. Values 0000 through 1101 represent the 14 defined standard account pairs. Value 1110 is the Correction/Void pair. Value 1111 is reserved — normally a protocol error — and becomes the Compound Continuation marker when compound mode is active.</p>
+      <p>The 1111 marker carries a single semantic instruction to the decoder: <em>do not post this record independently. Link it to the record that preceded it. Post both together, or neither.</em> When a 1111 record arrives, the decoder holds it against the pending compound group and waits for the group to close before any record in the group is posted.</p>
+
+      <div class="bit-display">
+        <div class="bit-display-label">BitLedger Layer 3 — Accounting Block — Bits 33–40 — Account pair = 1111 (Compound Continuation)</div>
+        <div class="bit-cells">
+          <div class="bit-cell account" data-layer="l3" data-tooltip="Bit 33: Account pair high bit. 1 = pair is in range 1000–1111.">
+            <span class="bit-pos">33</span>
+            <span class="bit-val on">1</span>
+            <span class="bit-name">Acct<br>Pair</span>
+          </div>
+          <div class="bit-cell account" data-layer="l3" data-tooltip="Bit 34: Account pair bit 2. Together with bit 33 = 11.">
+            <span class="bit-pos">34</span>
+            <span class="bit-val on">1</span>
+            <span class="bit-name">Acct<br>Pair</span>
+          </div>
+          <div class="bit-cell account" data-layer="l3" data-tooltip="Bit 35: Account pair bit 3. 1111 = Compound Continuation.">
+            <span class="bit-pos">35</span>
+            <span class="bit-val on">1</span>
+            <span class="bit-name">Acct<br>Pair</span>
+          </div>
+          <div class="bit-cell account" data-layer="l3" data-tooltip="Bit 36: Account pair low bit. 1111 complete — this is the continuation marker.">
+            <span class="bit-pos">36</span>
+            <span class="bit-val on">1</span>
+            <span class="bit-name">Acct<br>Pair</span>
+          </div>
+          <div class="bit-cell flag-f" data-layer="l3" data-tooltip="Bit 37: Sub-type high bit. In a 1111 record these bits carry continuation sub-type, not direction mirror.">
+            <span class="bit-pos">37</span>
+            <span class="bit-val off">0</span>
+            <span class="bit-name">Sub-<br>Type</span>
+          </div>
+          <div class="bit-cell flag-f" data-layer="l3" data-tooltip="Bit 38: Sub-type low bit. 00 = Standard continuation.">
+            <span class="bit-pos">38</span>
+            <span class="bit-val off">0</span>
+            <span class="bit-name">Sub-<br>Type</span>
+          </div>
+          <div class="bit-cell flag-f" data-layer="l3" data-tooltip="Bit 39: Completeness. 0 = compound group closed (post all held). 1 = more 1111 records follow.">
+            <span class="bit-pos">39</span>
+            <span class="bit-val off">0</span>
+            <span class="bit-name">Comp-<br>lete</span>
+          </div>
+          <div class="bit-cell reserved" data-layer="l3" data-tooltip="Bit 40: Reserved — transmits as 1.">
+            <span class="bit-pos">40</span>
+            <span class="bit-val on">1</span>
+            <span class="bit-name">Rsv</span>
+          </div>
+        </div>
+        <div class="bit-legend">
+          <span class="legend-item"><span class="legend-swatch account"></span> Account pair / archetype (bits 33–36)</span>
+          <span class="legend-item"><span class="legend-swatch flag-f"></span> Flag / sub-type / completeness (bits 37–39)</span>
+          <span class="legend-item"><span class="legend-swatch reserved"></span> Reserved</span>
+          <span class="legend-item" style="margin-left:12px;color:var(--ink-faint);">Hover cells for field detail · Bottom strip = layer (L3 = orange)</span>
+        </div>
+      </div>
+
+      <p>A 3-record compound transaction: an opening debit leg declares itself partial (completeness = 1, account pair ≠ 1111), a 1111 continuation follows (also partial if more legs are pending), and a final closing record (completeness = 0, account pair ≠ 1111) closes the group and triggers posting of all held records.</p>
+
+      <div class="printout">
+        <div class="ph">────────────────────────────────────────────────────────</div>
+        <div class="ph"> 3-RECORD COMPOUND TRANSACTION — WIRE SEQUENCE</div>
+        <div class="ph">────────────────────────────────────────────────────────</div>
+        <div><span class="pl">Record 1    </span><span class="pv">Account pair = 0100  (Op Income / Asset — debit leg)</span></div>
+        <div><span class="pl">            </span><span class="pb">bits 33-36 = 0 1 0 0</span><span class="pc">  ← standard pair</span></div>
+        <div><span class="pl">            </span><span class="pv">Completeness (bit 39) = 1  (Partial — continuation follows)</span></div>
+        <div><span class="pl">            </span><span class="pc">→ Decoder: enter compound watch, hold Record 1, expect 1111</span></div>
+        <div class="ph">  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·</div>
+        <div><span class="pl">Record 2    </span><span class="pv">Account pair = 1111  (Compound Continuation marker)</span></div>
+        <div><span class="pl">            </span><span class="pb">bits 33-36 = 1 1 1 1</span><span class="pc">  ← continuation</span></div>
+        <div><span class="pl">            </span><span class="pv">Sub-type (bits 37-38) = 00  (Standard continuation)</span></div>
+        <div><span class="pl">            </span><span class="pv">Completeness (bit 39) = 1  (Partial — more follows)</span></div>
+        <div><span class="pl">            </span><span class="pc">→ Decoder: append to group, still holding, expect next</span></div>
+        <div class="ph">  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·</div>
+        <div><span class="pl">Record 3    </span><span class="pv">Account pair = 0110  (Op Expense / Asset — credit leg)</span></div>
+        <div><span class="pl">            </span><span class="pb">bits 33-36 = 0 1 1 0</span><span class="pc">  ← standard pair, closes group</span></div>
+        <div><span class="pl">            </span><span class="pv">Completeness (bit 39) = 0  (Full — compound group closed)</span></div>
+        <div><span class="pl">            </span><span class="pg">→ Decoder: group closed. Post Records 1 + 2 + 3 together.</span></div>
+        <div class="ph">────────────────────────────────────────────────────────</div>
+        <div><span class="pl">Post rule   </span><span class="pg">All three records post atomically, or none post.</span></div>
+        <div><span class="pl">Group ID    </span><span class="pv">Record Separator value at time of group open (Record 1)</span></div>
+        <div class="ph">────────────────────────────────────────────────────────</div>
+      </div>
+    </section>
+
+    <!-- ── SUB-TYPES ── -->
+    <section id="subtypes">
+      <p class="eyebrow">Bits 37–38 When Account Pair = 1111</p>
+      <h2>Continuation Sub-Types</h2>
+      <p>When the account pair field is 1111, bits 37–38 carry the continuation sub-type rather than their standard role as direction/status mirrors. Four sub-types are defined. The sub-type qualifies the nature of the link between the current record and its predecessor — whether it is a standard additional leg, an error correction, a reversal, or a cross-batch continuation.</p>
+
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Bits 37–38</th>
+            <th>Sub-type</th>
+            <th>Meaning</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="xrow" data-drawer="sub-00">
+            <td><code>00</code> <span class="xrow-indicator">▾</span></td>
+            <td>Standard</td>
+            <td>Normal linked entry — next leg of the same event. COGS entry, contra, paired leg.</td>
+          </tr>
+          <tr class="xdrawer" id="sub-00">
+            <td colspan="3">
+              <div class="xdrawer-inner">
+                <div class="xdrawer-grid">
+                  <div class="xdrawer-section">
+                    <h5>Standard Continuation</h5>
+                    <p>The most common sub-type. This record is the next required leg of the same economic or physical event that opened the compound group. The records share one logical identity and must post together.</p>
+                    <p>Example: Record A = Sale revenue recognised. Record B (1111, sub-type 00) = COGS debit. Both legs of one retail transaction.</p>
+                  </div>
+                  <div class="xdrawer-section">
+                    <h5>Bit Pattern</h5>
+                    <div class="xdrawer-bits">
+                      <div class="xdrawer-bit" style="border-top-color:var(--bit-account);">1</div>
+                      <div class="xdrawer-bit" style="border-top-color:var(--bit-account);">1</div>
+                      <div class="xdrawer-bit" style="border-top-color:var(--bit-account);">1</div>
+                      <div class="xdrawer-bit" style="border-top-color:var(--bit-account);">1</div>
+                      <div class="xdrawer-bit" style="border-top-color:var(--bit-flag);">0</div>
+                      <div class="xdrawer-bit" style="border-top-color:var(--bit-flag);">0</div>
+                      <div class="xdrawer-bit" style="border-top-color:var(--bit-flag);">·</div>
+                      <div class="xdrawer-bit" style="border-top-color:var(--bit-reserved);">1</div>
+                    </div>
+                    <p>Bits 33–36 = 1111. Bits 37–38 = 00. Bit 39 = completeness (0=close, 1=more). Bit 40 = reserved.</p>
+                  </div>
+                </div>
+              </div>
+            </td>
+          </tr>
+          <tr class="xrow" data-drawer="sub-01">
+            <td><code>01</code> <span class="xrow-indicator">▾</span></td>
+            <td>Correcting</td>
+            <td>Error correction leg — this record corrects a specific error in the preceding record.</td>
+          </tr>
+          <tr class="xdrawer" id="sub-01">
+            <td colspan="3">
+              <div class="xdrawer-inner">
+                <div class="xdrawer-grid">
+                  <div class="xdrawer-section">
+                    <h5>Correcting Continuation</h5>
+                    <p>This record directly corrects a field error in the preceding record. The compound group holds both the errored record and its correction. Neither posts independently. When the group closes the decoder applies the correction before posting the corrected value.</p>
+                    <p>Distinct from account pair 1110 (Correction/Void) which operates at the single-record level. This sub-type operates within a compound group.</p>
+                  </div>
+                  <div class="xdrawer-section">
+                    <h5>Bit Pattern</h5>
+                    <div class="xdrawer-bits">
+                      <div class="xdrawer-bit" style="border-top-color:var(--bit-account);">1</div>
+                      <div class="xdrawer-bit" style="border-top-color:var(--bit-account);">1</div>
+                      <div class="xdrawer-bit" style="border-top-color:var(--bit-account);">1</div>
+                      <div class="xdrawer-bit" style="border-top-color:var(--bit-account);">1</div>
+                      <div class="xdrawer-bit on" style="border-top-color:var(--bit-flag);">0</div>
+                      <div class="xdrawer-bit on" style="border-top-color:var(--bit-flag);">1</div>
+                      <div class="xdrawer-bit" style="border-top-color:var(--bit-flag);">·</div>
+                      <div class="xdrawer-bit" style="border-top-color:var(--bit-reserved);">1</div>
+                    </div>
+                    <p>Bits 37–38 = 01. This is the error correction leg of the compound group.</p>
+                  </div>
+                </div>
+              </div>
+            </td>
+          </tr>
+          <tr class="xrow" data-drawer="sub-10">
+            <td><code>10</code> <span class="xrow-indicator">▾</span></td>
+            <td>Reversal</td>
+            <td>Full reversal — this record fully reverses the preceding record in the group.</td>
+          </tr>
+          <tr class="xdrawer" id="sub-10">
+            <td colspan="3">
+              <div class="xdrawer-inner">
+                <div class="xdrawer-grid">
+                  <div class="xdrawer-section">
+                    <h5>Reversal Continuation</h5>
+                    <p>The current record is a full reversal of the immediately preceding record in the compound group. The sign of all value fields is inverted. The compound group holds both the original record and its reversal. When closed, both records post together, netting to zero for the reversed quantity.</p>
+                    <p>Used when a transaction must be partially unwound within the same posting cycle without losing audit trail of what was done.</p>
+                  </div>
+                  <div class="xdrawer-section">
+                    <h5>Bit Pattern</h5>
+                    <div class="xdrawer-bits">
+                      <div class="xdrawer-bit" style="border-top-color:var(--bit-account);">1</div>
+                      <div class="xdrawer-bit" style="border-top-color:var(--bit-account);">1</div>
+                      <div class="xdrawer-bit" style="border-top-color:var(--bit-account);">1</div>
+                      <div class="xdrawer-bit" style="border-top-color:var(--bit-account);">1</div>
+                      <div class="xdrawer-bit on" style="border-top-color:var(--bit-flag);">1</div>
+                      <div class="xdrawer-bit" style="border-top-color:var(--bit-flag);">0</div>
+                      <div class="xdrawer-bit" style="border-top-color:var(--bit-flag);">·</div>
+                      <div class="xdrawer-bit" style="border-top-color:var(--bit-reserved);">1</div>
+                    </div>
+                    <p>Bits 37–38 = 10. Full reversal of the preceding group record.</p>
+                  </div>
+                </div>
+              </div>
+            </td>
+          </tr>
+          <tr class="xrow" data-drawer="sub-11">
+            <td><code>11</code> <span class="xrow-indicator">▾</span></td>
+            <td>Cross-batch</td>
+            <td>Continuation spans a batch boundary — this record links to the prior batch's open compound group.</td>
+          </tr>
+          <tr class="xdrawer" id="sub-11">
+            <td colspan="3">
+              <div class="xdrawer-inner">
+                <div class="xdrawer-grid">
+                  <div class="xdrawer-section">
+                    <h5>Cross-Batch Continuation</h5>
+                    <p>The rarest sub-type. A compound group that opened in a previous batch — whose records are already held by the decoder — is continued by this record in a new batch. The batch boundary does not close the group. The group identity from the prior batch is carried forward.</p>
+                    <p>Required when a long-running multi-leg transaction spans batch boundaries. The decoder must be stateful across batches when this sub-type is present.</p>
+                  </div>
+                  <div class="xdrawer-section">
+                    <h5>Bit Pattern</h5>
+                    <div class="xdrawer-bits">
+                      <div class="xdrawer-bit" style="border-top-color:var(--bit-account);">1</div>
+                      <div class="xdrawer-bit" style="border-top-color:var(--bit-account);">1</div>
+                      <div class="xdrawer-bit" style="border-top-color:var(--bit-account);">1</div>
+                      <div class="xdrawer-bit" style="border-top-color:var(--bit-account);">1</div>
+                      <div class="xdrawer-bit on" style="border-top-color:var(--bit-flag);">1</div>
+                      <div class="xdrawer-bit on" style="border-top-color:var(--bit-flag);">1</div>
+                      <div class="xdrawer-bit" style="border-top-color:var(--bit-flag);">·</div>
+                      <div class="xdrawer-bit" style="border-top-color:var(--bit-reserved);">1</div>
+                    </div>
+                    <p>Bits 37–38 = 11. Cross-batch continuation — decoder must carry group state across the batch boundary.</p>
+                  </div>
+                </div>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="notice warn">
+        <p><strong>Cross-layer validation note:</strong> In standard (non-1111) records, bits 37–38 mirror bits 29–30 as a cross-layer integrity check. In 1111 records these bits carry sub-type data instead. The cross-layer check does not apply to 1111 records. This is the specific weakening of error detection that compound mode ON introduces.</p>
+      </div>
+    </section>
+
+    <!-- ── COMPLETENESS ── -->
+    <section id="completeness">
+      <p class="eyebrow">Layer 3 Bit 39</p>
+      <h2>The Completeness Bit</h2>
+      <p>The Completeness bit (Layer 3 bit 39) works in conjunction with the 1111 account pair to create unambiguous group boundaries. It is the primary signal the decoder uses to determine whether a compound group is open, ongoing, or closed.</p>
+      <p>When a standard record (account pair ≠ 1111) has Completeness = 1 (Partial), the decoder enters compound watch — it holds that record pending and waits for a 1111 continuation. When a 1111 record has Completeness = 0 (Full), the group closes and all held records post together.</p>
+      <p>The two bits interact across the four possible combinations to produce four distinct decoder actions:</p>
+
+      <table class="data-table decode-table">
+        <thead>
+          <tr>
+            <th>Completeness (bit 39)</th>
+            <th>Account Pair</th>
+            <th>Decoder Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>0</code> — Full</td>
+            <td>Any standard pair (≠ 1111)</td>
+            <td class="action-post">Standalone record. Post immediately.</td>
+          </tr>
+          <tr>
+            <td><code>1</code> — Partial</td>
+            <td>Any standard pair (≠ 1111)</td>
+            <td class="action-hold">Enter compound watch. Hold record. Expect 1111 next.</td>
+          </tr>
+          <tr>
+            <td><code>0</code> — Full</td>
+            <td>1111 (Compound Continuation)</td>
+            <td class="action-close">Group closed. Post all held records atomically.</td>
+          </tr>
+          <tr>
+            <td><code>1</code> — Partial</td>
+            <td>1111 (Compound Continuation)</td>
+            <td class="action-cont">Compound continues. Append to group. More 1111 records follow.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="notice">
+        <p><strong>Conservation check timing:</strong> In standard (non-compound) records the conservation invariant — debits equal credits — is checked per record. In compound mode the conservation invariant is checked per logical transaction, not per record. Each individual record in a compound group is permitted to be unbalanced. The balance check runs when the group closes (completeness = 0 on a non-1111 record). This is the correct behaviour: a sale record showing $499.90 of revenue is not balanced on its own; it only balances when the $499.90 COGS record is included in the same posting.</p>
+      </div>
+    </section>
+
+    <!-- ── WORKED EXAMPLES ── -->
+    <section id="examples">
+      <p class="eyebrow">Full Bit-Field Traces</p>
+      <h2>Worked Examples</h2>
+      <p>Two worked examples showing compound mode in use: a financial payment split across three accounts, and an engineering power transfer between satellite nodes. Both use the same wire format. The semantic interpretation differs only in the account pair field and quantity type.</p>
+
+      <h3>Financial Compound — Sale with COGS</h3>
+      <p>A retail sale simultaneously generates revenue (credit to Op Income / Asset pair) and removes inventory (debit to Op Expense / Asset pair). These are one economic event that requires two accounting entries. Compound mode links them: either both post, or neither does.</p>
+
+      <div class="printout">
+        <div class="ph">────────────────────────────────────────────────────────────────</div>
+        <div class="ph"> FINANCIAL COMPOUND — RETAIL SALE + COGS — 3-RECORD GROUP</div>
+        <div class="ph">────────────────────────────────────────────────────────────────</div>
+        <div><span class="pc">─── RECORD 1 — Opening leg (Revenue recognition) ───</span></div>
+        <div><span class="pl">Account pair   </span><span class="pv">0100  (Op Income / Asset)</span></div>
+        <div><span class="pl">Bit 33-36      </span><span class="pb">0 1 0 0</span></div>
+        <div><span class="pl">Completeness   </span><span class="pv">1  (Partial — continuation follows)</span></div>
+        <div><span class="pl">Value          </span><span class="pv">$499.90  (sale price)</span></div>
+        <div><span class="pl">Decoder action </span><span class="pg">Enter compound watch. Hold Record 1. Expect 1111.</span></div>
+        <div class="ph">  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·</div>
+        <div><span class="pc">─── RECORD 2 — 1111 Continuation (COGS debit) ───</span></div>
+        <div><span class="pl">Account pair   </span><span class="pv">1111  (Compound Continuation marker)</span></div>
+        <div><span class="pl">Bit 33-36      </span><span class="pb">1 1 1 1</span></div>
+        <div><span class="pl">Sub-type 37-38 </span><span class="pb">0 0</span><span class="pc">  Standard linked entry</span></div>
+        <div><span class="pl">Completeness   </span><span class="pv">1  (Partial — more follows)</span></div>
+        <div><span class="pl">Value          </span><span class="pv">$180.00  (cost of goods)</span></div>
+        <div><span class="pl">Decoder action </span><span class="pg">Append to group. Still holding. Expect next.</span></div>
+        <div class="ph">  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·</div>
+        <div><span class="pc">─── RECORD 3 — Closing leg (Tax payable) ───</span></div>
+        <div><span class="pl">Account pair   </span><span class="pv">0110  (Liability / Asset pair)</span></div>
+        <div><span class="pl">Bit 33-36      </span><span class="pb">0 1 1 0</span></div>
+        <div><span class="pl">Completeness   </span><span class="pv">0  (Full — group closed)</span></div>
+        <div><span class="pl">Value          </span><span class="pv">$319.90  (retained / tax deferred)</span></div>
+        <div><span class="pl">Decoder action </span><span class="pg">Group closed. Post Records 1 + 2 + 3 atomically.</span></div>
+        <div class="ph">────────────────────────────────────────────────────────────────</div>
+        <div><span class="pl">Conservation   </span><span class="pg">$499.90 debit = $180.00 + $319.90 credit  ✓  balanced</span></div>
+        <div><span class="pl">Check timing   </span><span class="pv">Runs at group close (Record 3), not per-record</span></div>
+        <div><span class="pl">Audit trail    </span><span class="pv">All three records share group ID — Record Separator at Record 1</span></div>
+        <div class="ph">────────────────────────────────────────────────────────────────</div>
+      </div>
+
+      <h3>Engineering Compound — Satellite Power Transfer</h3>
+      <p>In the Universal Domain, a power transfer between satellites via a relay node requires three flow records: a debit from the source satellite, an intermediate relay node record, and a credit to the destination satellite. The same 1111 marker and compound mode permission apply. Only the semantic interpretation of the account pair field changes — here it encodes Universal Domain flow archetypes.</p>
+
+      <div class="printout">
+        <div class="ph">────────────────────────────────────────────────────────────────</div>
+        <div class="ph"> ENGINEERING COMPOUND — 3-NODE POWER TRANSFER (WATT-HOURS)</div>
+        <div class="ph">────────────────────────────────────────────────────────────────</div>
+        <div><span class="pc">─── RECORD 1 — Satellite A (Source debit) ───</span></div>
+        <div><span class="pl">Archetype      </span><span class="pv">0001  (Source-to-Sink flow)</span></div>
+        <div><span class="pl">Bit 33-36      </span><span class="pb">0 0 0 1</span></div>
+        <div><span class="pl">Completeness   </span><span class="pv">1  (Partial — relay node record follows)</span></div>
+        <div><span class="pl">Quantity type  </span><span class="pv">Energy — watt-hours</span></div>
+        <div><span class="pl">Value          </span><span class="pv">847.50 Wh  (dispatched from Satellite A)</span></div>
+        <div><span class="pl">Decoder action </span><span class="pg">Enter compound watch. Hold Record 1.</span></div>
+        <div class="ph">  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·</div>
+        <div><span class="pc">─── RECORD 2 — Relay Node (1111 Continuation / intermediate) ───</span></div>
+        <div><span class="pl">Account pair   </span><span class="pv">1111  (Compound Continuation marker)</span></div>
+        <div><span class="pl">Bit 33-36      </span><span class="pb">1 1 1 1</span></div>
+        <div><span class="pl">Sub-type 37-38 </span><span class="pb">0 0</span><span class="pc">  Standard linked entry</span></div>
+        <div><span class="pl">Completeness   </span><span class="pv">1  (Partial — destination record follows)</span></div>
+        <div><span class="pl">Value          </span><span class="pv">0.00 Wh  (relay node — pass-through, no storage)</span></div>
+        <div><span class="pl">Decoder action </span><span class="pg">Append relay record to group. Keep holding.</span></div>
+        <div class="ph">  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·</div>
+        <div><span class="pc">─── RECORD 3 — Satellite B (Destination credit, group close) ───</span></div>
+        <div><span class="pl">Archetype      </span><span class="pv">0001  (Source-to-Sink — credit side)</span></div>
+        <div><span class="pl">Bit 33-36      </span><span class="pb">0 0 0 1</span></div>
+        <div><span class="pl">Completeness   </span><span class="pv">0  (Full — group closed)</span></div>
+        <div><span class="pl">Value          </span><span class="pv">847.50 Wh  (received at Satellite B)</span></div>
+        <div><span class="pl">Decoder action </span><span class="pg">Group closed. Post all three records atomically.</span></div>
+        <div class="ph">────────────────────────────────────────────────────────────────</div>
+        <div><span class="pl">Conservation   </span><span class="pg">847.50 Wh out = 847.50 Wh in  ✓  balanced (lossless model)</span></div>
+        <div><span class="pl">Wire format    </span><span class="pv">Byte-for-byte identical to financial example above</span></div>
+        <div><span class="pl">Domain delta   </span><span class="pv">Only bits 33-36 archetype + quantity type code differ</span></div>
+        <div class="ph">────────────────────────────────────────────────────────────────</div>
+      </div>
+    </section>
+
+    <!-- ── SESSION CONFIG ── -->
+    <section id="session-config">
+      <p class="eyebrow">Layer 1 Session Config Extension Byte</p>
+      <h2>Session Config Extension</h2>
+      <p>Compound mode is activated by setting bit 4 of the Session Config Extension byte. This byte is transmitted once at session open, triggered when Layer 1 bit 12 (Session Enhancement Flag) is set or when the opposing convention is non-default. Once transmitted, the compound mode state is fixed for the entire session.</p>
+      <p>The Session Config Extension byte also carries nesting level, opposing convention, and the BitLedger block optional flag. All session-level configuration is read from this single byte at session open — the decoder builds its complete session picture in one step.</p>
+
+      <div class="bit-display">
+        <div class="bit-display-label">Session Config Extension Byte — Compound Mode = Active (bit 4 = 1)</div>
+        <div class="bit-cells">
+          <div class="bit-cell identity" data-layer="l1" data-tooltip="Bits 1-2: Nesting Level Code. 00 = no nesting (flat session).">
+            <span class="bit-pos">1</span>
+            <span class="bit-val off">0</span>
+            <span class="bit-name">Nest<br>Lvl</span>
+          </div>
+          <div class="bit-cell identity" data-layer="l1" data-tooltip="Bit 2: Nesting Level Code low bit.">
+            <span class="bit-pos">2</span>
+            <span class="bit-val off">0</span>
+            <span class="bit-name">Nest<br>Lvl</span>
+          </div>
+          <div class="bit-cell mode" data-layer="l1" data-tooltip="Bit 3: Opposing Convention. 0 = default convention (debit left, credit right).">
+            <span class="bit-pos">3</span>
+            <span class="bit-val off">0</span>
+            <span class="bit-name">Opp.<br>Conv.</span>
+          </div>
+          <div class="bit-cell enhance" data-layer="l1" data-tooltip="Bit 4: Compound Mode Active. 1 = compound mode ON for this session. 1111 account pair is valid.">
+            <span class="bit-pos">4</span>
+            <span class="bit-val on">1</span>
+            <span class="bit-name">Cmpnd<br>Mode</span>
+          </div>
+          <div class="bit-cell mode" data-layer="l1" data-tooltip="Bit 5: BitLedger Block Optional. 0 = BL block required in every record. 1 = BL block may be omitted.">
+            <span class="bit-pos">5</span>
+            <span class="bit-val off">0</span>
+            <span class="bit-name">BL<br>Opt.</span>
+          </div>
+          <div class="bit-cell reserved" data-layer="l1" data-tooltip="Bit 6: Reserved — transmits as 1.">
+            <span class="bit-pos">6</span>
+            <span class="bit-val on">1</span>
+            <span class="bit-name">Rsv</span>
+          </div>
+          <div class="bit-cell reserved" data-layer="l1" data-tooltip="Bit 7: Reserved — transmits as 1.">
+            <span class="bit-pos">7</span>
+            <span class="bit-val on">1</span>
+            <span class="bit-name">Rsv</span>
+          </div>
+          <div class="bit-cell reserved" data-layer="l1" data-tooltip="Bit 8: Reserved — transmits as 1.">
+            <span class="bit-pos">8</span>
+            <span class="bit-val on">1</span>
+            <span class="bit-name">Rsv</span>
+          </div>
+        </div>
+        <div class="bit-legend">
+          <span class="legend-item"><span class="legend-swatch identity"></span> Session identity / nesting</span>
+          <span class="legend-item"><span class="legend-swatch enhance"></span> Compound mode enable (bit 4)</span>
+          <span class="legend-item"><span class="legend-swatch mode"></span> Mode / convention flags</span>
+          <span class="legend-item"><span class="legend-swatch reserved"></span> Reserved (transmit as 1)</span>
+          <span class="legend-item" style="margin-left:12px;color:var(--ink-faint);">Bottom strip = L1 (blue). Hover for detail.</span>
+        </div>
+      </div>
+
+      <table class="data-table" style="margin-top:20px;">
+        <thead>
+          <tr>
+            <th>Bit</th>
+            <th>Field</th>
+            <th>0 = OFF</th>
+            <th>1 = ON</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>1–2</code></td>
+            <td>Nesting Level Code</td>
+            <td>00 = no nesting (flat)</td>
+            <td>01/10/11 = nesting depth</td>
+          </tr>
+          <tr>
+            <td><code>3</code></td>
+            <td>Opposing Convention</td>
+            <td>Default (debit left)</td>
+            <td>Opposing convention active</td>
+          </tr>
+          <tr>
+            <td><code>4</code></td>
+            <td><strong>Compound Mode Active</strong></td>
+            <td>1111 is a protocol error (free sentinel)</td>
+            <td><strong>1111 is a valid compound continuation</strong></td>
+          </tr>
+          <tr>
+            <td><code>5</code></td>
+            <td>BL Block Optional</td>
+            <td>BL block required in every record</td>
+            <td>BL block may be omitted on some records</td>
+          </tr>
+          <tr>
+            <td><code>6–8</code></td>
+            <td>Reserved</td>
+            <td colspan="2">Transmit as 1. Receiving 0 in reserved bits = protocol error.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- ── V1 VS V2 ── -->
+    <section id="v1-vs-v2">
+      <p class="eyebrow">Architecture Decision</p>
+      <h2>v1 vs v2 Tradeoff</h2>
+      <p>In BitPads Protocol v1.0, compound mode was declared in the BitLedger Context Control byte — a per-batch control record triggered by the Value expect flag. In v2.0 this byte was removed. Compound mode moved to the Session Configuration Extension byte, making it a session-open declaration only.</p>
+      <p>The v1 per-batch byte allowed compound mode to be toggled on a batch-by-batch basis — ON for a batch containing sale+COGS pairs, OFF for the next batch of routine single-entry records. The v2 session-level flag is all-or-nothing for the session.</p>
+
+      <h3>v1 — Per-Batch Control Byte (Removed)</h3>
+      <div class="printout">
+        <div class="ph">─────────────────────────────────────────────────────</div>
+        <div class="ph"> BITLEDGER CONTEXT CONTROL BYTE (v1 — now removed)</div>
+        <div class="ph">─────────────────────────────────────────────────────</div>
+        <div><span class="pl">Byte pattern   </span><span class="pb">0  1 1 0  C  B  R R</span></div>
+        <div><span class="pl">Leading 0      </span><span class="pv">Control record</span></div>
+        <div><span class="pl">Type 110       </span><span class="pv">BitLedger context declaration</span></div>
+        <div><span class="pl">Bit C          </span><span class="pv">Compound mode active (per-batch toggle)</span></div>
+        <div><span class="pl">Bit B          </span><span class="pv">BitLedger block optional</span></div>
+        <div><span class="pl">Bits RR        </span><span class="pv">Reserved = 1</span></div>
+        <div class="ph">  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·</div>
+        <div><span class="pl">Trigger        </span><span class="pv">Meta byte 1 bit 5 = 1 (Value expect flag) AND BL active</span></div>
+        <div><span class="pl">Frequency      </span><span class="pv">Once per batch containing Value records</span></div>
+        <div><span class="pl">Overhead       </span><span class="pv">1 byte per batch — even when compound mode was OFF</span></div>
+        <div class="ph">─────────────────────────────────────────────────────</div>
+        <div><span class="pc">v1 mixed-session behaviour:</span></div>
+        <div><span class="pl">Batch 1        </span><span class="pv">BL ctrl byte: C=0  →  1111 = detectable error</span></div>
+        <div><span class="pl">Batch 2        </span><span class="pv">BL ctrl byte: C=1  →  1111 = valid compound</span></div>
+        <div><span class="pl">Batch 3        </span><span class="pv">BL ctrl byte: C=0  →  1111 = detectable error again</span></div>
+        <div class="ph">─────────────────────────────────────────────────────</div>
+      </div>
+
+      <h3>The Four Tradeoffs</h3>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Dimension</th>
+            <th>v1 Behaviour</th>
+            <th>v2 Behaviour</th>
+            <th>Net impact</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Granularity</strong></td>
+            <td>Per-batch toggle</td>
+            <td>Per-session only</td>
+            <td>Real constraint for mixed sessions. Most deployments unaffected.</td>
+          </tr>
+          <tr>
+            <td><strong>Overhead</strong></td>
+            <td>1 byte per batch (even if compound unused)</td>
+            <td>1 byte per session total</td>
+            <td>Net saving in most sessions. Overhead was universal in v1.</td>
+          </tr>
+          <tr>
+            <td><strong>Flexibility</strong></td>
+            <td>Higher — can toggle mid-session</td>
+            <td>Lower — all-or-nothing</td>
+            <td>Loss of per-batch error detection on non-compound batches in compound-ON sessions.</td>
+          </tr>
+          <tr>
+            <td><strong>Decoder complexity</strong></td>
+            <td>Higher — BL context spread across Layer 1 and per-batch ctrl byte</td>
+            <td>Lower — single read at session open</td>
+            <td>Cleaner decoder. Complete session picture from one byte position.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="notice warn">
+        <p><strong>Why v2 chose session-level:</strong> The v1 per-batch BL ctrl byte added 1 byte of overhead to every batch that contained Value records — whether compound mode was used or not. In sessions where compound mode was never needed (the majority of deployments), this was unconditional overhead on every batch. Moving compound mode to the Session Config Extension byte reduced this to one byte per session, paid once. The per-batch toggle capability is recoverable via Category 1101 for the deployments that genuinely need it.</p>
+      </div>
+
+      <h3>Layer 2 Compound Prefix — Per-Batch Ceiling</h3>
+      <p>The Layer 2 batch header carries the Compound Prefix (bits 46–47), which limits how many compound groups are permitted within a specific batch. This is a capacity ceiling, not a mode toggle — it operates even when session compound mode is ON. Setting bits 46–47 = 00 in a batch header forbids compound groups in that batch without changing session-level mode state.</p>
+
+      <div class="prefix-grid">
+        <div class="prefix-cell">
+          <div class="prefix-bits">00</div>
+          <div class="prefix-name">No Compound</div>
+          <p class="prefix-desc">1111 is a protocol error in this batch even if session compound mode is ON.</p>
+        </div>
+        <div class="prefix-cell">
+          <div class="prefix-bits">01</div>
+          <div class="prefix-name">Up to 3 Groups</div>
+          <p class="prefix-desc">NACK is sent after the 3rd compound group closes within this batch.</p>
+        </div>
+        <div class="prefix-cell">
+          <div class="prefix-bits">10</div>
+          <div class="prefix-name">Up to 7 Groups</div>
+          <p class="prefix-desc">NACK is sent after the 7th compound group closes within this batch.</p>
+        </div>
+        <div class="prefix-cell">
+          <div class="prefix-bits">11</div>
+          <div class="prefix-name">Unlimited</div>
+          <p class="prefix-desc">No ceiling within this batch. All compound groups permitted.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── CATEGORY 1101 WORKAROUND ── -->
+    <section id="category-1101">
+      <p class="eyebrow">Enhancement Sub-Protocol · Category 1101</p>
+      <h2>Category 1101 Workaround</h2>
+      <p>The per-batch compound mode toggling capability removed in v2 can be restored using the Category 1101 Context Declaration mechanism from the Enhancement Sub-Protocol. Category 1101 declares a session parameter update with a specified scope. By setting the scope to "next stream unit" (next batch) and the parameter to compound mode ON, the effect of the v1 per-batch toggle is reproduced within the v2 architecture.</p>
+      <p>The cost is 3 bytes (Meta byte + 2 declaration bytes) versus the v1 approach of 1 byte per batch. This 2-byte overhead is the direct cost of the v2 design choice — recoverable only for deployments that specifically need per-batch compound toggling.</p>
+
+      <div class="printout">
+        <div class="ph">──────────────────────────────────────────────────────────</div>
+        <div class="ph"> CATEGORY 1101 WORKAROUND — PER-BATCH COMPOUND ENABLE</div>
+        <div class="ph">──────────────────────────────────────────────────────────</div>
+        <div><span class="pc">Session open: compound mode = OFF in Session Config Extension</span></div>
+        <div><span class="pc">1111 is a detectable error sentinel for all simple batches.</span></div>
+        <div class="ph">  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·</div>
+        <div><span class="pc">Before a batch requiring compound records:</span></div>
+        <div class="ph"> </div>
+        <div><span class="pl">Byte 1         </span><span class="pb">0 0 0 1 1 1 0 1</span><span class="pc">  Wave, category 1101 (Context Declaration)</span></div>
+        <div><span class="pl">Byte 2         </span><span class="pb">0 1 1 1 0 0 1 1</span></div>
+        <div><span class="pl">  Type nibble  </span><span class="pv">0111  (Update session parameter)</span></div>
+        <div><span class="pl">  Scope nibble </span><span class="pv">0011  (Next stream unit = next batch only)</span></div>
+        <div><span class="pl">Byte 3         </span><span class="pv">Parameter byte — compound mode ON</span></div>
+        <div class="ph"> </div>
+        <div><span class="pl">Total cost     </span><span class="pv">3 bytes  (vs 1 byte in v1)</span></div>
+        <div><span class="pl">Overhead delta </span><span class="pe">+2 bytes per compound batch toggle</span></div>
+        <div class="ph">  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·</div>
+        <div><span class="pc">After that batch closes:</span></div>
+        <div><span class="pl">Scope expires  </span><span class="pg">Automatically — scope was 'next stream unit'</span></div>
+        <div><span class="pl">Mode returns   </span><span class="pg">Compound mode reverts to session default = OFF</span></div>
+        <div><span class="pl">1111 state     </span><span class="pg">Again a detectable error sentinel in subsequent batches</span></div>
+        <div class="ph">──────────────────────────────────────────────────────────</div>
+      </div>
+
+      <h3>Four-Scenario Comparison</h3>
+      <p>The table below shows the four deployment patterns and their compound mode detection behaviour. The Category 1101 workaround (row 4) is the only pattern that achieves per-batch control with strong error detection on non-compound batches in v2.</p>
+
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Scenario</th>
+            <th>Session Compound Mode</th>
+            <th>Batch Compound Prefix</th>
+            <th>1111 Detection</th>
+            <th>Compound Records</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Always-on compound session</td>
+            <td>ON</td>
+            <td>11 (unlimited)</td>
+            <td class="tbl-weak">Weak — 1111 always valid</td>
+            <td class="tbl-strong">YES — all batches</td>
+          </tr>
+          <tr>
+            <td>Never compound (full off)</td>
+            <td>OFF</td>
+            <td>Any</td>
+            <td class="tbl-strong">Strong — 1111 always error</td>
+            <td style="color:var(--nasa-red);">NO — entire session</td>
+          </tr>
+          <tr>
+            <td>Prefix 00 on simple batches</td>
+            <td>ON</td>
+            <td>00 on simple / 11 on compound</td>
+            <td class="tbl-med">Medium — batch-level rejection, not session-level sentinel</td>
+            <td class="tbl-strong">Selective per batch</td>
+          </tr>
+          <tr>
+            <td>Category 1101 workaround</td>
+            <td>OFF at session, ON via 1101</td>
+            <td>11 for compound batches</td>
+            <td class="tbl-strong">Strong on simple batches / normal on compound batches</td>
+            <td class="tbl-strong">Per-batch control restored</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="notice">
+        <p><strong>Recommendation:</strong> For the large majority of deployments, compound mode is a session-level concern and the v2 behaviour is correct and simpler. Declare compound mode at session open. Leave it fixed. The Layer 2 Compound Prefix already provides per-batch ceiling control. Use the Category 1101 workaround only for deployments that specifically need per-batch compound toggling with maximum error detection on non-compound batches — typically high-reliability financial systems on challenged channels. Document it as a named pattern in the deployment profile.</p>
+      </div>
+    </section>
+
+    <!-- ── ERROR DETECTION ── -->
+    <section id="error-detection">
+      <p class="eyebrow">Three-Layer Integrity System</p>
+      <h2>Error Detection in Compound Mode</h2>
+      <p>BitLedger v3.0 uses three independent error detection layers. Compound mode interacts with each layer differently. Understanding these interactions is essential for deploying compound mode on high-reliability or noise-prone channels.</p>
+
+      <h3>Layer 1 — CRC-15 Session Integrity</h3>
+      <p>The CRC-15 covers the entire session including all compound records within it. Compound mode has no effect on CRC-15 operation. The session checksum is computed over all bytes transmitted in the session regardless of whether individual records are 1111 continuations or standard entries. CRC-15 detects all burst errors of 15 bits or fewer, all single-bit and double-bit errors, and all odd-count errors, with no modification for compound mode.</p>
+
+      <div class="notice">
+        <p><strong>CRC-15 is session-wide:</strong> A corrupted compound group record will be caught by CRC-15 at session close just as any other record would be. The CRC-15 layer is equally strong in compound and non-compound sessions. The error detection tradeoff discussed in this document applies only to the cross-layer and sentinel layers below.</p>
+      </div>
+
+      <h3>Layer 2 — Cross-Layer Flag Validation</h3>
+      <p>The cross-layer flag validation checks that bits 29–30 in the session header mirror bits 37–38 in each Layer 3 record. In standard records, bits 37–38 carry direction and status flags that must match their Layer 2 counterparts. This redundancy provides per-record integrity at zero wire cost — any mismatch is a protocol error.</p>
+      <p>In a 1111 compound continuation record, bits 37–38 carry the continuation sub-type (00=standard, 01=correcting, 10=reversal, 11=cross-batch) rather than direction/status mirrors. The cross-layer check therefore does not apply to 1111 records. The second error detection layer is absent for continuation records. This is the specific, bounded weakening that compound mode introduces.</p>
+
+      <div class="printout">
+        <div class="ph">──────────────────────────────────────────────────</div>
+        <div class="ph"> CROSS-LAYER VALIDATION — STANDARD vs 1111 RECORDS</div>
+        <div class="ph">──────────────────────────────────────────────────</div>
+        <div><span class="pc">Standard record (account pair ≠ 1111):</span></div>
+        <div><span class="pl">Bits 29-30     </span><span class="pv">Session header: direction + status flags</span></div>
+        <div><span class="pl">Bits 37-38     </span><span class="pv">Layer 3 record: MUST mirror bits 29-30</span></div>
+        <div><span class="pl">Check          </span><span class="pg">bit29 = bit37 AND bit30 = bit38  →  valid record</span></div>
+        <div><span class="pl">Mismatch       </span><span class="pe">bit29 ≠ bit37 OR bit30 ≠ bit38  →  protocol error</span></div>
+        <div class="ph">  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·</div>
+        <div><span class="pc">1111 compound continuation record:</span></div>
+        <div><span class="pl">Bits 37-38     </span><span class="pv">Carry sub-type (00/01/10/11) — not direction mirrors</span></div>
+        <div><span class="pl">Check          </span><span class="pc">Cross-layer check does NOT apply to 1111 records</span></div>
+        <div><span class="pl">Detection      </span><span class="pe">Layer 2 cross-layer protection absent for 1111 records</span></div>
+        <div><span class="pl">Still active   </span><span class="pg">CRC-15 (Layer 1) covers the 1111 record fully</span></div>
+        <div class="ph">──────────────────────────────────────────────────</div>
+      </div>
+
+      <h3>Layer 3 — The 1111 Sentinel</h3>
+      <p>When compound mode is OFF, the value 1111 in bits 33–36 is unreachable by any valid transmission. If it appears, it is unambiguously the result of a transmission error — a free error detection sentinel that costs nothing in overhead. Any record with bits 33–36 = 1111 is rejected without further analysis.</p>
+      <p>When compound mode is ON, 1111 is a valid code. The sentinel function is surrendered. A corrupted record whose account pair bits happened to flip to 1111 will be processed as a compound continuation. The cross-layer sub-type bits (37–38) may reveal the corruption if the flipped bits produce an inconsistent sub-type, but the strongest form of this layer is gone.</p>
+
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Compound Mode</th>
+            <th>1111 in bits 33–36</th>
+            <th>Cross-layer check</th>
+            <th>CRC-15</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>OFF</td>
+            <td class="tbl-strong">Unambiguous error — reject</td>
+            <td class="tbl-strong">Applies — bit29=bit37, bit30=bit38</td>
+            <td class="tbl-strong">Active — full session coverage</td>
+          </tr>
+          <tr>
+            <td>ON</td>
+            <td class="tbl-weak">Valid continuation — process as 1111</td>
+            <td class="tbl-weak">Absent for 1111 records (sub-type in 37–38)</td>
+            <td class="tbl-strong">Active — full session coverage</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>Conservation Checking — Per Logical Transaction</h3>
+      <p>In standard (non-compound) mode, the conservation invariant — the sum of all signed flows in a record set must equal zero — is checked per record. Each record is a complete double-entry transaction and must balance on its own.</p>
+      <p>In compound mode, individual records in a group are permitted to be unbalanced. The conservation check is deferred to group close. When the final leg closes the group (completeness = 0 on a non-1111 record), the decoder runs the conservation check across all records in the group together. This is the correct behaviour for multi-leg transactions: a $499.90 revenue record does not balance by itself. It only balances when the $499.90 COGS record is included.</p>
+
+      <div class="notice">
+        <p><strong>Why per-logical-transaction checking is correct:</strong> Checking conservation per-record in compound mode would reject every valid compound transaction. The conservation law applies to the complete economic or physical event — not to individual legs of that event. The compound group is the unit of conservation, not the record. The decoder enforces this by holding all group records pending until the group closes and then checking the aggregate balance.</p>
+      </div>
+
+      <div class="printout">
+        <div class="ph">──────────────────────────────────────────────────────</div>
+        <div class="ph"> CONSERVATION CHECK — STANDARD vs COMPOUND MODE</div>
+        <div class="ph">──────────────────────────────────────────────────────</div>
+        <div><span class="pc">Standard mode (compound OFF):</span></div>
+        <div><span class="pl">Check trigger  </span><span class="pv">Per-record — each 40-bit record must balance</span></div>
+        <div><span class="pl">Invariant      </span><span class="pv">∑(signed flows) = 0  per record</span></div>
+        <div><span class="pl">Fail action    </span><span class="pe">Record rejected — encoding error</span></div>
+        <div class="ph">  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·</div>
+        <div><span class="pc">Compound mode (ON, group in progress):</span></div>
+        <div><span class="pl">Check trigger  </span><span class="pv">Per-group — deferred until completeness=0 on non-1111</span></div>
+        <div><span class="pl">Per-record     </span><span class="pc">Not enforced — individual legs may be unbalanced</span></div>
+        <div><span class="pl">Invariant      </span><span class="pv">∑(signed flows across all group records) = 0</span></div>
+        <div><span class="pl">Fail action    </span><span class="pe">Group rejected — conservation violation at group close</span></div>
+        <div class="ph">  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·</div>
+        <div><span class="pc">Example — $499.90 sale + $180.00 COGS:</span></div>
+        <div><span class="pl">Record 1       </span><span class="pc">$499.90 credit — unbalanced on its own</span></div>
+        <div><span class="pl">Record 2 (1111)</span><span class="pc">$180.00 debit  — unbalanced on its own</span></div>
+        <div><span class="pl">Record 3       </span><span class="pc">$319.90 debit  — group close</span></div>
+        <div><span class="pl">Group check    </span><span class="pg">$499.90 = $180.00 + $319.90  ✓  balanced</span></div>
+        <div class="ph">──────────────────────────────────────────────────────</div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div>
+      <div class="footer-group-label">Protocol</div>
+      <ul class="footer-links">
+        <li><a href="bitpads-v2.html">BitPads v2</a></li>
+        <li><a href="bitledger.html">BitLedger v3</a></li>
+        <li><a href="universal-domain.html">Universal Domain</a></li>
+        <li><a href="compound-mode.html">Compound Mode</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-group-label">Enhancement</div>
+      <ul class="footer-links">
+        <li><a href="enhancement-grammar.html">Grammar &amp; Signal Slots</a></li>
+        <li><a href="enhancement-commands.html">Commands &amp; Context</a></li>
+        <li><a href="enhancement-telegraph-1.html">Telegraph Emulation I</a></li>
+        <li><a href="enhancement-telegraph-2.html">Telegraph Emulation II</a></li>
+        <li><a href="enhancement-nesting.html">Nesting &amp; Overhead</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-group-label">Resources</div>
+      <ul class="footer-links">
+        <li><a href="engineering.html">Engineering Applications</a></li>
+        <li><a href="guide.html">Implementation Guide</a></li>
+        <li><a href="cli.html">CLI Tools</a></li>
+        <li><a href="reference.html">Reference &amp; Glossary</a></li>
+      </ul>
+    </div>
+    <div class="footer-copy">
+      BitPads Protocol v2.0<br>
+      BitLedger Protocol v3.0<br>
+      Universal Domain v1.0<br>
+      © BABB
+    </div>
+  </div>
+</footer>
+
+<script>
+// TOC active state via IntersectionObserver
+const secs = document.querySelectorAll('section[id]');
+const tocAs = document.querySelectorAll('.toc a');
+const io = new IntersectionObserver(es => {
+  es.forEach(e => {
+    if (e.isIntersecting) {
+      tocAs.forEach(a => a.classList.remove('active'));
+      const a = document.querySelector(`.toc a[href="#${e.target.id}"]`);
+      if (a) a.classList.add('active');
+    }
+  });
+}, { rootMargin: '-15% 0px -70% 0px' });
+secs.forEach(s => io.observe(s));
+
+// Expandable table rows
+document.querySelectorAll('tr.xrow').forEach(row => {
+  row.addEventListener('click', () => {
+    const did = row.dataset.drawer;
+    const drawer = document.getElementById(did);
+    if (!drawer) return;
+    const open = drawer.classList.contains('open');
+    document.querySelectorAll('tr.xdrawer.open').forEach(d => {
+      d.classList.remove('open');
+      d.previousElementSibling?.classList.remove('open');
+    });
+    if (!open) { drawer.classList.add('open'); row.classList.add('open'); }
+  });
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,1253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nesting &amp; Overhead — BitPads Documentation</title>
+<link rel="stylesheet" href="bp-style.css">
+<style>
+/* ── Page-specific ── */
+
+/* Nesting scenario grid */
+.scenario-grid {
+  display: flex; flex-direction: column; gap: 2px;
+  margin: 20px 0;
+}
+.scenario-row {
+  display: grid;
+  grid-template-columns: 28px 200px 72px 72px 1fr;
+  align-items: stretch;
+  border: 1px solid var(--rule-soft);
+  background: var(--bg-panel);
+}
+.scenario-row.header-row {
+  background: var(--bg-soft);
+  border-bottom: 2px solid var(--nasa-blue);
+}
+.sc-cell {
+  padding: 11px 14px;
+  border-right: 1px solid var(--rule-soft);
+  font-size: 13px; color: var(--ink-soft);
+  display: flex; align-items: center;
+}
+.sc-cell:last-child { border-right: none; }
+.sc-cell.header {
+  font-family: var(--mono); font-size: 9px;
+  text-transform: uppercase; letter-spacing: 0.1em;
+  color: var(--ink-soft); font-weight: normal;
+}
+.sc-num {
+  font-family: var(--mono); font-size: 12px;
+  font-weight: 700; color: white;
+  background: var(--nasa-blue);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.scenario-row.no-push .sc-num { background: var(--ink-faint); }
+.sc-name {
+  font-family: var(--display); font-weight: 600;
+  font-size: 14px; text-transform: uppercase;
+  letter-spacing: 0.04em; color: var(--ink);
+}
+.sc-badge {
+  font-family: var(--mono); font-size: 10px;
+  text-align: center; display: flex; align-items: center; justify-content: center;
+}
+.sc-badge.yes { color: var(--nasa-blue); font-weight: 700; }
+.sc-badge.no  { color: var(--ink-faint); }
+.sc-badge.partial { color: var(--nasa-gold); }
+
+/* Depth pyramid */
+.depth-meter {
+  display: flex; flex-direction: column; gap: 3px;
+  margin: 20px 0; align-items: flex-start;
+}
+.dm-row {
+  display: flex; align-items: center; gap: 12px;
+}
+.dm-bar {
+  height: 28px; background: var(--nasa-blue);
+  border-right: 2px solid var(--nasa-gold);
+  display: flex; align-items: center;
+  padding: 0 14px;
+  font-family: var(--mono); font-size: 10px;
+  font-weight: 700; color: white;
+  flex-shrink: 0;
+  min-width: 40px; justify-content: center;
+}
+.dm-bar.level-1 { width: 90px; }
+.dm-bar.level-2 { width: 160px; }
+.dm-bar.level-4 { width: 230px; }
+.dm-bar.level-ext { width: 300px; background: var(--bit-enhance); }
+.dm-label {
+  font-size: 13px; color: var(--ink-soft);
+}
+.dm-code {
+  font-family: var(--mono); font-size: 10px;
+  color: var(--ink-faint);
+}
+
+/* Stack frame diagram */
+.stack-visual {
+  display: flex; flex-direction: column; gap: 0;
+  margin: 20px 0; border: 1px solid var(--rule);
+  max-width: 520px;
+}
+.sv-frame {
+  background: var(--bg-panel);
+  border-bottom: 1px solid var(--rule-soft);
+  padding: 14px 18px;
+  border-left: 4px solid var(--nasa-blue);
+}
+.sv-frame.inner { border-left-color: var(--nasa-red); background: #FFF9F8; }
+.sv-frame.empty {
+  background: var(--bg-soft);
+  border-left-color: var(--rule);
+  color: var(--ink-faint); font-family: var(--mono); font-size: 11px;
+  text-align: center; padding: 10px;
+}
+.sv-frame:last-child { border-bottom: none; }
+.sv-frame-label {
+  font-family: var(--mono); font-size: 9px;
+  text-transform: uppercase; letter-spacing: 0.12em;
+  color: var(--nasa-red); margin-bottom: 6px;
+}
+.sv-frame .sv-frame-label { color: var(--nasa-blue); }
+.sv-frame.inner .sv-frame-label { color: var(--nasa-red); }
+.sv-fields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px 16px;
+  font-family: var(--mono); font-size: 11px;
+  color: var(--ink-soft);
+}
+.sv-fields span { color: var(--nasa-blue); }
+
+/* Overhead meter */
+.overhead-meter {
+  margin: 24px 0;
+  display: flex; flex-direction: column; gap: 3px;
+}
+.om-row {
+  display: flex; align-items: center; gap: 12px;
+}
+.om-label {
+  font-family: var(--mono); font-size: 11px;
+  min-width: 200px; color: var(--ink-soft); flex-shrink: 0;
+}
+.om-bar-wrap {
+  flex: 1; height: 18px; background: var(--bg-soft);
+  border: 1px solid var(--rule-soft);
+  position: relative; overflow: hidden;
+}
+.om-bar {
+  height: 100%; background: var(--nasa-blue);
+  transition: width .5s;
+}
+.om-bar.secondary { background: var(--bit-enhance); }
+.om-bar.minimal { background: var(--ink-faint); }
+.om-bytes {
+  font-family: var(--mono); font-size: 11px;
+  color: var(--ink-faint); min-width: 80px;
+  text-align: right;
+}
+
+/* Break-even table highlight */
+.be-win { background: #F0FAF2; }
+.be-neutral { background: var(--bg-panel); }
+.be-cost { background: #FDF5F0; }
+
+/* Deployment card grid */
+.deploy-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1px; background: var(--rule);
+  border: 1px solid var(--rule); margin: 24px 0;
+}
+.deploy-card {
+  background: var(--bg-panel); padding: 22px;
+}
+.dc-level {
+  font-family: var(--mono); font-size: 9px;
+  text-transform: uppercase; letter-spacing: 0.12em;
+  color: var(--nasa-red); margin-bottom: 8px;
+}
+.dc-usecase {
+  font-family: var(--display); font-weight: 700;
+  font-size: 16px; text-transform: uppercase;
+  letter-spacing: 0.04em; margin: 0 0 8px;
+  color: var(--ink);
+}
+.dc-strength {
+  font-family: var(--mono); font-size: 11px;
+  color: var(--nasa-blue); margin-bottom: 8px;
+}
+.dc-reason {
+  font-size: 12.5px; color: var(--ink-soft);
+  line-height: 1.5; margin: 0;
+}
+
+/* Context preservation table compact */
+.ctx-table {
+  width: 100%; border-collapse: collapse;
+  margin: 16px 0; font-size: 12.5px;
+}
+.ctx-table th {
+  font-family: var(--mono); font-size: 8.5px;
+  text-transform: uppercase; letter-spacing: 0.1em;
+  color: var(--ink-soft); padding: 8px 12px;
+  background: var(--bg-soft);
+  border-bottom: 2px solid var(--nasa-blue);
+  text-align: left; white-space: nowrap;
+}
+.ctx-table td {
+  padding: 9px 12px;
+  border-bottom: 1px solid var(--rule-soft);
+  vertical-align: top; line-height: 1.4;
+  color: var(--ink-soft);
+}
+.ctx-table td:first-child {
+  font-family: var(--mono); font-size: 11px;
+  color: var(--ink);
+}
+.ctx-table tr.carries td:last-child { color: var(--nasa-blue); }
+.ctx-table tr.resets  td:last-child { color: var(--nasa-red); }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="index.html">
+      <span class="brand-mark">BP</span>
+      <span class="brand-name">BitPads Protocol</span>
+    </a>
+    <nav class="topnav">
+      <a href="overview.html">Overview</a>
+      <a href="bitpads-v2.html">BitPads v2</a>
+      <a href="bitledger.html" class="active">BitLedger</a>
+      <a href="universal-domain.html">Universal Domain</a>
+      <div class="nav-group">
+        <a href="enhancement-grammar.html">Enhancement</a>
+        <div class="nav-dropdown">
+          <a href="enhancement-grammar.html">Grammar &amp; Signal Slots</a>
+          <a href="enhancement-commands.html">Commands &amp; Context</a>
+          <a href="enhancement-telegraph-1.html">Telegraph Emulation I</a>
+          <a href="enhancement-telegraph-2.html">Telegraph Emulation II</a>
+          <a href="enhancement-nesting.html">Nesting &amp; Overhead</a>
+        </div>
+      </div>
+      <a href="compound-mode.html">Compound Mode</a>
+      <a href="engineering.html">Engineering</a>
+      <a href="guide.html">Guide</a>
+      <a href="cli.html">CLI</a>
+      <a href="reference.html">Reference</a>
+    </nav>
+  </div>
+</header>
+
+<div class="page">
+  <aside class="sidebar">
+    <p class="toc-label">On This Page</p>
+    <ul class="toc">
+      <li><a href="#overview" class="active">Overview</a></li>
+      <li><a href="#nesting-levels">Nesting Level Codes</a></li>
+      <li><a href="#parser-stack">Parser Stack</a></li>
+      <li><a href="#declaration">Nesting Declaration</a></li>
+      <li><a href="#scope-levels">Scope Levels</a></li>
+      <li><a href="#industrial-strength">Industrial Strength</a></li>
+      <li><a href="#overhead">Overhead Tables</a></li>
+      <li><a href="#break-even">Break-Even Analysis</a></li>
+      <li><a href="#deployment-guidance">Deployment Guidance</a></li>
+    </ul>
+  </aside>
+
+  <main>
+
+    <!-- ── OVERVIEW ── -->
+    <section id="overview">
+      <p class="eyebrow">Enhancement Sub-Protocol v2.0 · Section 8 &amp; 15</p>
+      <h1>Nesting<br>&amp; Overhead</h1>
+      <p class="pullquote">Enhancement sequences may contain transmission structures within themselves. A formally specified parser stack tracks every nesting boundary and restores outer context on exit.</p>
+      <p class="lead">Nesting allows one BitPads structure — a stream, a record, a session — to contain another complete structure, suspending the outer context while the inner structure executes, then restoring the outer exactly.</p>
+      <p>The sub-protocol defines six nesting scenarios, two of which require parser stack operations. A <code>ParserStateFrame</code> captures the complete decoder context at the moment nesting is entered. The stack is last-in-first-out. On inner structure close, the frame is popped and the outer context is restored bit-for-bit. Maximum nesting depth is negotiated at session open from three independent limits: hardware capacity, operator policy, and the negotiated minimum of both endpoints.</p>
+      <p>Overhead is a first-class design concern throughout the sub-protocol. The enhancement grammar is a microservice: it adds zero overhead to transmissions that do not use it. For transmissions that do, overhead is exactly proportional to what is expressed — one byte per signal slot declaration, one bit per session-level activation.</p>
+
+      <div class="notice">
+        <p><strong>Six nesting scenarios:</strong> Record in Stream (stack push), Sub-Session in Session (stack push), Compound in Escalated Record (partial), Signal Sequence (no push — repetition at one position), Fragmented + Signal (partial), Context Update in Stream (no push — updates in place). This page covers the full stack specification and overhead accounting for all scenarios.</p>
+      </div>
+    </section>
+
+    <!-- ── NESTING LEVELS ── -->
+    <section id="nesting-levels">
+      <p class="eyebrow">Section 8.5</p>
+      <h2>Nesting Level Codes</h2>
+      <p>The device declares its nesting capability in Layer 1. Two non-contiguous bits in the Layer 1 session defaults — bits 9 and 12 — form a 2-bit nesting level code. This code communicates the maximum nesting depth the sender supports and triggers the Nesting Declaration Extension byte when depth beyond four levels is required.</p>
+
+      <div class="depth-meter">
+        <div class="dm-row">
+          <div class="dm-bar level-1">00</div>
+          <div>
+            <div class="dm-label">Depth 1 — Flat only, no nesting permitted</div>
+            <div class="dm-code">Layer 1 bits 9+12 = 00 · Constrained hardware · No stack allocated</div>
+          </div>
+        </div>
+        <div class="dm-row">
+          <div class="dm-bar level-2">01</div>
+          <div>
+            <div class="dm-label">Depth 2 — One level of nesting</div>
+            <div class="dm-code">Layer 1 bits 9+12 = 01 · Typical embedded device · Record-in-stream supported</div>
+          </div>
+        </div>
+        <div class="dm-row">
+          <div class="dm-bar level-4">10</div>
+          <div>
+            <div class="dm-label">Depth 4 — Up to four levels</div>
+            <div class="dm-code">Layer 1 bits 9+12 = 10 · Industrial controller · Sub-session + escalation chains</div>
+          </div>
+        </div>
+        <div class="dm-row">
+          <div class="dm-bar level-ext">11</div>
+          <div>
+            <div class="dm-label">Extended — Nesting Declaration Extension byte follows Layer 1</div>
+            <div class="dm-code">Layer 1 bits 9+12 = 11 · Mission-critical or deep telemetry · Up to 15 levels declared</div>
+          </div>
+        </div>
+      </div>
+
+      <h3>The Six Nesting Scenarios</h3>
+      <p>The sub-protocol formally defines six scenarios in which one transmission structure contains or overlaps another. Scenarios 1 and 2 are structural nesting requiring stack push and pop. Scenarios 3–6 are partial or non-structural.</p>
+
+      <div class="scenario-grid">
+        <div class="scenario-row header-row">
+          <div class="sc-cell header">#</div>
+          <div class="sc-cell header">Scenario</div>
+          <div class="sc-cell header">Stack Push</div>
+          <div class="sc-cell header">Outer Pauses</div>
+          <div class="sc-cell header">Trigger</div>
+        </div>
+        <div class="scenario-row">
+          <div class="sc-num">1</div>
+          <div class="sc-cell"><div class="sc-name">Record in Stream</div></div>
+          <div class="sc-cell sc-badge yes">YES</div>
+          <div class="sc-cell sc-badge yes">YES</div>
+          <div class="sc-cell">Enhancement field <code>101</code> (component escalation) in any stream signal slot. Full BitPads Record delivered within active stream. Stack restores stream on close.</div>
+        </div>
+        <div class="scenario-row">
+          <div class="sc-num">2</div>
+          <div class="sc-cell"><div class="sc-name">Sub-Session in Session</div></div>
+          <div class="sc-cell sc-badge yes">YES</div>
+          <div class="sc-cell sc-badge yes">YES</div>
+          <div class="sc-cell">SOH + Continuation flag in P1 signal slot. Nested session with its own Layer 1, identity, domain, and permissions. Outer session suspended until EOT.</div>
+        </div>
+        <div class="scenario-row">
+          <div class="sc-num">3</div>
+          <div class="sc-cell"><div class="sc-name">Compound in Escalated Record</div></div>
+          <div class="sc-cell sc-badge partial">Partial</div>
+          <div class="sc-cell sc-badge partial">Partial</div>
+          <div class="sc-cell">1111 continuation marker in a BitLedger record delivered via component escalation. Compound close (bit 39=0) closes inner compound before the inner record closes.</div>
+        </div>
+        <div class="scenario-row no-push">
+          <div class="sc-num">4</div>
+          <div class="sc-cell"><div class="sc-name">Signal Sequence</div></div>
+          <div class="sc-cell sc-badge no">NO</div>
+          <div class="sc-cell sc-badge no">No</div>
+          <div class="sc-cell">Continuation flag C=1 in any signal slot. Multiple enhanced C0 bytes at the same position. Repetition — not structural nesting. Receiver reads until C=0.</div>
+        </div>
+        <div class="scenario-row no-push">
+          <div class="sc-num">5</div>
+          <div class="sc-cell"><div class="sc-name">Fragmented + Signal</div></div>
+          <div class="sc-cell sc-badge partial">Partial</div>
+          <div class="sc-cell sc-badge no">No</div>
+          <div class="sc-cell">Meta bit 3=1 (BitPad fragment) simultaneously with C=1 in a signal slot. Both close independently. Meta bit 3=0 closes BitPad fragment; C=0 closes signal sequence.</div>
+        </div>
+        <div class="scenario-row no-push">
+          <div class="sc-num">6</div>
+          <div class="sc-cell"><div class="sc-name">Context Update in Stream</div></div>
+          <div class="sc-cell sc-badge no">NO</div>
+          <div class="sc-cell sc-badge partial">Brief</div>
+          <div class="sc-cell">Enhancement field <code>111</code> + opcode byte in any active stream. DLE escape into context operation. Stream pauses two bytes; context updated in place; stream resumes.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── PARSER STACK ── -->
+    <section id="parser-stack">
+      <p class="eyebrow">Section 8.2 — 8.3</p>
+      <h2>Parser Stack</h2>
+      <p>Scenarios 1 and 2 require a parser stack — a last-in-first-out structure of <code>ParserStateFrame</code> objects. Each frame is a complete snapshot of the decoder context at the moment nesting was entered: the outer mode, category, slot position, component flags remaining, all stream state, all session/batch context, and the enhancement grammar state. When the inner structure closes, the frame is popped and the outer context is restored exactly.</p>
+      <p>The effective stack depth is the minimum of three independent limits: the hardware capacity derived from available stack memory, the operator-configured policy maximum, and the agreed depth negotiated at session open via DC2 parameter exchange in the P1 slot.</p>
+
+      <div class="formula">
+        <span class="f-name">effective_depth</span> = min(<span class="f-var">hardware_max</span>, <span class="f-var">policy_max</span>, <span class="f-var">negotiated_max</span>)<br>
+        <span class="f-name">hardware_max</span>   = floor(<span class="f-var">stack_memory_bytes</span> / <span class="f-note">frame_size_bytes</span>)<br>
+        <span class="f-note">                   &nbsp;&nbsp;64 bytes stack  → hardware_max = 3 frames</span><br>
+        <span class="f-note">                   256 bytes stack  → hardware_max = 12 frames</span><br>
+        <span class="f-note">                    1 KB stack      → hardware_max = 51 frames</span><br>
+        <span class="f-name">policy_max</span>     = declared in NestingPolicy dataclass<br>
+        <span class="f-name">negotiated_max</span> = min(<span class="f-var">sender_declared</span>, <span class="f-var">receiver_declared</span>)<br>
+        <span class="f-note">                   negotiated via DC2 parameter in P1 slot</span>
+      </div>
+
+      <h3>ParserStateFrame Structure</h3>
+      <p>Each frame is approximately 20 bytes on a 32-bit embedded device. The stack memory formula follows directly from this: allocate stack bytes, divide by 20, floor to integer for hardware_max.</p>
+
+      <div class="printout">
+        <div class="ph">── ParserStateFrame ────────────────────────────────────────</div>
+        <div><span class="pl">outer_mode             </span><span class="pv">int   </span><span class="pc"># WAVE/RECORD/STREAM/COMMAND/CONTEXT</span></div>
+        <div><span class="pl">outer_category         </span><span class="pv">int   </span><span class="pc"># category code 0–15</span></div>
+        <div><span class="pl">outer_slot_position    </span><span class="pv">int   </span><span class="pc"># slot P1–P13 at time of interrupt</span></div>
+        <div><span class="pl">outer_component_flags  </span><span class="pv">int   </span><span class="pc"># which components remain unread</span></div>
+        <div class="ph">── Signal sequence state ────────────────────────────────────</div>
+        <div><span class="pl">signal_sequence_open   </span><span class="pv">bool  </span><span class="pc"># was a C=1 sequence in progress?</span></div>
+        <div><span class="pl">signal_c0_code         </span><span class="pv">int   </span><span class="pc"># which C0 code was sequencing</span></div>
+        <div><span class="pl">signal_count           </span><span class="pv">int   </span><span class="pc"># how many signals received so far</span></div>
+        <div class="ph">── Stream state (if outer was a stream) ────────────────────</div>
+        <div><span class="pl">stream_bytes_remaining </span><span class="pv">int   </span><span class="pc"># length countdown; 0 if not stream</span></div>
+        <div><span class="pl">stream_codebook        </span><span class="pv">int   </span><span class="pc"># active codebook index</span></div>
+        <div><span class="pl">stream_archetype       </span><span class="pv">int   </span><span class="pc"># active archetype code</span></div>
+        <div><span class="pl">stream_cipher_active   </span><span class="pv">bool  </span><span class="pc"># cipher shift flag</span></div>
+        <div class="ph">── Session / batch context ──────────────────────────────────</div>
+        <div><span class="pl">scaling_factor_index   </span><span class="pv">int   </span><span class="pc"># current SF</span></div>
+        <div><span class="pl">decimal_position       </span><span class="pv">int   </span><span class="pc"># current D</span></div>
+        <div><span class="pl">optimal_split          </span><span class="pv">int   </span><span class="pc"># current S</span></div>
+        <div><span class="pl">currency_code          </span><span class="pv">int   </span><span class="pc"># current currency/qty type</span></div>
+        <div class="ph">── Enhancement and continuation ─────────────────────────────</div>
+        <div><span class="pl">enhancement_active     </span><span class="pv">bool  </span><span class="pc"># was grammar active?</span></div>
+        <div><span class="pl">meta_continuation      </span><span class="pv">bool  </span><span class="pc"># was Meta byte bit 3 = 1?</span></div>
+        <div><span class="pl">resume_byte_offset     </span><span class="pv">int   </span><span class="pc"># stream position to resume from</span></div>
+        <div class="ph">── Frame size: ~20 bytes on 32-bit embedded device ──────────</div>
+      </div>
+
+      <h3>Stack Push — Component Escalation</h3>
+      <p>When enhancement field <code>101</code> is encountered in a stream signal slot, the current parser context is captured into a frame and pushed onto the stack. The inner record then reads its own Meta bytes, Layer 1, and components independently.</p>
+
+      <div class="printout">
+        <div class="ph">── PUSH — Component Escalation (Record in Stream) ──────────</div>
+        <div><span class="pc"># Trigger: enhancement field 101 in stream signal slot</span></div>
+        <div><span class="pl">frame </span><span class="pv">= ParserStateFrame(</span></div>
+        <div><span class="pv">    outer_mode             = session.current_mode,</span></div>
+        <div><span class="pv">    outer_category         = session.current_category,</span></div>
+        <div><span class="pv">    outer_slot_position    = session.current_slot,</span></div>
+        <div><span class="pv">    outer_component_flags  = session.remaining_components,</span></div>
+        <div><span class="pv">    stream_bytes_remaining = session.stream_counter,</span></div>
+        <div><span class="pv">    stream_codebook        = session.active_codebook,</span></div>
+        <div><span class="pv">    stream_archetype       = session.active_archetype,</span></div>
+        <div><span class="pv">    stream_cipher_active   = session.cipher_active,</span></div>
+        <div><span class="pv">    resume_byte_offset     = session.stream_position,</span></div>
+        <div><span class="pv">    ... </span><span class="pc"># all remaining fields</span></div>
+        <div><span class="pv">)</span></div>
+        <div><span class="pg">stack.push(frame)  # returns False if at limit</span></div>
+        <div><span class="pl">session.current_mode      </span><span class="pv">= ParserMode.RECORD</span></div>
+        <div><span class="pl">session.inner_record_active </span><span class="pv">= True</span></div>
+        <div class="ph">────────────────────────────────────────────────────────────</div>
+        <div class="ph">── POP — Inner Record Close ─────────────────────────────────</div>
+        <div><span class="pc"># Trigger: ETX/EOT in P8 slot or final component read</span></div>
+        <div><span class="pg">outer = stack.pop()        # ProtocolError if empty (underflow)</span></div>
+        <div><span class="pl">session.current_mode          </span><span class="pv">= outer.outer_mode</span></div>
+        <div><span class="pl">session.stream_counter        </span><span class="pv">= outer.stream_bytes_remaining</span></div>
+        <div><span class="pl">session.active_codebook       </span><span class="pv">= outer.stream_codebook</span></div>
+        <div><span class="pl">session.stream_position       </span><span class="pv">= outer.resume_byte_offset</span></div>
+        <div><span class="pl">session.inner_record_active   </span><span class="pv">= False</span></div>
+        <div><span class="pc"># ... all fields restored from frame</span></div>
+        <div class="ph">── Return STATE 3F. Stream resumes. ─────────────────────────</div>
+      </div>
+
+      <h3>Stack Push — Sub-Session</h3>
+
+      <div class="printout">
+        <div class="ph">── PUSH — Sub-Session Open ──────────────────────────────────</div>
+        <div><span class="pc"># Trigger: SOH + Continuation flag in P1 slot</span></div>
+        <div><span class="pg">frame = build_full_session_frame(session)</span></div>
+        <div><span class="pg">stack.push(frame)   # full session snapshot</span></div>
+        <div><span class="pl">session.current_mode      </span><span class="pv">= ParserMode.IDLE</span></div>
+        <div><span class="pl">session.sub_session_depth </span><span class="pv">+= 1</span></div>
+        <div><span class="pc"># Sub-session reads own Layer 1, has independent identity</span></div>
+        <div class="ph">── POP — Sub-Session Close (EOT) ────────────────────────────</div>
+        <div><span class="pg">outer = stack.pop()</span></div>
+        <div><span class="pg">restore_session_from_frame(session, outer)</span></div>
+        <div><span class="pl">session.sub_session_depth </span><span class="pv">-= 1</span></div>
+        <div class="ph">── Outer session resumes exactly where it was. ──────────────</div>
+      </div>
+
+      <h3>Overflow Policy</h3>
+      <p>When a push is attempted at the stack limit, the overflow policy from the operator's <code>NestingPolicy</code> dataclass determines the response.</p>
+      <div class="printout">
+        <div class="ph">── Overflow Handling ────────────────────────────────────────</div>
+        <div><span class="pl">if overflow_policy == </span><span class="pg">'reject'</span><span class="pl">:</span></div>
+        <div><span class="pe">    raise ProtocolError('Nesting limit exceeded')</span></div>
+        <div><span class="pl">elif overflow_policy == </span><span class="pg">'flatten'</span><span class="pl">:</span></div>
+        <div><span class="pv">    emit_enhanced_c0(C0Code.NAK, flags=ParserFlags(continuation=True))</span></div>
+        <div><span class="pc">    # treat inner structure as same level — no stack push</span></div>
+        <div class="ph">── Warning emitted at warn_at_depth (EM signal + Priority) ─</div>
+      </div>
+
+      <h3>Context Preservation on Push and Pop</h3>
+      <p>Not all fields behave the same way at nesting boundaries. Some carry over into the inner structure; others reset. All are fully restored on pop.</p>
+
+      <table class="ctx-table">
+        <thead>
+          <tr>
+            <th>Field</th>
+            <th>On Push — Inner Gets</th>
+            <th>On Pop — Outer Restored</th>
+            <th>Note</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="carries">
+            <td>sender_id</td>
+            <td>Carries over</td>
+            <td>Restored from frame</td>
+            <td>Identity always preserved</td>
+          </tr>
+          <tr class="carries">
+            <td>domain</td>
+            <td>Carries over</td>
+            <td>Restored</td>
+            <td>Inner re-declares if needed</td>
+          </tr>
+          <tr class="carries">
+            <td>permissions</td>
+            <td>Carries over</td>
+            <td>Restored</td>
+            <td>Inner cannot exceed outer</td>
+          </tr>
+          <tr class="carries">
+            <td>scaling_factor</td>
+            <td>Carries over</td>
+            <td>Restored from frame</td>
+            <td>Inner may re-declare</td>
+          </tr>
+          <tr class="carries">
+            <td>currency_code</td>
+            <td>Carries over</td>
+            <td>Restored from frame</td>
+            <td>Same as SF</td>
+          </tr>
+          <tr class="carries">
+            <td>enhancement_active</td>
+            <td>Carries over</td>
+            <td>Restored</td>
+            <td>Grammar state preserved</td>
+          </tr>
+          <tr class="resets">
+            <td>stream_counter</td>
+            <td>Resets to 0</td>
+            <td>Restored from frame</td>
+            <td>Inner has own length context</td>
+          </tr>
+          <tr class="resets">
+            <td>active_codebook</td>
+            <td>Resets to 0</td>
+            <td>Restored from frame</td>
+            <td>Inner starts with primary codebook</td>
+          </tr>
+          <tr class="resets">
+            <td>active_archetype</td>
+            <td>Resets to 0</td>
+            <td>Restored from frame</td>
+            <td>Inner starts with default archetype</td>
+          </tr>
+          <tr class="resets">
+            <td>cipher_active</td>
+            <td>Resets to false</td>
+            <td>Restored from frame</td>
+            <td>Cipher must be re-declared in inner</td>
+          </tr>
+          <tr class="resets">
+            <td>compound_open</td>
+            <td>Resets to false</td>
+            <td>Restored from frame</td>
+            <td>Inner compounds are independent</td>
+          </tr>
+          <tr class="resets">
+            <td>records_received</td>
+            <td>Resets to 0</td>
+            <td>Not restored (outer kept)</td>
+            <td>Inner record count is independent</td>
+          </tr>
+          <tr class="carries">
+            <td>signal_sequence_open</td>
+            <td>Saved in frame</td>
+            <td>Restored from frame</td>
+            <td>Outer sequence resumes on close</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- ── DECLARATION BYTE ── -->
+    <section id="declaration">
+      <p class="eyebrow">Section 8.5</p>
+      <h2>Nesting Declaration Extension</h2>
+      <p>When the Layer 1 nesting code is <code>11</code> (bits 9 and 12 both set), a Nesting Declaration Extension byte follows Layer 1 immediately. This byte allows the sender to declare a precise depth up to 15 levels, select an overflow policy, and configure timeout behaviour — all in a single byte before the session begins handling records.</p>
+
+      <div class="bit-display">
+        <div class="bit-display-label">Nesting Declaration Extension Byte — appears when Layer 1 nesting code = 11</div>
+        <div class="bit-cells">
+          <div class="bit-cell enhance w4" data-layer="l2"
+               data-tooltip="Bits 1–4: Maximum nesting depth for this session. 0000=0 levels (flat), 0001=1 level … 1111=15 levels.">
+            <span class="bit-pos">1–4</span>
+            <span class="bit-val on">D</span>
+            <span class="bit-name">Max<br>Depth<br>0–15</span>
+          </div>
+          <div class="bit-cell mode" data-layer="l2"
+               data-tooltip="Bit 5: Stack overflow policy. 0 = reject (ProtocolError). 1 = flatten (NAK + treat as same level).">
+            <span class="bit-pos">5</span>
+            <span class="bit-val off">0</span>
+            <span class="bit-name">Overflow<br>Policy</span>
+          </div>
+          <div class="bit-cell mode" data-layer="l2"
+               data-tooltip="Bit 6: Timeout active. 0 = no timeout on nested structures. 1 = timeout enabled per timeout scale.">
+            <span class="bit-pos">6</span>
+            <span class="bit-val off">0</span>
+            <span class="bit-name">Timeout<br>Active</span>
+          </div>
+          <div class="bit-cell data w2" data-layer="l2"
+               data-tooltip="Bits 7–8: Timeout scale. 00 = none. 01 = seconds. 10 = units. 11 = control bytes.">
+            <span class="bit-pos">7–8</span>
+            <span class="bit-val off">T</span>
+            <span class="bit-name">Timeout<br>Scale</span>
+          </div>
+        </div>
+        <div class="bit-legend">
+          <span class="legend-item"><span class="legend-swatch enhance"></span> Nesting depth (4 bits, 0–15 levels)</span>
+          <span class="legend-item"><span class="legend-swatch mode"></span> Policy / control flags</span>
+          <span class="legend-item"><span class="legend-swatch data"></span> Timeout scale selector</span>
+        </div>
+      </div>
+
+      <table class="data-table" style="margin-top:8px;">
+        <thead>
+          <tr>
+            <th>Bits</th>
+            <th>Field</th>
+            <th>Values</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>1–4</code></td>
+            <td>Maximum Nesting Depth</td>
+            <td>0000–1111</td>
+            <td>Declares the maximum stack depth for this session. 0000 = flat only (no nesting). 1111 = 15 levels.</td>
+          </tr>
+          <tr>
+            <td><code>5</code></td>
+            <td>Overflow Policy</td>
+            <td>0 / 1</td>
+            <td>0 = reject — raise ProtocolError when limit reached. 1 = flatten — emit NAK and treat inner structure as same level without pushing stack.</td>
+          </tr>
+          <tr>
+            <td><code>6</code></td>
+            <td>Timeout Active</td>
+            <td>0 / 1</td>
+            <td>0 = no timeout; nested structures may remain open indefinitely. 1 = timeout enabled; scale defined in bits 7–8.</td>
+          </tr>
+          <tr>
+            <td><code>7–8</code></td>
+            <td>Timeout Scale</td>
+            <td>00–11</td>
+            <td>00 = none. 01 = seconds. 10 = transmission units. 11 = control bytes (protocol-controlled count).</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>Depth Negotiation at Session Open</h3>
+      <p>When sender and receiver declare different nesting limits, they negotiate at session open using the P1 signal slot. The agreed depth is the minimum of both declared values. Both sides must compute the same minimum — the protocol produces a single agreed depth with no ambiguity.</p>
+
+      <div class="printout">
+        <div class="ph">── Depth Negotiation — P1 Signal Slot ──────────────────────</div>
+        <div><span class="pc"># Step 1: Sender transmits Layer 1 with nesting code in bits 9+12</span></div>
+        <div><span class="pc"># Step 2: Receiver reads Layer 1, extracts sender_max</span></div>
+        <div><span class="pc"># Step 3: Receiver transmits DC2 + ACK in P1 slot</span></div>
+        <div><span class="pv">#         parameter byte = receiver_max</span></div>
+        <div><span class="pc"># Step 4: Both sides compute:</span></div>
+        <div><span class="pl">agreed_depth </span><span class="pv">= min(sender_max, receiver_max)</span></div>
+        <div class="ph">────────────────────────────────────────────────────────────</div>
+        <div><span class="pc"># If agreed_depth == 0:</span></div>
+        <div><span class="pe">    emit_enhanced_c0(C0Code.EM, flags=ParserFlags(priority=True))</span></div>
+        <div><span class="pe">    # "Nesting not permitted. Flat sessions only."</span></div>
+        <div><span class="pl">    session.nesting_permitted </span><span class="pv">= False</span></div>
+      </div>
+    </section>
+
+    <!-- ── SCOPE LEVELS ── -->
+    <section id="scope-levels">
+      <p class="eyebrow">Section 10.2</p>
+      <h2>Activation Scope Levels</h2>
+      <p>The C0 Enhancement Module attaches at five scope levels. Each scope determines the activation mechanism, the overhead cost, and the lifetime of the enhancement context. Nesting depth interacts with scope: a session-scope activation permits nesting across all records in the session; a record-scope activation permits nesting only within the single record where the Signal Slot Presence byte is set.</p>
+
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Scope</th>
+            <th>Attachment Point</th>
+            <th>Activation Mechanism</th>
+            <th>Overhead</th>
+            <th>Nesting Context</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Session</strong></td>
+            <td>Layer 1</td>
+            <td>1 bit in Layer 1 session defaults</td>
+            <td>1 bit once; zero thereafter</td>
+            <td>Enhancement active for all records and streams in the session. Full nesting depth available throughout.</td>
+          </tr>
+          <tr>
+            <td><strong>Batch</strong></td>
+            <td>Layer 2 Set B</td>
+            <td>1 bit in Layer 2 reserved space</td>
+            <td>1 bit per batch header</td>
+            <td>Enhancement applies to all records in the batch. Nesting resets at each batch boundary — depth counter clears when batch closes.</td>
+          </tr>
+          <tr>
+            <td><strong>Category</strong></td>
+            <td>Category code</td>
+            <td>Categories 1100, 1101, 1110 activate automatically</td>
+            <td>Zero beyond category declaration</td>
+            <td>Enhancement applies for the duration of the category structure. Category 1110 (Telegraph Emulation) opens a stream scope; nesting applies within that stream only.</td>
+          </tr>
+          <tr>
+            <td><strong>Record</strong></td>
+            <td>Meta byte 2 bit 8</td>
+            <td>Signal Slot Presence byte follows Meta byte 2</td>
+            <td>1 byte when any slot active</td>
+            <td>Enhancement applies within the single record. Signal slots P4–P8 may trigger nesting (e.g., component escalation at P6/P7) — but only while the record is being read.</td>
+          </tr>
+          <tr>
+            <td><strong>Inline Wave</strong></td>
+            <td>Meta byte 1</td>
+            <td>Category 1110 Wave with enhanced C0 bytes</td>
+            <td>1 Meta byte + N signal bytes</td>
+            <td>Applies to the next enhanced C0 token only. No nesting — inline scope is a single-use enhancement burst (heartbeat, alert, flow control).</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p>Scope levels nest inside each other in strict containment order. A record-scope activation sits inside a batch-scope session. A batch-scope activation sits inside a session-scope session. The parser stack honours containment: a stack push from a record-level escalation is unwound before the record's batch context is closed.</p>
+
+      <div class="notice">
+        <p><strong>Scope and depth interaction:</strong> For sessions with more than eight records where any record requires enhancement signals, session-scope activation (Level 4) is always cheaper than record-scope (Level 2) — the 1-bit session flag pays for itself at eight records and costs nothing per-record thereafter. For sparse enhancement needs, record-scope keeps overhead proportional to actual use.</p>
+      </div>
+    </section>
+
+    <!-- ── INDUSTRIAL STRENGTH ── -->
+    <section id="industrial-strength">
+      <p class="eyebrow">Section 10.3</p>
+      <h2>Industrial Strength Spectrum</h2>
+      <p>The sub-protocol defines six levels of enhancement activation forming a progressive capability spectrum. Level 0 is standard BitPads with no C0 grammar active. Level 5 is full Telegraph Emulation with session-wide enhancement, deep nesting, and the complete Murray-Baudot lineage. Each level is a strict superset of the level below it.</p>
+
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Level</th>
+            <th>Name</th>
+            <th>Features Active</th>
+            <th>Overhead / Record</th>
+            <th>Typical Use Case</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>0</strong></td>
+            <td>No Enhancement</td>
+            <td>Standard BitPads. No C0 grammar. No signal slots.</td>
+            <td>0 bytes</td>
+            <td>Single-sensor IoT, heartbeat-only devices, constrained microcontrollers</td>
+          </tr>
+          <tr>
+            <td><strong>1</strong></td>
+            <td>Inline Signals</td>
+            <td>Category 1110 Wave for pure control. Priority, ACK, Continuation flags on C0 signals.</td>
+            <td>1 Meta + N signal bytes per Wave</td>
+            <td>Lightweight alerts, presence pulses, ACK-confirmed heartbeats</td>
+          </tr>
+          <tr>
+            <td><strong>2</strong></td>
+            <td>Record Signals</td>
+            <td>All Level 1 features + Signal Slot Presence byte. Component boundary signalling per record. Slots P4–P8 available.</td>
+            <td>1 byte (presence) + 1 byte/slot active</td>
+            <td>Multi-sensor reporting, confirmed delivery, record-level event annotation</td>
+          </tr>
+          <tr>
+            <td><strong>3</strong></td>
+            <td>Batch Enhancement</td>
+            <td>All Level 2 features + Layer 2 batch flag. All records in batch can use signal slots. Zero per-record overhead.</td>
+            <td>0 bytes (1 bit paid at batch open)</td>
+            <td>Industrial controller batches, mixed enhancement across a record group</td>
+          </tr>
+          <tr>
+            <td><strong>4</strong></td>
+            <td>Session Enhancement</td>
+            <td>All Level 3 features + Layer 1 session flag. All 13 signal slots (P1–P13) available. Basic nesting depth declared in Layer 1 code.</td>
+            <td>0 bytes (1 bit paid at session open)</td>
+            <td>Mission-critical telemetry, safety-critical links, high-BER environments</td>
+          </tr>
+          <tr>
+            <td><strong>5</strong></td>
+            <td>Full Telegraph Emulation</td>
+            <td>All Level 4 features + Category 1110 stream + extended nesting (Nesting Declaration Extension byte). All 29+4 agreed C0 codes. Rolling codebook. Binary pictography. Deep nesting.</td>
+            <td>0 bytes per record (session flag + 1 stream ctrl paid once)</td>
+            <td>Rich binary telemetry, deep-space communication, legacy C0 system bridging</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="stat-grid" style="margin-top:24px;">
+        <div class="stat-cell">
+          <div class="stat-val">0</div>
+          <div class="stat-unit">bytes — Level 0</div>
+          <p class="stat-desc">No enhancement. Standard protocol validation only. Nothing spent.</p>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-val">1</div>
+          <div class="stat-unit">bit — Level 3 &amp; 4</div>
+          <p class="stat-desc">Session or batch flag paid once. Zero overhead per record or batch thereafter.</p>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-val">1</div>
+          <div class="stat-unit">byte — Level 2</div>
+          <p class="stat-desc">Signal Slot Presence byte. Declares up to 5 slot positions in 8 bits. Paid once per record with any active slot.</p>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-val">20</div>
+          <div class="stat-unit">bytes — frame size</div>
+          <p class="stat-desc">Approximate size of one ParserStateFrame on a 32-bit embedded device. Stack memory determines hardware_max.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── OVERHEAD ── -->
+    <section id="overhead">
+      <p class="eyebrow">Section 15.1 — 15.2</p>
+      <h2>Overhead Reference</h2>
+      <p>The overhead model is strictly pay-for-what-you-use. Every byte of overhead directly earns its cost by providing a signal, a confirmation, or a nesting boundary that the transmission explicitly needs. Transmissions that do not use a feature pay nothing for it.</p>
+
+      <h3>Per-Element Costs</h3>
+
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Element</th>
+            <th>Bits</th>
+            <th>Bytes</th>
+            <th>Frequency</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Session enhancement flag (Layer 1)</td>
+            <td>1</td>
+            <td>&lt;1</td>
+            <td>Once per session</td>
+          </tr>
+          <tr>
+            <td>Nesting Declaration Extension byte</td>
+            <td>8</td>
+            <td>1</td>
+            <td>Once per session (when depth &gt; 4 declared, Layer 1 code = <code>11</code>)</td>
+          </tr>
+          <tr>
+            <td>Signal Slot Presence byte (Meta2 bit8=1)</td>
+            <td>8</td>
+            <td>1</td>
+            <td>Once per record with any slot active</td>
+          </tr>
+          <tr>
+            <td>Individual signal slot — plain C0 (<code>000</code> flag)</td>
+            <td>8</td>
+            <td>1</td>
+            <td>Per slot declared present</td>
+          </tr>
+          <tr>
+            <td>Individual signal slot — enhanced (<code>001–111</code> flag)</td>
+            <td>8</td>
+            <td>1</td>
+            <td>Per slot declared present</td>
+          </tr>
+          <tr>
+            <td>Signal sequence continuation byte</td>
+            <td>8</td>
+            <td>1</td>
+            <td>Per additional signal in a C=1 sequence</td>
+          </tr>
+          <tr>
+            <td>Stream-Open Control byte (categories 1001/1110)</td>
+            <td>8</td>
+            <td>1</td>
+            <td>Once per stream</td>
+          </tr>
+          <tr>
+            <td>Context Declaration Block</td>
+            <td>8–32</td>
+            <td>1–4</td>
+            <td>Per context change (category 1101)</td>
+          </tr>
+          <tr>
+            <td>In-stream context opcode (field <code>111</code> + opcode)</td>
+            <td>16</td>
+            <td>2</td>
+            <td>Per in-stream context operation (DLE + opcode byte)</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>Overhead at Each Microservice Level</h3>
+
+      <div class="overhead-meter">
+        <div class="om-row">
+          <div class="om-label">Level 0 — None</div>
+          <div class="om-bar-wrap"><div class="om-bar minimal" style="width:0%;"></div></div>
+          <div class="om-bytes">0 / 0 / 0 bytes</div>
+        </div>
+        <div class="om-row">
+          <div class="om-label">Level 1 — Inline</div>
+          <div class="om-bar-wrap"><div class="om-bar minimal" style="width:8%;"></div></div>
+          <div class="om-bytes">1 Meta + N signal</div>
+        </div>
+        <div class="om-row">
+          <div class="om-label">Level 2 — Record Signals</div>
+          <div class="om-bar-wrap"><div class="om-bar" style="width:22%;"></div></div>
+          <div class="om-bytes">1B presence/record</div>
+        </div>
+        <div class="om-row">
+          <div class="om-label">Level 3 — Batch</div>
+          <div class="om-bar-wrap"><div class="om-bar secondary" style="width:3%;"></div></div>
+          <div class="om-bytes">1 bit/batch</div>
+        </div>
+        <div class="om-row">
+          <div class="om-label">Level 4 — Session</div>
+          <div class="om-bar-wrap"><div class="om-bar secondary" style="width:2%;"></div></div>
+          <div class="om-bytes">1 bit/session</div>
+        </div>
+        <div class="om-row">
+          <div class="om-label">Level 5 — Full Emulation</div>
+          <div class="om-bar-wrap"><div class="om-bar secondary" style="width:5%;"></div></div>
+          <div class="om-bytes">1 bit + 1 stream ctrl</div>
+        </div>
+      </div>
+
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Level</th>
+            <th>Per Session</th>
+            <th>Per Batch</th>
+            <th>Per Record</th>
+            <th>Per Signal</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>0 — None</strong></td>
+            <td>0</td>
+            <td>0</td>
+            <td>0</td>
+            <td>N/A</td>
+          </tr>
+          <tr>
+            <td><strong>1 — Inline</strong></td>
+            <td>1 Meta byte</td>
+            <td>0</td>
+            <td>0</td>
+            <td>1 byte</td>
+          </tr>
+          <tr>
+            <td><strong>2 — Record</strong></td>
+            <td>0</td>
+            <td>0</td>
+            <td>1 byte (presence)</td>
+            <td>1 byte per slot</td>
+          </tr>
+          <tr>
+            <td><strong>3 — Batch</strong></td>
+            <td>1 bit (Layer 2)</td>
+            <td>0</td>
+            <td>0</td>
+            <td>1 byte per slot</td>
+          </tr>
+          <tr>
+            <td><strong>4 — Session</strong></td>
+            <td>1 bit (Layer 1)</td>
+            <td>0</td>
+            <td>0</td>
+            <td>1 byte per slot</td>
+          </tr>
+          <tr>
+            <td><strong>5 — Full Emulation</strong></td>
+            <td>1 bit + 1 stream ctrl</td>
+            <td>0</td>
+            <td>0</td>
+            <td>1 byte per signal</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="notice">
+        <p><strong>Nesting overhead:</strong> The Nesting Declaration Extension byte adds exactly 1 byte per session when depth beyond 4 is declared (Layer 1 code = <code>11</code>). Stack push/pop operations have no wire overhead — they are decoder-side memory operations. The only wire cost of nesting is the signal that triggers it (1 byte for the component escalation enhancement field).</p>
+      </div>
+    </section>
+
+    <!-- ── BREAK-EVEN ── -->
+    <section id="break-even">
+      <p class="eyebrow">Section 15.3</p>
+      <h2>Break-Even Analysis</h2>
+      <p class="lead">At what transmission volume does enhancement grammar overhead pay for itself compared to application-layer alternatives?</p>
+
+      <p>The canonical comparison is between two approaches to conveying signal information alongside records: embedding a status byte at the application layer in every record (1 byte per record, always, in the payload), versus using the enhancement grammar at session scope (1 bit once at session open, then per-signal bytes only when a signal is actually sent).</p>
+
+      <h3>Approach Comparison</h3>
+      <div class="compare">
+        <div>
+          <h4>Application-Layer Status Byte</h4>
+          <ul>
+            <li>1 byte embedded in every record payload, every time</li>
+            <li>Cost = N records × 1 byte = N bytes total</li>
+            <li>No protocol-level semantics — application must parse</li>
+            <li>No priority, ACK, or continuation flags</li>
+            <li>No signal slot positions — decoder cannot validate placement</li>
+            <li>Works on all receivers without protocol negotiation</li>
+          </ul>
+        </div>
+        <div>
+          <h4>Enhancement Grammar (Level 4 Session)</h4>
+          <ul>
+            <li>1 bit at session open (in Layer 1)</li>
+            <li>1 byte per signal slot only when the slot is active</li>
+            <li>Priority, ACK-request, Continuation flags at no extra byte cost</li>
+            <li>13 named positions with structural validation</li>
+            <li>Nesting and component escalation available at Level 4</li>
+            <li>Requires protocol negotiation at session open</li>
+          </ul>
+        </div>
+      </div>
+
+      <h3>Break-Even Table</h3>
+      <p>Assume a typical record where one signal is sent per record on average (e.g., an STX at component start plus an ETX at end = 2 signal bytes per record when active). Enhancement grammar pays for itself when session overhead amortises below the per-record application-layer cost.</p>
+
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Session size (records)</th>
+            <th>App-layer cost (bytes)</th>
+            <th>Enhancement L4 cost (bytes)</th>
+            <th>Enhancement L2 cost (bytes)</th>
+            <th>Winner</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="be-neutral">
+            <td>1</td>
+            <td>1</td>
+            <td>≈0 (1 bit session flag)</td>
+            <td>1 (presence byte, no signals)</td>
+            <td>Level 4 if signals needed; L0 if not</td>
+          </tr>
+          <tr class="be-neutral">
+            <td>5</td>
+            <td>5</td>
+            <td>≈0 session + 5 × signal bytes</td>
+            <td>5 (presence bytes only)</td>
+            <td>Equal at low signal density</td>
+          </tr>
+          <tr class="be-win">
+            <td>10</td>
+            <td>10</td>
+            <td>≈0 session + actual signal bytes only</td>
+            <td>10 (presence) + actual signal bytes</td>
+            <td><strong>Level 4 cheaper</strong> when &gt;1 slot/record</td>
+          </tr>
+          <tr class="be-win">
+            <td>100</td>
+            <td>100</td>
+            <td>≈0 session overhead; signals only on use</td>
+            <td>100 (presence bytes) + signal bytes</td>
+            <td><strong>Level 4 dominant</strong> — fixed cost amortised</td>
+          </tr>
+          <tr class="be-win">
+            <td>1,000</td>
+            <td>1,000</td>
+            <td>≈0 session overhead; structured signals</td>
+            <td>1,000 (presence) + signal bytes</td>
+            <td><strong>Level 4 decisive</strong> — structural semantics free</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p>The formal break-even between session-scope (Level 4, 1 bit) and record-scope (Level 2, 1 byte per record) is at eight records. After eight records in a session, the session flag is always cheaper. Between batch-scope (Level 3, 1 bit per batch) and record-scope, break-even is also at eight records per batch. For any session with more than eight records requiring any enhancement, session-scope activation is the optimal choice.</p>
+
+      <div class="formula">
+        <span class="f-name">break_even_L4_vs_L2</span> = 8 records<br>
+        <span class="f-note">&nbsp;&nbsp;&nbsp;Level 4 (1 bit session flag) becomes cheaper than Level 2 (1 byte/record) after 8 records.</span><br>
+        <span class="f-name">break_even_L3_vs_L2</span> = 8 records per batch<br>
+        <span class="f-note">&nbsp;&nbsp;&nbsp;Batch flag (1 bit) cheaper than presence byte per record after 8 records/batch.</span><br>
+        <span class="f-name">cost_app_layer_N</span>     = N × 1 byte<br>
+        <span class="f-name">cost_enhancement_L4_N</span> = ~0 + (active_slots × 1 byte)<br>
+        <span class="f-note">&nbsp;&nbsp;&nbsp;Enhancement grammar cheaper whenever active_slots/record &lt; 1.0 on average.</span>
+      </div>
+
+      <div class="notice warn">
+        <p><strong>For mixed sessions:</strong> When only occasional records need enhancement signals, record-scope (Level 2) keeps overhead exactly proportional to actual use. Level 4 pays its 1-bit session cost upfront — always justified when more than 8 records in the session will ever use any signal slot.</p>
+      </div>
+    </section>
+
+    <!-- ── DEPLOYMENT GUIDANCE ── -->
+    <section id="deployment-guidance">
+      <p class="eyebrow">Engineering Application</p>
+      <h2>Deployment Guidance</h2>
+      <p>Select the industrial strength level that matches the application's reliability requirements, hardware constraints, and signal density. The table below provides canonical starting points. Profiles may be tuned in the <code>NestingPolicy</code> dataclass and session profile JSON for production deployments.</p>
+
+      <div class="deploy-grid">
+        <div class="deploy-card">
+          <div class="dc-level">Level 0</div>
+          <div class="dc-usecase">Single-Sensor IoT</div>
+          <div class="dc-strength">No Enhancement</div>
+          <p class="dc-reason">One data source, no multi-signal coordination. Standard BitPads Wave or Record mode is sufficient. No C0 grammar active. Zero protocol overhead beyond the record itself. Constrained 8-bit microcontrollers with no stack to spare.</p>
+        </div>
+        <div class="deploy-card">
+          <div class="dc-level">Level 1</div>
+          <div class="dc-usecase">Multi-Sensor Reporting</div>
+          <div class="dc-strength">Inline Signals / Signal Slots</div>
+          <p class="dc-reason">Multiple sensors in a batch or session need heartbeat confirmation and occasional priority alerts. Category 1110 Wave bursts handle the signalling. Signal slots in records confirm delivery of critical readings. Minimal overhead per record.</p>
+        </div>
+        <div class="deploy-card">
+          <div class="dc-level">Level 2 – 3</div>
+          <div class="dc-usecase">Industrial Controller</div>
+          <div class="dc-strength">Commands + Context Declarations</div>
+          <p class="dc-reason">Discrete command sequences (Category 1100) and context declarations (Category 1101) alongside instrumentation records. Batch-scope enhancement activates once and covers all records in the batch. Component escalation for structured event delivery within a stream.</p>
+        </div>
+        <div class="deploy-card">
+          <div class="dc-level">Level 4</div>
+          <div class="dc-usecase">Mission-Critical Telemetry</div>
+          <div class="dc-strength">Session Enhancement + Nesting</div>
+          <p class="dc-reason">All 13 signal slots active across the session. Record-in-stream nesting via component escalation. Sub-session-in-session for independent subsystem identity. Parser stack negotiated at session open. One bit pays for the entire session's signalling infrastructure.</p>
+        </div>
+        <div class="deploy-card">
+          <div class="dc-level">Level 5</div>
+          <div class="dc-usecase">Rich Binary Communication</div>
+          <div class="dc-strength">Full Telegraph Emulation</div>
+          <p class="dc-reason">Category 1110 stream with full C0 enhancement grammar. Rolling codebook for stream semantic obscuration. Binary pictography for compact rich data. Nesting Declaration Extension byte for deep stack. Complete Murray-Baudot lineage with legacy receiver compatibility via the Plain Form Rule.</p>
+        </div>
+        <div class="deploy-card">
+          <div class="dc-level">Level 4 + NDE</div>
+          <div class="dc-usecase">Deep Space / High-BER Links</div>
+          <div class="dc-strength">Session + Extended Nesting Depth</div>
+          <p class="dc-reason">Layer 1 session flag + Nesting Declaration Extension byte (code 11). Maximum depth declared up to 15 levels. Overflow policy set to flatten (not reject) for graceful degradation. ACK-chained signals at P1 for confirmed session open. Timeout scale set to control bytes for deterministic retry bounds.</p>
+        </div>
+      </div>
+
+      <h3>NestingPolicy Configuration Reference</h3>
+      <p>The <code>NestingPolicy</code> dataclass is stored in the session profile JSON. It is the single source of truth for nesting behaviour at runtime. All fields are operator-configurable.</p>
+
+      <div class="printout">
+        <div class="ph">── NestingPolicy Dataclass (default values) ────────────────</div>
+        <div><span class="pl">max_depth              </span><span class="pv">= 3        </span><span class="pc"># effective stack depth (≤ hardware_max)</span></div>
+        <div><span class="pl">overflow_policy        </span><span class="pv">= 'reject' </span><span class="pc"># 'reject' | 'flatten' | 'error'</span></div>
+        <div><span class="pl">timeout_enabled        </span><span class="pv">= False    </span><span class="pc"># timeout on nested structures</span></div>
+        <div><span class="pl">timeout_units          </span><span class="pv">= 30       </span><span class="pc"># timeout value in chosen scale</span></div>
+        <div class="ph">── Per-type limits ──────────────────────────────────────────</div>
+        <div><span class="pl">max_record_in_stream   </span><span class="pv">= 2        </span><span class="pc"># Records-in-stream per stream</span></div>
+        <div><span class="pl">max_session_in_session </span><span class="pv">= 1        </span><span class="pc"># Sub-sessions per session</span></div>
+        <div><span class="pl">max_signal_sequence_len</span><span class="pv">= 8        </span><span class="pc"># C=1 sequence length per slot</span></div>
+        <div><span class="pl">max_compound_depth     </span><span class="pv">= 4        </span><span class="pc"># 1111-chain depth in escalated record</span></div>
+        <div class="ph">── Warning threshold ────────────────────────────────────────</div>
+        <div><span class="pl">warn_at_depth          </span><span class="pv">= 2        </span><span class="pc"># emit EM + Priority at this stack depth</span></div>
+        <div class="ph">────────────────────────────────────────────────────────────</div>
+        <div class="ph">── Profile JSON representation ──────────────────────────────</div>
+        <div><span class="pv">"nesting": {</span></div>
+        <div><span class="pv">  "max_depth": 3,</span></div>
+        <div><span class="pv">  "overflow_policy": "reject",</span></div>
+        <div><span class="pv">  "per_type": {</span></div>
+        <div><span class="pv">    "record_in_stream": 2,</span></div>
+        <div><span class="pv">    "session_in_session": 1,</span></div>
+        <div><span class="pv">    "signal_sequence": 8,</span></div>
+        <div><span class="pv">    "compound_depth": 4</span></div>
+        <div><span class="pv">  },</span></div>
+        <div><span class="pv">  "warn_at_depth": 2</span></div>
+        <div><span class="pv">}</span></div>
+      </div>
+
+      <div class="notice">
+        <p><strong>Microservice principle:</strong> If the C0 Enhancement Module is not activated, a transmission is byte-for-byte identical to a standard BitPads transmission. The module adds no overhead to transmissions that do not use it. Every byte of overhead it adds is directly earning its cost by providing a signal, a confirmation, or a nesting boundary that the transmission explicitly needs.</p>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div>
+      <div class="footer-group-label">Protocol</div>
+      <ul class="footer-links">
+        <li><a href="bitpads-v2.html">BitPads v2</a></li>
+        <li><a href="bitledger.html">BitLedger v3</a></li>
+        <li><a href="universal-domain.html">Universal Domain</a></li>
+        <li><a href="compound-mode.html">Compound Mode</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-group-label">Enhancement</div>
+      <ul class="footer-links">
+        <li><a href="enhancement-grammar.html">Grammar &amp; Signal Slots</a></li>
+        <li><a href="enhancement-commands.html">Commands &amp; Context</a></li>
+        <li><a href="enhancement-telegraph-1.html">Telegraph Emulation I</a></li>
+        <li><a href="enhancement-telegraph-2.html">Telegraph Emulation II</a></li>
+        <li><a href="enhancement-nesting.html">Nesting &amp; Overhead</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-group-label">Resources</div>
+      <ul class="footer-links">
+        <li><a href="engineering.html">Engineering Applications</a></li>
+        <li><a href="guide.html">Implementation Guide</a></li>
+        <li><a href="cli.html">CLI Tools</a></li>
+        <li><a href="reference.html">Reference &amp; Glossary</a></li>
+      </ul>
+    </div>
+    <div class="footer-copy">
+      BitPads Protocol v2.0<br>
+      BitLedger Protocol v3.0<br>
+      Universal Domain v1.0<br>
+      &copy; BABB
+    </div>
+  </div>
+</footer>
+
+<script>
+// TOC active state via IntersectionObserver
+const secs = document.querySelectorAll('section[id]');
+const tocAs = document.querySelectorAll('.toc a');
+const io = new IntersectionObserver(es => {
+  es.forEach(e => {
+    if (e.isIntersecting) {
+      tocAs.forEach(a => a.classList.remove('active'));
+      const a = document.querySelector(`.toc a[href="#${e.target.id}"]`);
+      if (a) a.classList.add('active');
+    }
+  });
+}, { rootMargin: '-15% 0px -70% 0px' });
+secs.forEach(s => io.observe(s));
+
+// Expandable table rows
+document.querySelectorAll('tr.xrow').forEach(row => {
+  row.addEventListener('click', () => {
+    const did = row.dataset.drawer;
+    const drawer = document.getElementById(did);
+    if (!drawer) return;
+    const open = drawer.classList.contains('open');
+    document.querySelectorAll('tr.xdrawer.open').forEach(d => {
+      d.classList.remove('open');
+      d.previousElementSibling?.classList.remove('open');
+    });
+    if (!open) { drawer.classList.add('open'); row.classList.add('open'); }
+  });
+});
+</script>
+</body>
+</html>

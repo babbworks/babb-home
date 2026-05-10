@@ -1,0 +1,1240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Category 1110 — Telegraph Emulation Mode I: Stream Structure &amp; Grammar — BitPads Protocol</title>
+<link rel="stylesheet" href="bp-style.css">
+<style>
+/* ── Page-specific ── */
+.compare-box {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 1px; background: var(--rule);
+  border: 1px solid var(--rule); margin: 20px 0;
+}
+@media (max-width: 700px) { .compare-box { grid-template-columns: 1fr; } }
+.compare-box > div { background: var(--bg-panel); padding: 22px; }
+.compare-box .cb-label {
+  font-family: var(--mono); font-size: 9px;
+  text-transform: uppercase; letter-spacing: 0.12em;
+  color: var(--nasa-red); margin: 0 0 12px;
+  padding-bottom: 8px; border-bottom: 1px solid var(--rule-soft);
+}
+.compare-box ul { margin: 0; padding-left: 0; list-style: none; font-size: 13px; }
+.compare-box li { margin-bottom: 7px; color: var(--ink-soft); line-height: 1.4; padding-left: 14px; position: relative; }
+.compare-box li::before { content: '›'; position: absolute; left: 0; color: var(--nasa-gold); }
+
+.seq-diagram {
+  display: flex; flex-direction: column; gap: 2px;
+  margin: 20px 0;
+}
+.seq-row {
+  display: flex; align-items: stretch; gap: 0;
+  border: 1px solid var(--rule-soft);
+}
+.seq-num {
+  font-family: var(--mono); font-size: 11px;
+  font-weight: 700; color: white;
+  background: var(--nasa-blue);
+  padding: 10px 14px;
+  display: flex; align-items: center; justify-content: center;
+  min-width: 38px;
+  flex-shrink: 0;
+}
+.seq-name {
+  font-family: var(--display); font-weight: 600;
+  font-size: 14px; text-transform: uppercase;
+  letter-spacing: 0.04em;
+  background: var(--bg-panel);
+  padding: 10px 16px;
+  display: flex; align-items: center;
+  min-width: 210px; flex-shrink: 0;
+  border-right: 1px solid var(--rule-soft);
+}
+.seq-desc {
+  font-size: 12.5px; color: var(--ink-soft);
+  background: var(--bg-soft);
+  padding: 10px 16px;
+  display: flex; align-items: center;
+  flex: 1;
+}
+.seq-optional .seq-name { color: var(--ink-faint); font-style: italic; }
+.seq-highlight .seq-num { background: var(--nasa-red); }
+
+.stream-ex {
+  font-family: var(--mono); font-size: 12px;
+  line-height: 2;
+}
+.stream-byte {
+  display: inline-block;
+  background: var(--bg-dark); color: #7ECEF4;
+  padding: 2px 7px;
+  margin: 1px 2px;
+  border-top: 2px solid var(--bit-enhance);
+}
+.stream-byte.plain { border-top-color: var(--bit-reserved); color: #99B8D4; }
+.stream-byte.priority { border-top-color: var(--nasa-red); color: #FC8C6A; }
+.stream-byte.ack { border-top-color: var(--bit-account); color: #6AC87E; }
+.stream-byte.eot { border-top-color: var(--bit-checksum); color: #E06060; }
+
+.scope-pyramid {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 3px; margin: 24px 0;
+}
+.sp-level {
+  border: 1px solid var(--rule);
+  background: var(--bg-panel);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--display); font-weight: 600;
+  font-size: 14px; text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 12px 24px;
+}
+
+.inline-decoder {
+  background: var(--bg-dark);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-top: 3px solid var(--nasa-gold);
+  padding: 24px 28px; margin: 28px 0;
+}
+.inline-decoder-title {
+  font-family: var(--display); font-weight: 700;
+  font-size: 13px; text-transform: uppercase;
+  letter-spacing: 0.12em; color: var(--nasa-gold);
+  margin: 0 0 18px;
+}
+.decoder-input {
+  width: 100%;
+  font-family: var(--mono); font-size: 13px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.12);
+  color: white; padding: 8px 12px;
+  outline: none; margin-bottom: 10px;
+}
+.decoder-input:focus { border-color: var(--nasa-gold); }
+.decoder-btn {
+  font-family: var(--display); font-weight: 700;
+  font-size: 12px; text-transform: uppercase;
+  letter-spacing: 0.1em;
+  background: var(--nasa-blue); color: white;
+  border: none; padding: 9px 20px;
+  cursor: pointer; margin-right: 8px;
+}
+.decoder-btn:hover { background: #0d4eb8; }
+.decoder-output {
+  border-top: 1px solid rgba(255,255,255,0.08);
+  margin-top: 16px; padding-top: 16px;
+  font-family: var(--mono); font-size: 11.5px;
+  line-height: 2; color: rgba(255,255,255,0.5);
+  min-height: 60px;
+}
+.decoder-row { display: grid; grid-template-columns: 60px 60px 120px 80px 1fr; gap: 8px; }
+.decoder-row.hdr { color: rgba(255,255,255,0.2); font-size: 9px; text-transform: uppercase; letter-spacing: 0.1em; }
+.d-hex { color: var(--nasa-gold); }
+.d-flags { color: #FC8C6A; }
+.d-code { color: #7ECEF4; }
+.d-legacy { color: #8898AA; }
+.d-bitpads { color: #6AC87E; }
+
+.parser-stack-diagram {
+  display: flex; gap: 2px; align-items: flex-end;
+  margin: 20px 0;
+}
+.psd-col { display: flex; flex-direction: column; gap: 2px; }
+.psd-label {
+  font-family: var(--mono); font-size: 9px;
+  text-transform: uppercase; letter-spacing: 0.1em;
+  color: var(--ink-faint); margin-bottom: 6px;
+  text-align: center;
+}
+.psd-frame {
+  background: var(--bg-panel); border: 1px solid var(--rule);
+  border-left: 3px solid var(--nasa-blue);
+  padding: 8px 14px;
+  font-family: var(--mono); font-size: 11px;
+  min-width: 160px;
+}
+.psd-frame.active { border-left-color: var(--nasa-red); background: #FFF8F5; }
+.psd-frame.inner { border-left-color: var(--nasa-gold); }
+.psd-arrow {
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--mono); font-size: 18px;
+  color: var(--nasa-gold); padding: 0 12px;
+  align-self: center;
+}
+
+.close-example {
+  background: var(--bg-panel);
+  border: 1px solid var(--rule);
+  border-left: 3px solid var(--nasa-blue);
+  padding: 16px 20px; margin: 10px 0;
+}
+.close-example h5 {
+  font-family: var(--mono); font-size: 9px;
+  text-transform: uppercase; letter-spacing: 0.12em;
+  color: var(--nasa-red); margin: 0 0 8px;
+}
+.close-example .printout { margin: 0; }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="index.html">
+      <span class="brand-mark">BP</span>
+      <span class="brand-name">BitPads Protocol</span>
+    </a>
+    <nav class="topnav">
+      <a href="overview.html">Overview</a>
+      <a href="bitpads-v2.html">BitPads v2</a>
+      <a href="bitledger.html" class="active">BitLedger</a>
+      <a href="universal-domain.html">Universal Domain</a>
+      <div class="nav-group">
+        <a href="enhancement-grammar.html">Enhancement</a>
+        <div class="nav-dropdown">
+          <a href="enhancement-grammar.html">Grammar &amp; Signal Slots</a>
+          <a href="enhancement-commands.html">Commands &amp; Context</a>
+          <a href="enhancement-telegraph-1.html">Telegraph Emulation I</a>
+          <a href="enhancement-telegraph-2.html">Telegraph Emulation II</a>
+          <a href="enhancement-nesting.html">Nesting &amp; Overhead</a>
+        </div>
+      </div>
+      <a href="compound-mode.html">Compound Mode</a>
+      <a href="engineering.html">Engineering</a>
+      <a href="guide.html">Guide</a>
+      <a href="cli.html">CLI</a>
+      <a href="reference.html">Reference</a>
+    </nav>
+  </div>
+</header>
+
+<div class="page">
+  <aside class="sidebar">
+    <p class="toc-label">On This Page</p>
+    <ul class="toc">
+      <li><a href="#what-it-is" class="active">What Telegraph Emulation Is</a></li>
+      <li><a href="#legacy-compat">Legacy Compatibility</a></li>
+      <li><a href="#activating">Activating Category 1110</a></li>
+      <li><a href="#stream-open-seq">Stream Open Sequence</a></li>
+      <li><a href="#stream-open-byte">Stream-Open Control Byte</a></li>
+      <li><a href="#every-byte">Every Byte in the Stream</a></li>
+      <li><a href="#anatomy">C0 Byte Anatomy</a></li>
+      <li><a href="#enhancement-fields">Enhancement Fields — All 8 States</a></li>
+      <li><a href="#escalation">Component Escalation — Field 101</a></li>
+      <li><a href="#signal-slots">Signal Slot Positions</a></li>
+      <li><a href="#stream-close">Stream Close Mechanics</a></li>
+      <li><a href="#legacy-view">Legacy Receiver Perspective</a></li>
+      <li><a href="#bitpads-view">BitPads Receiver Perspective</a></li>
+    </ul>
+  </aside>
+
+  <main>
+
+    <!-- ── HERO ── -->
+    <section id="what-it-is">
+      <p class="eyebrow">Enhancement Sub-Protocol · Category 1110</p>
+      <h1>Telegraph<br>Emulation<br>Mode I</h1>
+      <p class="pullquote">Every byte in the stream is a signal. The same byte stream is readable by a 1960s teleprinter and a BitPads receiver simultaneously.</p>
+      <p class="lead">Category 1110 is the most powerful of the three Enhancement Sub-Protocol categories. The full C0 Enhancement Grammar is active for the entire stream duration — not just at declared signal slots.</p>
+      <p>Named for the telegraph protocols from which it inherits the byte structure, Telegraph Emulation Mode delivers a vocabulary of 232 distinct typed events per byte position while remaining byte-for-byte backward compatible with legacy C0 receivers.</p>
+
+      <div class="stat-grid" style="margin-top:32px;">
+        <div class="stat-cell">
+          <div class="stat-val">232</div>
+          <div class="stat-unit">typed events per byte</div>
+          <p class="stat-desc">29 agreed C0 controls × 8 flag combinations. Every byte position in the stream.</p>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-val">1110</div>
+          <div class="stat-unit">meta category code</div>
+          <p class="stat-desc">Meta byte 1: bit1=0 (Wave), bit4=1 (category mode), bits5-8=1110.</p>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-val">100%</div>
+          <div class="stat-unit">backward compatible</div>
+          <p class="stat-desc">Legacy receivers see standard C0 controls. Plain C0 bytes (flags 000) are identical to their legacy counterparts.</p>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-val">3</div>
+          <div class="stat-unit">flag bits per byte</div>
+          <p class="stat-desc">Upper 3 bits carry P/A/C (Priority, Acknowledge, Continuation) flags. Lower 5 bits carry the C0 code identity.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── SECTION 2: LEGACY COMPATIBILITY ── -->
+    <section id="legacy-compat">
+      <p class="eyebrow">Design Achievement</p>
+      <h2>The Legacy Compatibility Design</h2>
+      <p>This is the central design achievement of Category 1110. A BitPads Telegraph Emulation stream transmits bytes 0–31 as genuine C0 controls. A legacy teleprinter or terminal receiving the same byte stream sees standard controls throughout — BEL rings, FS separates files, EOT closes the transmission.</p>
+      <p>A BitPads receiver reads the enhancement flags in the upper 3 bits and decodes rich typed events from the same stream. The two receive modes coexist on the same byte stream. No channel switching. No mode flags to the legacy device.</p>
+
+      <div class="compare-box">
+        <div>
+          <div class="cb-label">Legacy Receiver View</div>
+          <ul>
+            <li>Bytes 0–31 read as standard C0 controls</li>
+            <li>Bytes 32+ seen as printable ASCII or Latin-1 content</li>
+            <li>BEL (0x07) still rings the bell</li>
+            <li>EOT (0x04) still closes the transmission</li>
+            <li>SYN (0x16) still provides synchronisation idle</li>
+            <li>FS, GS, RS, US still act as data separators</li>
+            <li>Enhancement bytes (≥32) appear as text</li>
+            <li>Completely transparent — no mode negotiation</li>
+          </ul>
+        </div>
+        <div>
+          <div class="cb-label">BitPads Receiver View</div>
+          <ul>
+            <li>Plain forms (000 + code) = standard C0 semantics</li>
+            <li>Enhanced forms (001–111 + code) = C0 meaning + P/A/C flags</li>
+            <li>Priority BEL (0x87) = urgent alert, elevated handling</li>
+            <li>ACK-req EOT (0x44) = confirmed close, ACK back required</li>
+            <li>Continuation SYN (0x36) = signal sequence opening</li>
+            <li>Full+ACK+Cont BEL (0xE7) = emergency alert with detail</li>
+            <li>Every byte decoded for flag state + C0 identity</li>
+            <li>232 distinct typed events per byte position</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="notice">
+        <p><strong>The structural reason this works:</strong> ASCII bytes 0–31 are C0 controls. Bytes 32–127 are printable characters. Latin-1 extends to 255. A legacy receiver treats bytes ≥32 as content. A BitPads receiver treats ALL bytes as enhanced C0 bytes — reading the upper 3 bits as flags and the lower 5 bits as the C0 code identity. The same 8 bits carry two complete, non-conflicting interpretations simultaneously.</p>
+      </div>
+    </section>
+
+    <!-- ── SECTION 3: ACTIVATING ── -->
+    <section id="activating">
+      <p class="eyebrow">Session Configuration</p>
+      <h2>Activating Category 1110</h2>
+      <p>Category 1110 is declared in Meta byte 1. The Wave mode bit (bit 1 = 0) is set, and the Category Mode bit (bit 4 = 1) is set. Bits 5–8 carry the category code 1110.</p>
+
+      <div class="bit-display">
+        <div class="bit-display-label">Meta Byte 1 — Category 1110 Declaration</div>
+        <div class="bit-cells">
+          <div class="bit-cell mode" data-layer="meta" data-tooltip="Bit 1: 0 = Wave mode. Layer 1 not required unless new session.">
+            <span class="bit-pos">1</span>
+            <span class="bit-val off">0</span>
+            <span class="bit-name">Wave<br>Mode</span>
+          </div>
+          <div class="bit-cell mode" data-layer="meta" data-tooltip="Bit 2: Category/ACK flag in Wave mode.">
+            <span class="bit-pos">2</span>
+            <span class="bit-val off">0</span>
+            <span class="bit-name">Cat/<br>ACK</span>
+          </div>
+          <div class="bit-cell mode" data-layer="meta" data-tooltip="Bit 3: Continuation — 0 = no fragment continuation.">
+            <span class="bit-pos">3</span>
+            <span class="bit-val off">0</span>
+            <span class="bit-name">Cont.</span>
+          </div>
+          <div class="bit-cell mode" data-layer="meta" data-tooltip="Bit 4: 1 = Category mode. Bits 5-8 carry the category code.">
+            <span class="bit-pos">4</span>
+            <span class="bit-val on">1</span>
+            <span class="bit-name">Cat.<br>Mode</span>
+          </div>
+          <div class="bit-cell enhance" data-layer="meta" data-tooltip="Bit 5: Category code bit 1. Value: 1">
+            <span class="bit-pos">5</span>
+            <span class="bit-val on">1</span>
+            <span class="bit-name">Cat.<br>Bit 1</span>
+          </div>
+          <div class="bit-cell enhance" data-layer="meta" data-tooltip="Bit 6: Category code bit 2. Value: 1">
+            <span class="bit-pos">6</span>
+            <span class="bit-val on">1</span>
+            <span class="bit-name">Cat.<br>Bit 2</span>
+          </div>
+          <div class="bit-cell enhance" data-layer="meta" data-tooltip="Bit 7: Category code bit 3. Value: 1">
+            <span class="bit-pos">7</span>
+            <span class="bit-val on">1</span>
+            <span class="bit-name">Cat.<br>Bit 3</span>
+          </div>
+          <div class="bit-cell enhance" data-layer="meta" data-tooltip="Bit 8: Category code bit 4. Value: 0 → Full code = 1110.">
+            <span class="bit-pos">8</span>
+            <span class="bit-val off">0</span>
+            <span class="bit-name">Cat.<br>Bit 4</span>
+          </div>
+        </div>
+        <div class="bit-legend">
+          <span class="legend-item"><span class="legend-swatch mode"></span> Mode / Control</span>
+          <span class="legend-item"><span class="legend-swatch enhance"></span> Category Code 1110</span>
+        </div>
+      </div>
+
+      <p>Layer 1 is required if no prior session is established. In an established session, Layer 1 is not required.</p>
+
+      <div class="notice">
+        <p><strong>Difference from Session Enhancement Flag (Layer 1 bit 12 = 1):</strong> The session flag activates enhancement at all 13 signal slot positions P1–P13. Category 1110 activates enhancement for the entire stream content — every byte in the stream body is an enhanced C0 byte. These two mechanisms are complementary. Both can be active simultaneously: session-scoped signal slots P1–P13 remain operational, and every byte in the stream body carries enhancement flags.</p>
+      </div>
+    </section>
+
+    <!-- ── SECTION 4: STREAM OPEN SEQUENCE ── -->
+    <section id="stream-open-seq">
+      <p class="eyebrow">Byte-Level Architecture</p>
+      <h2>Stream Open Sequence</h2>
+      <p>A Category 1110 transmission follows a defined opening sequence. Each element is present at a specific byte position. The stream body begins immediately after the Stream-Open Control byte.</p>
+
+      <div class="seq-diagram">
+        <div class="seq-row seq-highlight">
+          <div class="seq-num">1</div>
+          <div class="seq-name">Meta Byte 1</div>
+          <div class="seq-desc">Declares category 1110. Wave mode, bit 4 = 1, bits 5–8 = 1110. Always present. This is byte 0 of every transmission.</div>
+        </div>
+        <div class="seq-row seq-optional">
+          <div class="seq-num">2</div>
+          <div class="seq-name">Layer 1</div>
+          <div class="seq-desc">Required for new sessions. Contains sender identity, session flags. Session Enhancement Flag (bit 12) optionally set here. Not required in established sessions.</div>
+        </div>
+        <div class="seq-row seq-optional">
+          <div class="seq-num">3</div>
+          <div class="seq-name">Session Config Ext.</div>
+          <div class="seq-desc">Present when Layer 1 bit 12 = 1. Declares nesting level code, codebook baseline, P1–P3 slot declarations. 1 byte.</div>
+        </div>
+        <div class="seq-row seq-highlight">
+          <div class="seq-num">4</div>
+          <div class="seq-name">Stream-Open Control</div>
+          <div class="seq-desc">Always present for category 1110. Declares active archetype, codebook selection, cipher shift, and update flag. 1 byte. See Section 5.</div>
+        </div>
+        <div class="seq-row">
+          <div class="seq-num">5</div>
+          <div class="seq-name">Length / Open</div>
+          <div class="seq-desc">Either a length prefix (number of stream bytes to follow) or stream-until-close (length inferred from EOT or new Meta byte). Declared in Stream-Open Control byte Update Flag.</div>
+        </div>
+        <div class="seq-row seq-highlight">
+          <div class="seq-num">6</div>
+          <div class="seq-name">Stream Body</div>
+          <div class="seq-desc">Every byte is an enhanced C0 byte. Upper 3 bits = P/A/C flags. Lower 5 bits = C0 code identity. No "content bytes" vs "signal bytes" distinction. The stream IS the signal.</div>
+        </div>
+        <div class="seq-row">
+          <div class="seq-num">7</div>
+          <div class="seq-name">Stream Close</div>
+          <div class="seq-desc">EOT byte (plain or enhanced), length exhausted, or new Meta byte (SOH 0x01). Three distinct close mechanisms. See Section 11.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── SECTION 5: STREAM-OPEN CONTROL BYTE ── -->
+    <section id="stream-open-byte">
+      <p class="eyebrow">Protocol Element</p>
+      <h2>The Stream-Open Control Byte</h2>
+      <p>The Stream-Open Control byte immediately follows the session preamble and precedes the stream body. It declares the semantic context for everything that follows.</p>
+
+      <div class="bit-display">
+        <div class="bit-display-label">Stream-Open Control Byte — 8 Bits</div>
+        <div class="bit-cells">
+          <div class="bit-cell account w4" data-tooltip="Bits 1-4: Active Archetype. 0000-1111 = BitLedger / Universal Domain archetype codes. Click table row below for full list.">
+            <span class="bit-pos">1–4</span>
+            <span class="bit-val">AAAA</span>
+            <span class="bit-name">Active<br>Archetype</span>
+          </div>
+          <div class="bit-cell data w2" data-tooltip="Bits 5-6: Codebook selection. 00=Universal, 01=Session-declared, 10=Shift offset/cipher, 11=Extended.">
+            <span class="bit-pos">5–6</span>
+            <span class="bit-val">CC</span>
+            <span class="bit-name">Codebook</span>
+          </div>
+          <div class="bit-cell enhance" data-tooltip="Bit 7: Cipher Shift. 0=Literal archetype, 1=Offset from session baseline.">
+            <span class="bit-pos">7</span>
+            <span class="bit-val">S</span>
+            <span class="bit-name">Cipher<br>Shift</span>
+          </div>
+          <div class="bit-cell mode" data-tooltip="Bit 8: Update Flag. 0=Fixed for stream, 1=Mid-stream codebook updates permitted.">
+            <span class="bit-pos">8</span>
+            <span class="bit-val">U</span>
+            <span class="bit-name">Update<br>Flag</span>
+          </div>
+        </div>
+        <div class="bit-legend">
+          <span class="legend-item"><span class="legend-swatch account"></span> Active Archetype (4 bits)</span>
+          <span class="legend-item"><span class="legend-swatch data"></span> Codebook Selection</span>
+          <span class="legend-item"><span class="legend-swatch enhance"></span> Cipher Shift</span>
+          <span class="legend-item"><span class="legend-swatch mode"></span> Update Flag</span>
+        </div>
+      </div>
+
+      <h3>Active Archetype Field (Bits 1–4)</h3>
+      <p>The 4-bit archetype field declares the semantic context for the stream's binary content — the universal domain flow relationship that governs interpretation of all stream events. Click any row to expand the archetype details.</p>
+
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Code</th><th>Archetype Name</th><th>Flow Direction</th><th>Domain</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="xrow" data-drawer="arch-0">
+            <td><code>0000</code> <span class="xrow-indicator">▾</span></td>
+            <td>Transfer</td><td>A → B</td><td>Universal</td>
+          </tr>
+          <tr class="xdrawer" id="arch-0"><td colspan="4"><div class="xdrawer-inner">
+            <p>Direct transfer from sender entity to receiver entity. The canonical flow. Financial: payment. Physical: mass transport. Energy: direct delivery. The baseline archetype — most common in simple sessions.</p>
+          </div></td></tr>
+          <tr class="xrow" data-drawer="arch-1">
+            <td><code>0001</code> <span class="xrow-indicator">▾</span></td>
+            <td>Exchange</td><td>A ⇄ B</td><td>Universal</td>
+          </tr>
+          <tr class="xdrawer" id="arch-1"><td colspan="4"><div class="xdrawer-inner">
+            <p>Mutual exchange — both parties give and receive. Financial: swap, barter. Physical: heat exchange. Encoded as two simultaneous flows. Each flow direction encoded separately with the Exchange archetype.</p>
+          </div></td></tr>
+          <tr class="xrow" data-drawer="arch-2">
+            <td><code>0010</code> <span class="xrow-indicator">▾</span></td>
+            <td>Deposit</td><td>A → Pool</td><td>Financial/Physical</td>
+          </tr>
+          <tr class="xdrawer" id="arch-2"><td colspan="4"><div class="xdrawer-inner">
+            <p>Entity deposits into a shared pool or reservoir. Financial: bank deposit, fund contribution. Physical: tank filling, reservoir input. The pool is the destination — not a specific entity but a shared store.</p>
+          </div></td></tr>
+          <tr class="xrow" data-drawer="arch-3">
+            <td><code>0011</code> <span class="xrow-indicator">▾</span></td>
+            <td>Withdrawal</td><td>Pool → A</td><td>Financial/Physical</td>
+          </tr>
+          <tr class="xdrawer" id="arch-3"><td colspan="4"><div class="xdrawer-inner">
+            <p>Entity withdraws from a shared pool. Financial: bank withdrawal, fund redemption. Physical: drawing from tank, reservoir output. The pool is the source.</p>
+          </div></td></tr>
+          <tr class="xrow" data-drawer="arch-4">
+            <td><code>0100</code> <span class="xrow-indicator">▾</span></td>
+            <td>Issuance</td><td>∅ → A</td><td>Financial</td>
+          </tr>
+          <tr class="xdrawer" id="arch-4"><td colspan="4"><div class="xdrawer-inner">
+            <p>New value created and issued into circulation. Financial: bond issuance, money creation, equity issuance. No corresponding debit from an existing store — the flow originates from the issuance authority. Used with careful conservation accounting.</p>
+          </div></td></tr>
+          <tr class="xrow" data-drawer="arch-5">
+            <td><code>0101</code> <span class="xrow-indicator">▾</span></td>
+            <td>Redemption</td><td>A → ∅</td><td>Financial</td>
+          </tr>
+          <tr class="xdrawer" id="arch-5"><td colspan="4"><div class="xdrawer-inner">
+            <p>Value retired from circulation. Financial: bond maturity, share buyback, loan repayment (destroying the obligation). The flow terminates rather than transferring to a new holder.</p>
+          </div></td></tr>
+          <tr class="xrow" data-drawer="arch-6">
+            <td><code>0110</code> <span class="xrow-indicator">▾</span></td>
+            <td>Allocation</td><td>A → A:sub</td><td>Internal</td>
+          </tr>
+          <tr class="xdrawer" id="arch-6"><td colspan="4"><div class="xdrawer-inner">
+            <p>Entity allocates from its own total to a designated sub-account or purpose. Financial: budget allocation. Physical: subsystem power budgeting. The total does not leave the entity — it is internally partitioned.</p>
+          </div></td></tr>
+          <tr class="xrow" data-drawer="arch-7">
+            <td><code>0111</code> <span class="xrow-indicator">▾</span></td>
+            <td>Consolidation</td><td>A:sub → A</td><td>Internal</td>
+          </tr>
+          <tr class="xdrawer" id="arch-7"><td colspan="4"><div class="xdrawer-inner">
+            <p>Sub-account balances consolidated back to the parent entity. Releases earmarked funds or resources back to the general pool. Reverse of Allocation.</p>
+          </div></td></tr>
+          <tr class="xrow" data-drawer="arch-8">
+            <td><code>1000</code> <span class="xrow-indicator">▾</span></td>
+            <td>Obligation</td><td>A ← B (future)</td><td>Contractual</td>
+          </tr>
+          <tr class="xdrawer" id="arch-8"><td colspan="4"><div class="xdrawer-inner">
+            <p>B is obligated to deliver to A at a future point. Financial: loan, forward contract, receivable. The obligation is the record — the future flow is not yet encoded. Creates a liability/asset pair in the double-entry system.</p>
+          </div></td></tr>
+          <tr class="xrow" data-drawer="arch-9">
+            <td><code>1001</code> <span class="xrow-indicator">▾</span></td>
+            <td>Settlement</td><td>A ← B (closing)</td><td>Contractual</td>
+          </tr>
+          <tr class="xdrawer" id="arch-9"><td colspan="4"><div class="xdrawer-inner">
+            <p>Closes a prior Obligation. The flow discharges the liability recorded in a prior transaction. The settlement record references the obligation record by session key or timestamp.</p>
+          </div></td></tr>
+          <tr class="xrow" data-drawer="arch-10">
+            <td><code>1010</code> <span class="xrow-indicator">▾</span></td>
+            <td>Conversion</td><td>A[x] → A[y]</td><td>Universal</td>
+          </tr>
+          <tr class="xdrawer" id="arch-10"><td colspan="4"><div class="xdrawer-inner">
+            <p>Same entity converts one quantity type to another. Financial: currency conversion. Physical: energy conversion (chemical → electrical). The conservation law applies within the conversion rate at the time of encoding.</p>
+          </div></td></tr>
+          <tr class="xrow" data-drawer="arch-11">
+            <td><code>1011</code> <span class="xrow-indicator">▾</span></td>
+            <td>Distribution</td><td>A → B,C,D</td><td>Universal</td>
+          </tr>
+          <tr class="xdrawer" id="arch-11"><td colspan="4"><div class="xdrawer-inner">
+            <p>One source distributes to multiple destinations. Financial: dividend distribution, payroll. Physical: power bus distribution to multiple loads. Encoded as a batch with the Distribution archetype and multiple destination entries.</p>
+          </div></td></tr>
+          <tr class="xrow" data-drawer="arch-12">
+            <td><code>1100</code> <span class="xrow-indicator">▾</span></td>
+            <td>Aggregation</td><td>A,B,C → D</td><td>Universal</td>
+          </tr>
+          <tr class="xdrawer" id="arch-12"><td colspan="4"><div class="xdrawer-inner">
+            <p>Multiple sources aggregate to one destination. Financial: pooled funding, crowdfund collection. Physical: multiple generators feeding a common bus. Reverse of Distribution.</p>
+          </div></td></tr>
+          <tr class="xrow" data-drawer="arch-13">
+            <td><code>1101</code> <span class="xrow-indicator">▾</span></td>
+            <td>Escrow</td><td>A → [hold] → B</td><td>Contractual</td>
+          </tr>
+          <tr class="xdrawer" id="arch-13"><td colspan="4"><div class="xdrawer-inner">
+            <p>Value moves to a held/locked state pending condition fulfilment. Financial: escrow account, collateral. Physical: staged propellant hold for future burn. The hold is the destination until release conditions are met.</p>
+          </div></td></tr>
+          <tr class="xrow" data-drawer="arch-14">
+            <td><code>1110</code> <span class="xrow-indicator">▾</span></td>
+            <td>Release</td><td>[hold] → B</td><td>Contractual</td>
+          </tr>
+          <tr class="xdrawer" id="arch-14"><td colspan="4"><div class="xdrawer-inner">
+            <p>Held value released to the intended destination. Closes an Escrow record. The release record references the escrow record. Conditions verified at release time by the session authority.</p>
+          </div></td></tr>
+          <tr class="xrow" data-drawer="arch-15">
+            <td><code>1111</code> <span class="xrow-indicator">▾</span></td>
+            <td>Audit / Reconciliation</td><td>A ↔ ledger</td><td>Control</td>
+          </tr>
+          <tr class="xdrawer" id="arch-15"><td colspan="4"><div class="xdrawer-inner">
+            <p>Declares the reconciliation state between an entity's actual holdings and the ledger record. Financial: audit confirmation, balance verification. Used in sessions where ledger integrity checks are transmitted as stream events.</p>
+          </div></td></tr>
+        </tbody>
+      </table>
+
+      <h3>Codebook Field (Bits 5–6)</h3>
+      <table class="data-table">
+        <thead>
+          <tr><th>Code</th><th>Mode</th><th>Effect</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>00</code></td>
+            <td>Universal</td>
+            <td>Standard BitPads nibble codebook. 16 entries. Globally agreed. No session declaration needed.</td>
+          </tr>
+          <tr>
+            <td><code>01</code></td>
+            <td>Session-declared</td>
+            <td>Codebook declared at session open in custom domain extension block. Receiver holds the codebook from session negotiation.</td>
+          </tr>
+          <tr>
+            <td><code>10</code></td>
+            <td>Shift offset / cipher</td>
+            <td>Cipher-shifted codebook. Active codebook = session baseline shifted by cipher key. Provides semantic obscuration without cryptographic overhead.</td>
+          </tr>
+          <tr>
+            <td><code>11</code></td>
+            <td>Extended</td>
+            <td>Extended codebook declaration follows in the next bytes immediately after the Stream-Open Control byte. Allows arbitrary codebook definition at stream open.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- ── SECTION 6: EVERY BYTE ── -->
+    <section id="every-byte">
+      <p class="eyebrow">Stream Architecture</p>
+      <h2>Every Byte in the Stream</h2>
+      <p>In Telegraph Emulation mode, every byte in the stream body is an enhanced C0 byte. There are no "content bytes" vs "signal bytes" — the distinction disappears. The stream IS the signal.</p>
+
+      <div class="bit-display">
+        <div class="bit-display-label">Generic Telegraph Stream Byte</div>
+        <div class="bit-cells">
+          <div class="bit-cell enhance w3" data-tooltip="Bits 1-3: Enhancement flags P/A/C. Priority (P), Acknowledge-request (A), Continuation (C). Upper 3 bits of every stream byte.">
+            <span class="bit-pos">1–3</span>
+            <span class="bit-val">PAC</span>
+            <span class="bit-name">Flags<br>P / A / C</span>
+          </div>
+          <div class="bit-cell mode w5" data-tooltip="Bits 4-8: C0 Code Identity. The 5-bit C0 control code. Values 00000-11100 map to the agreed C0 control set (29 unconditional controls + 4 session-conditionals).">
+            <span class="bit-pos">4–8</span>
+            <span class="bit-val">CCCCC</span>
+            <span class="bit-name">C0 Code Identity</span>
+          </div>
+        </div>
+        <div class="bit-legend">
+          <span class="legend-item"><span class="legend-swatch enhance"></span> Enhancement Flags (P/A/C)</span>
+          <span class="legend-item"><span class="legend-swatch mode"></span> C0 Code Identity (5 bits)</span>
+        </div>
+      </div>
+
+      <div class="formula">
+        <span class="f-name">Vocabulary per byte position:</span><br>
+        <span class="f-var">agreed C0 controls</span> × <span class="f-var">flag combinations</span> = <span class="f-val">typed events</span><br>
+        29 unconditional controls × 8 flag states = <span class="f-val" style="color:var(--nasa-red);font-weight:700;">232 distinct typed events</span><br>
+        <span class="f-note">At every byte position in the stream. One C0 signal per byte. Three flag bits add P/A/C information to each signal.</span>
+      </div>
+
+      <p>This means the stream carries structured semantic data at the rate of one typed event per byte, with the three flag bits adding priority, confirmation, and continuation information to each signal. A 100-byte telegraph stream carries up to 100 typed events — each uniquely identified by a (C0 code, flag state) pair from the vocabulary of 232.</p>
+    </section>
+
+    <!-- ── SECTION 7: C0 ANATOMY ── -->
+    <section id="anatomy">
+      <p class="eyebrow">Byte-Level Decoding</p>
+      <h2>C0 Byte Anatomy in Telegraph Mode</h2>
+      <p>Every byte is decoded by splitting the 8 bits into the 3-bit flag field and the 5-bit C0 identity. The following examples show a variety of byte values and their complete decoded meaning.</p>
+
+      <div class="printout">
+        <div class="ph">EXAMPLE BYTE SEQUENCE — TELEGRAPH STREAM DECODE</div>
+        <div class="ph">──────────────────────────────────────────────────────────</div>
+        <div>&nbsp;</div>
+        <div><span class="pl">Sequence:    </span><span class="pv">0x16  0x96  0x16  0x16  0x86</span></div>
+        <div>&nbsp;</div>
+        <div class="ph">──────────────────────────────────────────────────────────</div>
+        <div><span class="pl">0x16 </span><span class="pb">= 000 10110 </span><span class="pv">= Plain SYN        </span><span class="pc">→ keep-alive / heartbeat, no flags</span></div>
+        <div><span class="pl">0x96 </span><span class="pb">= 100 10110 </span><span class="pv">= Priority SYN     </span><span class="pc">→ priority heartbeat / pre-announce</span></div>
+        <div><span class="pl">0x16 </span><span class="pb">= 000 10110 </span><span class="pv">= Plain SYN        </span><span class="pc">→ return to normal cadence</span></div>
+        <div><span class="pl">0x16 </span><span class="pb">= 000 10110 </span><span class="pv">= Plain SYN        </span><span class="pc">→ normal cadence continues</span></div>
+        <div><span class="pl">0x86 </span><span class="pb">= 100 00110 </span><span class="pv">= Priority ACK     </span><span class="pc">→ priority acknowledgement</span></div>
+        <div class="ph">──────────────────────────────────────────────────────────</div>
+      </div>
+
+      <div class="printout">
+        <div class="ph">EXAMPLE SEQUENCE — ALERT ESCALATION</div>
+        <div class="ph">──────────────────────────────────────────────────────────</div>
+        <div>&nbsp;</div>
+        <div><span class="pl">Sequence:    </span><span class="pv">0x07  0x87  0xE7  0x44  0x04</span></div>
+        <div>&nbsp;</div>
+        <div class="ph">──────────────────────────────────────────────────────────</div>
+        <div><span class="pl">0x07 </span><span class="pb">= 000 00111 </span><span class="pv">= Plain BEL        </span><span class="pc">→ standard alert, legacy rings bell</span></div>
+        <div><span class="pl">0x87 </span><span class="pb">= 100 00111 </span><span class="pv">= Priority BEL     </span><span class="pc">→ elevated urgency alert</span></div>
+        <div><span class="pl">0xE7 </span><span class="pb">= 111 00111 </span><span class="pv">= Full BEL (P+A+C) </span><span class="pc">→ emergency, confirm + detail seq follows</span></div>
+        <div><span class="pl">0x44 </span><span class="pb">= 010 00100 </span><span class="pv">= ACK EOT          </span><span class="pc">→ confirmed close signal incoming</span></div>
+        <div><span class="pl">0x04 </span><span class="pb">= 000 00100 </span><span class="pv">= Plain EOT        </span><span class="pc">→ stream close</span></div>
+        <div class="ph">──────────────────────────────────────────────────────────</div>
+      </div>
+
+      <div class="printout">
+        <div class="ph">EXAMPLE SEQUENCE — CONFIRMED DATA HANDOFF</div>
+        <div class="ph">──────────────────────────────────────────────────────────</div>
+        <div>&nbsp;</div>
+        <div><span class="pl">Sequence:    </span><span class="pv">0x1C  0x9C  0xBC  0x1E  0x02</span></div>
+        <div>&nbsp;</div>
+        <div class="ph">──────────────────────────────────────────────────────────</div>
+        <div><span class="pl">0x1C </span><span class="pb">= 000 11100 </span><span class="pv">= Plain FS         </span><span class="pc">→ file separator (legacy compatible)</span></div>
+        <div><span class="pl">0x9C </span><span class="pb">= 100 11100 </span><span class="pv">= Priority FS      </span><span class="pc">→ priority file separation event</span></div>
+        <div><span class="pl">0xBC </span><span class="pb">= 101 11100 </span><span class="pv">= P+C FS           </span><span class="pc">→ priority FS, component escalation opens</span></div>
+        <div><span class="pl">0x1E </span><span class="pb">= 000 11110 </span><span class="pv">= Plain RS         </span><span class="pc">→ record separator (legacy compatible)</span></div>
+        <div><span class="pl">0x02 </span><span class="pb">= 000 00010 </span><span class="pv">= Plain STX        </span><span class="pc">→ start of text / stream resume</span></div>
+        <div class="ph">──────────────────────────────────────────────────────────</div>
+      </div>
+
+      <div class="printout">
+        <div class="ph">EXAMPLE SEQUENCE — CONTINUATION SEQUENCE</div>
+        <div class="ph">──────────────────────────────────────────────────────────</div>
+        <div>&nbsp;</div>
+        <div><span class="pl">Sequence:    </span><span class="pv">0xB6  0x36  0x36  0x16</span></div>
+        <div>&nbsp;</div>
+        <div class="ph">──────────────────────────────────────────────────────────</div>
+        <div><span class="pl">0xB6 </span><span class="pb">= 101 10110 </span><span class="pv">= P+C SYN          </span><span class="pc">→ priority SYN, opens signal sequence</span></div>
+        <div><span class="pl">0x36 </span><span class="pb">= 001 10110 </span><span class="pv">= C SYN            </span><span class="pc">→ continuation SYN in sequence</span></div>
+        <div><span class="pl">0x36 </span><span class="pb">= 001 10110 </span><span class="pv">= C SYN            </span><span class="pc">→ continuation SYN in sequence</span></div>
+        <div><span class="pl">0x16 </span><span class="pb">= 000 10110 </span><span class="pv">= Plain SYN        </span><span class="pc">→ sequence close, normal heartbeat</span></div>
+        <div class="ph">──────────────────────────────────────────────────────────</div>
+      </div>
+    </section>
+
+    <!-- ── SECTION 8: ENHANCEMENT FIELDS ── -->
+    <section id="enhancement-fields">
+      <p class="eyebrow">Flag Grammar</p>
+      <h2>Enhancement Fields — All 8 States</h2>
+      <p>The upper 3 bits of every telegraph stream byte carry the P/A/C flag combination. Eight states. Each has a defined meaning in the stream context. Click any row to expand the detail.</p>
+
+      <table class="data-table">
+        <thead>
+          <tr><th>Flags (P/A/C)</th><th>Byte Form</th><th>Stream Meaning</th><th>Legacy Safe?</th></tr>
+        </thead>
+        <tbody>
+          <tr class="xrow" data-drawer="flag-000">
+            <td><code>000</code> — Plain <span class="xrow-indicator">▾</span></td>
+            <td>0x00–0x1F</td>
+            <td>Standard C0 semantics. No enhancement flags.</td>
+            <td><span class="pg" style="color:var(--bit-account);font-weight:700;">YES</span></td>
+          </tr>
+          <tr class="xdrawer" id="flag-000"><td colspan="4"><div class="xdrawer-inner">
+            <div class="xdrawer-grid">
+              <div class="xdrawer-section">
+                <h5>Behaviour</h5>
+                <p>Byte values 0–31. Byte-for-byte identical to standard C0 control codes. Legacy receivers and BitPads receivers decode identically. This is the backward-compatible ground state.</p>
+              </div>
+              <div class="xdrawer-section">
+                <h5>Protocol Flow</h5>
+                <p>No response required unless the C0 code itself requires it (e.g., ENQ expects ACK). No escalation. No signal sequence opens. Stream continues normally after the byte.</p>
+              </div>
+              <div class="xdrawer-section">
+                <h5>Example</h5>
+                <p><code>0x16</code> = Plain SYN = synchronisation idle / keep-alive. Transmitted at regular intervals on idle streams. Legacy receivers re-synchronise. BitPads receivers note the heartbeat.</p>
+              </div>
+            </div>
+          </div></td></tr>
+
+          <tr class="xrow" data-drawer="flag-001">
+            <td><code>001</code> — Continuation <span class="xrow-indicator">▾</span></td>
+            <td>0x20–0x3F</td>
+            <td>Opens a signal sequence. More bytes follow at this semantic position.</td>
+            <td><span style="color:var(--nasa-gold);font-weight:700;">PARTIAL</span></td>
+          </tr>
+          <tr class="xdrawer" id="flag-001"><td colspan="4"><div class="xdrawer-inner">
+            <div class="xdrawer-grid">
+              <div class="xdrawer-section">
+                <h5>Behaviour</h5>
+                <p>Byte values 32–63. Legacy receivers see printable ASCII characters (space, !, ", # ...). BitPads receivers enter Continuation mode: the semantic position remains open until a byte without the C flag (bit 3 = 0) closes the sequence.</p>
+              </div>
+              <div class="xdrawer-section">
+                <h5>Protocol Flow</h5>
+                <p>Receiver buffers the C0 code identity of the opening byte. Subsequent bytes with C=1 extend the sequence. First byte with C=0 closes the sequence and triggers the semantic event.</p>
+              </div>
+              <div class="xdrawer-section">
+                <h5>Example</h5>
+                <p><code>0x36 0x36 0x16</code>: two continuation SYNs followed by plain SYN. The receiver accumulates three SYN signals before triggering the keep-alive event. Extended heartbeat pattern.</p>
+              </div>
+            </div>
+          </div></td></tr>
+
+          <tr class="xrow" data-drawer="flag-010">
+            <td><code>010</code> — ACK-request <span class="xrow-indicator">▾</span></td>
+            <td>0x40–0x5F</td>
+            <td>Reliable delivery within the stream. Receiver must ACK this byte's event.</td>
+            <td><span style="color:var(--nasa-gold);font-weight:700;">PARTIAL</span></td>
+          </tr>
+          <tr class="xdrawer" id="flag-010"><td colspan="4"><div class="xdrawer-inner">
+            <div class="xdrawer-grid">
+              <div class="xdrawer-section">
+                <h5>Behaviour</h5>
+                <p>Byte values 64–95. Legacy receivers see ASCII D, E, F... BitPads receivers note the ACK-request flag. The C0 code identity declares what is being confirmed. The receiver must ACK within the session timeout.</p>
+              </div>
+              <div class="xdrawer-section">
+                <h5>Protocol Flow</h5>
+                <p>Sender marks the byte as requiring acknowledgement. Receiver processes the C0 event. Receiver sends ACK byte (<code>0x06</code> or enhanced ACK form) before the timeout. Sender may retransmit on timeout.</p>
+              </div>
+              <div class="xdrawer-section">
+                <h5>Example</h5>
+                <p><code>0x44</code> = ACK EOT = confirmed close request. Receiver must acknowledge the stream close before the channel tears down. Allows orderly session termination.</p>
+              </div>
+            </div>
+          </div></td></tr>
+
+          <tr class="xrow" data-drawer="flag-011">
+            <td><code>011</code> — ACK + Continuation <span class="xrow-indicator">▾</span></td>
+            <td>0x60–0x7F</td>
+            <td>Reliable delivery within a signal sequence. Confirmation required for a continuation event.</td>
+            <td><span style="color:var(--nasa-gold);font-weight:700;">PARTIAL</span></td>
+          </tr>
+          <tr class="xdrawer" id="flag-011"><td colspan="4"><div class="xdrawer-inner">
+            <div class="xdrawer-grid">
+              <div class="xdrawer-section">
+                <h5>Behaviour</h5>
+                <p>Byte values 96–127. ACK-request and Continuation both set. The event requires confirmation AND more bytes follow. Used for confirmed multi-byte signal sequences.</p>
+              </div>
+              <div class="xdrawer-section">
+                <h5>Protocol Flow</h5>
+                <p>Sender opens a signal sequence that requires confirmation. Receiver must ACK the opening event before the sequence continues. Sequence continues after ACK receipt. Provides confirmed ordered delivery of extended events.</p>
+              </div>
+            </div>
+          </div></td></tr>
+
+          <tr class="xrow" data-drawer="flag-100">
+            <td><code>100</code> — Priority <span class="xrow-indicator">▾</span></td>
+            <td>0x80–0x9F</td>
+            <td>Elevated urgency. Pre-empts normal stream processing priority.</td>
+            <td><span style="color:var(--nasa-gold);font-weight:700;">PARTIAL</span></td>
+          </tr>
+          <tr class="xdrawer" id="flag-100"><td colspan="4"><div class="xdrawer-inner">
+            <div class="xdrawer-grid">
+              <div class="xdrawer-section">
+                <h5>Behaviour</h5>
+                <p>Byte values 128–159. Priority flag set. The event is elevated above normal stream priority. Receiver interrupts any pending normal-priority processing to handle this event first. Same C0 code identity as the plain form.</p>
+              </div>
+              <div class="xdrawer-section">
+                <h5>Protocol Flow</h5>
+                <p>Receiver pre-empts normal queue. Processes the C0 event at elevated priority. Normal stream processing resumes after the priority event is handled. No ACK required unless also flagged.</p>
+              </div>
+              <div class="xdrawer-section">
+                <h5>Example</h5>
+                <p><code>0x87</code> = Priority BEL = urgent alert. Immediate interrupt of any pending lower-priority processing. The bell is an emergency rather than a notification.</p>
+              </div>
+            </div>
+          </div></td></tr>
+
+          <tr class="xrow" data-drawer="flag-101">
+            <td><code>101</code> — Priority + Continuation <span class="xrow-indicator">▾</span></td>
+            <td>0xA0–0xBF</td>
+            <td>Urgent announcement with detail following. Triggers Component Escalation at signal slots.</td>
+            <td><span style="color:var(--nasa-red);font-weight:700;">NO*</span></td>
+          </tr>
+          <tr class="xdrawer" id="flag-101"><td colspan="4"><div class="xdrawer-inner">
+            <div class="xdrawer-grid">
+              <div class="xdrawer-section">
+                <h5>Behaviour</h5>
+                <p>Byte values 160–191. Priority set, Continuation set, no ACK. At a declared signal slot position: triggers Component Escalation (full BitPads Record embedded inline). Within stream body: opens priority signal sequence with detail following.</p>
+              </div>
+              <div class="xdrawer-section">
+                <h5>Protocol Flow</h5>
+                <p>At signal slot: parser pushes state, reads inner Record, pops state, resumes stream. In stream body: receiver processes high-priority event and awaits continuation bytes defining the detail payload.</p>
+              </div>
+              <div class="xdrawer-section">
+                <h5>Legacy Note</h5>
+                <p>*Legacy receivers see byte values 160–191, which fall in the Latin-1 extended character range. They appear as extended characters — visible on screen but not processed as controls. The stream continues to be receivable.</p>
+              </div>
+            </div>
+          </div></td></tr>
+
+          <tr class="xrow" data-drawer="flag-110">
+            <td><code>110</code> — Priority + ACK <span class="xrow-indicator">▾</span></td>
+            <td>0xC0–0xDF</td>
+            <td>Standard form for confirmed important events. Critical system state with required confirmation.</td>
+            <td><span style="color:var(--nasa-red);font-weight:700;">NO*</span></td>
+          </tr>
+          <tr class="xdrawer" id="flag-110"><td colspan="4"><div class="xdrawer-inner">
+            <div class="xdrawer-grid">
+              <div class="xdrawer-section">
+                <h5>Behaviour</h5>
+                <p>Byte values 192–223. Priority set, ACK-request set. Used for critical events that must be confirmed. Lower 5 bits of C0 identity also carry codebook shift index when used at rolling codebook shift positions.</p>
+              </div>
+              <div class="xdrawer-section">
+                <h5>Protocol Flow</h5>
+                <p>Receiver pre-empts normal queue. Processes at high priority. Must ACK within timeout. No continuation — this is a single confirmed event. The combination of Priority and ACK marks high-reliability critical events.</p>
+              </div>
+              <div class="xdrawer-section">
+                <h5>Example</h5>
+                <p><code>0xC7</code> = Priority+ACK BEL = critical alert requiring confirmation. Receiver must ACK before the sending system considers the alert delivered. Maximum reliability for critical state changes.</p>
+              </div>
+            </div>
+          </div></td></tr>
+
+          <tr class="xrow" data-drawer="flag-111">
+            <td><code>111</code> — All Flags (P+A+C) <span class="xrow-indicator">▾</span></td>
+            <td>0xE0–0xFF</td>
+            <td>Emergency with confirmation and detail sequence. Maximum event weight.</td>
+            <td><span style="color:var(--nasa-red);font-weight:700;">NO*</span></td>
+          </tr>
+          <tr class="xdrawer" id="flag-111"><td colspan="4"><div class="xdrawer-inner">
+            <div class="xdrawer-grid">
+              <div class="xdrawer-section">
+                <h5>Behaviour</h5>
+                <p>Byte values 224–255. All three flags set. Emergency-level event requiring confirmation, with a continuation sequence following to deliver the detail. The highest-weight event form in the protocol.</p>
+              </div>
+              <div class="xdrawer-section">
+                <h5>Protocol Flow</h5>
+                <p>Receiver drops all normal queue processing. Handles at emergency level. Must ACK the opening event. Reads continuation bytes. The full sequence constitutes the emergency record. Receiver may trigger hardware interrupt or failsafe.</p>
+              </div>
+              <div class="xdrawer-section">
+                <h5>Example</h5>
+                <p><code>0xE7</code> = All-flags BEL = full emergency alert, confirmation required, detail sequence follows. In a spacecraft: triggers immediate safing mode entry, transmits full fault record in the continuation sequence, requires ground ACK before system can resume.</p>
+              </div>
+            </div>
+          </div></td></tr>
+        </tbody>
+      </table>
+
+      <!-- INLINE STREAM DECODER -->
+      <div class="inline-decoder">
+        <div class="inline-decoder-title">Stream Decoder / Simulator</div>
+        <p style="font-family:var(--mono);font-size:11px;color:rgba(255,255,255,0.4);margin:0 0 14px;">Enter hex bytes separated by spaces (e.g. <span style="color:var(--nasa-gold);">16 96 16 86 04 84</span>). Decoder shows C0 identity, flag states, and both legacy and BitPads interpretations.</p>
+        <input class="decoder-input" id="decoderInput" type="text" placeholder="16 96 07 87 E7 44 04" spellcheck="false">
+        <button class="decoder-btn" onclick="runDecoder()">Decode Stream</button>
+        <button class="decoder-btn" onclick="loadExample()" style="background:rgba(255,255,255,0.08);">Load Example</button>
+        <div class="decoder-output" id="decoderOutput">
+          <div style="color:rgba(255,255,255,0.2);">Enter hex bytes above and click Decode Stream.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── SECTION 9: COMPONENT ESCALATION ── -->
+    <section id="escalation">
+      <p class="eyebrow">Advanced Capability</p>
+      <h2>Component Escalation — Field 101</h2>
+      <p>Enhancement field 101 (Priority + Continuation, no ACK) at a stream signal slot triggers Component Escalation: the delivery of a full BitPads Record within the active stream. This is the most significant capability of the Enhancement Sub-Protocol — embedding a complete Record, with all its structure and components, inside a Telegraph stream.</p>
+
+      <div class="notice">
+        <p><strong>What this enables:</strong> A stream can deliver a fully identified, timestamped, valued record inline — without interrupting the stream. The outer stream resumes immediately after the embedded record. No new session. No stream break. The embedded record can itself be a BitLedger transaction with conservation-verified double-entry accounting.</p>
+      </div>
+
+      <h3>Parser Stack Operation</h3>
+      <p>When the decoder encounters a byte with flags=101 (Priority+Continuation) at a declared signal slot, the parser stack mechanism activates:</p>
+
+      <div class="printout">
+        <div class="ph">COMPONENT ESCALATION — PARSER STACK OPERATION</div>
+        <div class="ph">──────────────────────────────────────────────────────────</div>
+        <div>&nbsp;</div>
+        <div><span class="pl">Step 1 </span><span class="pv">Detect byte with flags=101 at declared signal slot</span></div>
+        <div><span class="pl">Step 2 </span><span class="pv">Save current ParserStateFrame (stream state, codebook, position)</span></div>
+        <div><span class="pl">Step 3 </span><span class="pv">Push frame onto parser stack</span></div>
+        <div><span class="pl">Step 4 </span><span class="pv">Begin reading inner Record from current byte position</span></div>
+        <div><span class="pl">       </span><span class="pc">(full Meta byte, Layer 1 if new session, all components)</span></div>
+        <div><span class="pl">Step 5 </span><span class="pv">Inner Record parsed completely as a BitPads transmission</span></div>
+        <div><span class="pl">       </span><span class="pc">(may itself trigger further escalation, up to max depth)</span></div>
+        <div><span class="pl">Step 6 </span><span class="pv">Inner Record reaches natural close (ETX / EOT / length end)</span></div>
+        <div><span class="pl">Step 7 </span><span class="pv">Pop top frame from parser stack</span></div>
+        <div><span class="pl">Step 8 </span><span class="pv">Restore all state from frame (stream position, codebook, etc.)</span></div>
+        <div><span class="pl">Step 9 </span><span class="pv">Outer stream resumes from resume_position</span></div>
+        <div>&nbsp;</div>
+        <div class="ph">──────────────────────────────────────────────────────────</div>
+        <div><span class="pg">Outer stream continues as if inner record was a single signal event.</span></div>
+      </div>
+
+      <h3>Parser Stack — Before / After Diagram</h3>
+
+      <div class="parser-stack-diagram">
+        <div class="psd-col">
+          <div class="psd-label">Before Escalation</div>
+          <div class="psd-frame active">Outer Stream<br><span style="color:var(--ink-faint);font-size:10px;">Category 1110 · Codebook 01<br>Position: byte 47</span></div>
+          <div class="psd-frame" style="border-left-color:var(--rule);color:var(--ink-faint);">(empty)</div>
+        </div>
+        <div class="psd-arrow">→</div>
+        <div class="psd-col">
+          <div class="psd-label">During Inner Record</div>
+          <div class="psd-frame inner">Inner Record<br><span style="color:var(--ink-faint);font-size:10px;">Parsing: Meta + L1 + Value<br>Current parser position</span></div>
+          <div class="psd-frame">Outer Stream [saved]<br><span style="color:var(--ink-faint);font-size:10px;">Category 1110 · Codebook 01<br>Resume: byte 47</span></div>
+        </div>
+        <div class="psd-arrow">→</div>
+        <div class="psd-col">
+          <div class="psd-label">After Escalation</div>
+          <div class="psd-frame active">Outer Stream [restored]<br><span style="color:var(--ink-faint);font-size:10px;">Category 1110 · Codebook 01<br>Resuming from byte 47</span></div>
+          <div class="psd-frame" style="border-left-color:var(--rule);color:var(--ink-faint);">(empty — frame popped)</div>
+        </div>
+      </div>
+
+      <h3>Example Byte Sequence</h3>
+      <div class="printout">
+        <div class="ph">EMBEDDED RECORD EXAMPLE — BYTE SEQUENCE</div>
+        <div class="ph">──────────────────────────────────────────────────────────</div>
+        <div>&nbsp;</div>
+        <div><span class="pl">Outer stream body continues:</span></div>
+        <div><span class="pl">  ...  </span><span class="pv">0x16  </span><span class="pc">SYN heartbeat — normal stream idle</span></div>
+        <div><span class="pl">  ...  </span><span class="pv">0xBC  </span><span class="pc">flags=101 FS at P11 signal slot → ESCALATION TRIGGER</span></div>
+        <div>&nbsp;</div>
+        <div><span class="pl">Inner Record begins (parser stack pushed):</span></div>
+        <div><span class="pl">  [0]  </span><span class="pv">0x01  </span><span class="pc">SOH — inner Record Meta byte 1 (Record mode)</span></div>
+        <div><span class="pl">  [1]  </span><span class="pv">0x80  </span><span class="pc">Meta byte 2</span></div>
+        <div><span class="pl">  [2-6]</span><span class="pv">Layer 1 bytes (sender ID, session flags)</span></div>
+        <div><span class="pl">  [7+] </span><span class="pv">Layer 3 value, time, task, note components</span></div>
+        <div><span class="pl">  [N]  </span><span class="pv">0x03  </span><span class="pc">ETX — inner Record close</span></div>
+        <div>&nbsp;</div>
+        <div><span class="pl">Outer stream resumes (parser stack popped):</span></div>
+        <div><span class="pl">  ...  </span><span class="pv">0x16  </span><span class="pc">SYN heartbeat — stream continues as if uninterrupted</span></div>
+        <div class="ph">──────────────────────────────────────────────────────────</div>
+      </div>
+    </section>
+
+    <!-- ── SECTION 10: SIGNAL SLOT POSITIONS ── -->
+    <section id="signal-slots">
+      <p class="eyebrow">Signal Architecture</p>
+      <h2>Signal Slot Positions in Telegraph Streams</h2>
+      <p>When the Session Enhancement Flag (Layer 1 bit 12) is active alongside category 1110, both the 13 signal slot positions P1–P13 and the stream's enhanced byte content are simultaneously available. How do these interact?</p>
+
+      <table class="data-table">
+        <thead>
+          <tr><th>Slots</th><th>Scope</th><th>Operation in Category 1110</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>P1–P3</code></td>
+            <td>Session layer</td>
+            <td>Operate at session level, before and after the stream. P1 fires at session open before any stream content. P3 fires at session close. P2 is the session-boundary slot between consecutive streams.</td>
+          </tr>
+          <tr>
+            <td><code>P4–P8</code></td>
+            <td>Record layer</td>
+            <td>Available when a full BitPads Record is embedded in the stream via Component Escalation (field 101). These slots operate within the inner Record's structure — pre-value, post-value, pre-task, post-task, note slots.</td>
+          </tr>
+          <tr>
+            <td><code>P9–P10</code></td>
+            <td>Batch layer</td>
+            <td>Batch boundary slots. Active when the stream is part of a batch context. P9 fires at batch open, P10 at batch close.</td>
+          </tr>
+          <tr>
+            <td><code>P11</code></td>
+            <td>Stream layer</td>
+            <td>The stream-open slot position. Fires at the point where the stream body begins — immediately after the Stream-Open Control byte. This is where the Component Escalation trigger is most commonly declared for stream-level embedded records.</td>
+          </tr>
+          <tr>
+            <td><code>P12–P13</code></td>
+            <td>Wave / inline</td>
+            <td>Available in Wave mode with Extended Flags set. In the context of Category 1110, P12 and P13 can be used for pre-stream and post-stream inline signals at the transmission boundary.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="notice">
+        <p><strong>Key principle:</strong> Within the stream body itself, every byte is an enhanced C0 byte — the signal slot architecture becomes the stream content itself. The two mechanisms combine rather than conflict. Session-scoped signal slots operate at their declared positions; the stream content carries the byte-level enhancement grammar throughout.</p>
+      </div>
+    </section>
+
+    <!-- ── SECTION 11: STREAM CLOSE ── -->
+    <section id="stream-close">
+      <p class="eyebrow">Stream Termination</p>
+      <h2>Stream Close Mechanics</h2>
+      <p>Three distinct mechanisms close a Telegraph Emulation stream. Each produces a different outcome for the session and channel state.</p>
+
+      <div class="close-example">
+        <h5>Close Method 1 — Length Exhausted</h5>
+        <div class="printout">
+          <div><span class="pl">Type:    </span><span class="pv">Automatic length-prefixed close</span></div>
+          <div><span class="pl">Trigger: </span><span class="pv">Stream body byte count reaches declared length</span></div>
+          <div><span class="pl">Effect:  </span><span class="pv">Stream closes silently. Parser returns to pre-stream state.</span></div>
+          <div><span class="pl">Session: </span><span class="pv">Remains open. Next transmission can begin immediately.</span></div>
+          <div><span class="pl">Example: </span><span class="pb">0x1E [stream-open] [length=0x0A] ... [10 stream bytes] → CLOSE</span></div>
+        </div>
+      </div>
+
+      <div class="close-example">
+        <h5>Close Method 2 — EOT Byte</h5>
+        <div class="printout">
+          <div><span class="pl">Type:    </span><span class="pv">End-of-Transmission signal</span></div>
+          <div><span class="pl">Trigger: </span><span class="pv">Any EOT form in the stream body</span></div>
+          <div>&nbsp;</div>
+          <div><span class="pl">0x04 </span><span class="pb">= 000 00100 </span><span class="pv">Plain EOT      </span><span class="pc">→ stream close, no confirmation</span></div>
+          <div><span class="pl">0x44 </span><span class="pb">= 010 00100 </span><span class="pv">ACK EOT        </span><span class="pc">→ confirmed close, receiver must ACK</span></div>
+          <div><span class="pl">0x24 </span><span class="pb">= 001 00100 </span><span class="pv">Continuation   </span><span class="pc">→ stream SUSPENDS, will resume</span></div>
+          <div><span class="pl">0xC4 </span><span class="pb">= 110 00100 </span><span class="pv">Priority+ACK   </span><span class="pc">→ urgent confirmed close</span></div>
+          <div><span class="pl">0xE4 </span><span class="pb">= 111 00100 </span><span class="pv">Full EOT       </span><span class="pc">→ emergency confirmed close with detail</span></div>
+          <div>&nbsp;</div>
+          <div><span class="pl">Session: </span><span class="pv">Depends on EOT form. ACK EOT waits for receiver ACK before tearing down.</span></div>
+        </div>
+      </div>
+
+      <div class="close-example">
+        <h5>Close Method 3 — New Meta Byte</h5>
+        <div class="printout">
+          <div><span class="pl">Type:    </span><span class="pv">New session open detected</span></div>
+          <div><span class="pl">Trigger: </span><span class="pv">Byte 0x01 (SOH) detected — the context-free session-open signal</span></div>
+          <div><span class="pl">Effect:  </span><span class="pv">Current stream abandoned. Parser treats 0x01 as new session open.</span></div>
+          <div><span class="pl">Warning: </span><span class="pe">Any in-flight stream data is discarded. Emergency use only.</span></div>
+          <div><span class="pl">Session: </span><span class="pv">New session begins from the 0x01 byte. Layer 1 read begins.</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── SECTION 12: LEGACY RECEIVER ── -->
+    <section id="legacy-view">
+      <p class="eyebrow">Compatibility Analysis</p>
+      <h2>Legacy Receiver Perspective</h2>
+      <p>A legacy teleprinter or ASCII terminal receiving a Category 1110 Telegraph Emulation stream. The same 15 bytes. What the legacy device sees and does.</p>
+
+      <div class="printout">
+        <div class="ph">LEGACY RECEIVER — STREAM DECODE</div>
+        <div class="ph">──────────────────────────────────────────────────────────────────────────────</div>
+        <div><span class="pl">Byte  Hex   Binary       </span><span class="pv">Legacy Device Sees            </span><span class="pc">Legacy Action</span></div>
+        <div class="ph">──────────────────────────────────────────────────────────────────────────────</div>
+        <div><span class="pl">  1   0x16  000 10110    </span><span class="pv">SYN (0x16)                    </span><span class="pc">Synchronise idle</span></div>
+        <div><span class="pl">  2   0x96  100 10110    </span><span class="pv">Extended char &#x96; (Latin-1)   </span><span class="pc">Display or ignore</span></div>
+        <div><span class="pl">  3   0x07  000 00111    </span><span class="pv">BEL (0x07)                    </span><span class="pc">Ring bell / alert</span></div>
+        <div><span class="pl">  4   0xC7  110 00111    </span><span class="pv">Extended char &#xC7; (Ç)         </span><span class="pc">Display character Ç</span></div>
+        <div><span class="pl">  5   0x04  000 00100    </span><span class="pv">EOT (0x04)                    </span><span class="pc">End transmission signal</span></div>
+        <div><span class="pl">  6   0x44  010 00100    </span><span class="pv">ASCII 'D' (0x44)              </span><span class="pc">Display character D</span></div>
+        <div><span class="pl">  7   0x16  000 10110    </span><span class="pv">SYN (0x16)                    </span><span class="pc">Synchronise idle</span></div>
+        <div><span class="pl">  8   0x1C  000 11100    </span><span class="pv">FS (0x1C)                     </span><span class="pc">File separator</span></div>
+        <div><span class="pl">  9   0x9C  100 11100    </span><span class="pv">Extended char &#x9C; (Latin-1)   </span><span class="pc">Display or ignore</span></div>
+        <div><span class="pl"> 10   0x02  000 00010    </span><span class="pv">STX (0x02)                    </span><span class="pc">Start of text marker</span></div>
+        <div><span class="pl"> 11   0xBC  101 11100    </span><span class="pv">Extended char &#xBC; (¼)          </span><span class="pc">Display character ¼</span></div>
+        <div><span class="pl"> 12   0x06  000 00110    </span><span class="pv">ACK (0x06)                    </span><span class="pc">Acknowledge signal</span></div>
+        <div><span class="pl"> 13   0xE7  111 00111    </span><span class="pv">Extended char &#xE7; (ç)          </span><span class="pc">Display character ç</span></div>
+        <div><span class="pl"> 14   0x16  000 10110    </span><span class="pv">SYN (0x16)                    </span><span class="pc">Synchronise idle</span></div>
+        <div><span class="pl"> 15   0x04  000 00100    </span><span class="pv">EOT (0x04)                    </span><span class="pc">End transmission — stream closed</span></div>
+        <div class="ph">──────────────────────────────────────────────────────────────────────────────</div>
+        <div><span class="pg">Legacy receiver: no errors, no protocol violations. Standard C0 stream.</span></div>
+      </div>
+
+      <p class="small soft">The legacy receiver sees bytes 0–31 as their standard C0 controls (which execute normally), and bytes 32+ as printable characters (which are displayed or ignored). The stream is fully functional for legacy devices. BEL rings. EOT closes. SYN synchronises. The rich BitPads event layer is invisible to legacy hardware.</p>
+    </section>
+
+    <!-- ── SECTION 13: BITPADS RECEIVER ── -->
+    <section id="bitpads-view">
+      <p class="eyebrow">Full Decode</p>
+      <h2>BitPads Receiver Perspective</h2>
+      <p>Same 15-byte stream. BitPads receiver. Every byte decoded for flags, C0 identity, event name, and response requirements.</p>
+
+      <div class="printout">
+        <div class="ph">BITPADS RECEIVER — FULL STREAM DECODE</div>
+        <div class="ph">──────────────────────────────────────────────────────────────────────────────────────</div>
+        <div><span class="pl">Byte  Hex   Legacy View              </span><span class="pv">BitPads View</span></div>
+        <div class="ph">──────────────────────────────────────────────────────────────────────────────────────</div>
+        <div><span class="pl">  1   0x16  SYN — sync idle           </span><span class="pv">SYN, flags=000 — keep-alive pulse, no response</span></div>
+        <div><span class="pl">  2   0x96  [extended char]           </span><span class="pv">SYN, flags=100 (Priority) — priority pre-announce</span></div>
+        <div><span class="pl">  3   0x07  BEL — bell / alert         </span><span class="pv">BEL, flags=000 — standard alert, no response required</span></div>
+        <div><span class="pl">  4   0xC7  [extended char Ç]         </span><span class="pv">BEL, flags=110 (Priority+ACK) — CRITICAL ALERT, ACK required</span></div>
+        <div><span class="pl">  5   0x04  EOT — end transmission     </span><span class="pv">EOT, flags=000 — stream close signal</span></div>
+        <div><span class="pl">  6   0x44  D — printable letter D     </span><span class="pv">EOT, flags=010 (ACK) — confirmed close, ACK back required</span></div>
+        <div><span class="pl">  7   0x16  SYN — sync idle           </span><span class="pv">SYN, flags=000 — heartbeat, normal cadence</span></div>
+        <div><span class="pl">  8   0x1C  FS — file separator        </span><span class="pv">FS, flags=000 — file boundary event</span></div>
+        <div><span class="pl">  9   0x9C  [extended char]           </span><span class="pv">FS, flags=100 (Priority) — priority file boundary</span></div>
+        <div><span class="pl"> 10   0x02  STX — start of text        </span><span class="pv">STX, flags=000 — stream content marker</span></div>
+        <div><span class="pl"> 11   0xBC  [extended char ¼]          </span><span class="pv">FS, flags=101 (P+C) — COMPONENT ESCALATION at P11</span></div>
+        <div><span class="pl"> 12   0x06  ACK                        </span><span class="pv">ACK, flags=000 — acknowledgement signal</span></div>
+        <div><span class="pl"> 13   0xE7  [extended char ç]          </span><span class="pv">BEL, flags=111 (P+A+C) — EMERGENCY, ACK + detail seq</span></div>
+        <div><span class="pl"> 14   0x16  SYN — sync idle           </span><span class="pv">SYN, flags=000 — heartbeat resumed</span></div>
+        <div><span class="pl"> 15   0x04  EOT — end transmission     </span><span class="pv">EOT, flags=000 — stream close</span></div>
+        <div class="ph">──────────────────────────────────────────────────────────────────────────────────────</div>
+        <div><span class="pg">BitPads receiver: 15 typed events decoded. 4 requiring responses. 1 component escalation.</span></div>
+      </div>
+
+      <div class="notice warn">
+        <p><strong>The contrast in a single pair:</strong> Byte 4 (0xC7) — the legacy receiver displays "Ç". The BitPads receiver triggers a critical alert handler, queues an ACK byte for transmission, logs the event with timestamp, and may trigger a hardware interrupt. Same byte. Two complete and non-conflicting interpretations.</p>
+      </div>
+
+      <p>The richness of the decoded event stream vs the legacy view demonstrates why Telegraph Emulation Mode is named for its heritage. The same wire carries two simultaneous communication layers — one for backward compatibility with equipment from 1970, one for modern binary-native systems requiring typed event streams with priority, confirmation, and continuation semantics.</p>
+    </section>
+
+  </main>
+</div>
+
+<footer class="site-footer"><div class="footer-inner">
+<div><div class="footer-group-label">Protocol</div><ul class="footer-links"><li><a href="bitpads-v2.html">BitPads v2</a></li><li><a href="bitledger.html">BitLedger v3</a></li><li><a href="universal-domain.html">Universal Domain</a></li><li><a href="compound-mode.html">Compound Mode</a></li></ul></div>
+<div><div class="footer-group-label">Enhancement</div><ul class="footer-links"><li><a href="enhancement-grammar.html">Grammar &amp; Signal Slots</a></li><li><a href="enhancement-commands.html">Commands &amp; Context</a></li><li><a href="enhancement-telegraph-1.html">Telegraph Emulation I</a></li><li><a href="enhancement-telegraph-2.html">Telegraph Emulation II</a></li><li><a href="enhancement-nesting.html">Nesting &amp; Overhead</a></li></ul></div>
+<div><div class="footer-group-label">Resources</div><ul class="footer-links"><li><a href="engineering.html">Engineering</a></li><li><a href="guide.html">Guide</a></li><li><a href="cli.html">CLI</a></li><li><a href="reference.html">Reference</a></li></ul></div>
+<div class="footer-copy">BitPads Protocol v2.0<br>BitLedger Protocol v3.0<br>© BABB</div>
+</div></footer>
+
+<script>
+/* ── TOC + Drawer standard JS ── */
+const secs=document.querySelectorAll('section[id]');const tocAs=document.querySelectorAll('.toc a');
+const io=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){tocAs.forEach(a=>a.classList.remove('active'));const a=document.querySelector(`.toc a[href="#${e.target.id}"]`);if(a)a.classList.add('active');}});},{rootMargin:'-15% 0px -70% 0px'});
+secs.forEach(s=>io.observe(s));
+document.querySelectorAll('tr.xrow').forEach(row=>{row.addEventListener('click',()=>{const did=row.dataset.drawer;const drawer=document.getElementById(did);if(!drawer)return;const open=drawer.classList.contains('open');document.querySelectorAll('tr.xdrawer.open').forEach(d=>{d.classList.remove('open');d.previousElementSibling?.classList.remove('open');});if(!open){drawer.classList.add('open');row.classList.add('open');}});});
+
+/* ── Stream Decoder ── */
+const C0_NAMES = {
+  0:'NUL',1:'SOH',2:'STX',3:'ETX',4:'EOT',5:'ENQ',6:'ACK',7:'BEL',
+  8:'BS',9:'HT',10:'LF',11:'VT',12:'FF',13:'CR',14:'SO',15:'SI',
+  16:'DLE',17:'DC1',18:'DC2',19:'DC3',20:'DC4',21:'NAK',22:'SYN',23:'ETB',
+  24:'CAN',25:'EM',26:'SUB',27:'ESC',28:'FS',29:'GS',30:'RS',31:'US'
+};
+const C0_LEGACY = {
+  0:'Null',1:'Session open',2:'Start of text',3:'End of text',4:'End transmission',
+  5:'Enquiry (expects ACK)',6:'Acknowledge',7:'Bell/alert — RINGS',8:'Backspace',
+  9:'Horizontal tab',10:'Line feed / newline',11:'Vertical tab',12:'Form feed / page',
+  13:'Carriage return',14:'Shift out (alternate charset)',15:'Shift in (primary charset)',
+  16:'Data link escape',17:'Device control 1 (XON)',18:'Device control 2',
+  19:'Device control 3 (XOFF)',20:'Device control 4',21:'Negative acknowledge',
+  22:'Synchronous idle — syncs',23:'End of transmission block',24:'Cancel',
+  25:'End of medium',26:'Substitute',27:'Escape',28:'File separator',
+  29:'Group separator',30:'Record separator',31:'Unit separator'
+};
+const FLAG_NAMES = ['000','001','010','011','100','101','110','111'];
+const FLAG_DESC  = ['Plain','Continuation','ACK-req','ACK+Cont','Priority','Priority+Cont','Priority+ACK','P+A+C (Emergency)'];
+
+function runDecoder() {
+  const raw = document.getElementById('decoderInput').value.trim();
+  const tokens = raw.split(/\s+/).filter(t => t.length);
+  const out = document.getElementById('decoderOutput');
+  if (!tokens.length) { out.innerHTML = '<span style="color:#E06060;">No input provided.</span>'; return; }
+
+  let html = '<div class="decoder-row hdr"><span>Byte</span><span>Hex</span><span>Flags</span><span>C0 Code</span><span>Decode</span></div>';
+  let legacyHtml = '';
+  let bitpadsHtml = '';
+
+  tokens.forEach((tok, i) => {
+    const v = parseInt(tok, 16);
+    if (isNaN(v) || v < 0 || v > 255) {
+      html += `<div class="decoder-row"><span>${i+1}</span><span class="d-hex">${tok}</span><span class="d-flags" style="color:#E06060;">INVALID</span><span>—</span><span>—</span></div>`;
+      return;
+    }
+    const flags = (v >> 5) & 0x7;
+    const code  = v & 0x1F;
+    const flagStr = FLAG_NAMES[flags];
+    const flagDesc = FLAG_DESC[flags];
+    const codeName = C0_NAMES[code] || `C${code}`;
+    const legacyDesc = (v < 32) ? (C0_LEGACY[code] || codeName) : (v < 128 ? `Printable ASCII '${String.fromCharCode(v)}'` : `Latin-1 char (${v})`);
+    const bitpadsDesc = `${codeName}, flags=${flagStr} (${flagDesc})`;
+    const ackReq = (flags & 2) ? ' ⚡ACK REQUIRED' : '';
+    const priority = (flags & 4) ? ' ▲PRIORITY' : '';
+    const cont = (flags & 1) ? ' →CONT' : '';
+
+    html += `<div class="decoder-row">
+      <span style="color:rgba(255,255,255,0.3);">${i+1}</span>
+      <span class="d-hex">0x${v.toString(16).toUpperCase().padStart(2,'0')}</span>
+      <span class="d-flags">${flagStr}</span>
+      <span class="d-code">${codeName}</span>
+      <span class="d-bitpads">${flagDesc} ${codeName}${priority}${ackReq}${cont}</span>
+    </div>
+    <div class="decoder-row" style="font-size:10px;margin-bottom:4px;border-bottom:1px solid rgba(255,255,255,0.04);">
+      <span></span><span></span><span></span>
+      <span class="d-legacy">Legacy:</span>
+      <span class="d-legacy">${legacyDesc}</span>
+    </div>`;
+  });
+
+  out.innerHTML = html;
+}
+
+function loadExample() {
+  document.getElementById('decoderInput').value = '16 96 07 C7 04 44 16 1C 9C BC E7 06 04';
+  runDecoder();
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,1023 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Category 1110 — Telegraph Emulation Mode II: Binary Pictography &amp; Codebooks — BitPads Protocol</title>
+<link rel="stylesheet" href="bp-style.css">
+<style>
+/* ── Page-specific ── */
+.nibble-vis {
+  display: flex; gap: 3px; margin: 16px 0; align-items: stretch;
+  font-family: var(--mono); font-size: 13px;
+  flex-wrap: wrap;
+}
+.nibble-group {
+  display: flex; gap: 0; border: 1px solid var(--rule);
+  position: relative;
+}
+.nibble-group-label {
+  position: absolute; top: -18px; left: 0; right: 0;
+  text-align: center; font-size: 9px; text-transform: uppercase;
+  letter-spacing: 0.1em; color: var(--ink-faint);
+  font-family: var(--mono);
+}
+.nib {
+  display: flex; flex-direction: column; align-items: center;
+  padding: 8px 10px;
+  border-right: 1px solid var(--rule-soft);
+}
+.nib:last-child { border-right: none; }
+.nib.n1 { background: rgba(11,61,145,0.1); border-top: 3px solid var(--bit-mode); }
+.nib.n2 { background: rgba(200,75,10,0.08); border-top: 3px solid var(--bit-data); }
+.nib.n3 { background: rgba(27,122,90,0.08); border-top: 3px solid var(--bit-enhance); }
+.nib.n4 { background: rgba(91,62,138,0.08); border-top: 3px solid var(--bit-identity); }
+.nib-pos { font-size: 8px; color: var(--ink-faint); margin-bottom: 3px; }
+.nib-val { font-weight: 700; font-size: 15px; color: var(--ink); margin-bottom: 3px; }
+.nib-label { font-size: 8px; color: var(--ink-faint); text-align: center; line-height: 1.3; }
+
+.codebook-table {
+  width: 100%; border-collapse: collapse;
+  margin: 20px 0; font-size: 13.5px;
+}
+.codebook-table th {
+  font-family: var(--mono); font-size: 9px;
+  text-transform: uppercase; letter-spacing: 0.1em;
+  color: var(--ink-soft); text-align: left;
+  padding: 9px 14px;
+  background: var(--bg-soft);
+  border-bottom: 2px solid var(--nasa-blue);
+  white-space: nowrap;
+}
+.codebook-table td {
+  padding: 9px 14px;
+  border-bottom: 1px solid var(--rule-soft);
+  vertical-align: top; line-height: 1.45;
+}
+.codebook-table .cb-idx {
+  font-family: var(--mono); font-weight: 700;
+  color: var(--nasa-blue); font-size: 12px;
+}
+.codebook-table .cb-meaning { color: var(--ink); font-weight: 500; }
+.codebook-table tbody tr:nth-child(odd) { background: var(--bg-soft); }
+.codebook-table tbody tr:hover { background: oklch(0.97 0.003 220); }
+
+.encoding-vis {
+  background: var(--bg-dark);
+  border-left: 3px solid var(--nasa-gold);
+  padding: 22px 24px; margin: 20px 0;
+  font-family: var(--mono); font-size: 12px;
+}
+.enc-row { display: flex; gap: 12px; line-height: 2; align-items: center; }
+.enc-label { color: #FC8C6A; min-width: 180px; flex-shrink: 0; }
+.enc-bits { color: var(--nasa-gold); letter-spacing: 0.15em; }
+.enc-sep { color: #8898AA; margin: 0 6px; }
+.enc-val { color: #7ECEF4; }
+.enc-result { color: #6AC87E; font-weight: 700; }
+.enc-divider { border-top: 1px solid rgba(255,255,255,0.08); margin: 8px 0; }
+
+.so-si-diagram {
+  display: flex; flex-direction: column; gap: 2px;
+  margin: 20px 0;
+}
+.ssd-row {
+  display: flex; align-items: stretch;
+  border: 1px solid var(--rule-soft);
+}
+.ssd-slot {
+  font-family: var(--mono); font-size: 11px;
+  font-weight: 700;
+  padding: 8px 12px;
+  display: flex; align-items: center; justify-content: center;
+  min-width: 70px; flex-shrink: 0;
+  color: white;
+  background: var(--nasa-blue);
+  border-right: 1px solid rgba(255,255,255,0.1);
+}
+.ssd-slot.shift { background: var(--nasa-gold); color: var(--bg-dark); }
+.ssd-slot.restore { background: var(--bit-account); }
+.ssd-name {
+  font-family: var(--display); font-weight: 600;
+  font-size: 13px; text-transform: uppercase; letter-spacing: 0.04em;
+  padding: 8px 14px; display: flex; align-items: center;
+  background: var(--bg-panel);
+  min-width: 200px; flex-shrink: 0;
+  border-right: 1px solid var(--rule-soft);
+}
+.ssd-desc {
+  font-size: 12px; color: var(--ink-soft);
+  padding: 8px 14px; display: flex; align-items: center;
+  background: var(--bg-soft); flex: 1;
+}
+
+.obscuration-compare {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 1px; background: var(--rule);
+  border: 1px solid var(--rule); margin: 20px 0;
+}
+@media (max-width: 700px) { .obscuration-compare { grid-template-columns: 1fr; } }
+.obc-col { background: var(--bg-panel); padding: 22px; }
+.obc-label {
+  font-family: var(--mono); font-size: 9px;
+  text-transform: uppercase; letter-spacing: 0.12em;
+  margin: 0 0 12px; padding-bottom: 8px;
+  border-bottom: 1px solid var(--rule-soft);
+}
+.obc-label.is { color: var(--bit-account); }
+.obc-label.isnot { color: var(--nasa-red); }
+.obc-col ul { margin: 0; padding: 0; list-style: none; font-size: 13px; }
+.obc-col li { margin-bottom: 7px; color: var(--ink-soft); padding-left: 14px; position: relative; line-height: 1.4; }
+.obc-col li::before { content: '›'; position: absolute; left: 0; color: var(--nasa-gold); }
+
+.heritage-timeline { margin: 24px 0; }
+.ht-item {
+  display: grid; grid-template-columns: 140px 1fr;
+  gap: 0; border-bottom: 1px solid var(--rule-soft);
+  align-items: stretch;
+}
+.ht-era {
+  font-family: var(--mono); font-size: 10px;
+  color: var(--nasa-red); padding: 16px 18px;
+  background: var(--bg-soft);
+  border-right: 1px solid var(--rule-soft);
+  display: flex; flex-direction: column; gap: 4px;
+}
+.ht-era-name {
+  font-family: var(--display); font-weight: 600;
+  font-size: 13px; text-transform: uppercase; letter-spacing: 0.04em;
+  color: var(--ink);
+}
+.ht-body { padding: 16px 18px; }
+.ht-body p { font-size: 13px; color: var(--ink-soft); margin: 0; }
+
+/* Binary Pictography calculator styles */
+.picto-calc {
+  background: var(--bg-dark);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-top: 3px solid var(--nasa-gold);
+  padding: 24px 28px; margin: 28px 0;
+}
+.picto-calc-title {
+  font-family: var(--display); font-weight: 700;
+  font-size: 13px; text-transform: uppercase;
+  letter-spacing: 0.12em; color: var(--nasa-gold);
+  margin: 0 0 18px;
+}
+.picto-fields {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 14px; margin-bottom: 14px;
+}
+@media (max-width: 600px) { .picto-fields { grid-template-columns: 1fr; } }
+.picto-field label {
+  display: block;
+  font-family: var(--mono); font-size: 9px;
+  text-transform: uppercase; letter-spacing: 0.1em;
+  color: rgba(255,255,255,0.4); margin-bottom: 5px;
+}
+.picto-field input,
+.picto-field select {
+  width: 100%; font-family: var(--mono); font-size: 13px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.12);
+  color: white; padding: 7px 10px; outline: none; appearance: none;
+}
+.picto-field input:focus,
+.picto-field select:focus { border-color: var(--nasa-gold); }
+.picto-field select option { background: var(--bg-dark); }
+.picto-btn {
+  font-family: var(--display); font-weight: 700;
+  font-size: 12px; text-transform: uppercase; letter-spacing: 0.1em;
+  background: var(--nasa-blue); color: white;
+  border: none; padding: 9px 20px; cursor: pointer; margin-right: 8px;
+}
+.picto-btn:hover { background: #0d4eb8; }
+.picto-btn.sec { background: rgba(255,255,255,0.08); }
+.picto-output {
+  border-top: 1px solid rgba(255,255,255,0.08);
+  margin-top: 16px; padding-top: 16px;
+  font-family: var(--mono); font-size: 11.5px;
+  line-height: 2; color: rgba(255,255,255,0.5);
+  min-height: 60px;
+}
+.po-byte {
+  display: inline-flex; gap: 0; margin: 2px 3px;
+  border: 1px solid rgba(255,255,255,0.1);
+}
+.po-nib {
+  padding: 3px 9px;
+  font-weight: 700; font-size: 13px;
+}
+.po-nib.n1 { background: rgba(11,61,145,0.3); color: #7ECEF4; }
+.po-nib.n2 { background: rgba(200,75,10,0.3); color: #FC8C6A; }
+.po-nib.n3 { background: rgba(27,122,90,0.3); color: #6AC87E; }
+.po-nib.n4 { background: rgba(91,62,138,0.3); color: #C4A0F0; }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="index.html">
+      <span class="brand-mark">BP</span>
+      <span class="brand-name">BitPads Protocol</span>
+    </a>
+    <nav class="topnav">
+      <a href="overview.html">Overview</a>
+      <a href="bitpads-v2.html">BitPads v2</a>
+      <a href="bitledger.html" class="active">BitLedger</a>
+      <a href="universal-domain.html">Universal Domain</a>
+      <div class="nav-group">
+        <a href="enhancement-grammar.html">Enhancement</a>
+        <div class="nav-dropdown">
+          <a href="enhancement-grammar.html">Grammar &amp; Signal Slots</a>
+          <a href="enhancement-commands.html">Commands &amp; Context</a>
+          <a href="enhancement-telegraph-1.html">Telegraph Emulation I</a>
+          <a href="enhancement-telegraph-2.html">Telegraph Emulation II</a>
+          <a href="enhancement-nesting.html">Nesting &amp; Overhead</a>
+        </div>
+      </div>
+      <a href="compound-mode.html">Compound Mode</a>
+      <a href="engineering.html">Engineering</a>
+      <a href="guide.html">Guide</a>
+      <a href="cli.html">CLI</a>
+      <a href="reference.html">Reference</a>
+    </nav>
+  </div>
+</header>
+
+<div class="page">
+  <aside class="sidebar">
+    <p class="toc-label">On This Page</p>
+    <ul class="toc">
+      <li><a href="#pictography" class="active">Binary Pictography</a></li>
+      <li><a href="#nibble-streams">Nibble Streams</a></li>
+      <li><a href="#codebook-arch">Codebook Architecture</a></li>
+      <li><a href="#universal-codebook">Universal Codebook</a></li>
+      <li><a href="#session-codebooks">Session-Declared Codebooks</a></li>
+      <li><a href="#rolling-codebook">Rolling Codebook</a></li>
+      <li><a href="#so-si">SO/SI Signals</a></li>
+      <li><a href="#obscuration">Semantic Obscuration</a></li>
+      <li><a href="#declaration-grammar">Codebook Declaration Grammar</a></li>
+      <li><a href="#encoding-example">Encoding Example</a></li>
+      <li><a href="#decoding-example">Decoding Example</a></li>
+      <li><a href="#note-blocks">Pictography in Note Blocks</a></li>
+      <li><a href="#combined">Telegraph + Pictography Together</a></li>
+      <li><a href="#heritage">Design Heritage</a></li>
+    </ul>
+  </aside>
+
+  <main>
+
+    <!-- ── SECTION 1: BINARY PICTOGRAPHY ── -->
+    <section id="pictography">
+      <p class="eyebrow">Enhancement Sub-Protocol · Category 1110</p>
+      <h1>Binary<br>Pictography<br>&amp; Codebooks</h1>
+      <p class="pullquote">The Sumerian scribes of 3000 BCE used minimal clay tokens whose meaning expanded through shared context. BitPads Binary Pictography applies this principle to binary data.</p>
+      <p class="lead">Four bits per symbol. Sixteen semantic concepts per codebook. Richness held in shared context rather than transmitted with every message.</p>
+      <p>The Sumerian scribes of 3000 BCE used compact clay tokens whose meaning expanded through shared context between sender and receiver. The mark was minimal. The codebook was in the reader's knowledge. BitPads Binary Pictography is this same principle implemented in nibble streams: four bits per symbol, sixteen semantic concepts per codebook, semantic compression that is 14× more compact than the most compact text alternative for the same payload.</p>
+
+      <div class="stat-grid" style="margin-top:32px;">
+        <div class="stat-cell">
+          <div class="stat-val">4</div>
+          <div class="stat-unit">bits per symbol</div>
+          <p class="stat-desc">One nibble. Selects one of 16 entries in the active codebook.</p>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-val">16</div>
+          <div class="stat-unit">codebook entries</div>
+          <p class="stat-desc">Per codebook. 65,536 codebooks referenceable in extended form.</p>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-val">14×</div>
+          <div class="stat-unit">compression ratio</div>
+          <p class="stat-desc">4 bits vs 56 bits minimum (7 ASCII chars) for the same semantic concept.</p>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-val">25.5:1</div>
+          <div class="stat-unit">example ratio</div>
+          <p class="stat-desc">4 status reports in 2 bytes vs 51 bytes of text. Spacecraft telemetry example.</p>
+        </div>
+      </div>
+
+      <p style="margin-top:24px;">Binary Pictography is available in three contexts:</p>
+      <ul style="max-width:60ch;">
+        <li><strong>Note blocks</strong> — Note encoding type = 10 (Stream category reference)</li>
+        <li><strong>Telegraph Emulation streams</strong> — Category 1110 with active codebook</li>
+        <li><strong>Any stream</strong> — with an active codebook and the binary pictography channel declared in the Stream-Open Control byte</li>
+      </ul>
+    </section>
+
+    <!-- ── SECTION 2: NIBBLE STREAMS ── -->
+    <section id="nibble-streams">
+      <p class="eyebrow">Core Mechanism</p>
+      <h2>Nibble Streams — Four Bits Per Symbol</h2>
+      <p>A nibble is 4 bits. A nibble stream is a sequence of 4-bit symbols. Two nibbles per byte. Each nibble selects one of 16 entries in the active codebook. The codebook maps the 4-bit index to a full semantic concept.</p>
+
+      <div class="bit-display">
+        <div class="bit-display-label">One Byte — Two Nibble Symbols</div>
+        <div class="bit-cells">
+          <div class="bit-cell mode w4" data-tooltip="Bits 1-4: First nibble. 4-bit index (0000-1111) into the active codebook. Selects symbol 1.">
+            <span class="bit-pos">1–4</span>
+            <span class="bit-val">NNNN</span>
+            <span class="bit-name">Nibble 1<br>Symbol 1</span>
+          </div>
+          <div class="bit-cell data w4" data-tooltip="Bits 5-8: Second nibble. 4-bit index (0000-1111) into the active codebook. Selects symbol 2.">
+            <span class="bit-pos">5–8</span>
+            <span class="bit-val">NNNN</span>
+            <span class="bit-name">Nibble 2<br>Symbol 2</span>
+          </div>
+        </div>
+        <div class="bit-legend">
+          <span class="legend-item"><span class="legend-swatch mode"></span> Nibble 1 — First Symbol (Codebook Index)</span>
+          <span class="legend-item"><span class="legend-swatch data"></span> Nibble 2 — Second Symbol (Codebook Index)</span>
+        </div>
+      </div>
+
+      <div class="formula">
+        <span class="f-name">Throughput:</span><br>
+        2 symbols per byte<br>
+        10-byte Note block → <span class="f-val">20 semantic events</span><br>
+        50-byte session over constrained link → <span class="f-val">100 status reports</span><br>
+        <span class="f-note">Each report is a complete semantic concept from the shared codebook. Zero overhead per report beyond the nibble itself.</span>
+      </div>
+
+      <p>At 2 symbols per byte, a constrained 50-byte session carries 100 status reports — each a complete semantic concept from the shared codebook. The only transmission cost is the nibble itself. No labels. No delimiters. No schema headers. The receiver holds the codebook; the stream carries only indices.</p>
+    </section>
+
+    <!-- ── SECTION 3: CODEBOOK ARCHITECTURE ── -->
+    <section id="codebook-arch">
+      <p class="eyebrow">System Design</p>
+      <h2>The Codebook Architecture</h2>
+      <p>A codebook is a 16-entry mapping from 4-bit index to semantic concept. The codebook exists as a pre-shared lookup table — agreed at session setup, referenced by index in the stream, never transmitted as content.</p>
+
+      <table class="data-table">
+        <thead>
+          <tr><th>Property</th><th>Specification</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Entries per codebook</td><td>16 (indexed by 4 bits: 0000–1111)</td></tr>
+          <tr><td>Active codebook count</td><td>1 per stream at any given time (can shift mid-stream)</td></tr>
+          <tr><td>Total codebook space (basic)</td><td>32 codebooks (5-bit index in rolling shift byte)</td></tr>
+          <tr><td>Total codebook space (extended)</td><td>65,536 codebooks (16-bit index in extended declaration)</td></tr>
+          <tr><td>Transmission cost per concept</td><td>4 bits (one nibble)</td></tr>
+          <tr><td>Equivalent text label ("NOMINAL")</td><td>56 bits minimum (7 ASCII bytes)</td></tr>
+          <tr><td>Compression ratio vs text</td><td>14× at minimum. Higher for longer labels.</td></tr>
+          <tr><td>Pre-sharing mechanism</td><td>Session Layer 1 custom extension block or firmware-resident table</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Codebook Structure</h3>
+      <table class="codebook-table">
+        <thead>
+          <tr><th>Index (4 bits)</th><th>Binary</th><th>Entry (example)</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="cb-idx">0</td><td><code>0000</code></td><td>Concept 0 — Session-agreed semantic at index 0</td></tr>
+          <tr><td class="cb-idx">1</td><td><code>0001</code></td><td>Concept 1</td></tr>
+          <tr><td class="cb-idx">2</td><td><code>0010</code></td><td>Concept 2</td></tr>
+          <tr><td class="cb-idx">3</td><td><code>0011</code></td><td>Concept 3</td></tr>
+          <tr><td class="cb-idx">4</td><td><code>0100</code></td><td>Concept 4</td></tr>
+          <tr><td class="cb-idx">5</td><td><code>0101</code></td><td>Concept 5</td></tr>
+          <tr><td class="cb-idx">6</td><td><code>0110</code></td><td>Concept 6</td></tr>
+          <tr><td class="cb-idx">7</td><td><code>0111</code></td><td>Concept 7</td></tr>
+          <tr><td class="cb-idx">8</td><td><code>1000</code></td><td>Concept 8</td></tr>
+          <tr><td class="cb-idx">9</td><td><code>1001</code></td><td>Concept 9</td></tr>
+          <tr><td class="cb-idx">10</td><td><code>1010</code></td><td>Concept 10</td></tr>
+          <tr><td class="cb-idx">11</td><td><code>1011</code></td><td>Concept 11</td></tr>
+          <tr><td class="cb-idx">12</td><td><code>1100</code></td><td>Concept 12</td></tr>
+          <tr><td class="cb-idx">13</td><td><code>1101</code></td><td>Concept 13</td></tr>
+          <tr><td class="cb-idx">14</td><td><code>1110</code></td><td>Concept 14</td></tr>
+          <tr><td class="cb-idx">15</td><td><code>1111</code></td><td>Concept 15</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- ── SECTION 4: UNIVERSAL CODEBOOK ── -->
+    <section id="universal-codebook">
+      <p class="eyebrow">Codebook 0001 — Example</p>
+      <h2>Universal Codebook — 16 Standard Entries</h2>
+      <p>Codebook 0000 (index 0) is the Universal codebook: globally agreed, no session declaration needed. The following shows Codebook 0001 — the spacecraft status codebook used throughout the BitPads specification examples.</p>
+
+      <table class="codebook-table">
+        <thead>
+          <tr><th>Index</th><th>Binary</th><th>Codebook 0001 — Spacecraft Status</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="cb-idx">0</td><td><code>0000</code></td><td class="cb-meaning">Nominal</td></tr>
+          <tr><td class="cb-idx">1</td><td><code>0001</code></td><td class="cb-meaning">Warning</td></tr>
+          <tr><td class="cb-idx">2</td><td><code>0010</code></td><td class="cb-meaning">Critical</td></tr>
+          <tr><td class="cb-idx">3</td><td><code>0011</code></td><td class="cb-meaning">Burn complete</td></tr>
+          <tr><td class="cb-idx">4</td><td><code>0100</code></td><td class="cb-meaning">Fuel low</td></tr>
+          <tr><td class="cb-idx">5</td><td><code>0101</code></td><td class="cb-meaning">Power nominal</td></tr>
+          <tr><td class="cb-idx">6</td><td><code>0110</code></td><td class="cb-meaning">Comms nominal</td></tr>
+          <tr><td class="cb-idx">7</td><td><code>0111</code></td><td class="cb-meaning">Attitude nominal</td></tr>
+          <tr><td class="cb-idx">8</td><td><code>1000</code></td><td class="cb-meaning">Thermal nominal</td></tr>
+          <tr><td class="cb-idx">9</td><td><code>1001</code></td><td class="cb-meaning">Data rate normal</td></tr>
+          <tr><td class="cb-idx">10</td><td><code>1010</code></td><td class="cb-meaning">Orbit nominal</td></tr>
+          <tr><td class="cb-idx">11</td><td><code>1011</code></td><td class="cb-meaning">Navigation lock</td></tr>
+          <tr><td class="cb-idx">12</td><td><code>1100</code></td><td class="cb-meaning">Downlink active</td></tr>
+          <tr><td class="cb-idx">13</td><td><code>1101</code></td><td class="cb-meaning">Uplink active</td></tr>
+          <tr><td class="cb-idx">14</td><td><code>1110</code></td><td class="cb-meaning">Fault detected</td></tr>
+          <tr><td class="cb-idx">15</td><td><code>1111</code></td><td class="cb-meaning">Emergency</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Four Status Reports in Two Bytes</h3>
+      <p>The canonical BitPads Binary Pictography example: spacecraft attitude control system reporting four subsystem states simultaneously using codebook 0001.</p>
+
+      <div style="margin-top:20px;margin-bottom:6px;">
+        <p class="eyebrow" style="margin-bottom:10px;">Interactive Nibble Visualisation</p>
+        <div class="nibble-vis">
+          <div style="font-family:var(--mono);font-size:11px;color:var(--ink-faint);align-self:center;margin-right:8px;">Byte 1 (0x35):</div>
+          <div class="nibble-group" style="margin-top:18px;">
+            <div class="nib n1"><span class="nib-pos">bits 1-4</span><span class="nib-val">0011</span><span class="nib-label">Nibble 1<br>Index 3</span></div>
+            <div class="nib n2"><span class="nib-pos">bits 5-8</span><span class="nib-val">0101</span><span class="nib-label">Nibble 2<br>Index 5</span></div>
+          </div>
+          <div style="font-family:var(--mono);font-size:11px;color:var(--ink-faint);align-self:center;margin: 0 14px;">→</div>
+          <div style="align-self:center;font-family:var(--mono);font-size:11px;">
+            <div style="color:var(--bit-mode);font-weight:700;">Codebook[3] = Burn complete</div>
+            <div style="color:var(--bit-data);font-weight:700;">Codebook[5] = Power nominal</div>
+          </div>
+        </div>
+        <div class="nibble-vis" style="margin-top:4px;">
+          <div style="font-family:var(--mono);font-size:11px;color:var(--ink-faint);align-self:center;margin-right:8px;">Byte 2 (0x60):</div>
+          <div class="nibble-group" style="margin-top:18px;">
+            <div class="nib n3"><span class="nib-pos">bits 1-4</span><span class="nib-val">0110</span><span class="nib-label">Nibble 3<br>Index 6</span></div>
+            <div class="nib n4"><span class="nib-pos">bits 5-8</span><span class="nib-val">0000</span><span class="nib-label">Nibble 4<br>Index 0</span></div>
+          </div>
+          <div style="font-family:var(--mono);font-size:11px;color:var(--ink-faint);align-self:center;margin: 0 14px;">→</div>
+          <div style="align-self:center;font-family:var(--mono);font-size:11px;">
+            <div style="color:var(--bit-enhance);font-weight:700;">Codebook[6] = Comms nominal</div>
+            <div style="color:var(--bit-identity);font-weight:700;">Codebook[0] = Nominal</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="encoding-vis">
+        <div style="color:var(--nasa-gold);font-family:var(--display);font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:14px;">Binary Pictography — 4 Status Reports in 2 Bytes</div>
+        <div class="enc-row"><span class="enc-label">Active codebook:</span><span class="enc-val">0001 (spacecraft status)</span></div>
+        <div class="enc-divider"></div>
+        <div class="enc-row"><span class="enc-label">Symbol 1: Burn complete</span><span class="enc-sep">→</span><span class="enc-bits">0011</span></div>
+        <div class="enc-row"><span class="enc-label">Symbol 2: Power nominal</span><span class="enc-sep">→</span><span class="enc-bits">0101</span></div>
+        <div class="enc-row"><span class="enc-label">Symbol 3: Comms nominal</span><span class="enc-sep">→</span><span class="enc-bits">0110</span></div>
+        <div class="enc-row"><span class="enc-label">Symbol 4: Nominal</span><span class="enc-sep">→</span><span class="enc-bits">0000</span></div>
+        <div class="enc-divider"></div>
+        <div class="enc-row"><span class="enc-label">Byte 1:</span><span class="enc-bits">0011 0101</span><span class="enc-sep">=</span><span class="enc-val">0x35</span></div>
+        <div class="enc-row"><span class="enc-label">Byte 2:</span><span class="enc-bits">0110 0000</span><span class="enc-sep">=</span><span class="enc-val">0x60</span></div>
+        <div class="enc-divider"></div>
+        <div class="enc-row"><span class="enc-label">Total:</span><span class="enc-result">4 status reports in 2 bytes (16 bits)</span></div>
+        <div class="enc-row"><span class="enc-label">Text equivalent:</span><span style="color:#8898AA;font-size:11px;">"BURN COMPLETE / POWER NOMINAL / COMMS NOMINAL / NOMINAL" = 51 bytes</span></div>
+        <div class="enc-row"><span class="enc-label">Compression ratio:</span><span class="enc-result">25.5:1</span></div>
+      </div>
+
+      <!-- BINARY PICTOGRAPHY CALCULATOR -->
+      <div class="picto-calc">
+        <div class="picto-calc-title">Binary Pictography Calculator</div>
+        <p style="font-family:var(--mono);font-size:11px;color:rgba(255,255,255,0.4);margin:0 0 14px;">Enter a binary nibble stream (e.g. <span style="color:var(--nasa-gold);">0011 0101 0110 0000</span>) or hex bytes (e.g. <span style="color:var(--nasa-gold);">35 60</span>). Select codebook and decode. For reverse: enter meanings (one per line) and encode.</p>
+        <div class="picto-fields">
+          <div class="picto-field">
+            <label>Input — Binary Nibbles or Hex Bytes</label>
+            <input type="text" id="pictoInput" placeholder="0011 0101 0110 0000" spellcheck="false">
+          </div>
+          <div class="picto-field">
+            <label>Active Codebook</label>
+            <select id="pictoCodebook">
+              <option value="0">Codebook 0000 — Universal (generic)</option>
+              <option value="1" selected>Codebook 0001 — Spacecraft Status</option>
+              <option value="custom">Custom (enter below)</option>
+            </select>
+          </div>
+        </div>
+        <button class="picto-btn" onclick="pictoDecodeForward()">Decode Nibbles →</button>
+        <button class="picto-btn sec" onclick="pictoLoadExample()">Load Example</button>
+        <div class="picto-output" id="pictoOutput">
+          <div style="color:rgba(255,255,255,0.2);">Enter nibble stream above and click Decode.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── SECTION 5: SESSION CODEBOOKS ── -->
+    <section id="session-codebooks">
+      <p class="eyebrow">Session Configuration</p>
+      <h2>Session-Declared Codebooks</h2>
+      <p>At session open, via the Custom Domain Extension Block or Layer 1 codebook declaration, the sender declares a custom codebook for the session. The codebook maps 4-bit indices to session-specific concepts. The receiver holds the codebook in a firmware-resident lookup table. The nibble stream references entries. No labels transmitted. Pure semantic compression.</p>
+
+      <div class="principles">
+        <div class="principle">
+          <div class="pr-num">Spacecraft</div>
+          <div class="pr-head">16 Subsystem States</div>
+          <p class="pr-body">Nominal, Warning, Critical, Burn complete, Fuel low, Power nominal, Comms nominal, Attitude nominal, Thermal nominal, Data rate normal, Orbit nominal, Navigation lock, Downlink active, Uplink active, Fault detected, Emergency.</p>
+        </div>
+        <div class="principle">
+          <div class="pr-num">Factory Floor</div>
+          <div class="pr-head">16 Process States</div>
+          <p class="pr-body">Idle, Starting, Running, Paused, Stopping, Error, Maintenance, Calibrating, Overload, Temperature high, Vibration high, Power fault, Conveyor stop, Feed empty, Output full, Emergency stop.</p>
+        </div>
+        <div class="principle">
+          <div class="pr-num">Financial</div>
+          <div class="pr-head">16 Transaction Events</div>
+          <p class="pr-body">Received, Pending, Cleared, Rejected, Reversed, Partial, Settled, Disputed, Escrow, Released, Expired, Converted, Allocated, Consolidated, Obligated, Audited.</p>
+        </div>
+        <div class="principle">
+          <div class="pr-num">Medical IoT</div>
+          <div class="pr-head">16 Patient Events</div>
+          <p class="pr-body">Stable, Improving, Degrading, Alert, Critical, Medication due, Vitals normal, Heart rate high, SPO2 low, BP elevated, Temperature elevated, Movement detected, Alarm cleared, Call staff, Emergency, Device fault.</p>
+        </div>
+      </div>
+
+      <p>The session codebook declaration is a one-time overhead: the 16-entry codebook is transmitted once at session open and then held by the receiver. Every subsequent nibble in the session references the codebook by index. For a 1000-event session, the one-time overhead is 16 codebook entries × 8 bits per entry = 128 bits, amortised across 1000 events at 4 bits each = 4000 bits of payload. The codebook overhead is 3.2% of the payload.</p>
+    </section>
+
+    <!-- ── SECTION 6: ROLLING CODEBOOK ── -->
+    <section id="rolling-codebook">
+      <p class="eyebrow">Dynamic Mechanism</p>
+      <h2>Rolling Codebook — The Shift Mechanism</h2>
+      <p>Enhancement field 110 bytes (flags=110: Priority+ACK, no Continuation) within an active enhancement stream update the active codebook. The lower 5 bits of the C0 code identity carry the new codebook index.</p>
+
+      <p>When the receiver encounters a byte with flags=110 at a signal slot position:</p>
+      <ol style="max-width:60ch;font-size:14px;line-height:1.8;">
+        <li>Lower 5 bits = new codebook index (0–31 in the basic form)</li>
+        <li>Active codebook shifts immediately at that byte position</li>
+        <li>All subsequent nibble symbols decoded against the new codebook</li>
+        <li>Both sender and receiver derive the shift sequence from the session key</li>
+        <li>An interceptor without session context cannot determine which codebook is active</li>
+      </ol>
+
+      <div class="printout">
+        <div class="ph">ROLLING CODEBOOK — SHIFT BYTE SEQUENCE</div>
+        <div class="ph">──────────────────────────────────────────────────────</div>
+        <div>&nbsp;</div>
+        <div><span class="pl">0xC0 </span><span class="pb">= 110 00000 </span><span class="pv">→ shift to codebook index 0 (Universal)</span></div>
+        <div><span class="pl">     </span><span class="pc">  flags=110 (Priority+ACK) · code bits = 00000 → index 0</span></div>
+        <div>&nbsp;</div>
+        <div><span class="pl">0xC8 </span><span class="pb">= 110 01000 </span><span class="pv">→ shift to codebook index 8 (session codebook 8)</span></div>
+        <div><span class="pl">     </span><span class="pc">  flags=110 (Priority+ACK) · code bits = 01000 → index 8</span></div>
+        <div>&nbsp;</div>
+        <div><span class="pl">0xC1 </span><span class="pb">= 110 00001 </span><span class="pv">→ shift to codebook index 1 (spacecraft status example)</span></div>
+        <div><span class="pl">     </span><span class="pc">  flags=110 (Priority+ACK) · code bits = 00001 → index 1</span></div>
+        <div>&nbsp;</div>
+        <div><span class="pl">0xD5 </span><span class="pb">= 110 10101 </span><span class="pv">→ shift to codebook index 21 (session-specific)</span></div>
+        <div><span class="pl">     </span><span class="pc">  flags=110 (Priority+ACK) · code bits = 10101 → index 21</span></div>
+        <div class="ph">──────────────────────────────────────────────────────</div>
+        <div><span class="pc">After each shift byte, all subsequent nibbles decoded against the new codebook.</span></div>
+        <div><span class="pc">Shift bytes themselves do not carry nibble payload — they are pure control.</span></div>
+      </div>
+
+      <p>The shift mechanism allows a single stream to carry content from multiple semantic domains without any in-band framing overhead beyond the single shift byte. A stream can switch from spacecraft system states to fuel telemetry to orbital parameters and back, with each domain reading from its own codebook, at the cost of one byte per domain transition.</p>
+    </section>
+
+    <!-- ── SECTION 7: SO/SI SIGNALS ── -->
+    <section id="so-si">
+      <p class="eyebrow">Signal Slot Mechanism</p>
+      <h2>SO/SI Signals — Mid-Note Codebook Shifts</h2>
+      <p>In Note blocks with encoding type=10 (binary pictography), mid-Note codebook shifts use the SO (Shift Out, 0x0E) and SI (Shift In, 0x0F) C0 signals in the P7 signal slot (Post-Task/Pre-Note position).</p>
+
+      <div class="so-si-diagram">
+        <div class="ssd-row">
+          <div class="ssd-slot">P7 Pre</div>
+          <div class="ssd-name">SO Byte (0x0E)</div>
+          <div class="ssd-desc">Shift Out signal. Active codebook changes from primary to alternate codebook for note content that follows.</div>
+        </div>
+        <div class="ssd-row">
+          <div class="ssd-slot" style="background:var(--bit-mode);">Note</div>
+          <div class="ssd-name">Primary Codebook Content</div>
+          <div class="ssd-desc">Note bytes encoded against primary (session-baseline) codebook. Decoded by receiver with primary codebook active.</div>
+        </div>
+        <div class="ssd-row">
+          <div class="ssd-slot shift">P7 Shift</div>
+          <div class="ssd-name">SO Mid-Note</div>
+          <div class="ssd-desc">Second SO signal within note. Shifts from primary to alternate codebook for the remaining bytes. No byte boundaries required for the shift.</div>
+        </div>
+        <div class="ssd-row">
+          <div class="ssd-slot" style="background:var(--nasa-gold);color:var(--bg-dark);">Note</div>
+          <div class="ssd-name">Alternate Codebook Content</div>
+          <div class="ssd-desc">Note bytes encoded against alternate codebook. Receiver has shifted at the SO signal — decodes with alternate codebook active.</div>
+        </div>
+        <div class="ssd-row">
+          <div class="ssd-slot restore">P7 Post</div>
+          <div class="ssd-name">SI Byte (0x0F)</div>
+          <div class="ssd-desc">Shift In signal. Restores primary codebook. All subsequent note bytes decoded against primary again. Session-baseline codebook restored.</div>
+        </div>
+        <div class="ssd-row">
+          <div class="ssd-slot" style="background:var(--bit-mode);">Note</div>
+          <div class="ssd-name">Primary Codebook Restored</div>
+          <div class="ssd-desc">Final note bytes decoded against primary codebook. Single Note block has now used two semantic domains.</div>
+        </div>
+      </div>
+
+      <div class="printout">
+        <div class="ph">SO/SI MID-NOTE SHIFT — WORKED EXAMPLE</div>
+        <div class="ph">──────────────────────────────────────────────────────────────</div>
+        <div>&nbsp;</div>
+        <div><span class="pl">P7 slot:     </span><span class="pv">0x0E (SO) </span><span class="pc">→ shift to alternate codebook for note content</span></div>
+        <div>&nbsp;</div>
+        <div><span class="pl">Note bytes [0-1]:  </span><span class="pb">0011 0101 </span><span class="pc">= 0x35, primary codebook active</span></div>
+        <div><span class="pl">             </span><span class="pc">Nibble 0011 → Burn complete | Nibble 0101 → Power nominal</span></div>
+        <div>&nbsp;</div>
+        <div><span class="pl">P7 slot (mid):     </span><span class="pv">0x0E (SO) </span><span class="pc">→ shift to fault-code codebook (alternate)</span></div>
+        <div>&nbsp;</div>
+        <div><span class="pl">Note bytes [2-4]:  </span><span class="pb">1110 0001 0011 </span><span class="pc">alternate codebook active</span></div>
+        <div><span class="pl">             </span><span class="pc">Nibble 1110 → Fault #14 | 0001 → Fault #1 | 0011 → Fault #3</span></div>
+        <div>&nbsp;</div>
+        <div><span class="pl">P7 slot (post):    </span><span class="pv">0x0F (SI) </span><span class="pc">→ restore primary codebook</span></div>
+        <div>&nbsp;</div>
+        <div><span class="pl">Note bytes [5]:    </span><span class="pb">0000 </span><span class="pc">= primary codebook, Nominal</span></div>
+        <div class="ph">──────────────────────────────────────────────────────────────</div>
+        <div><span class="pg">Single Note block. Two codebooks. Zero framing overhead beyond SO/SI signals.</span></div>
+      </div>
+    </section>
+
+    <!-- ── SECTION 8: SEMANTIC OBSCURATION ── -->
+    <section id="obscuration">
+      <p class="eyebrow">Security Model</p>
+      <h2>Semantic Obscuration — What It Is and Isn't</h2>
+      <p>The rolling codebook creates semantic obscuration — a specific and intentional property that is distinct from cryptographic security. Understanding the distinction is essential for correct deployment.</p>
+
+      <div class="obscuration-compare">
+        <div class="obc-col">
+          <div class="obc-label is">What Semantic Obscuration IS</div>
+          <ul>
+            <li>An interceptor without session context cannot determine which codebook is active at any point in the stream</li>
+            <li>They see bytes, but cannot decode nibbles to their semantic meanings</li>
+            <li>With N codebooks and a session-key-derived shift sequence, the interceptor faces an N-choice ambiguity at each shift point</li>
+            <li>The semantic layer is opaque to passive observation without the session key</li>
+            <li>Meaningful resistance to casual interception on low-threat channels</li>
+            <li>Appropriate for sensor networks and industrial telemetry</li>
+            <li>Appropriate for semi-public broadcast channels where semantic privacy vs passive observation is needed</li>
+          </ul>
+        </div>
+        <div class="obc-col">
+          <div class="obc-label isnot">What Semantic Obscuration IS NOT</div>
+          <ul>
+            <li>Cryptographic guarantee — the byte values themselves are transmitted in cleartext</li>
+            <li>Physical layer protection — layer inspection reveals the bytes</li>
+            <li>Resistance to determined adversaries with knowledge of the agreed codebooks and the session key derivation</li>
+            <li>A substitute for transport-layer encryption</li>
+            <li>Suitable as the sole protection mechanism for high-threat channels</li>
+            <li>Forward secrecy — if the session key is compromised, past streams can be decoded</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="notice warn">
+        <p><strong>Deployment note:</strong> Semantic obscuration is appropriate when the threat model is passive casual interception — a receiver that can see the wire but does not hold the session codebook mapping. It is not appropriate as a substitute for encryption in adversarial threat models. The mechanism was designed for sensor networks, industrial controllers, and semi-public broadcast where the primary goal is preventing casual semantic decoding, not resisting active cryptographic attack.</p>
+      </div>
+    </section>
+
+    <!-- ── SECTION 9: CODEBOOK DECLARATION GRAMMAR ── -->
+    <section id="declaration-grammar">
+      <p class="eyebrow">Protocol Element</p>
+      <h2>Codebook Declaration Grammar</h2>
+      <p>The Stream-Open Control byte's Codebook field (bits 5–6) declares the codebook mode for the stream. This interacts directly with the rolling codebook mechanism.</p>
+
+      <table class="data-table">
+        <thead>
+          <tr><th>Code</th><th>Mode</th><th>Rolling Allowed</th><th>Effect</th></tr>
+        </thead>
+        <tbody>
+          <tr class="xrow" data-drawer="cb-mode-00">
+            <td><code>00</code> <span class="xrow-indicator">▾</span></td>
+            <td>Universal</td>
+            <td>Yes (if Update Flag = 1)</td>
+            <td>Start on universal codebook. May shift to any session codebook via rolling mechanism.</td>
+          </tr>
+          <tr class="xdrawer" id="cb-mode-00"><td colspan="4"><div class="xdrawer-inner">
+            <p>The stream begins with the globally-agreed universal codebook active. No session negotiation needed. Both sender and receiver derive meaning identically from nibble index 0–15. If the Update Flag (bit 8 of Stream-Open Control byte) is 1, rolling codebook shifts via flags=110 bytes are permitted during the stream.</p>
+          </div></td></tr>
+          <tr class="xrow" data-drawer="cb-mode-01">
+            <td><code>01</code> <span class="xrow-indicator">▾</span></td>
+            <td>Session-declared</td>
+            <td>Yes (if Update Flag = 1)</td>
+            <td>Start on the codebook declared at session open. Rolling shifts permitted if Update Flag set.</td>
+          </tr>
+          <tr class="xdrawer" id="cb-mode-01"><td colspan="4"><div class="xdrawer-inner">
+            <p>The stream begins with the session-declared codebook active. The codebook was declared in the Layer 1 custom extension block at session open. The receiver already holds this codebook from session negotiation. Rolling shifts from this baseline are permitted if the Update Flag is 1.</p>
+          </div></td></tr>
+          <tr class="xrow" data-drawer="cb-mode-10">
+            <td><code>10</code> <span class="xrow-indicator">▾</span></td>
+            <td>Cipher shift</td>
+            <td>Always</td>
+            <td>Active codebook = session baseline + cipher offset. Start offset derived from session key. Baseline not directly observable from the stream.</td>
+          </tr>
+          <tr class="xdrawer" id="cb-mode-10"><td colspan="4"><div class="xdrawer-inner">
+            <p>The strongest obscuration mode. The active codebook index is not directly observable from the byte stream — even if an interceptor can see the shift bytes (flags=110 + code index), they cannot determine the actual active codebook without knowing the session baseline. The baseline itself is session-derived via the session key. Rolling shifts apply a further XOR offset from the observable shift index.</p>
+            <p>This means: even knowing the shift bytes, an interceptor cannot determine which codebook is active at any point unless they hold the session key.</p>
+          </div></td></tr>
+          <tr class="xrow" data-drawer="cb-mode-11">
+            <td><code>11</code> <span class="xrow-indicator">▾</span></td>
+            <td>Extended</td>
+            <td>Depends on extended declaration</td>
+            <td>Extended codebook declaration follows in the bytes immediately after the Stream-Open Control byte. Allows arbitrary codebook definition at stream open — 16-bit codebook index space.</td>
+          </tr>
+          <tr class="xdrawer" id="cb-mode-11"><td colspan="4"><div class="xdrawer-inner">
+            <p>When Extended mode is declared, the next 2+ bytes after the Stream-Open Control byte carry the extended codebook declaration: a 16-bit codebook index (0–65535) identifying the specific codebook from the receiver's extended codebook library. This allows up to 65,536 distinct codebooks to be referenced within a session. The extended declaration bytes are not stream content — they are consumed by the parser before the stream body begins.</p>
+          </div></td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- ── SECTION 10: ENCODING EXAMPLE ── -->
+    <section id="encoding-example">
+      <p class="eyebrow">Worked Example</p>
+      <h2>Encoding Example — 4 Status Reports in 2 Bytes</h2>
+      <p>Detailed walkthrough of the canonical Binary Pictography example from the BitPads specification. Scenario: spacecraft attitude control system reporting four subsystem states simultaneously.</p>
+
+      <div class="printout">
+        <div class="ph">BINARY PICTOGRAPHY ENCODING — STEP BY STEP</div>
+        <div class="ph">──────────────────────────────────────────────────────────────</div>
+        <div>&nbsp;</div>
+        <div><span class="pl">Scenario:    </span><span class="pv">Spacecraft ACS — 4 subsystem state reports</span></div>
+        <div><span class="pl">Active codebook: </span><span class="pv">0001 (spacecraft status)</span></div>
+        <div>&nbsp;</div>
+        <div class="ph">Step 1 — Session opened with codebook 0001 active</div>
+        <div class="ph">Step 2 — Note block opened, encoding type = 10 (binary pictography)</div>
+        <div class="ph">Step 3 — Sensor data gathered from four subsystems</div>
+        <div class="ph">Step 4 — Encoder maps sensor states to codebook indices</div>
+        <div>&nbsp;</div>
+        <div><span class="pl">State 1:     </span><span class="pv">Burn complete    </span><span class="pb">→ index 3 = 0011</span></div>
+        <div><span class="pl">State 2:     </span><span class="pv">Power nominal    </span><span class="pb">→ index 5 = 0101</span></div>
+        <div><span class="pl">State 3:     </span><span class="pv">Comms nominal    </span><span class="pb">→ index 6 = 0110</span></div>
+        <div><span class="pl">State 4:     </span><span class="pv">Nominal          </span><span class="pb">→ index 0 = 0000</span></div>
+        <div>&nbsp;</div>
+        <div class="ph">Step 5 — Pack nibbles into bytes (2 nibbles per byte)</div>
+        <div>&nbsp;</div>
+        <div><span class="pl">Nibble 1 + 2: </span><span class="pb">0011 0101 </span><span class="pv">= 0x35</span></div>
+        <div><span class="pl">Nibble 3 + 4: </span><span class="pb">0110 0000 </span><span class="pv">= 0x60</span></div>
+        <div>&nbsp;</div>
+        <div class="ph">──────────────────────────────────────────────────────────────</div>
+        <div><span class="pl">Transmit:    </span><span class="pv">0x35 0x60</span><span class="pc">  (2 bytes = 16 bits)</span></div>
+        <div><span class="pl">Text equiv:  </span><span class="pc">"BURN COMPLETE / POWER NOMINAL / COMMS NOMINAL / NOMINAL"</span></div>
+        <div><span class="pl">Text size:   </span><span class="pe">51 bytes (408 bits)</span></div>
+        <div><span class="pl">Ratio:       </span><span class="pg">25.5:1 compression vs text</span></div>
+        <div class="ph">──────────────────────────────────────────────────────────────</div>
+      </div>
+    </section>
+
+    <!-- ── SECTION 11: DECODING EXAMPLE ── -->
+    <section id="decoding-example">
+      <p class="eyebrow">Worked Example</p>
+      <h2>Decoding Example — Receiver Side</h2>
+      <p>Same 2 bytes. Receiver side. Full decoding from wire bytes to semantic events.</p>
+
+      <div class="printout">
+        <div class="ph">BINARY PICTOGRAPHY DECODE — RECEIVER SIDE</div>
+        <div class="ph">──────────────────────────────────────────────────────────────</div>
+        <div>&nbsp;</div>
+        <div><span class="pl">Input bytes:     </span><span class="pv">0x35, 0x60</span></div>
+        <div><span class="pl">Active codebook: </span><span class="pv">0001 (spacecraft status)</span></div>
+        <div>&nbsp;</div>
+        <div class="ph">──────────────────────────────────────────────────────────────</div>
+        <div><span class="pl">Byte 1: </span><span class="pv">0x35</span><span class="pb"> = 0011 0101</span></div>
+        <div><span class="pl">  Nibble 1: </span><span class="pb">0011 </span><span class="pc">→ index 3 → </span><span class="pv">codebook[3] = Burn complete</span></div>
+        <div><span class="pl">  Nibble 2: </span><span class="pb">0101 </span><span class="pc">→ index 5 → </span><span class="pv">codebook[5] = Power nominal</span></div>
+        <div>&nbsp;</div>
+        <div><span class="pl">Byte 2: </span><span class="pv">0x60</span><span class="pb"> = 0110 0000</span></div>
+        <div><span class="pl">  Nibble 3: </span><span class="pb">0110 </span><span class="pc">→ index 6 → </span><span class="pv">codebook[6] = Comms nominal</span></div>
+        <div><span class="pl">  Nibble 4: </span><span class="pb">0000 </span><span class="pc">→ index 0 → </span><span class="pv">codebook[0] = Nominal</span></div>
+        <div>&nbsp;</div>
+        <div class="ph">──────────────────────────────────────────────────────────────</div>
+        <div><span class="pg">Report 1: Burn complete</span></div>
+        <div><span class="pg">Report 2: Power nominal</span></div>
+        <div><span class="pg">Report 3: Comms nominal</span></div>
+        <div><span class="pg">Report 4: Nominal</span></div>
+        <div class="ph">──────────────────────────────────────────────────────────────</div>
+        <div><span class="pc">4 events decoded. 2 bytes consumed. Zero parsing overhead.</span></div>
+        <div><span class="pc">Receiver lookup: 4 array accesses. O(1) per event. No schema. No delimiter scan.</span></div>
+      </div>
+    </section>
+
+    <!-- ── SECTION 12: NOTE BLOCKS ── -->
+    <section id="note-blocks">
+      <p class="eyebrow">Record Component</p>
+      <h2>Binary Pictography in Note Blocks</h2>
+      <p>Binary Pictography is declared as a Note encoding type (type=10, Stream category reference). The Note Header declares the encoding; the Note content is a nibble stream decoded through the active codebook.</p>
+
+      <div class="bit-display">
+        <div class="bit-display-label">Note Header — Binary Pictography Mode</div>
+        <div class="bit-cells">
+          <div class="bit-cell mode w2" data-tooltip="Bits 1-2: Encoding type. 10 = Binary Pictography / Stream category reference. The Note content is a nibble stream.">
+            <span class="bit-pos">1–2</span>
+            <span class="bit-val on">10</span>
+            <span class="bit-name">Enc.<br>Type</span>
+          </div>
+          <div class="bit-cell data w2" data-tooltip="Bits 3-4: Language / codebook variant selector. In pictography mode: selects a variant of the active codebook.">
+            <span class="bit-pos">3–4</span>
+            <span class="bit-val">VV</span>
+            <span class="bit-name">Codebook<br>Variant</span>
+          </div>
+          <div class="bit-cell enhance w4" data-tooltip="Bits 5-8: Length field. 0000-1110 = direct length in bytes. 1111 = escape: next byte carries length up to 255.">
+            <span class="bit-pos">5–8</span>
+            <span class="bit-val">LLLL</span>
+            <span class="bit-name">Length<br>(escape=1111)</span>
+          </div>
+        </div>
+        <div class="bit-legend">
+          <span class="legend-item"><span class="legend-swatch mode"></span> Encoding Type = 10 (Binary Pictography)</span>
+          <span class="legend-item"><span class="legend-swatch data"></span> Codebook Variant Selector</span>
+          <span class="legend-item"><span class="legend-swatch enhance"></span> Content Length</span>
+        </div>
+      </div>
+
+      <p>When encoding type = 10, the Note content is a nibble stream decoded through the active codebook. The Note Header's variant field (bits 3–4) selects a variant of the active codebook — providing four sub-variants per codebook without requiring a full codebook shift.</p>
+
+      <p>SO/SI mid-Note shifts (Section 7) operate via the P7 signal slot. This allows a single Note block to contain content encoded against multiple codebooks — with seamless transitions driven by the P7 signal slot's SO/SI C0 control signals. The transition does not break the Note block; the content continues in the same Note after the shift.</p>
+
+      <div class="notice">
+        <p><strong>Note block pictography at scale:</strong> A 10-byte Note block in binary pictography mode carries 20 semantic events. A session with 100 Note blocks carries 2,000 events in 1,000 bytes of Note content (plus Note headers). The same session in text would require approximately 14,000 bytes of label content minimum. The structured BitPads record overhead (identity, timestamp, CRC) is shared across all events in each record — it does not multiply.</p>
+      </div>
+    </section>
+
+    <!-- ── SECTION 13: COMBINED ── -->
+    <section id="combined">
+      <p class="eyebrow">Integration</p>
+      <h2>Telegraph Emulation + Pictography Together</h2>
+      <p>The combination of Category 1110 (Telegraph Emulation stream) with binary pictography active creates the most semantically dense binary communication channel in the BitPads protocol family.</p>
+
+      <div class="formula">
+        <span class="f-name">Combined capability:</span><br>
+        Every byte = enhanced C0 byte (flags + code identity)<br>
+        Active codebook provides semantic context for C0 code interpretations<br>
+        Rolling codebook shifts update semantic context mid-stream<br>
+        Legacy receivers see standard C0 controls throughout<br>
+        BitPads receivers decode typed events with full semantic resolution<br>
+        <span class="f-note">This is the Sumerian principle in binary: minimal marks, shared context, rich meaning.</span>
+      </div>
+
+      <p>In this mode, the C0 code identity within each stream byte serves as a compressed semantic pointer into the active codebook, while the P/A/C flags carry the event's priority, confirmation, and continuation state. A single byte carries: a 3-bit flag state AND a 5-bit semantic index into the codebook. The codebook entry carries the full semantic concept.</p>
+
+      <div class="printout">
+        <div class="ph">10-BYTE STREAM — FULL ANNOTATION (BOTH VIEWS)</div>
+        <div class="ph">──────────────────────────────────────────────────────────────────────────────────</div>
+        <div><span class="pl">Active codebook: 0001 (spacecraft status). Category 1110 active.</span></div>
+        <div class="ph">──────────────────────────────────────────────────────────────────────────────────</div>
+        <div><span class="pl">Byte  Hex   Binary       Legacy View          BitPads View</span></div>
+        <div class="ph">──────────────────────────────────────────────────────────────────────────────────</div>
+        <div><span class="pl">  1   0x16  000 10110    SYN — idle           SYN, no flags — heartbeat</span></div>
+        <div><span class="pl">  2   0x96  100 10110    [extended char]      SYN, Priority — priority pulse</span></div>
+        <div><span class="pl">  3   0xC1  110 00001    [extended char Á]    SOH, P+ACK → shift to codebook 1</span></div>
+        <div><span class="pl">  4   0x35  001 10101   </span><span class="pc"> % (ASCII)            </span><span class="pv">C+NAK — nibbles: 0011|0101</span></div>
+        <div><span class="pl">            </span><span class="pc">                                     Codebook[3]=Burn complete | Codebook[5]=Power nominal</span></div>
+        <div><span class="pl">  5   0x60  011 00000    ` (backtick)         ACK+C NUL — nibbles: 0110|0000</span></div>
+        <div><span class="pl">            </span><span class="pc">                                     Codebook[6]=Comms nominal | Codebook[0]=Nominal</span></div>
+        <div><span class="pl">  6   0x07  000 00111    BEL — rings bell     BEL, no flags — standard alert</span></div>
+        <div><span class="pl">  7   0x87  100 00111    [extended char]      BEL, Priority — urgent alert</span></div>
+        <div><span class="pl">  8   0xC8  110 01000    [extended char È]    BS, P+ACK → shift to codebook 8</span></div>
+        <div><span class="pl">  9   0x16  000 10110    SYN — idle           SYN, no flags — heartbeat resumed</span></div>
+        <div><span class="pl"> 10   0x04  000 00100    EOT — end of tx      EOT, no flags — stream close</span></div>
+        <div class="ph">──────────────────────────────────────────────────────────────────────────────────</div>
+        <div><span class="pc">Legacy: a standard C0 stream. BEL rings. EOT closes. Sync bytes idle the line.</span></div>
+        <div><span class="pg">BitPads: 10 typed events. 4 status reports in 2 bytes. 2 codebook shifts. 1 alert.</span></div>
+      </div>
+    </section>
+
+    <!-- ── SECTION 14: HERITAGE ── -->
+    <section id="heritage">
+      <p class="eyebrow">Design Lineage</p>
+      <h2>Design Heritage Connections</h2>
+      <p>Every mechanism in the Binary Pictography system has a lineage reaching back to the history of communication. The connections are not metaphorical — they are structural isomorphisms.</p>
+
+      <div class="heritage-timeline">
+        <div class="ht-item">
+          <div class="ht-era">
+            <span>c. 3000 BCE</span>
+            <span class="ht-era-name">Sumerian Clay Tokens</span>
+          </div>
+          <div class="ht-body">
+            <p>Compact marks whose meaning expanded through shared context between sender and receiver. The scribe pressed a minimal token into clay. The reader interpreted it through a shared codebook held in cultural knowledge. The token itself was compact — the richness was in the shared context, not in the mark.</p>
+            <p style="margin-top:8px;"><strong>Connection:</strong> BitPads nibble codebook — 4-bit index, semantic meaning held in the shared codebook, zero label overhead per event. The same structural principle separated by 5,000 years.</p>
+          </div>
+        </div>
+        <div class="ht-item">
+          <div class="ht-era">
+            <span>1870</span>
+            <span class="ht-era-name">Baudot Shift States</span>
+          </div>
+          <div class="ht-body">
+            <p>Baudot's five-bit code used two shift states — "Letters" and "Figures" — to double the vocabulary from 32 to 64 symbols without adding bits. A single control signal (Shift Out / Shift In) changed the interpretation of all subsequent symbols. The shift state was maintained by the receiver.</p>
+            <p style="margin-top:8px;"><strong>Connection:</strong> BitPads SO/SI codebook switching — the same structural mechanism: a single control signal changes the semantic interpretation of all subsequent content. One SO byte shifts the active codebook. One SI byte restores it. Zero content bits consumed by the shift itself.</p>
+          </div>
+        </div>
+        <div class="ht-item">
+          <div class="ht-era">
+            <span>1838</span>
+            <span class="ht-era-name">Morse Code Priority</span>
+          </div>
+          <div class="ht-body">
+            <p>Samuel Morse assigned the shortest codes to the most frequent letters (E = dot, T = dash) and longer sequences to rare letters. The code was optimised by frequency — common signals carried the minimum weight. The priority flag operates on the same principle: the most important signals receive elevated handling regardless of their code identity.</p>
+            <p style="margin-top:8px;"><strong>Connection:</strong> BitPads Priority flag (P bit) — signals marked with P=1 receive pre-emptive handling. The most urgent events carry the flag. Legacy equivalence: BEL was always the highest-priority C0 control. Priority BEL (0x87) is the direct structural successor to the telegraph operator's emergency key.</p>
+          </div>
+        </div>
+        <div class="ht-item">
+          <div class="ht-era">
+            <span>1844</span>
+            <span class="ht-era-name">Telegraph Key Contact</span>
+          </div>
+          <div class="ht-body">
+            <p>The telegraph key closed or opened a circuit — one binary bit. The complete meaning of a signal was in the timing and sequence of key contacts, read through a shared protocol (Morse, Baudot, etc.). The contact itself carried no label. The receiver decoded through trained knowledge.</p>
+            <p style="margin-top:8px;"><strong>Connection:</strong> Every byte in a Category 1110 stream is a complete signal event. The C0 code identity plays the role of the key contact sequence; the codebook plays the role of the trained operator's knowledge. The mechanism is direct: binary contact → shared codebook → complete semantic event.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="notice">
+        <p><strong>The unbroken line:</strong> Sumerian clay token (4000+ BCE) → Baudot shift state (1870) → SO/SI in ASCII (1963) → BitPads codebook shift (2024). The structural principle — minimal mark, shared context, rich meaning — has been rediscovered and implemented in every major binary communication standard. BitPads Binary Pictography is its most compact binary-native expression: four bits per semantic event, sixteen events per codebook, 65,536 codebooks per session.</p>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<footer class="site-footer"><div class="footer-inner">
+<div><div class="footer-group-label">Protocol</div><ul class="footer-links"><li><a href="bitpads-v2.html">BitPads v2</a></li><li><a href="bitledger.html">BitLedger v3</a></li><li><a href="universal-domain.html">Universal Domain</a></li><li><a href="compound-mode.html">Compound Mode</a></li></ul></div>
+<div><div class="footer-group-label">Enhancement</div><ul class="footer-links"><li><a href="enhancement-grammar.html">Grammar &amp; Signal Slots</a></li><li><a href="enhancement-commands.html">Commands &amp; Context</a></li><li><a href="enhancement-telegraph-1.html">Telegraph Emulation I</a></li><li><a href="enhancement-telegraph-2.html">Telegraph Emulation II</a></li><li><a href="enhancement-nesting.html">Nesting &amp; Overhead</a></li></ul></div>
+<div><div class="footer-group-label">Resources</div><ul class="footer-links"><li><a href="engineering.html">Engineering</a></li><li><a href="guide.html">Guide</a></li><li><a href="cli.html">CLI</a></li><li><a href="reference.html">Reference</a></li></ul></div>
+<div class="footer-copy">BitPads Protocol v2.0<br>BitLedger Protocol v3.0<br>© BABB</div>
+</div></footer>
+
+<script>
+const secs=document.querySelectorAll('section[id]');const tocAs=document.querySelectorAll('.toc a');
+const io=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){tocAs.forEach(a=>a.classList.remove('active'));const a=document.querySelector(`.toc a[href="#${e.target.id}"]`);if(a)a.classList.add('active');}});},{rootMargin:'-15% 0px -70% 0px'});
+secs.forEach(s=>io.observe(s));
+document.querySelectorAll('tr.xrow').forEach(row=>{row.addEventListener('click',()=>{const did=row.dataset.drawer;const drawer=document.getElementById(did);if(!drawer)return;const open=drawer.classList.contains('open');document.querySelectorAll('tr.xdrawer.open').forEach(d=>{d.classList.remove('open');d.previousElementSibling?.classList.remove('open');});if(!open){drawer.classList.add('open');row.classList.add('open');}});});
+
+/* ── Binary Pictography Calculator ── */
+const CODEBOOKS = {
+  '0': ['Concept 0','Concept 1','Concept 2','Concept 3','Concept 4','Concept 5','Concept 6','Concept 7','Concept 8','Concept 9','Concept 10','Concept 11','Concept 12','Concept 13','Concept 14','Concept 15'],
+  '1': ['Nominal','Warning','Critical','Burn complete','Fuel low','Power nominal','Comms nominal','Attitude nominal','Thermal nominal','Data rate normal','Orbit nominal','Navigation lock','Downlink active','Uplink active','Fault detected','Emergency']
+};
+const NIB_COLORS = ['n1','n2','n3','n4'];
+
+function pictoDecodeForward() {
+  const raw = document.getElementById('pictoInput').value.trim();
+  const cbKey = document.getElementById('pictoCodebook').value;
+  const cb = CODEBOOKS[cbKey] || CODEBOOKS['0'];
+  const out = document.getElementById('pictoOutput');
+
+  // parse: handle binary strings OR hex bytes
+  let nibbles = [];
+  // Remove all whitespace
+  const cleaned = raw.replace(/\s+/g,'');
+
+  if (/^[01]+$/.test(cleaned)) {
+    // binary input
+    for (let i = 0; i < cleaned.length; i += 4) {
+      const chunk = cleaned.slice(i, i+4);
+      if (chunk.length === 4) nibbles.push(parseInt(chunk, 2));
+    }
+  } else {
+    // hex input
+    const hexTokens = raw.trim().split(/\s+/);
+    for (const tok of hexTokens) {
+      const v = parseInt(tok, 16);
+      if (!isNaN(v) && v >= 0 && v <= 255) {
+        nibbles.push((v >> 4) & 0xF);
+        nibbles.push(v & 0xF);
+      }
+    }
+  }
+
+  if (!nibbles.length) {
+    out.innerHTML = '<span style="color:#E06060;">Could not parse input. Enter binary nibbles (e.g. 0011 0101) or hex bytes (e.g. 35 60).</span>';
+    return;
+  }
+
+  let html = `<div style="color:rgba(255,255,255,0.25);font-size:9px;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:8px;">Codebook: ${cbKey === '1' ? '0001 — Spacecraft Status' : '0000 — Universal'} · ${nibbles.length} nibbles · ${Math.ceil(nibbles.length/2)} bytes</div>`;
+
+  // Group by byte
+  for (let i = 0; i < nibbles.length; i += 2) {
+    const n1 = nibbles[i];
+    const n2 = (i+1 < nibbles.length) ? nibbles[i+1] : null;
+    const byteNum = Math.floor(i/2) + 1;
+    const hexVal = n2 !== null ? ((n1 << 4) | n2).toString(16).toUpperCase().padStart(2,'0') : (n1 << 4).toString(16).toUpperCase().padStart(2,'0');
+    const binVal = n2 !== null ? `${n1.toString(2).padStart(4,'0')} ${n2.toString(2).padStart(4,'0')}` : n1.toString(2).padStart(4,'0');
+
+    html += `<div style="margin-bottom:6px;border-top:1px solid rgba(255,255,255,0.06);padding-top:6px;">`;
+    html += `<span style="color:rgba(255,255,255,0.3);font-size:10px;">Byte ${byteNum} (0x${hexVal} = ${binVal})</span>`;
+    html += `<div style="margin-top:4px;display:flex;gap:14px;flex-wrap:wrap;">`;
+
+    const nc = NIB_COLORS[i % 4];
+    html += `<span style="display:inline-block;padding:3px 9px;font-weight:700;background:rgba(11,61,145,0.25);color:#7ECEF4;border-top:2px solid var(--nasa-blue);font-size:13px;">${n1.toString(2).padStart(4,'0')}</span>`;
+    html += `<span style="color:#FC8C6A;">→ index ${n1}</span>`;
+    html += `<span style="color:#6AC87E;font-weight:600;">${cb[n1]}</span>`;
+
+    if (n2 !== null) {
+      html += `<span style="color:rgba(255,255,255,0.15);">|</span>`;
+      html += `<span style="display:inline-block;padding:3px 9px;font-weight:700;background:rgba(200,75,10,0.2);color:#FC8C6A;border-top:2px solid var(--bit-data);font-size:13px;">${n2.toString(2).padStart(4,'0')}</span>`;
+      html += `<span style="color:#FC8C6A;">→ index ${n2}</span>`;
+      html += `<span style="color:#6AC87E;font-weight:600;">${cb[n2]}</span>`;
+    }
+
+    html += `</div></div>`;
+  }
+
+  out.innerHTML = html;
+}
+
+function pictoLoadExample() {
+  document.getElementById('pictoInput').value = '0011 0101 0110 0000';
+  document.getElementById('pictoCodebook').value = '1';
+  pictoDecodeForward();
+}
+</script>
+</body>
+</html>

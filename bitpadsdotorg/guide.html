@@ -1,0 +1,1557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Implementation Guide — BitPads Protocol</title>
+<link rel="stylesheet" href="bp-style.css">
+<style>
+/* ── Guide-specific ── */
+.decision-tree {
+  background: var(--bg-dark);
+  border-left: 3px solid var(--nasa-gold);
+  font-family: var(--mono); font-size: 12px;
+  line-height: 1.9; color: #99B8D4;
+  padding: 18px 22px; margin: 14px 0;
+  overflow-x: auto;
+}
+.dt-root  { color: var(--nasa-red); font-weight: 700; }
+.dt-cond  { color: #FC8C6A; }
+.dt-leaf  { color: #6AC87E; }
+.dt-note  { color: #8898AA; }
+.dt-val   { color: #7ECEF4; }
+.dt-err   { color: #E06060; }
+.dt-arrow { color: var(--nasa-gold); }
+
+.state-machine {
+  border: 1px solid var(--rule);
+  margin: 20px 0; overflow-x: auto;
+}
+.sm-row {
+  display: grid;
+  grid-template-columns: 180px 80px 1fr;
+  border-bottom: 1px solid var(--rule-soft);
+  align-items: stretch;
+}
+.sm-row:first-child { background: var(--bg-soft); }
+.sm-row:last-child  { border-bottom: none; }
+.sm-cell {
+  padding: 11px 14px;
+  border-right: 1px solid var(--rule-soft);
+  font-size: 13px;
+}
+.sm-cell:last-child { border-right: none; }
+.sm-state {
+  font-family: var(--mono); font-size: 11px;
+  font-weight: 700; color: var(--nasa-blue);
+}
+.sm-bytes {
+  font-family: var(--mono); font-size: 11px;
+  color: var(--ink-faint); text-align: center;
+}
+.sm-action { color: var(--ink-soft); line-height: 1.45; }
+.sm-action code { font-size: 11px; }
+.sm-next  { font-family: var(--mono); font-size: 10px; color: var(--nasa-gold); }
+
+.tier-table { margin: 20px 0; width: 100%; }
+
+.pitfall-tag {
+  font-family: var(--mono); font-size: 9px;
+  text-transform: uppercase; letter-spacing: 0.1em;
+  padding: 2px 6px;
+  background: var(--nasa-red);
+  color: white; margin-right: 6px;
+}
+
+.vec-block {
+  background: var(--bg-dark);
+  border-left: 3px solid var(--nasa-teal);
+  font-family: var(--mono); font-size: 11.5px;
+  line-height: 2; color: #99B8D4;
+  padding: 16px 20px; margin: 10px 0;
+  overflow-x: auto;
+}
+.vec-block .vl  { color: #FC8C6A; }
+.vec-block .vv  { color: #7ECEF4; letter-spacing: 0.12em; }
+.vec-block .vb  { color: #E8C56A; letter-spacing: 0.15em; }
+.vec-block .vg  { color: #6AC87E; }
+.vec-block .vc  { color: #8898AA; }
+.vec-block .vh  { color: var(--nasa-gold); }
+
+.algo-steps {
+  counter-reset: step;
+  list-style: none;
+  padding: 0; margin: 16px 0;
+}
+.algo-steps li {
+  counter-increment: step;
+  display: flex; gap: 14px;
+  margin-bottom: 10px;
+  padding: 12px 16px;
+  background: var(--bg-panel);
+  border: 1px solid var(--rule-soft);
+  border-left: 3px solid var(--nasa-blue);
+  font-size: 13.5px; line-height: 1.5;
+}
+.algo-steps li::before {
+  content: counter(step, decimal-leading-zero);
+  font-family: var(--mono); font-size: 11px;
+  color: var(--nasa-blue); font-weight: 700;
+  flex-shrink: 0; padding-top: 2px;
+  min-width: 24px;
+}
+.algo-steps li code { font-size: 12px; }
+
+.byte-map {
+  display: flex; flex-wrap: wrap; gap: 3px;
+  margin: 16px 0;
+}
+.bm-cell {
+  background: var(--bg-panel);
+  border: 1px solid var(--rule);
+  padding: 8px 10px;
+  text-align: center; min-width: 70px;
+}
+.bm-pos {
+  font-family: var(--mono); font-size: 8px;
+  color: var(--ink-faint); display: block; margin-bottom: 3px;
+}
+.bm-label {
+  font-family: var(--mono); font-size: 10px;
+  color: var(--ink); font-weight: 700; display: block;
+}
+.bm-bits {
+  font-family: var(--mono); font-size: 9px;
+  color: var(--nasa-blue); display: block; margin-top: 2px;
+}
+.bm-cell.layer-meta { border-top: 3px solid var(--layer-meta); }
+.bm-cell.layer-l1   { border-top: 3px solid var(--layer-1); }
+.bm-cell.layer-l2   { border-top: 3px solid var(--layer-2); }
+.bm-cell.layer-l3   { border-top: 3px solid var(--layer-3); }
+
+.flow-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1px; background: var(--rule);
+  border: 1px solid var(--rule); margin: 20px 0;
+}
+.flow-cell {
+  background: var(--bg-panel); padding: 18px;
+}
+.flow-label {
+  font-family: var(--mono); font-size: 9px;
+  text-transform: uppercase; letter-spacing: 0.1em;
+  color: var(--nasa-red); margin-bottom: 6px;
+}
+.flow-title {
+  font-family: var(--display); font-weight: 700;
+  font-size: 16px; text-transform: uppercase;
+  letter-spacing: 0.04em; margin: 0 0 6px;
+}
+.flow-body { font-size: 12.5px; color: var(--ink-soft); line-height: 1.5; margin: 0; }
+
+.cross-val-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1px; background: var(--rule);
+  border: 1px solid var(--rule); margin: 16px 0;
+}
+@media (max-width: 600px) { .cross-val-grid { grid-template-columns: 1fr; } }
+.cv-cell {
+  background: var(--bg-panel); padding: 16px 18px;
+}
+.cv-head {
+  font-family: var(--mono); font-size: 9px;
+  text-transform: uppercase; letter-spacing: 0.1em;
+  color: var(--nasa-blue); margin-bottom: 6px;
+}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="index.html">
+      <span class="brand-mark">BP</span>
+      <span class="brand-name">BitPads Protocol</span>
+    </a>
+    <nav class="topnav">
+      <a href="overview.html">Overview</a>
+      <a href="bitpads-v2.html">BitPads v2</a>
+      <a href="bitledger.html" class="active">BitLedger</a>
+      <a href="universal-domain.html">Universal Domain</a>
+      <div class="nav-group">
+        <a href="enhancement-grammar.html">Enhancement</a>
+        <div class="nav-dropdown">
+          <a href="enhancement-grammar.html">Grammar &amp; Signal Slots</a>
+          <a href="enhancement-commands.html">Commands &amp; Context</a>
+          <a href="enhancement-telegraph-1.html">Telegraph Emulation I</a>
+          <a href="enhancement-telegraph-2.html">Telegraph Emulation II</a>
+          <a href="enhancement-nesting.html">Nesting &amp; Overhead</a>
+        </div>
+      </div>
+      <a href="compound-mode.html">Compound Mode</a>
+      <a href="engineering.html">Engineering</a>
+      <a href="guide.html">Guide</a>
+      <a href="cli.html">CLI</a>
+      <a href="reference.html">Reference</a>
+    </nav>
+  </div>
+
+</header><header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="index.html">
+      <span class="brand-mark">BP</span>
+      <span class="brand-name">BitPads Protocol</span>
+    </a>
+    <nav class="topnav">
+      <a href="overview.html">Overview</a>
+      <a href="bitpads-v2.html">BitPads v2</a>
+      <a href="bitledger.html" class="active">BitLedger</a>
+      <a href="universal-domain.html">Universal Domain</a>
+      <div class="nav-group">
+        <a href="enhancement-grammar.html">Enhancement</a>
+        <div class="nav-dropdown">
+          <a href="enhancement-grammar.html">Grammar &amp; Signal Slots</a>
+          <a href="enhancement-commands.html">Commands &amp; Context</a>
+          <a href="enhancement-telegraph-1.html">Telegraph Emulation I</a>
+          <a href="enhancement-telegraph-2.html">Telegraph Emulation II</a>
+          <a href="enhancement-nesting.html">Nesting &amp; Overhead</a>
+        </div>
+      </div>
+      <a href="compound-mode.html">Compound Mode</a>
+      <a href="engineering.html">Engineering</a>
+      <a href="guide.html">Guide</a>
+      <a href="cli.html">CLI</a>
+      <a href="reference.html">Reference</a>
+    </nav>
+  </div>
+</header>
+
+<div class="page">
+  <aside class="sidebar">
+    <p class="toc-label">On This Page</p>
+    <ul class="toc">
+      <li><a href="#orientation" class="active">Where to Start</a></li>
+      <li><a href="#meta-decoder">Meta Byte Decoder</a></li>
+      <li><a href="#value-encoding">Value Encoding</a></li>
+      <li><a href="#layer1-guide">Layer 1 Session Header</a></li>
+      <li><a href="#layer2-guide">Layer 2 Batch Header</a></li>
+      <li><a href="#layer3-guide">Layer 3 Record</a></li>
+      <li><a href="#state-machine">Decoder State Machine</a></li>
+      <li><a href="#enhancement-decoder">Enhancement Decoder</a></li>
+      <li><a href="#pitfalls">Common Pitfalls</a></li>
+      <li><a href="#test-vectors">Test Vectors</a></li>
+    </ul>
+  </aside>
+
+  <main>
+
+    <!-- ── ORIENTATION ── -->
+    <section id="orientation">
+      <p class="eyebrow">Implementation Guide · BitPads Protocol v2.0 / BitLedger v3.0</p>
+      <h1>Mission<br>Manual</h1>
+      <p class="pullquote">You have read the specs. Now build the encoder or decoder. This guide walks every algorithm step by step with real values throughout.</p>
+      <p class="lead">Every BitPads implementation starts at the same byte: Meta byte 1. Two paths diverge from there depending on whether you are producing frames or consuming them.</p>
+
+      <div class="flow-grid">
+        <div class="flow-cell">
+          <div class="flow-label">Path A</div>
+          <div class="flow-title">Encoder</div>
+          <p class="flow-body">Assemble BitPads frames from application data. Start at the Meta byte, determine mode, populate layers from innermost to outermost, compute CRC-15 last. Output is a byte sequence conforming to the wire format.</p>
+          <p class="flow-body mt8">Sections: <a href="#value-encoding">Value Encoding</a> → <a href="#layer1-guide">Layer 1</a> → <a href="#layer2-guide">Layer 2</a> → <a href="#layer3-guide">Layer 3</a></p>
+        </div>
+        <div class="flow-cell">
+          <div class="flow-label">Path B</div>
+          <div class="flow-title">Decoder</div>
+          <p class="flow-body">Parse incoming BitPads bytes into structured records. Read the Meta byte first, branch on mode, traverse the fixed component sequence, validate cross-layer rules after each record.</p>
+          <p class="flow-body mt8">Sections: <a href="#meta-decoder">Meta Byte</a> → <a href="#state-machine">State Machine</a> → <a href="#layer3-guide">Layer 3 Validation</a></p>
+        </div>
+        <div class="flow-cell">
+          <div class="flow-label">Both paths</div>
+          <div class="flow-title">Common Ground</div>
+          <p class="flow-body">The Meta byte is the universal entry point. Both encoder and decoder must implement the full Meta byte interpretation table. All fields are positional — no schema lookup, no field identifiers. Know the position and you know the meaning.</p>
+          <p class="flow-body mt8">Spec refs: <a href="bitpads-v2.html">BitPads v2</a> · <a href="bitledger.html">BitLedger v3</a></p>
+        </div>
+      </div>
+
+      <div class="notice">
+        <p><strong>Bit numbering convention.</strong> The spec numbers bits 1–8 from MSB (most significant) to LSB. Bit 1 is the high bit of each byte. Confirm your byte-manipulation code matches this convention before encoding any field. Reversal here corrupts every frame silently. See <a href="#pitfalls">Common Pitfalls</a>.</p>
+      </div>
+    </section>
+
+    <!-- ── META BYTE DECODER ── -->
+    <section id="meta-decoder">
+      <p class="eyebrow">Entry Point — All Parsing Starts Here</p>
+      <h2>Meta Byte Decoder</h2>
+      <p>Every BitPads frame begins with Meta byte 1. Read exactly one byte. This byte fully determines what follows before you read a single additional bit. The first branch is on bit 1 — Wave or Record mode.</p>
+
+      <h3>Bit Layout — Meta Byte 1</h3>
+      <div class="bit-display">
+        <div class="bit-display-label">Meta Byte 1 — field map (all modes)</div>
+        <div class="bit-cells">
+          <div class="bit-cell mode" data-layer="meta" data-tooltip="Bit 1: 0=Wave mode. 1=Record mode. Controls everything that follows.">
+            <span class="bit-pos">1</span>
+            <span class="bit-val">?</span>
+            <span class="bit-name">Mode</span>
+          </div>
+          <div class="bit-cell mode" data-layer="meta" data-tooltip="Bit 2: Wave=ACK Request. Record=System Context Extension follows Layer 1.">
+            <span class="bit-pos">2</span>
+            <span class="bit-val">?</span>
+            <span class="bit-name">ACK/<br>SysCtx</span>
+          </div>
+          <div class="bit-cell mode" data-layer="meta" data-tooltip="Bit 3: 0=Complete. 1=Fragment, accumulate until bit3=0. Universal.">
+            <span class="bit-pos">3</span>
+            <span class="bit-val">?</span>
+            <span class="bit-name">Cont.</span>
+          </div>
+          <div class="bit-cell mode" data-layer="meta" data-tooltip="Bit 4: Wave only — 0=Role A (descriptor flags), 1=Role B (category code). Ignored in Record mode.">
+            <span class="bit-pos">4</span>
+            <span class="bit-val">?</span>
+            <span class="bit-name">Treat/<br>Ignored</span>
+          </div>
+          <div class="bit-cell data" data-layer="meta" data-tooltip="Bits 5-8: Role A (Wave basic), Role B (Wave category), or Role C (Record expect flags).">
+            <span class="bit-pos">5</span>
+            <span class="bit-val">?</span>
+            <span class="bit-name">A/B/C</span>
+          </div>
+          <div class="bit-cell data" data-layer="meta" data-tooltip="Bits 5-8: Role A/B/C field continued.">
+            <span class="bit-pos">6</span>
+            <span class="bit-val">?</span>
+            <span class="bit-name">A/B/C</span>
+          </div>
+          <div class="bit-cell data" data-layer="meta" data-tooltip="Bits 5-8: Role A/B/C field continued.">
+            <span class="bit-pos">7</span>
+            <span class="bit-val">?</span>
+            <span class="bit-name">A/B/C</span>
+          </div>
+          <div class="bit-cell data" data-layer="meta" data-tooltip="Bits 5-8: Role A/B/C field continued.">
+            <span class="bit-pos">8</span>
+            <span class="bit-val">?</span>
+            <span class="bit-name">A/B/C</span>
+          </div>
+        </div>
+        <div class="bit-legend">
+          <span class="legend-item"><span class="legend-swatch mode"></span> Mode / Control</span>
+          <span class="legend-item"><span class="legend-swatch data"></span> Content Field — Role A / B / C</span>
+        </div>
+      </div>
+
+      <h3>Full Decision Tree</h3>
+      <div class="decision-tree">
+<span class="dt-root">READ byte[0]  ←  Meta Byte 1</span>
+<span class="dt-arrow">│</span>
+<span class="dt-arrow">├─</span> <span class="dt-cond">bit1 = 0  →  WAVE MODE</span>
+<span class="dt-arrow">│    │</span>
+<span class="dt-arrow">│    ├─</span> <span class="dt-cond">bit2 = 1  →  ACK Request flagged</span>
+<span class="dt-arrow">│    │         </span><span class="dt-note">  (single byte alone = Pure Signal)</span>
+<span class="dt-arrow">│    │</span>
+<span class="dt-arrow">│    ├─</span> <span class="dt-cond">bit3 = 1  →  Fragment — accumulate bytes until bit3=0</span>
+<span class="dt-arrow">│    │</span>
+<span class="dt-arrow">│    ├─</span> <span class="dt-cond">bit4 = 0  →  BASIC TREATMENT — Role A active</span>
+<span class="dt-arrow">│    │    │</span>
+<span class="dt-arrow">│    │    ├─</span> <span class="dt-val">bit5 = Priority flag (0=normal 1=elevated)</span>
+<span class="dt-arrow">│    │    ├─</span> <span class="dt-val">bit6 = Cipher Active (0=plain 1=rolling codebook)</span>
+<span class="dt-arrow">│    │    ├─</span> <span class="dt-val">bit7 = Extended Flags (0=none 1=ext byte follows)</span>
+<span class="dt-arrow">│    │    └─</span> <span class="dt-val">bit8 = Profile Defined (0=standard 1=profile applies)</span>
+<span class="dt-arrow">│    │</span>
+<span class="dt-arrow">│    └─</span> <span class="dt-cond">bit4 = 1  →  CATEGORY MODE — Role B active</span>
+<span class="dt-arrow">│         │</span>
+<span class="dt-arrow">│         └─</span> <span class="dt-val">bits5-8 = 4-bit category code  →  see Wave category table below</span>
+<span class="dt-arrow">│</span>
+<span class="dt-arrow">└─</span> <span class="dt-cond">bit1 = 1  →  RECORD MODE</span>
+     <span class="dt-arrow">│</span>
+     <span class="dt-arrow">├─</span> <span class="dt-val">bits5-8 = Role C expect flags:</span>
+     <span class="dt-arrow">│    </span><span class="dt-val">  bit5=Value Present  bit6=Time Present</span>
+     <span class="dt-arrow">│    </span><span class="dt-val">  bit7=Task Present   bit8=Note Present</span>
+     <span class="dt-arrow">│</span>
+     <span class="dt-arrow">└─</span> <span class="dt-cond">READ byte[1]  ←  Meta Byte 2 (always follows in Record mode)</span>
+          <span class="dt-arrow">│</span>
+          <span class="dt-arrow">├─</span> <span class="dt-val">bits1-4 = Archetype / sub-type by category</span>
+          <span class="dt-arrow">├─</span> <span class="dt-val">bits5-6 = Time tier selector</span>
+          <span class="dt-arrow">│           00=none  01=T1 session offset</span>
+          <span class="dt-arrow">│           10=T1 external ref  11=T2 Time Block</span>
+          <span class="dt-arrow">├─</span> <span class="dt-val">bit7 = Setup Byte Present (1=Setup byte precedes Value block)</span>
+          <span class="dt-arrow">└─</span> <span class="dt-cond">bit8 = Signal Slot Presence</span>
+               <span class="dt-arrow">  0  →  proceed to Layer 1 directly</span>
+               <span class="dt-arrow">  1  →  READ Signal Slot Presence byte first,</span>
+               <span class="dt-arrow">        then proceed to Layer 1</span>
+      </div>
+
+      <h3>Wave Category Table — bits 5-8 (Role B, bit4=1)</h3>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Code</th>
+            <th>Category</th>
+            <th>Layer 1?</th>
+            <th>Structure</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td><code>0000</code></td><td>Plain Value</td><td>Session est.</td><td>Setup byte (opt.) + Value block at tier</td></tr>
+          <tr><td><code>0001</code></td><td>Simple Message</td><td>Session est.</td><td>1-byte length prefix + content bytes</td></tr>
+          <tr><td><code>0010</code></td><td>Status / Log</td><td>Session est.</td><td>Status code or length + log content</td></tr>
+          <tr><td><code>0011</code></td><td>Command / Request</td><td>Session est.</td><td>Task short form (1 byte) + optional ext</td></tr>
+          <tr><td><code>0100</code></td><td>Basic Record</td><td>Required</td><td>Layer 1 + opt. Layer 2 + value + opt. time</td></tr>
+          <tr><td><code>0101</code></td><td>Transaction + Message</td><td>Required</td><td>Layer 1 + Layer 2 + BL ctrl + value + note</td></tr>
+          <tr><td><code>0110</code></td><td>Rich Log Entry</td><td>Required</td><td>Layer 1 + all four components</td></tr>
+          <tr><td><code>0111</code></td><td>Priority Alert</td><td>Required</td><td>Layer 1 + value + task, priority override</td></tr>
+          <tr><td><code>1000</code></td><td>Text Stream</td><td>Session</td><td>Stream-length prefix + UTF-8 bytes</td></tr>
+          <tr><td><code>1001</code></td><td>Flag / Archetype Stream</td><td>Session</td><td>Stream-Open ctrl + length + packed flags</td></tr>
+          <tr><td><code>1010</code></td><td>Variable Field Stream</td><td>Session</td><td>Stream-Open + length-prefixed fields</td></tr>
+          <tr><td><code>1011</code></td><td>Binary Blob</td><td>Session</td><td>Length prefix + raw binary</td></tr>
+          <tr><td><code>1100</code></td><td>Compact Command</td><td>No</td><td>Enhancement grammar — upper 3=class, lower 5=code</td></tr>
+          <tr><td><code>1101</code></td><td>Context Declaration</td><td>No</td><td>Context Declaration Block, 1–4 bytes</td></tr>
+          <tr><td><code>1110</code></td><td>Telegraph Emulation</td><td>Session</td><td>Full C0 Enhancement Grammar stream</td></tr>
+          <tr><td><code>1111</code></td><td>Extended Category</td><td>Depends</td><td>Next byte = 8-bit extended category code</td></tr>
+        </tbody>
+      </table>
+
+      <div class="notice warn">
+        <p><strong>Wave category 1100/1101/1110</strong> engage the Enhancement Sub-Protocol. See <a href="enhancement-grammar.html">Enhancement Grammar</a> for the full C0 byte structure. In these categories every content byte carries 3 flag bits (P/A/C) in its upper 3 bits and 5 content bits in its lower 5.</p>
+      </div>
+    </section>
+
+    <!-- ── VALUE ENCODING ── -->
+    <section id="value-encoding">
+      <p class="eyebrow">Algorithm</p>
+      <h2>Value Encoding Algorithm</h2>
+      <p>All values encode as whole integers using the formula <code>N = A × 2<sup>S</sup> + r</code>. No floating point anywhere. Every integer from 0 to 33,554,431 is reachable without gaps. Rounding, when it occurs, is always explicit — two flag bits declare direction.</p>
+
+      <div class="formula">
+        <div><span class="f-name">N</span> = <span class="f-var">A</span> × 2<sup><span class="f-var">S</span></sup> + <span class="f-var">r</span></div>
+        <div style="margin-top:6px;font-size:12px;">
+          <span class="f-note">N</span> = stored integer in the value block<br>
+          <span class="f-note">A</span> = upper (25−S) bits = floor(N / 2<sup>S</sup>)<br>
+          <span class="f-note">S</span> = Optimal Split from Layer 2 (default 8)<br>
+          <span class="f-note">r</span> = lower S bits = N mod 2<sup>S</sup><br>
+        </div>
+        <div style="margin-top:10px;">
+          <span class="f-note">Real Value</span> = (N × Scaling Factor) / 10<sup>Decimal Position</sup>
+        </div>
+      </div>
+
+      <h3>Encoder Algorithm — Step by Step</h3>
+      <ol class="algo-steps">
+        <li>Determine the target real value <code>V</code> (e.g. $4.53). Obtain <code>SF</code> (Scaling Factor) and <code>D</code> (Decimal Position) from Layer 2 batch context.</li>
+        <li>Compute raw stored integer: <code>R = V × 10<sup>D</sup> / SF</code>. Example: V=4.53, SF=1, D=2 → R = 4.53 × 100 / 1 = 453.</li>
+        <li>Check if <code>R</code> is a whole integer. If yes: set <code>N = R</code>, bit 26 = 0, bit 27 = 0 (exact). Skip to step 6.</li>
+        <li>Rounding required. Choose direction by account type: Liability/Tax → round up (ceiling). Asset/Income → round down (floor). General → round to nearest. Set <code>N = floor(R)</code> or <code>ceil(R)</code>. Set bit 26 = 1. Set bit 27 = 0 (down) or 1 (up).</li>
+        <li>Range check: if <code>N &gt; 33,554,431</code>, increase SF to next power of 10 and return to step 2.</li>
+        <li>Obtain Optimal Split <code>S</code> from Layer 2 (default S=8). Compute: <code>A = floor(N / 2<sup>S</sup>)</code>, <code>r = N mod 2<sup>S</sup></code>. Pack A into upper bits, r into lower bits of value block.</li>
+      </ol>
+
+      <h3>Worked Example — $4.53 at SF×1, D=2, S=8</h3>
+      <div class="printout">
+        <div class="ph">── ENCODER: $4.53 ────────────────────────────</div>
+        <div><span class="pl">Target V     </span><span class="pv">$4.53</span></div>
+        <div><span class="pl">SF, D, S     </span><span class="pv">×1, D=2, S=8</span></div>
+        <div class="ph">──────────────────────────────────────────────</div>
+        <div><span class="pl">Step 1       </span><span class="pv">R = 4.53 × 100 / 1 = 453</span></div>
+        <div><span class="pl">Step 2       </span><span class="pv">453 is whole integer → exact</span></div>
+        <div><span class="pl">Bit 26       </span><span class="pv">0  (exact)</span></div>
+        <div><span class="pl">Bit 27       </span><span class="pv">0  (must be 0 when bit26=0)</span></div>
+        <div class="ph">──────────────────────────────────────────────</div>
+        <div><span class="pl">N            </span><span class="pv">453</span></div>
+        <div><span class="pl">A = ⌊453/256⌋</span><span class="pv">1  → stored in bits 1-17</span></div>
+        <div><span class="pl">r = 453 mod 256</span><span class="pv">197 → stored in bits 18-25</span></div>
+        <div class="ph">──────────────────────────────────────────────</div>
+        <div><span class="pl">Decode check </span><span class="pv">N = 1×256 + 197 = 453</span></div>
+        <div><span class="pl">Real Value   </span><span class="pg">453 × 1 / 100 = $4.53  ✓ exact</span></div>
+      </div>
+
+      <h3>Value Tier Reference</h3>
+      <table class="data-table tier-table">
+        <thead>
+          <tr>
+            <th>Tier</th>
+            <th>Setup bits 1-2</th>
+            <th>Block bits</th>
+            <th>Max N</th>
+            <th>Max at SF×1, D=2</th>
+            <th>When to use</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>T1</td>
+            <td><code>00</code></td>
+            <td>8 bits</td>
+            <td>255</td>
+            <td>$2.55</td>
+            <td>Status codes, deep space IoT, single-byte values</td>
+          </tr>
+          <tr>
+            <td>T2</td>
+            <td><code>01</code></td>
+            <td>16 bits</td>
+            <td>65,535</td>
+            <td>$655.35</td>
+            <td>Small sensor values, local measurements</td>
+          </tr>
+          <tr>
+            <td><strong>T3</strong></td>
+            <td><code>10</code> <em>(DEFAULT)</em></td>
+            <td>24 bits</td>
+            <td>16,777,215</td>
+            <td>$167,772.15</td>
+            <td>General purpose — default when no Setup byte present</td>
+          </tr>
+          <tr>
+            <td>T4</td>
+            <td><code>11</code></td>
+            <td>32 bits</td>
+            <td>4,294,967,295</td>
+            <td>$42,949,672.95</td>
+            <td>Large assets, high-volume physical quantities</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="calculator" id="calc-value">
+        <div class="calc-title">Value Encoder — N = A × 2<sup style="font-size:9px">S</sup> + r</div>
+
+        <div style="margin-bottom:12px;">
+          <label class="calc-label" style="display:block;margin-bottom:5px;">Target value</label>
+          <input type="number" id="cv-val" class="calc-input" value="4.53" step="any"
+                 style="width:100%;font-size:20px;padding:10px 12px;">
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr 120px;gap:10px;margin-bottom:4px;">
+          <div>
+            <label class="calc-label" style="display:block;margin-bottom:5px;">Scaling Factor (SF)</label>
+            <select id="cv-sf" class="calc-input" style="width:100%;padding:8px 10px;">
+              <option value="1">×1 — retail / payroll</option>
+              <option value="10">×10</option>
+              <option value="100">×100 — large corporate</option>
+              <option value="1000">×1,000</option>
+              <option value="10000">×10,000 — institutional</option>
+              <option value="100000">×100,000</option>
+              <option value="1000000">×1,000,000</option>
+            </select>
+          </div>
+          <div>
+            <label class="calc-label" style="display:block;margin-bottom:5px;">Decimal Position (D)</label>
+            <select id="cv-d" class="calc-input" style="width:100%;padding:8px 10px;">
+              <option value="0">D=0 — integer</option>
+              <option value="1">D=1</option>
+              <option value="2" selected>D=2 — standard</option>
+              <option value="3">D=3 — precision</option>
+              <option value="4">D=4 — forex pip</option>
+              <option value="5">D=5 — institutional</option>
+              <option value="6">D=6 — crypto</option>
+            </select>
+          </div>
+          <div>
+            <label class="calc-label" style="display:block;margin-bottom:5px;">Split S</label>
+            <input type="number" id="cv-s" class="calc-input" value="8" min="1" max="24"
+                   style="width:100%;padding:8px 10px;" title="Optimal split bits (default 8)">
+          </div>
+        </div>
+
+        <div class="calc-output" id="cv-out" style="margin-top:16px;"></div>
+      </div>
+    </section>
+
+    <!-- ── LAYER 1 ── -->
+    <section id="layer1-guide">
+      <p class="eyebrow">Session Header</p>
+      <h2>Layer 1 — 8 Bytes</h2>
+      <p>Layer 1 is transmitted once at session open. It carries sender identity, domain, permissions, session defaults, and a CRC-15 checksum over bits 1–49. CRC is computed AFTER all other fields are populated.</p>
+
+      <div class="byte-map">
+        <div class="bm-cell layer-l1">
+          <span class="bm-pos">Bit 1</span>
+          <span class="bm-label">SOH</span>
+          <span class="bm-bits">Always 1</span>
+        </div>
+        <div class="bm-cell layer-l1">
+          <span class="bm-pos">Bit 2</span>
+          <span class="bm-label">Wire Ver</span>
+          <span class="bm-bits">0=v1 current</span>
+        </div>
+        <div class="bm-cell layer-l1">
+          <span class="bm-pos">Bits 3-4</span>
+          <span class="bm-label">Domain</span>
+          <span class="bm-bits">00=Financial</span>
+        </div>
+        <div class="bm-cell layer-l1">
+          <span class="bm-pos">Bits 5-8</span>
+          <span class="bm-label">Permissions</span>
+          <span class="bm-bits">R/W/C/Proxy</span>
+        </div>
+        <div class="bm-cell layer-l1">
+          <span class="bm-pos">Bit 9</span>
+          <span class="bm-label">Split Order</span>
+          <span class="bm-bits">0=Mulcand first</span>
+        </div>
+        <div class="bm-cell layer-l1">
+          <span class="bm-pos">Bits 10-11</span>
+          <span class="bm-label">ID Split</span>
+          <span class="bm-bits">00=Flat 32-bit</span>
+        </div>
+        <div class="bm-cell layer-l1">
+          <span class="bm-pos">Bit 12</span>
+          <span class="bm-label">Enh. Flag</span>
+          <span class="bm-bits">0=off 1=C0 on</span>
+        </div>
+        <div class="bm-cell layer-l1">
+          <span class="bm-pos">Bits 13-44</span>
+          <span class="bm-label">Sender ID</span>
+          <span class="bm-bits">32-bit flat/split</span>
+        </div>
+        <div class="bm-cell layer-l1">
+          <span class="bm-pos">Bits 45-49</span>
+          <span class="bm-label">Sub-Entity</span>
+          <span class="bm-bits">5-bit (0-31)</span>
+        </div>
+        <div class="bm-cell layer-l1" style="border-top-color: var(--bit-checksum);">
+          <span class="bm-pos">Bits 50-64</span>
+          <span class="bm-label">CRC-15</span>
+          <span class="bm-bits">x^15+x+1</span>
+        </div>
+      </div>
+
+      <h3>CRC-15 Encoding Algorithm</h3>
+      <p>The CRC-15 covers bits 1–49 (the 49-bit session payload). Generator polynomial: <code>G = x<sup>15</sup> + x + 1 = 0x8003</code>. At the encoder side, compute the remainder, then embed in bits 50–64.</p>
+
+      <div class="printout">
+        <div class="ph">── CRC-15 ENCODER ────────────────────────────────────────────</div>
+        <div><span class="pl">Input        </span><span class="pv">P = bits 1-49  (49-bit session payload)</span></div>
+        <div class="ph">──────────────────────────────────────────────────────────────</div>
+        <div><span class="pc">Step 1: Append 15 zero bits</span></div>
+        <div><span class="pv">W = P[1..49] + 000000000000000   </span><span class="pc">// W is now 64 bits</span></div>
+        <div>&nbsp;</div>
+        <div><span class="pc">Step 2: XOR shift loop — one iteration per payload bit</span></div>
+        <div><span class="pv">for i = 1 to 49:</span></div>
+        <div><span class="pv">    if leading bit of W == 1:</span></div>
+        <div><span class="pv">        W = W XOR (G &lt;&lt; (64 - 15 - i))  </span><span class="pc">// align polynomial</span></div>
+        <div><span class="pv">    W = W &lt;&lt; 1</span></div>
+        <div>&nbsp;</div>
+        <div><span class="pc">Step 3: Extract remainder</span></div>
+        <div><span class="pv">R = final 15 bits of W</span></div>
+        <div>&nbsp;</div>
+        <div><span class="pc">Step 4: Pack into frame</span></div>
+        <div><span class="pv">transmit: bits[1..49] followed by R[0..14]</span></div>
+        <div><span class="pv">total: 64 bits = 8 bytes = Layer 1 complete</span></div>
+        <div class="ph">──────────────────────────────────────────────────────────────</div>
+        <div><span class="pc">DECODER: run CRC-15 over all 64 received bits using same polynomial.</span></div>
+        <div><span class="pc">Result == 0x0000  →  </span><span class="pg">session accepted</span></div>
+        <div><span class="pc">Result != 0x0000  →  </span><span class="pe">NACK, session rejected, request retransmission</span></div>
+      </div>
+
+      <h3>Worked Example — Layer 1 Construction</h3>
+      <div class="printout">
+        <div class="ph">── LAYER 1 EXAMPLE: Sender ID 0x00291847 ─────────────────────</div>
+        <div><span class="pl">SOH          </span><span class="pb">1</span>          <span class="pc">// always 1, self-framing</span></div>
+        <div><span class="pl">Wire Ver     </span><span class="pb">0</span>          <span class="pc">// current wire format v1</span></div>
+        <div><span class="pl">Domain       </span><span class="pb">00</span>         <span class="pc">// Financial</span></div>
+        <div><span class="pl">Permissions  </span><span class="pb">1111</span>       <span class="pc">// Read+Write+Correct+Proxy all set</span></div>
+        <div><span class="pl">Split Order  </span><span class="pb">0</span>          <span class="pc">// Multiplicand first</span></div>
+        <div><span class="pl">ID Split     </span><span class="pb">00</span>         <span class="pc">// Flat 32-bit Node ID</span></div>
+        <div><span class="pl">Enh. Flag    </span><span class="pb">0</span>          <span class="pc">// No C0 Enhancement this session</span></div>
+        <div><span class="pl">Sender ID    </span><span class="pb">0000 0000 0010 1001 0001 1000 0100 0111</span>  <span class="pc">// 0x00291847</span></div>
+        <div><span class="pl">Sub-Entity   </span><span class="pb">00100</span>      <span class="pc">// sub-entity 4</span></div>
+        <div class="ph">──────────────────────────────────────────────────────────────</div>
+        <div><span class="pl">Payload bits </span><span class="pv">49 bits assembled (bits 1-49)</span></div>
+        <div><span class="pl">CRC-15 result</span><span class="pv">computed over 49-bit payload, polynomial 0x8003</span></div>
+        <div><span class="pl">CRC example  </span><span class="pb">011 0100 1011 0001</span>  <span class="pc">// 15 bits embedded at bits 50-64</span></div>
+        <div class="ph">──────────────────────────────────────────────────────────────</div>
+        <div><span class="pl">Final hex    </span><span class="pv">80 F0 01 48 C2 1C 06 B1</span>  <span class="pc">// 8 bytes = Layer 1 complete</span></div>
+      </div>
+
+      <div class="notice">
+        <p><strong>v2.0 change:</strong> Layer 1 bit 12 is now the Session Enhancement Flag (was Opposing Convention in v1). When bit 12 = 1, a Session Configuration Extension byte follows Layer 1 before any content. It carries Nesting Level Code, Opposing Convention, Compound Mode Active, and BL Block Optional flags.</p>
+      </div>
+
+      <h3>Session Config Extension Byte (when bit 12 = 1)</h3>
+      <table class="data-table">
+        <thead>
+          <tr><th>Bits</th><th>Field</th><th>Values</th><th>Meaning</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>1-2</code></td><td>Nesting Level Code</td><td>00–11</td><td>00=Flat only. 01=Depth 2. 10=Depth 4. 11=Extended (ext byte follows).</td></tr>
+          <tr><td><code>3</code></td><td>Opposing Convention</td><td>0/1</td><td>0=Opposing inferred. 1=Always transmitted explicitly in extension byte.</td></tr>
+          <tr><td><code>4</code></td><td>Compound Mode Active</td><td>0/1</td><td>0=Off. 1=1111 continuation markers valid this session.</td></tr>
+          <tr><td><code>5</code></td><td>BL Block Optional</td><td>0/1</td><td>0=Accounting block always present. 1=Optional per record.</td></tr>
+          <tr><td><code>6-8</code></td><td>Reserved</td><td>111</td><td>Transmit as 1.</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- ── LAYER 2 ── -->
+    <section id="layer2-guide">
+      <p class="eyebrow">Batch Header</p>
+      <h2>Layer 2 — 6 Bytes (48 bits)</h2>
+      <p>Layer 2 establishes the decoding context for an entire batch. Every record in the batch inherits SF, D, and currency without re-stating them. Transmitted once before the first record in each batch.</p>
+
+      <div class="byte-map">
+        <div class="bm-cell layer-l2">
+          <span class="bm-pos">Bits 1-2</span>
+          <span class="bm-label">TX Type</span>
+          <span class="bm-bits">01=Pre-conv</span>
+        </div>
+        <div class="bm-cell layer-l2">
+          <span class="bm-pos">Bits 3-9</span>
+          <span class="bm-label">Scale Factor</span>
+          <span class="bm-bits">7-bit index</span>
+        </div>
+        <div class="bm-cell layer-l2">
+          <span class="bm-pos">Bits 10-13</span>
+          <span class="bm-label">Opt. Split</span>
+          <span class="bm-bits">0-15 (def=8)</span>
+        </div>
+        <div class="bm-cell layer-l2">
+          <span class="bm-pos">Bits 14-16</span>
+          <span class="bm-label">Dec. Position</span>
+          <span class="bm-bits">010=D=2</span>
+        </div>
+        <div class="bm-cell layer-l2">
+          <span class="bm-pos">Bit 17</span>
+          <span class="bm-label">Enquiry Bell</span>
+          <span class="bm-bits">0/1</span>
+        </div>
+        <div class="bm-cell layer-l2">
+          <span class="bm-pos">Bit 18</span>
+          <span class="bm-label">ACK Bell</span>
+          <span class="bm-bits">0/1</span>
+        </div>
+        <div class="bm-cell layer-l2">
+          <span class="bm-pos">Bits 19-22</span>
+          <span class="bm-label">Group Sep</span>
+          <span class="bm-bits">4-bit group ID</span>
+        </div>
+        <div class="bm-cell layer-l2">
+          <span class="bm-pos">Bits 23-27</span>
+          <span class="bm-label">Record Sep</span>
+          <span class="bm-bits">5-bit rec ID</span>
+        </div>
+        <div class="bm-cell layer-l2">
+          <span class="bm-pos">Bits 28-30</span>
+          <span class="bm-label">File Sep</span>
+          <span class="bm-bits">3-bit file ID</span>
+        </div>
+        <div class="bm-cell layer-l2">
+          <span class="bm-pos">Bits 31-35</span>
+          <span class="bm-label">Entity ID</span>
+          <span class="bm-bits">5-bit</span>
+        </div>
+        <div class="bm-cell layer-l2">
+          <span class="bm-pos">Bits 36-41</span>
+          <span class="bm-label">Currency</span>
+          <span class="bm-bits">6-bit code</span>
+        </div>
+        <div class="bm-cell layer-l2">
+          <span class="bm-pos">Bits 42-45</span>
+          <span class="bm-label">Rounding Bal</span>
+          <span class="bm-bits">4-bit signed</span>
+        </div>
+        <div class="bm-cell layer-l2">
+          <span class="bm-pos">Bits 46-47</span>
+          <span class="bm-label">Compound Pfx</span>
+          <span class="bm-bits">00-11</span>
+        </div>
+        <div class="bm-cell layer-l2">
+          <span class="bm-pos">Bit 48</span>
+          <span class="bm-label">Reserved</span>
+          <span class="bm-bits">Always 1</span>
+        </div>
+      </div>
+
+      <h3>Encoding Example — USD, D=2, SF×1, Batch 1</h3>
+      <div class="printout">
+        <div class="ph">── LAYER 2: USD · SF×1 · D=2 · Batch 1 ─────────────────────</div>
+        <div><span class="pl">TX Type      </span><span class="pb">01</span>           <span class="pc">// Pre-converted (bit1-2)</span></div>
+        <div><span class="pl">Scale Factor </span><span class="pb">000 0000</span>     <span class="pc">// index 0 = ×1 (bits 3-9)</span></div>
+        <div><span class="pl">Optimal Split</span><span class="pb">1000</span>         <span class="pc">// 8 bits for multiplier (bits 10-13)</span></div>
+        <div><span class="pl">Dec. Position</span><span class="pb">010</span>          <span class="pc">// D=2, standard retail/banking (bits 14-16)</span></div>
+        <div><span class="pl">Enquiry Bell </span><span class="pb">0</span>            <span class="pc">// no ACK request</span></div>
+        <div><span class="pl">ACK Bell     </span><span class="pb">0</span>            <span class="pc">// no ACK confirmation</span></div>
+        <div><span class="pl">Group Sep    </span><span class="pb">0001</span>         <span class="pc">// group 1 (bits 19-22)</span></div>
+        <div><span class="pl">Record Sep   </span><span class="pb">00001</span>        <span class="pc">// record group 1 (bits 23-27)</span></div>
+        <div><span class="pl">File Sep     </span><span class="pb">001</span>          <span class="pc">// file 1 (bits 28-30)</span></div>
+        <div><span class="pl">Entity ID    </span><span class="pb">00100</span>        <span class="pc">// sub-entity 4 (bits 31-35)</span></div>
+        <div><span class="pl">Currency     </span><span class="pb">000001</span>       <span class="pc">// USD = code 1 (bits 36-41)</span></div>
+        <div><span class="pl">Rounding Bal </span><span class="pb">0000</span>         <span class="pc">// exactly balanced (bits 42-45)</span></div>
+        <div><span class="pl">Compound Pfx </span><span class="pb">00</span>           <span class="pc">// no compound records in batch</span></div>
+        <div><span class="pl">Reserved     </span><span class="pb">1</span>            <span class="pc">// always 1 (bit 48)</span></div>
+        <div class="ph">──────────────────────────────────────────────────────────────</div>
+        <div><span class="pl">Raw bits     </span><span class="pb">01 0000000 1000 010 0 0 0001 00001 001 00100 000001 0000 00 1</span></div>
+        <div><span class="pl">Hex          </span><span class="pv">40 10 84 08 04 81</span>   <span class="pc">// 6 bytes = Layer 2 complete</span></div>
+        <div><span class="pl">Precision    </span><span class="pg">Step = $0.01  ·  Max = $335,544.31  ·  Currency: USD</span></div>
+      </div>
+
+      <h3>Rounding Balance — Sign-Magnitude Encoding</h3>
+      <p>Bits 42-45 track net rounding for the batch. High bit = sign (0=rounded up, 1=rounded down). Lower 3 bits = magnitude in minimum precision units. <code>0000</code> = exactly balanced. <code>1000</code> = escape — magnitude exceeds 7, see batch-close control record.</p>
+      <p>The precision unit is always <code>SF / 10<sup>D</sup></code>. At SF×1, D=2: precision unit = $0.01.</p>
+    </section>
+
+    <!-- ── LAYER 3 ── -->
+    <section id="layer3-guide">
+      <p class="eyebrow">Transaction Record</p>
+      <h2>Layer 3 — The 40-Bit Record</h2>
+      <p>Five bytes. Both sides of a double-entry transaction. Three independent error detection mechanisms operate on every record without a separate checksum field.</p>
+
+      <div class="byte-map">
+        <div class="bm-cell layer-l3" style="flex: 2.5;">
+          <span class="bm-pos">Bits 1-17</span>
+          <span class="bm-label">Multiplicand A</span>
+          <span class="bm-bits">17 bits, 0-131071</span>
+        </div>
+        <div class="bm-cell layer-l3" style="flex: 1;">
+          <span class="bm-pos">Bits 18-25</span>
+          <span class="bm-label">Multiplier r</span>
+          <span class="bm-bits">8 bits, 0-255</span>
+        </div>
+        <div class="bm-cell layer-l3" style="border-top-color: var(--bit-flag);">
+          <span class="bm-pos">Bit 26</span>
+          <span class="bm-label">Rounding</span>
+          <span class="bm-bits">0=exact</span>
+        </div>
+        <div class="bm-cell layer-l3" style="border-top-color: var(--bit-flag);">
+          <span class="bm-pos">Bit 27</span>
+          <span class="bm-label">Round Dir</span>
+          <span class="bm-bits">0=down 1=up</span>
+        </div>
+        <div class="bm-cell layer-l3" style="border-top-color: var(--bit-flag);">
+          <span class="bm-pos">Bit 28</span>
+          <span class="bm-label">Split Order</span>
+          <span class="bm-bits">0=session def</span>
+        </div>
+        <div class="bm-cell layer-l3" style="border-top-color: var(--bit-flag);">
+          <span class="bm-pos">Bit 29</span>
+          <span class="bm-label">Direction</span>
+          <span class="bm-bits">0=In 1=Out</span>
+        </div>
+        <div class="bm-cell layer-l3" style="border-top-color: var(--bit-flag);">
+          <span class="bm-pos">Bit 30</span>
+          <span class="bm-label">Status</span>
+          <span class="bm-bits">0=Paid 1=Debt</span>
+        </div>
+        <div class="bm-cell layer-l3" style="border-top-color: var(--bit-flag);">
+          <span class="bm-pos">Bit 31</span>
+          <span class="bm-label">Dr/Cr</span>
+          <span class="bm-bits">0=Cr 1=Dr</span>
+        </div>
+        <div class="bm-cell layer-l3" style="border-top-color: var(--bit-flag);">
+          <span class="bm-pos">Bit 32</span>
+          <span class="bm-label">Qty Present</span>
+          <span class="bm-bits">0=flat 1=split</span>
+        </div>
+        <div class="bm-cell layer-l3" style="border-top-color: var(--bit-account);">
+          <span class="bm-pos">Bits 33-36</span>
+          <span class="bm-label">Acct Pair</span>
+          <span class="bm-bits">0000-1111</span>
+        </div>
+        <div class="bm-cell layer-l3" style="border-top-color: var(--bit-account);">
+          <span class="bm-pos">Bit 37</span>
+          <span class="bm-label">BL Dir</span>
+          <span class="bm-bits">= bit 29</span>
+        </div>
+        <div class="bm-cell layer-l3" style="border-top-color: var(--bit-account);">
+          <span class="bm-pos">Bit 38</span>
+          <span class="bm-label">BL Status</span>
+          <span class="bm-bits">= bit 30</span>
+        </div>
+        <div class="bm-cell layer-l3" style="border-top-color: var(--bit-account);">
+          <span class="bm-pos">Bit 39</span>
+          <span class="bm-label">Complete</span>
+          <span class="bm-bits">0=full 1=part</span>
+        </div>
+        <div class="bm-cell layer-l3" style="border-top-color: var(--bit-account);">
+          <span class="bm-pos">Bit 40</span>
+          <span class="bm-label">Ext Flag</span>
+          <span class="bm-bits">0=done 1=ext</span>
+        </div>
+      </div>
+
+      <h3>Cross-Layer Validation Rules</h3>
+      <p>These rules provide two of the three independent error detection signals on every record. Any violation means the record is malformed — reject before posting.</p>
+
+      <div class="cross-val-grid">
+        <div class="cv-cell">
+          <div class="cv-head">Rule 1 — Direction Mirror</div>
+          <div class="printout" style="margin:8px 0 0;">
+            <div><span class="pl">bit29 (Set A)  </span><span class="pv">Direction flag</span></div>
+            <div><span class="pl">bit37 (BL)     </span><span class="pv">Direction flag</span></div>
+            <div>&nbsp;</div>
+            <div><span class="pc">MUST be equal:</span></div>
+            <div><span class="pv">if record[29] != record[37]:</span></div>
+            <div><span class="pe">    raise ProtocolError('direction mismatch')</span></div>
+          </div>
+        </div>
+        <div class="cv-cell">
+          <div class="cv-head">Rule 2 — Status Mirror</div>
+          <div class="printout" style="margin:8px 0 0;">
+            <div><span class="pl">bit30 (Set A)  </span><span class="pv">Status flag</span></div>
+            <div><span class="pl">bit38 (BL)     </span><span class="pv">Status flag</span></div>
+            <div>&nbsp;</div>
+            <div><span class="pc">MUST be equal:</span></div>
+            <div><span class="pv">if record[30] != record[38]:</span></div>
+            <div><span class="pe">    raise ProtocolError('status mismatch')</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="printout">
+        <div class="ph">── CROSS-LAYER VALIDATION — FULL PSEUDOCODE ──────────────────</div>
+        <div><span class="pc">Rule 1: direction mirror</span></div>
+        <div><span class="pv">if record[29] != record[37]:  </span><span class="pe">PROTOCOL ERROR — record rejected</span></div>
+        <div>&nbsp;</div>
+        <div><span class="pc">Rule 2: status mirror</span></div>
+        <div><span class="pv">if record[30] != record[38]:  </span><span class="pe">PROTOCOL ERROR — record rejected</span></div>
+        <div>&nbsp;</div>
+        <div><span class="pc">Rule 3: rounding state validity</span></div>
+        <div><span class="pv">if record[26] == 0 and record[27] == 1:</span></div>
+        <div><span class="pe">    PROTOCOL ERROR — state 01 is structurally invalid</span></div>
+        <div><span class="pe">    do not post to ledger</span></div>
+        <div class="ph">──────────────────────────────────────────────────────────────</div>
+        <div><span class="pc">All three rules pass  →  </span><span class="pg">record valid, proceed to conservation check</span></div>
+      </div>
+
+      <h3>Conservation Invariant Check</h3>
+      <p>Run after completing each batch (when batch-end flag is set). The sum of all signed flows must equal zero. A batch that fails this check is invalid — it may contain phantom flows, missing records, or duplicates.</p>
+
+      <div class="printout">
+        <div class="ph">── CONSERVATION CHECK — PER BATCH ───────────────────────────</div>
+        <div><span class="pv">batch_balance = 0</span></div>
+        <div>&nbsp;</div>
+        <div><span class="pv">for each record in batch:</span></div>
+        <div><span class="pv">    N = decode_value(record)           </span><span class="pc">// apply A, S, r formula</span></div>
+        <div><span class="pv">    real_val = (N × SF) / 10^D</span></div>
+        <div>&nbsp;</div>
+        <div><span class="pv">    if record[29] == 0:               </span><span class="pc">// Direction = In (Plus)</span></div>
+        <div><span class="pv">        batch_balance += real_val</span></div>
+        <div><span class="pv">    else:                             </span><span class="pc">// Direction = Out (Minus)</span></div>
+        <div><span class="pv">        batch_balance -= real_val</span></div>
+        <div>&nbsp;</div>
+        <div><span class="pv">    if record[39] == 0 and is_batch_end:</span></div>
+        <div><span class="pv">        break                         </span><span class="pc">// batch closed</span></div>
+        <div>&nbsp;</div>
+        <div><span class="pc">Account for rounding balance from Layer 2 bits 42-45</span></div>
+        <div><span class="pv">batch_balance += rounding_balance_from_L2</span></div>
+        <div>&nbsp;</div>
+        <div><span class="pv">if batch_balance != 0:</span></div>
+        <div><span class="pe">    BATCH INVALID — conservation violation</span></div>
+        <div><span class="pe">    send NACK, reject batch, flag for investigation</span></div>
+        <div><span class="pv">else:</span></div>
+        <div><span class="pg">    BATCH VALID — conservation confirmed</span></div>
+        <div class="ph">──────────────────────────────────────────────────────────────</div>
+        <div><span class="pc">Note: check is per-batch, not per-record.</span></div>
+        <div><span class="pc">Do not check after each individual record.</span></div>
+      </div>
+
+      <h3>Full BitLedger Frame Example — $100.00 USD Debit, Account Pair 0001</h3>
+      <div class="printout">
+        <div class="ph">── LAYER 3 RECORD: $100.00 USD Debit, Op Expense/Liability ──</div>
+        <div><span class="pl">Target       </span><span class="pv">$100.00  SF=×1  D=2  S=8</span></div>
+        <div><span class="pl">N            </span><span class="pv">10000</span></div>
+        <div><span class="pl">A = ⌊10000/256⌋</span><span class="pv">39</span></div>
+        <div><span class="pl">r = 10000 mod 256</span><span class="pv">16</span></div>
+        <div><span class="pl">Decode check </span><span class="pv">39×256 + 16 = 10000  →  $100.00 exact</span></div>
+        <div class="ph">──────────────────────────────────────────────────────────────</div>
+        <div><span class="pl">Bits 1-17    </span><span class="pb">0 0000 0000 0010 0111</span>   <span class="pc">// A=39</span></div>
+        <div><span class="pl">Bits 18-25   </span><span class="pb">0001 0000</span>               <span class="pc">// r=16</span></div>
+        <div><span class="pl">Bit 26       </span><span class="pb">0</span>                       <span class="pc">// exact</span></div>
+        <div><span class="pl">Bit 27       </span><span class="pb">0</span>                       <span class="pc">// must be 0 when bit26=0</span></div>
+        <div><span class="pl">Bit 28       </span><span class="pb">0</span>                       <span class="pc">// follow session split order</span></div>
+        <div><span class="pl">Bit 29       </span><span class="pb">1</span>                       <span class="pc">// Out (Debit disbursement)</span></div>
+        <div><span class="pl">Bit 30       </span><span class="pb">1</span>                       <span class="pc">// Debt (accrued, not yet settled)</span></div>
+        <div><span class="pl">Bit 31       </span><span class="pb">1</span>                       <span class="pc">// Debit side</span></div>
+        <div><span class="pl">Bit 32       </span><span class="pb">0</span>                       <span class="pc">// flat value, qty implicit=1</span></div>
+        <div class="ph">──────────────────────────────────────────────────────────────</div>
+        <div><span class="pl">Bits 33-36   </span><span class="pb">0001</span>                    <span class="pc">// Acct pair: Op Expense / Liability</span></div>
+        <div><span class="pl">Bit 37       </span><span class="pb">1</span>                       <span class="pc">// Out — must match bit29  ✓</span></div>
+        <div><span class="pl">Bit 38       </span><span class="pb">1</span>                       <span class="pc">// Debt — must match bit30  ✓</span></div>
+        <div><span class="pl">Bit 39       </span><span class="pb">0</span>                       <span class="pc">// Full, transaction complete</span></div>
+        <div><span class="pl">Bit 40       </span><span class="pb">0</span>                       <span class="pc">// no extension byte</span></div>
+        <div class="ph">──────────────────────────────────────────────────────────────</div>
+        <div><span class="pl">Record hex   </span><span class="pv">00 27 10 0E 03</span>          <span class="pc">// 5 bytes = Layer 3 complete</span></div>
+        <div><span class="pl">Journal      </span><span class="pg">DEBIT Op Expense $100.00 / CREDIT Accounts Payable $100.00</span></div>
+      </div>
+    </section>
+
+    <!-- ── STATE MACHINE ── -->
+    <section id="state-machine">
+      <p class="eyebrow">Parser</p>
+      <h2>Decoder State Machine</h2>
+      <p>The decoder is a deterministic state machine. State transitions are driven exclusively by the bytes read and the flags previously set. No lookahead. No ambiguity. Each state reads a fixed number of bytes or derives the count from previously read flags.</p>
+
+      <div class="state-machine">
+        <div class="sm-row">
+          <div class="sm-cell"><span class="mono faint small upper">State</span></div>
+          <div class="sm-cell"><span class="mono faint small upper">Bytes</span></div>
+          <div class="sm-cell"><span class="mono faint small upper">Action / Transition</span></div>
+        </div>
+        <div class="sm-row">
+          <div class="sm-cell"><span class="sm-state">INIT</span></div>
+          <div class="sm-cell sm-bytes">0</div>
+          <div class="sm-cell sm-action">Idle. Await any byte. If byte = 0x01 (SOH leading 1-bit) → unconditionally open Layer 1 read. Otherwise → read as Meta byte 1. <span class="sm-next">→ META1</span></div>
+        </div>
+        <div class="sm-row">
+          <div class="sm-cell"><span class="sm-state">META1</span></div>
+          <div class="sm-cell sm-bytes">1</div>
+          <div class="sm-cell sm-action">Decode bit1. If bit1=0 → Wave mode, read category or Role A flags, branch per category. Standalone = WAVE_COMPLETE. If bit1=1 → Record mode. <span class="sm-next">→ META2_EXPECT</span></div>
+        </div>
+        <div class="sm-row">
+          <div class="sm-cell"><span class="sm-state">META2_EXPECT</span></div>
+          <div class="sm-cell sm-bytes">1</div>
+          <div class="sm-cell sm-action">Read Meta byte 2. Decode bits1-4 (archetype/sub-type), bits5-6 (time tier), bit7 (Setup byte present), bit8 (Signal Slot Presence). <span class="sm-next">→ META2</span></div>
+        </div>
+        <div class="sm-row">
+          <div class="sm-cell"><span class="sm-state">META2</span></div>
+          <div class="sm-cell sm-bytes">0</div>
+          <div class="sm-cell sm-action">Branch: if Meta2 bit8=1 → read 1 Signal Slot Presence byte, store P4-P8 flags. If bit8=0 → skip. <span class="sm-next">→ L1_EXPECT</span></div>
+        </div>
+        <div class="sm-row">
+          <div class="sm-cell"><span class="sm-state">L1_EXPECT</span></div>
+          <div class="sm-cell sm-bytes">8</div>
+          <div class="sm-cell sm-action">Read 64 bits (8 bytes) for Layer 1. Run CRC-15 over all 64 bits. If CRC ≠ 0x0000 → NACK, session rejected. If CRC = 0x0000 → valid. Store Sender ID, domain, permissions, session defaults, Enhancement Flag (bit12). <span class="sm-next">→ L1</span></div>
+        </div>
+        <div class="sm-row">
+          <div class="sm-cell"><span class="sm-state">L1</span></div>
+          <div class="sm-cell sm-bytes">0</div>
+          <div class="sm-cell sm-action">Branch: if L1 bit12=1 (Enhancement active) → read Session Config Extension byte, store nesting, opposing, compound, BL-optional flags. If nesting code=11 → read Nesting Declaration Extension. If Meta1 bit2=1 → read System Context Extension block. <span class="sm-next">→ L2_EXPECT</span></div>
+        </div>
+        <div class="sm-row">
+          <div class="sm-cell"><span class="sm-state">L2_EXPECT</span></div>
+          <div class="sm-cell sm-bytes">6</div>
+          <div class="sm-cell sm-action">Read 48 bits (6 bytes) for Layer 2 batch header. Store SF, Optimal Split, DP, separators, Entity ID, currency, rounding balance, compound prefix. <span class="sm-next">→ L2</span></div>
+        </div>
+        <div class="sm-row">
+          <div class="sm-cell"><span class="sm-state">L2</span></div>
+          <div class="sm-cell sm-bytes">0</div>
+          <div class="sm-cell sm-action">SF, DP, Optimal Split stored. Batch context established. If compound prefix ≠ 00 → enter compound-aware mode. <span class="sm-next">→ L3_EXPECT</span></div>
+        </div>
+        <div class="sm-row">
+          <div class="sm-cell"><span class="sm-state">L3_EXPECT</span></div>
+          <div class="sm-cell sm-bytes">5</div>
+          <div class="sm-cell sm-action">Read 40 bits (5 bytes) for Layer 3 record. <span class="sm-next">→ L3</span></div>
+        </div>
+        <div class="sm-row">
+          <div class="sm-cell"><span class="sm-state">L3</span></div>
+          <div class="sm-cell sm-bytes">0</div>
+          <div class="sm-cell sm-action">Decode value block (N = A×2<sup>S</sup>+r). Check rounding state (bits 26-27). Run cross-layer validation (bit29=bit37, bit30=bit38). Update batch balance. If bits 33-36 = 1111 → COMPOUND_CONTINUATION. If bit40=1 → read extension byte(s). <span class="sm-next">→ RECORD_COMPLETE or COMPOUND_CONTINUATION</span></div>
+        </div>
+        <div class="sm-row">
+          <div class="sm-cell"><span class="sm-state">COMPOUND_CONTINUATION</span></div>
+          <div class="sm-cell sm-bytes">5</div>
+          <div class="sm-cell sm-action">Linked record. Bits 37-38 carry sub-type (00=standard, 01=correction, 10=reversal, 11=cross-batch). Bit39=1 → more continuations follow, read another L3. Bit39=0 → compound closed. <span class="sm-next">→ RECORD_COMPLETE</span></div>
+        </div>
+        <div class="sm-row">
+          <div class="sm-cell"><span class="sm-state">RECORD_COMPLETE</span></div>
+          <div class="sm-cell sm-bytes">0</div>
+          <div class="sm-cell sm-action">If batch-end flag set (control record type 010 or record count met) → run conservation check (batch_balance = 0?). If valid → post records to ledger. <span class="sm-next">→ L3_EXPECT (next record) or INIT</span></div>
+        </div>
+        <div class="sm-row">
+          <div class="sm-cell"><span class="sm-state">WAVE_COMPLETE</span></div>
+          <div class="sm-cell sm-bytes">0</div>
+          <div class="sm-cell sm-action">Wave frame consumed. Process per category (value, message, command, stream, etc.). If bit3=1 in prior Meta byte → accumulate next fragment until bit3=0. <span class="sm-next">→ INIT</span></div>
+        </div>
+      </div>
+
+      <div class="notice">
+        <p><strong>Enhancement signal slots.</strong> When Layer 1 bit 12 = 1 (Enhancement active), the state machine inserts C0 Enhancement reads at each declared signal slot position. P4 = before Value block, P5 = after Value block, P6 = after Time field, P7 = after Task block, P8 = after Note block. Session-layer slots P1-P3 appear at session open. Batch-layer slots P9-P11 appear at batch open/close. See <a href="enhancement-grammar.html">Enhancement Grammar</a> for full slot map.</p>
+      </div>
+    </section>
+
+    <!-- ── ENHANCEMENT DECODER ── -->
+    <section id="enhancement-decoder">
+      <p class="eyebrow">C0 Enhancement Grammar</p>
+      <h2>Enhancement Decoder</h2>
+      <p>When Layer 1 bit 12 = 1 and the Signal Slot Presence byte declares one or more slots active, the decoder encounters enhanced C0 bytes at the declared positions. Each enhanced C0 byte carries a 3-bit flag matrix in its upper 3 bits and a 5-bit C0 code identity in its lower 5 bits.</p>
+
+      <h3>Enhanced C0 Byte Structure</h3>
+      <div class="bit-display">
+        <div class="bit-display-label">Enhanced C0 Byte — upper 3 bits = flags, lower 5 = C0 identity</div>
+        <div class="bit-cells">
+          <div class="bit-cell enhance" data-layer="meta" data-tooltip="Bit 1: P = Priority. 1=this signal has elevated priority over session baseline.">
+            <span class="bit-pos">1</span>
+            <span class="bit-val">P</span>
+            <span class="bit-name">Priority</span>
+          </div>
+          <div class="bit-cell enhance" data-layer="meta" data-tooltip="Bit 2: A = Acknowledge Request. 1=receiver must respond with ACK signal at this slot position.">
+            <span class="bit-pos">2</span>
+            <span class="bit-val">A</span>
+            <span class="bit-name">ACK Req</span>
+          </div>
+          <div class="bit-cell enhance" data-layer="meta" data-tooltip="Bit 3: C = Continuation. 1=more signals follow at this same slot position. Read next byte as another C0 signal.">
+            <span class="bit-pos">3</span>
+            <span class="bit-val">C</span>
+            <span class="bit-name">Cont.</span>
+          </div>
+          <div class="bit-cell data" data-layer="meta" data-tooltip="Bits 4-8: 5-bit C0 code. 0-31. Look up in agreed control table (29 unconditional + 4 conditional).">
+            <span class="bit-pos">4</span>
+            <span class="bit-val">C0</span>
+            <span class="bit-name">Code</span>
+          </div>
+          <div class="bit-cell data" data-layer="meta">
+            <span class="bit-pos">5</span>
+            <span class="bit-val">C0</span>
+            <span class="bit-name">Code</span>
+          </div>
+          <div class="bit-cell data" data-layer="meta">
+            <span class="bit-pos">6</span>
+            <span class="bit-val">C0</span>
+            <span class="bit-name">Code</span>
+          </div>
+          <div class="bit-cell data" data-layer="meta">
+            <span class="bit-pos">7</span>
+            <span class="bit-val">C0</span>
+            <span class="bit-name">Code</span>
+          </div>
+          <div class="bit-cell data" data-layer="meta">
+            <span class="bit-pos">8</span>
+            <span class="bit-val">C0</span>
+            <span class="bit-name">Code</span>
+          </div>
+        </div>
+        <div class="bit-legend">
+          <span class="legend-item"><span class="legend-swatch enhance"></span> Enhancement flags (P/A/C)</span>
+          <span class="legend-item"><span class="legend-swatch data"></span> C0 code identity (5 bits, 0-31)</span>
+        </div>
+      </div>
+
+      <h3>Enhancement Decode Algorithm</h3>
+      <ol class="algo-steps">
+        <li>Determine the byte is at a declared signal slot position (P4-P8 per Signal Slot Presence byte, or P1-P3/P9-P13 for session/batch/stream positions when bit12=1).</li>
+        <li>Read the byte. Extract upper 3 bits: P (bit1) = Priority flag, A (bit2) = Acknowledge Request, C (bit3) = Continuation flag.</li>
+        <li>Extract lower 5 bits (bits 4-8): this is the C0 code identity (0-31). Look up in the agreed control table. 29 unconditional codes always map to the same controls. 4 conditional codes are context-dependent.</li>
+        <li>If P=1: process this signal at elevated priority before lower-priority pending items. If A=1: queue an ACK signal to be sent at the corresponding response slot. </li>
+        <li>Route to the appropriate handler for the decoded C0 control (e.g. SOH, STX, ETX, BEL, SO, SI, EM, SUB, FS, GS, RS, US, etc.).</li>
+        <li>If C=1 (Continuation flag set): read the next byte as another enhanced C0 signal at the same slot position. Repeat from step 2. If C=0: slot consumption complete, resume normal frame parsing.</li>
+      </ol>
+
+      <div class="printout">
+        <div class="ph">── ENHANCED C0 DECODE EXAMPLE ─────────────────────────────</div>
+        <div><span class="pl">Byte at P5   </span><span class="pv">0xC5 = 1100 0101</span></div>
+        <div><span class="pl">Upper 3 bits </span><span class="pb">1 1 0</span>   <span class="pc">// P=1 (Priority), A=1 (ACK req), C=0 (no more)</span></div>
+        <div><span class="pl">Lower 5 bits </span><span class="pb">0 0101</span>  <span class="pc">// C0 code 5 = ENQ (Enquire)</span></div>
+        <div class="ph">──────────────────────────────────────────────────────────</div>
+        <div><span class="pl">P flag       </span><span class="pv">1  →  elevated priority, process first</span></div>
+        <div><span class="pl">A flag       </span><span class="pv">1  →  ACK required — queue response signal</span></div>
+        <div><span class="pl">C flag       </span><span class="pv">0  →  slot done, return to normal parsing</span></div>
+        <div><span class="pl">C0 code 5    </span><span class="pg">ENQ  →  route to Enquire handler</span></div>
+      </div>
+    </section>
+
+    <!-- ── COMMON PITFALLS ── -->
+    <section id="pitfalls">
+      <p class="eyebrow">Implementation Warnings</p>
+      <h2>Common Pitfalls</h2>
+      <p>The following mistakes recur in first-time implementations. Each has a single correct resolution. Click any row to expand.</p>
+
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Pitfall</th>
+            <th>Symptom</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+
+          <tr class="xrow" data-drawer="p1">
+            <td><span class="pitfall-tag">CRITICAL</span>Bit ordering reversed — MSB/LSB confusion <span class="xrow-indicator">▾</span></td>
+            <td>All frames decode incorrectly. Mode always wrong.</td>
+          </tr>
+          <tr class="xdrawer" id="p1">
+            <td colspan="3">
+              <div class="xdrawer-inner">
+                <div class="xdrawer-grid">
+                  <div class="xdrawer-section">
+                    <h5>The Problem</h5>
+                    <p>The spec numbers bits 1–8 from MSB (most significant) to LSB (least significant). Bit 1 is the high bit. Many implementors default to LSB-first numbering, which silently reverses every field.</p>
+                  </div>
+                  <div class="xdrawer-section">
+                    <h5>The Fix</h5>
+                    <p>Pure Signal <code>0x40 = 0100 0000</code>. Bit 1 (MSB) = 0 (Wave mode). Bit 2 = 1 (ACK Request). Write a single-byte decoder that produces this interpretation. If it does, your bit ordering is correct. If not, reverse your extraction mask.</p>
+                  </div>
+                </div>
+              </div>
+            </td>
+          </tr>
+
+          <tr class="xrow" data-drawer="p2">
+            <td><span class="pitfall-tag">CRITICAL</span>CRC-15 computed over wrong byte range <span class="xrow-indicator">▾</span></td>
+            <td>All sessions rejected at receiver. CRC never validates.</td>
+          </tr>
+          <tr class="xdrawer" id="p2">
+            <td colspan="3">
+              <div class="xdrawer-inner">
+                <div class="xdrawer-grid">
+                  <div class="xdrawer-section">
+                    <h5>The Problem</h5>
+                    <p>CRC-15 covers the 49-bit session payload (bits 1–49 of Layer 1). It does NOT cover Layer 2 or Layer 3 independently. A common mistake is computing CRC over the full frame or over only the first byte.</p>
+                  </div>
+                  <div class="xdrawer-section">
+                    <h5>The Fix</h5>
+                    <p>Compute CRC-15 over exactly bits 1–49 of Layer 1 (SOH through Sub-Entity ID). Embed the 15-bit remainder at bits 50–64. Decoder: run the same CRC over all 64 bits — a correct frame produces remainder 0x0000.</p>
+                  </div>
+                </div>
+              </div>
+            </td>
+          </tr>
+
+          <tr class="xrow" data-drawer="p3">
+            <td><span class="pitfall-tag">HIGH</span>Compound mode without session permission <span class="xrow-indicator">▾</span></td>
+            <td>1111 account pair triggers decode errors. Records corrupted.</td>
+          </tr>
+          <tr class="xdrawer" id="p3">
+            <td colspan="3">
+              <div class="xdrawer-inner">
+                <div class="xdrawer-grid">
+                  <div class="xdrawer-section">
+                    <h5>The Problem</h5>
+                    <p>Account pair 1111 is the compound continuation marker. You cannot use it unless Compound Mode Active is set in the Session Config Extension byte (bit 4) AND the Layer 2 Compound Prefix is non-00 for the current batch. Both must be active.</p>
+                  </div>
+                  <div class="xdrawer-section">
+                    <h5>The Fix</h5>
+                    <p>At session open, set Session Enhancement Flag (bit 12 = 1) and include Session Config Extension with bit 4 = 1. At batch open, set Compound Prefix to 01, 10, or 11 as appropriate. Only then is 1111 valid in Layer 3 records.</p>
+                  </div>
+                </div>
+              </div>
+            </td>
+          </tr>
+
+          <tr class="xrow" data-drawer="p4">
+            <td><span class="pitfall-tag">HIGH</span>Conservation check run after each record <span class="xrow-indicator">▾</span></td>
+            <td>All multi-record batches flagged as invalid. False positives.</td>
+          </tr>
+          <tr class="xdrawer" id="p4">
+            <td colspan="3">
+              <div class="xdrawer-inner">
+                <div class="xdrawer-grid">
+                  <div class="xdrawer-section">
+                    <h5>The Problem</h5>
+                    <p>The conservation invariant (sum of all signed flows = 0) is a batch-level invariant, not a per-record invariant. Checking it after each record will always fail for batches with more than one record.</p>
+                  </div>
+                  <div class="xdrawer-section">
+                    <h5>The Fix</h5>
+                    <p>Accumulate the running batch balance across all records. Run the conservation check exactly once — at batch close (batch-end flag from control record type 010 or batch record count met). Only then check <code>batch_balance == 0</code>.</p>
+                  </div>
+                </div>
+              </div>
+            </td>
+          </tr>
+
+          <tr class="xrow" data-drawer="p5">
+            <td><span class="pitfall-tag">MEDIUM</span>Rounding balance in Layer 2 not carried across records <span class="xrow-indicator">▾</span></td>
+            <td>Batches with rounded values fail conservation check despite correct encoding.</td>
+          </tr>
+          <tr class="xdrawer" id="p5">
+            <td colspan="3">
+              <div class="xdrawer-inner">
+                <div class="xdrawer-grid">
+                  <div class="xdrawer-section">
+                    <h5>The Problem</h5>
+                    <p>Layer 2 bits 42-45 encode the net rounding balance for the batch in sign-magnitude form. When records are rounded, the accumulated rounding delta is declared here. A decoder that ignores this field will see a non-zero batch balance even for a correctly encoded rounded batch.</p>
+                  </div>
+                  <div class="xdrawer-section">
+                    <h5>The Fix</h5>
+                    <p>Decode the 4-bit rounding balance (high bit = sign: 0=rounded up, 1=rounded down; lower 3 bits = magnitude in precision units). Add this to the batch balance before the conservation check. Code 1000 = escape — read the full value from the batch-close control record payload.</p>
+                  </div>
+                </div>
+              </div>
+            </td>
+          </tr>
+
+          <tr class="xrow" data-drawer="p6">
+            <td><span class="pitfall-tag">MEDIUM</span>Signal Slot Presence byte assumed always present <span class="xrow-indicator">▾</span></td>
+            <td>Decoder reads Layer 1 one byte late. All subsequent fields corrupted.</td>
+          </tr>
+          <tr class="xdrawer" id="p6">
+            <td colspan="3">
+              <div class="xdrawer-inner">
+                <div class="xdrawer-grid">
+                  <div class="xdrawer-section">
+                    <h5>The Problem</h5>
+                    <p>The Signal Slot Presence byte (Meta byte 2 bit 8) is CONDITIONAL. It only appears when Meta byte 2 bit 8 = 1. The most common case is bit 8 = 0, in which case the byte is absent and the sequence proceeds directly from Meta byte 2 to Layer 1.</p>
+                  </div>
+                  <div class="xdrawer-section">
+                    <h5>The Fix</h5>
+                    <p>Always read Meta byte 2 bit 8 first. If bit 8 = 0: proceed directly to Layer 1. If bit 8 = 1: read exactly one Signal Slot Presence byte, decode P4-P8 flags (bits 1-5), then proceed to Layer 1. Never assume the byte is present.</p>
+                  </div>
+                </div>
+              </div>
+            </td>
+          </tr>
+
+          <tr class="xrow" data-drawer="p7">
+            <td><span class="pitfall-tag">LOW</span>Wave mode vs Record mode misidentified <span class="xrow-indicator">▾</span></td>
+            <td>Frames parsed in wrong mode. Garbled output for all frame types.</td>
+          </tr>
+          <tr class="xdrawer" id="p7">
+            <td colspan="3">
+              <div class="xdrawer-inner">
+                <div class="xdrawer-grid">
+                  <div class="xdrawer-section">
+                    <h5>The Problem</h5>
+                    <p>Mode is determined by bit 1 of Meta byte 1 only. No other byte, no preamble, no frame length prefix indicates mode. Do not infer mode from byte count, context, or any other field.</p>
+                  </div>
+                  <div class="xdrawer-section">
+                    <h5>The Fix</h5>
+                    <p>Read bit 1 of the first byte. 0 = Wave mode. 1 = Record mode. Apply this branch unconditionally before reading any other field. Do not cache mode across frames — read it fresh from every new Meta byte 1.</p>
+                  </div>
+                </div>
+              </div>
+            </td>
+          </tr>
+
+        </tbody>
+      </table>
+    </section>
+
+    <!-- ── TEST VECTORS ── -->
+    <section id="test-vectors">
+      <p class="eyebrow">Verification</p>
+      <h2>Test Vectors</h2>
+      <p>Known-good byte sequences for implementation verification. An encoder producing these exact byte sequences, and a decoder consuming them and producing the stated interpretation, is conformant for the covered cases.</p>
+
+      <h3>Vector 1 — Pure Signal (1 byte)</h3>
+      <div class="vec-block">
+        <div class="vh">── PURE SIGNAL ──────────────────────────────────────────────</div>
+        <div><span class="vl">Hex          </span><span class="vv">40</span></div>
+        <div><span class="vl">Binary       </span><span class="vb">0100 0000</span></div>
+        <div class="vh">────────────────────────────────────────────────────────────</div>
+        <div><span class="vl">Byte 0       </span><span class="vv">0x40</span></div>
+        <div><span class="vl"> bit1        </span><span class="vc">0  = Wave mode</span></div>
+        <div><span class="vl"> bit2        </span><span class="vc">1  = ACK Request</span></div>
+        <div><span class="vl"> bit3        </span><span class="vc">0  = Complete (no continuation)</span></div>
+        <div><span class="vl"> bit4        </span><span class="vc">0  = Basic treatment, Role A active</span></div>
+        <div><span class="vl"> bits5-8     </span><span class="vc">0000 = no priority, plain, no ext, standard</span></div>
+        <div class="vh">────────────────────────────────────────────────────────────</div>
+        <div><span class="vl">Meaning      </span><span class="vg">I am here. Acknowledge me.</span></div>
+        <div><span class="vl">Response     </span><span class="vv">ACK control record 0x31</span></div>
+        <div><span class="vl">Total bytes  </span><span class="vv">1</span></div>
+      </div>
+
+      <h3>Vector 2 — Minimal Wave (4 bytes — anonymous value $4.53)</h3>
+      <div class="vec-block">
+        <div class="vh">── MINIMAL WAVE — $4.53 SF×1 D=2 ───────────────────────────</div>
+        <div><span class="vl">Hex          </span><span class="vv">0F 00 01 C5</span></div>
+        <div><span class="vl">Binary       </span><span class="vb">0000 1111  00000000  00000001  11000101</span></div>
+        <div class="vh">────────────────────────────────────────────────────────────</div>
+        <div><span class="vl">Byte 0: 0x0F </span><span class="vc">bit1=0 Wave, bit2=0 no ACK, bit3=0 complete,</span></div>
+        <div><span class="vl">             </span><span class="vc">bit4=1 Category mode → bits5-8 = 0000 Plain Value</span></div>
+        <div><span class="vl">Byte 1: 0x00 </span><span class="vc">Setup byte: tier=00 (T1 explicit), SF=00 (×1), D=01 (D=2)</span></div>
+        <div><span class="vc">             (in this example tier 3 default, byte signals defaults)</span></div>
+        <div><span class="vl">Bytes 2-3    </span><span class="vc">Value block Tier 3 (24-bit): A=1, r=197</span></div>
+        <div><span class="vl"> A bits      </span><span class="vv">00000000 00000001</span><span class="vc"> = 1</span></div>
+        <div><span class="vl"> r bits      </span><span class="vv">11000101</span><span class="vc"> = 197</span></div>
+        <div class="vh">────────────────────────────────────────────────────────────</div>
+        <div><span class="vl">Decode       </span><span class="vc">N = 1×256 + 197 = 453</span></div>
+        <div><span class="vl">Real Value   </span><span class="vg">$4.53  (453 × 1 / 100)</span></div>
+        <div><span class="vl">Total bytes  </span><span class="vv">4</span></div>
+      </div>
+
+      <h3>Vector 3 — Minimal Record with Layer 1 (13 bytes)</h3>
+      <div class="vec-block">
+        <div class="vh">── MINIMAL RECORD — Meta×2 + Layer 1 + Tier 3 Value ─────────</div>
+        <div><span class="vl">Hex          </span><span class="vv">80 00  80 F0 01 48 C2 1C 06 B1  00 27 10</span></div>
+        <div class="vh">── BYTE MAP ─────────────────────────────────────────────────</div>
+        <div><span class="vl">Byte 0: 0x80 </span><span class="vc">Meta byte 1: bit1=1 Record, bits5-8=0000 no components</span></div>
+        <div><span class="vl">Byte 1: 0x00 </span><span class="vc">Meta byte 2: no archetype, no time, no setup, no slots</span></div>
+        <div><span class="vl">Bytes 2-9    </span><span class="vc">Layer 1 (8 bytes):</span></div>
+        <div><span class="vl"> 80          </span><span class="vc">SOH=1, ver=0, domain=00 (fin), perms=1111</span></div>
+        <div><span class="vl"> F0          </span><span class="vc">split=0, ID-split=00, enh=0, SenderID high</span></div>
+        <div><span class="vl"> 01 48 C2    </span><span class="vc">Sender ID mid/low bytes (= 0x00291847 partial)</span></div>
+        <div><span class="vl"> 1C          </span><span class="vc">Sub-entity ID (5 bits) + CRC-15 high bits</span></div>
+        <div><span class="vl"> 06 B1       </span><span class="vc">CRC-15 low bytes</span></div>
+        <div><span class="vl">Bytes 10-12  </span><span class="vc">Layer 3 value block (3 bytes = Tier 3 default):</span></div>
+        <div><span class="vl"> 00 27 10    </span><span class="vc">N = 39×256 + 16 = 10000 → $100.00 at SF×1 D=2</span></div>
+        <div class="vh">────────────────────────────────────────────────────────────</div>
+        <div><span class="vl">Total bytes  </span><span class="vv">13</span><span class="vc">  (minimum full record)</span></div>
+      </div>
+
+      <h3>Vector 4 — Full BitLedger Frame (22 bytes — $100.00 USD Debit, account pair 0001)</h3>
+      <div class="vec-block">
+        <div class="vh">── FULL BITLEDGER FRAME — $100.00 USD DEBIT ─────────────────</div>
+        <div><span class="vl">Total hex    </span><span class="vv">80 00 80 F0 01 48 C2 1C 06 B1 40 10 84 08 04 81 00 27 10 0E 03 00</span></div>
+        <div class="vh">── FRAME LAYOUT ─────────────────────────────────────────────</div>
+        <div><span class="vl">Bytes 0-1    </span><span class="vv">80 00</span>               <span class="vc">Meta bytes 1 &amp; 2</span></div>
+        <div><span class="vl"> Meta1 0x80  </span><span class="vc">Record mode, Value Present (bit5=1), no other components</span></div>
+        <div><span class="vl"> Meta2 0x00  </span><span class="vc">No archetype, D=2 (default), no setup byte, no slots</span></div>
+        <div class="vh">────────────────────────────────────────────────────────────</div>
+        <div><span class="vl">Bytes 2-9    </span><span class="vv">80 F0 01 48 C2 1C 06 B1</span>  <span class="vc">Layer 1 (8 bytes)</span></div>
+        <div><span class="vl"> SOH+domain  </span><span class="vc">SOH=1, Financial domain, Perms=RWCP, Flat 32-bit ID</span></div>
+        <div><span class="vl"> Sender ID   </span><span class="vc">0x00291847</span></div>
+        <div><span class="vl"> Sub-entity  </span><span class="vc">4</span></div>
+        <div><span class="vl"> CRC-15      </span><span class="vc">valid  (zero remainder on full 64-bit block)</span></div>
+        <div class="vh">────────────────────────────────────────────────────────────</div>
+        <div><span class="vl">Bytes 10-15  </span><span class="vv">40 10 84 08 04 81</span>         <span class="vc">Layer 2 (6 bytes)</span></div>
+        <div><span class="vl"> TX Type     </span><span class="vc">01 Pre-converted</span></div>
+        <div><span class="vl"> SF          </span><span class="vc">×1 (index 0)</span></div>
+        <div><span class="vl"> Opt. Split  </span><span class="vc">8 (default)</span></div>
+        <div><span class="vl"> Dec. Pos    </span><span class="vc">D=2 (standard banking)</span></div>
+        <div><span class="vl"> Currency    </span><span class="vc">USD (code 1)</span></div>
+        <div><span class="vl"> Rounding    </span><span class="vc">0000 (exactly balanced)</span></div>
+        <div><span class="vl"> Compound    </span><span class="vc">00 (no compound records)</span></div>
+        <div class="vh">────────────────────────────────────────────────────────────</div>
+        <div><span class="vl">Bytes 16-20  </span><span class="vv">00 27 10 0E 03</span>            <span class="vc">Layer 3 (5 bytes)</span></div>
+        <div><span class="vl"> A=39, r=16  </span><span class="vc">N = 39×256+16 = 10000 → $100.00 exact</span></div>
+        <div><span class="vl"> bit26=0     </span><span class="vc">Exact (no rounding)</span></div>
+        <div><span class="vl"> bit29=1     </span><span class="vc">Direction Out (Debit)</span></div>
+        <div><span class="vl"> bit30=1     </span><span class="vc">Status Debt (accrued)</span></div>
+        <div><span class="vl"> bit31=1     </span><span class="vc">Debit side</span></div>
+        <div><span class="vl"> bits33-36   </span><span class="vc">0001 = Op Expense / Liability</span></div>
+        <div><span class="vl"> bit37=1     </span><span class="vc">Out — matches bit29  ✓ (Rule 1 pass)</span></div>
+        <div><span class="vl"> bit38=1     </span><span class="vc">Debt — matches bit30  ✓ (Rule 2 pass)</span></div>
+        <div><span class="vl"> bit39=0     </span><span class="vc">Full — transaction complete</span></div>
+        <div><span class="vl"> bit40=0     </span><span class="vc">No extension byte</span></div>
+        <div><span class="vl">Byte 21      </span><span class="vv">00</span>                        <span class="vc">Padding / frame end marker</span></div>
+        <div class="vh">────────────────────────────────────────────────────────────</div>
+        <div><span class="vl">Journal      </span><span class="vg">DEBIT Op Expense $100.00 / CREDIT Accounts Payable $100.00</span></div>
+        <div><span class="vl">Status       </span><span class="vg">Accrued, not yet settled</span></div>
+        <div><span class="vl">Validation   </span><span class="vg">All 3 cross-layer rules pass  ·  Conservation: $100 out = $100 in</span></div>
+        <div><span class="vl">Total bytes  </span><span class="vv">22</span><span class="vc">  (minimum full BitLedger frame in BitPads)</span></div>
+      </div>
+
+      <div class="notice">
+        <p><strong>Validating your implementation.</strong> A correct encoder produces the exact hex sequences above for the stated inputs. A correct decoder consumes them and produces the stated interpretation. If your byte sequence differs, check: (1) bit ordering — MSB first, (2) CRC-15 polynomial 0x8003 over bits 1-49, (3) value formula N=A×2<sup>S</sup>+r with default S=8, (4) cross-layer bit mirroring (bit29=bit37, bit30=bit38).</p>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div>
+      <div class="footer-group-label">Protocol</div>
+      <ul class="footer-links">
+        <li><a href="bitpads-v2.html">BitPads v2</a></li>
+        <li><a href="bitledger.html">BitLedger v3</a></li>
+        <li><a href="universal-domain.html">Universal Domain</a></li>
+        <li><a href="compound-mode.html">Compound Mode</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-group-label">Enhancement</div>
+      <ul class="footer-links">
+        <li><a href="enhancement-grammar.html">Grammar &amp; Signal Slots</a></li>
+        <li><a href="enhancement-commands.html">Commands &amp; Context</a></li>
+        <li><a href="enhancement-telegraph-1.html">Telegraph Emulation I</a></li>
+        <li><a href="enhancement-telegraph-2.html">Telegraph Emulation II</a></li>
+        <li><a href="enhancement-nesting.html">Nesting &amp; Overhead</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-group-label">Resources</div>
+      <ul class="footer-links">
+        <li><a href="engineering.html">Engineering Applications</a></li>
+        <li><a href="guide.html">Implementation Guide</a></li>
+        <li><a href="cli.html">CLI Tools</a></li>
+        <li><a href="reference.html">Reference &amp; Glossary</a></li>
+      </ul>
+    </div>
+    <div class="footer-copy">
+      BitPads Protocol v2.0<br>
+      BitLedger Protocol v3.0<br>
+      Universal Domain v1.0<br>
+      © BABB
+    </div>
+  </div>
+</footer>
+
+<script>
+// TOC active state via IntersectionObserver
+const secs = document.querySelectorAll('section[id]');
+const tocAs = document.querySelectorAll('.toc a');
+const io = new IntersectionObserver(es => {
+  es.forEach(e => {
+    if (e.isIntersecting) {
+      tocAs.forEach(a => a.classList.remove('active'));
+      const a = document.querySelector(`.toc a[href="#${e.target.id}"]`);
+      if (a) a.classList.add('active');
+    }
+  });
+}, { rootMargin: '-15% 0px -70% 0px' });
+secs.forEach(s => io.observe(s));
+
+// Expandable table rows
+document.querySelectorAll('tr.xrow').forEach(row => {
+  row.addEventListener('click', () => {
+    const did = row.dataset.drawer;
+    const drawer = document.getElementById(did);
+    if (!drawer) return;
+    const open = drawer.classList.contains('open');
+    document.querySelectorAll('tr.xdrawer.open').forEach(d => {
+      d.classList.remove('open');
+      d.previousElementSibling?.classList.remove('open');
+    });
+    if (!open) { drawer.classList.add('open'); row.classList.add('open'); }
+  });
+});
+
+// Value Encoder Calculator
+(function() {
+  const out = document.getElementById('cv-out');
+  ['cv-val','cv-sf','cv-d','cv-s'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('input', runCalc);
+  });
+
+  function runCalc() {
+    const str = document.getElementById('cv-val').value.trim();
+    const V   = parseFloat(str);
+    const SF  = parseInt(document.getElementById('cv-sf').value) || 1;
+    const D   = parseInt(document.getElementById('cv-d').value) || 2;
+    const S   = parseInt(document.getElementById('cv-s').value) || 8;
+
+    if (!str || isNaN(V)) { out.innerHTML = ''; return; }
+
+    const scale   = Math.pow(10, D);
+    const pow2S   = Math.pow(2, S);
+    const maxN    = Math.pow(2, 25) - 1;
+
+    const R       = V * scale / SF;
+    const N       = Math.round(R);
+    const isExact = Math.abs(R - N) < 1e-9;
+    const A       = Math.floor(N / pow2S);
+    const r       = N % pow2S;
+
+    const decodeN   = A * pow2S + r;
+    const decodeVal = (decodeN * SF) / scale;
+    const error     = decodeVal - V;
+    const minStep   = SF / scale;
+
+    const hexA = A.toString(16).toUpperCase().padStart(4,'0');
+    const hexR = r.toString(16).toUpperCase().padStart(Math.ceil(S/4),'0');
+
+    const overflow = N > maxN || A < 0;
+
+    let roundBlock = '';
+    if (overflow) {
+      roundBlock = `<div class="calc-line" style="margin-top:10px;padding:10px 14px;background:rgba(252,61,33,0.12);border-left:3px solid var(--nasa-red);">
+        <span class="cl">STATUS</span><span class="ce">⚠ OVERFLOW — N=${N.toLocaleString()} exceeds 25-bit max (${maxN.toLocaleString()}). Increase Scaling Factor.</span>
+      </div>`;
+    } else if (isExact) {
+      roundBlock = `<div class="calc-line" style="margin-top:10px;padding:10px 14px;background:rgba(46,160,67,0.12);border-left:3px solid #2ea043;">
+        <span class="cl">ROUNDING</span><span class="cr">Exact — no loss. bit26=0</span>
+      </div>`;
+    } else {
+      const dir = error > 0 ? 'up' : 'down';
+      const pct = Math.abs(error / V * 100).toFixed(4);
+      roundBlock = `<div class="calc-line" style="margin-top:10px;padding:10px 14px;background:rgba(232,154,10,0.1);border-left:3px solid var(--nasa-gold);">
+        <span class="cl">ROUNDING</span><span class="cv">Rounded ${dir} by ${Math.abs(error).toExponential(3)} (${pct}%) — bit26=1</span>
+      </div>
+      <div class="calc-line"><span class="cl">MIN STEP</span><span class="cv">${minStep} at SF=×${SF}, D=${D} — smallest representable unit</span></div>
+      <div class="calc-line"><span class="cl">DECODED</span><span class="cv">${decodeVal.toFixed(D)} (target was ${V})</span></div>`;
+    }
+
+    out.innerHTML = `
+      <div class="calc-line"><span class="cl">Raw R</span><span class="cv">${R.toFixed(6)}</span><span class="cb">V × 10^D ÷ SF</span></div>
+      <div class="calc-line"><span class="cl">N (25-bit)</span><span class="cv">${N.toLocaleString()}</span><span class="cb">round(R), fits ${overflow?'❌':'✓'} 25-bit</span></div>
+      <div class="calc-line"><span class="cl">A (mantissa)</span><span class="cv">${A.toLocaleString()}</span><span class="cb">floor(N ÷ 2^${S}) = 0x${hexA}</span></div>
+      <div class="calc-line"><span class="cl">r (remainder)</span><span class="cv">${r.toLocaleString()}</span><span class="cb">N mod 2^${S} = 0x${hexR}</span></div>
+      <div class="calc-line"><span class="cl">Verify</span><span class="cv">A×2^${S}+r = ${decodeN.toLocaleString()} → ${decodeVal.toFixed(D)}</span></div>
+      ${roundBlock}`;
+  }
+
+  runCalc();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,1842 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Universal Domain v1.0 — BitPads Documentation</title>
+<link rel="stylesheet" href="bp-style.css">
+<style>
+/* ── Page-specific ── */
+.ud-hero { padding: 72px 0 48px; }
+
+.domain-cols {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1px; background: var(--rule);
+  border: 1px solid var(--rule); margin: 24px 0;
+}
+@media (max-width: 700px) { .domain-cols { grid-template-columns: 1fr 1fr; } }
+.domain-col {
+  background: var(--bg-panel); padding: 20px 18px;
+}
+.domain-col.active-domain { background: #EBF1FA; }
+.domain-bits {
+  font-family: var(--mono); font-weight: 700;
+  font-size: 22px; color: var(--nasa-blue);
+  letter-spacing: 0.08em; margin-bottom: 6px;
+}
+.domain-name {
+  font-family: var(--display); font-weight: 700;
+  font-size: 15px; text-transform: uppercase;
+  letter-spacing: 0.04em; margin-bottom: 6px;
+}
+.domain-desc {
+  font-size: 12px; color: var(--ink-soft);
+  line-height: 1.45;
+}
+
+.qty-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1px; background: var(--rule);
+  border: 1px solid var(--rule); margin: 24px 0;
+}
+.qty-band {
+  background: var(--bg-panel); padding: 18px;
+}
+.qty-band-label {
+  font-family: var(--mono); font-size: 9px;
+  text-transform: uppercase; letter-spacing: 0.12em;
+  color: var(--nasa-red); margin-bottom: 10px;
+}
+.qty-band-range {
+  font-family: var(--mono); font-weight: 700;
+  font-size: 17px; color: var(--nasa-blue);
+  margin-bottom: 6px;
+}
+.qty-band ul {
+  margin: 0; padding-left: 14px;
+  font-size: 12px; color: var(--ink-soft);
+}
+.qty-band li { margin-bottom: 3px; line-height: 1.4; }
+
+.conserv-worked {
+  background: var(--bg-panel);
+  border: 1px solid var(--rule);
+  border-left: 4px solid var(--nasa-teal);
+  padding: 18px 22px; margin: 20px 0;
+}
+.conserv-worked h5 {
+  font-family: var(--mono); font-size: 9px;
+  text-transform: uppercase; letter-spacing: 0.12em;
+  color: var(--nasa-teal); margin: 0 0 10px;
+}
+
+.error-cols {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px; background: var(--rule);
+  border: 1px solid var(--rule); margin: 24px 0;
+}
+@media (max-width: 700px) { .error-cols { grid-template-columns: 1fr; } }
+.error-col {
+  background: var(--bg-panel); padding: 22px 18px;
+}
+.error-col-label {
+  font-family: var(--mono); font-size: 9px;
+  text-transform: uppercase; letter-spacing: 0.12em;
+  color: var(--nasa-red); margin-bottom: 8px;
+}
+.error-col-head {
+  font-family: var(--display); font-weight: 700;
+  font-size: 16px; text-transform: uppercase;
+  letter-spacing: 0.04em; margin-bottom: 8px;
+}
+.error-col-body {
+  font-size: 12.5px; color: var(--ink-soft);
+  line-height: 1.5; margin: 0;
+}
+
+.example-block {
+  margin: 32px 0;
+  border: 1px solid var(--rule);
+  background: var(--bg-panel);
+}
+.example-head {
+  display: flex; align-items: baseline; gap: 14px;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--rule);
+  background: var(--bg-soft);
+}
+.example-num {
+  font-family: var(--mono); font-size: 9px;
+  text-transform: uppercase; letter-spacing: 0.12em;
+  color: var(--nasa-red); flex-shrink: 0;
+}
+.example-title {
+  font-family: var(--display); font-weight: 700;
+  font-size: 17px; text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.example-body { padding: 18px; }
+.example-body p {
+  font-size: 13px; color: var(--ink-soft);
+  margin: 0 0 12px; max-width: 100%;
+}
+
+.transport-table {
+  width: 100%; border-collapse: collapse;
+  margin: 20px 0; font-size: 13px;
+}
+.transport-table th {
+  font-family: var(--mono); font-size: 9px;
+  text-transform: uppercase; letter-spacing: 0.1em;
+  color: var(--ink-soft); text-align: left;
+  padding: 9px 14px;
+  background: var(--bg-soft);
+  border-bottom: 2px solid var(--nasa-blue);
+}
+.transport-table td {
+  padding: 11px 14px;
+  border-bottom: 1px solid var(--rule-soft);
+  vertical-align: top; line-height: 1.45;
+  color: var(--ink-soft);
+}
+.transport-table tbody tr:hover { background: oklch(0.97 0.003 220); }
+
+.comparison-table {
+  width: 100%; border-collapse: collapse;
+  margin: 20px 0; font-size: 13px;
+}
+.comparison-table th {
+  font-family: var(--mono); font-size: 9px;
+  text-transform: uppercase; letter-spacing: 0.1em;
+  color: var(--ink-soft); text-align: left;
+  padding: 9px 14px;
+  background: var(--bg-soft);
+  border-bottom: 2px solid var(--nasa-blue);
+}
+.comparison-table td {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--rule-soft);
+  vertical-align: top; line-height: 1.45;
+  color: var(--ink-soft);
+}
+.comparison-table td:first-child { color: var(--ink); font-weight: 500; }
+.comparison-table tbody tr:hover { background: oklch(0.97 0.003 220); }
+
+.check { color: var(--nasa-teal); font-weight: 700; }
+.cross { color: var(--nasa-red); font-weight: 700; }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="index.html">
+      <span class="brand-mark">BP</span>
+      <span class="brand-name">BitPads Protocol</span>
+    </a>
+    <nav class="topnav">
+      <a href="overview.html">Overview</a>
+      <a href="bitpads-v2.html">BitPads v2</a>
+      <a href="bitledger.html" class="active">BitLedger</a>
+      <a href="universal-domain.html">Universal Domain</a>
+      <div class="nav-group">
+        <a href="enhancement-grammar.html">Enhancement</a>
+        <div class="nav-dropdown">
+          <a href="enhancement-grammar.html">Grammar &amp; Signal Slots</a>
+          <a href="enhancement-commands.html">Commands &amp; Context</a>
+          <a href="enhancement-telegraph-1.html">Telegraph Emulation I</a>
+          <a href="enhancement-telegraph-2.html">Telegraph Emulation II</a>
+          <a href="enhancement-nesting.html">Nesting &amp; Overhead</a>
+        </div>
+      </div>
+      <a href="compound-mode.html">Compound Mode</a>
+      <a href="engineering.html">Engineering</a>
+      <a href="guide.html">Guide</a>
+      <a href="cli.html">CLI</a>
+      <a href="reference.html">Reference</a>
+    </nav>
+  </div>
+</header>
+
+<div class="page">
+  <aside class="sidebar">
+    <p class="toc-label">On This Page</p>
+    <ul class="toc">
+      <li><a href="#overview" class="active">Overview</a></li>
+      <li><a href="#domain-bits">Domain Declaration</a></li>
+      <li><a href="#archetypes">Flow Archetypes</a></li>
+      <li><a href="#quantity-type">Quantity Types</a></li>
+      <li><a href="#conservation">Conservation Invariant</a></li>
+      <li><a href="#examples">Worked Examples</a></li>
+      <li><a href="#error-detection">Error Detection</a></li>
+      <li><a href="#domains">Hybrid &amp; Custom</a></li>
+      <li><a href="#transport">Transport Compatibility</a></li>
+      <li><a href="#deployment">Deployments</a></li>
+    </ul>
+  </aside>
+
+  <main>
+
+    <!-- ── OVERVIEW ── -->
+    <section id="overview" class="ud-hero">
+      <p class="eyebrow">BitLedger Universal Domain v1.0 · Companion to BitLedger Protocol v3.0</p>
+      <h1>Any Conserved<br>Scalar</h1>
+      <p class="pullquote">Financial accounting and physical conservation are the same algebra applied to different quantities. The wire format does not change.</p>
+      <p class="lead">The same 40-bit record that encodes a monetary transaction can carry 450 kg of propellant flowing from Tank Assembly to Main Engine Thruster Array — because both are applications of the same conservation law.</p>
+      <p>Double-entry accounting is not a bookkeeping convention. It is a conservation law. Every transaction records a quantity leaving one account and arriving at another. The sum of all signed flows in any valid set of entries is zero. This is the same algebraic invariant that governs current flow in electrical networks, mass balance in chemical processes, and momentum transfer in mechanical systems.</p>
+      <p>Kirchhoff's Current Law — sum of currents at any node equals zero — is double-entry balance applied to electrical current. The same principle governs mass in a pipe network, heat in a thermal system, data packets in a buffer, and watt-hours in a satellite power constellation. BitLedger encodes this invariant at the wire level for any domain.</p>
+
+      <div class="notice">
+        <p><strong>Key insight:</strong> What changes across domains is the semantic interpretation of two fields: the 4-bit relationship matrix (account pair in financial mode, flow archetype in engineering mode) and the 6-bit quantity type code (currency in financial mode, physical unit in engineering mode). Every other bit in the 40-bit record is domain-agnostic by construction. A financial decoder reading an engineering record sees valid wire structure — it simply loads a different interpretation table.</p>
+      </div>
+
+      <div style="margin: 32px 0 0; display: grid; grid-template-columns: repeat(3,1fr); gap: 1px; background: var(--rule); border: 1px solid var(--rule);">
+        <div style="background: var(--bg-panel); padding: 22px 20px;">
+          <div style="font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:0.12em;color:var(--nasa-red);margin-bottom:8px;">Kirchhoff's Current Law</div>
+          <div style="font-family:var(--mono);font-size:12.5px;line-height:1.9;color:var(--ink);border-left:2px solid var(--rule);padding-left:12px;">∑(I<sub>in</sub>) − ∑(I<sub>out</sub>) = 0<br><br>All currents at any node<br>sum to zero.<br><br>Electrical networks · 1845.</div>
+        </div>
+        <div style="background: var(--bg-panel); padding: 22px 20px;">
+          <div style="font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:0.12em;color:var(--nasa-red);margin-bottom:8px;">Double-Entry Accounting</div>
+          <div style="font-family:var(--mono);font-size:12.5px;line-height:1.9;color:var(--ink);border-left:2px solid var(--rule);padding-left:12px;">∑(Debits) = ∑(Credits)<br>∑(+V<sub>i</sub>) + ∑(−V<sub>i</sub>) = 0<br><br>Same invariant applied<br>to monetary quantities.<br>Venetian merchants · 1494.</div>
+        </div>
+        <div style="background: var(--bg-panel); padding: 22px 20px;">
+          <div style="font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:0.12em;color:var(--nasa-red);margin-bottom:8px;">BitLedger Batch</div>
+          <div style="font-family:var(--mono);font-size:12.5px;line-height:1.9;color:var(--ink);border-left:2px solid var(--rule);padding-left:12px;">∑(signed flows) = 0<br>(mod precision step)<br><br>Enforced at wire level<br>before application<br>processes any record.</div>
+        </div>
+      </div>
+
+      <p style="margin-top: 24px;">These three statements are the same conservation principle expressed in different domains. Any system governed by a conservation law is a natural candidate for BitLedger records — not as an approximation, but as an exact fit. The wire format does not change across domains.</p>
+    </section>
+
+    <!-- ── DOMAIN BITS ── -->
+    <section id="domain-bits">
+      <p class="eyebrow">Layer 1 · Bits 3–4</p>
+      <h2>Domain Declaration</h2>
+      <p>The receiver learns the semantic context of the entire session within the first four bits it ever receives. Bit 1 is always 1 (SOH). Bit 2 carries the wire format version. Bits 3–4 carry the domain code. By the time the receiver has processed four bits it knows whether to interpret subsequent records as financial entries, physical flow records, a hybrid of both, or a custom-declared domain.</p>
+
+      <div class="bit-display">
+        <div class="bit-display-label">Layer 1 · Byte 1 · Bits 1–8 — Domain declaration in bits 3–4</div>
+        <div class="bit-cells">
+          <div class="bit-cell mode" data-layer="l1" data-tooltip="Bit 1: Always 1 — SOH. Self-framing session open.">
+            <span class="bit-pos">1</span>
+            <span class="bit-val on">1</span>
+            <span class="bit-name">SOH</span>
+          </div>
+          <div class="bit-cell mode" data-layer="l1" data-tooltip="Bit 2: Wire Format Version. 0 = v1 (current). 1 = non-standard, control byte follows.">
+            <span class="bit-pos">2</span>
+            <span class="bit-val off">0</span>
+            <span class="bit-name">Ver.</span>
+          </div>
+          <div class="bit-cell mode" data-layer="l1" data-tooltip="Bit 3: Domain MSB. Combined with bit 4 to select domain. 01 = Engineering (Universal Domain).">
+            <span class="bit-pos">3</span>
+            <span class="bit-val off">0</span>
+            <span class="bit-name">Dom<br>MSB</span>
+          </div>
+          <div class="bit-cell mode" data-layer="l1" data-tooltip="Bit 4: Domain LSB. 01 = Engineering. Switches interpretation to universal flow archetypes.">
+            <span class="bit-pos">4</span>
+            <span class="bit-val on">1</span>
+            <span class="bit-name">Dom<br>LSB</span>
+          </div>
+          <div class="bit-cell flag-f" data-layer="l1" data-tooltip="Bit 5: Observe permission. Engineering reinterpretation of Read.">
+            <span class="bit-pos">5</span>
+            <span class="bit-val off">0</span>
+            <span class="bit-name">Obs.</span>
+          </div>
+          <div class="bit-cell flag-f" data-layer="l1" data-tooltip="Bit 6: Actuate permission. Engineering reinterpretation of Write.">
+            <span class="bit-pos">6</span>
+            <span class="bit-val off">0</span>
+            <span class="bit-name">Act.</span>
+          </div>
+          <div class="bit-cell flag-f" data-layer="l1" data-tooltip="Bit 7: Override permission. Engineering reinterpretation of Correct.">
+            <span class="bit-pos">7</span>
+            <span class="bit-val off">0</span>
+            <span class="bit-name">Ovr.</span>
+          </div>
+          <div class="bit-cell flag-f" data-layer="l1" data-tooltip="Bit 8: Proxy permission. Engineering reinterpretation of Represent — one node transmitting on behalf of another.">
+            <span class="bit-pos">8</span>
+            <span class="bit-val off">0</span>
+            <span class="bit-name">Proxy</span>
+          </div>
+        </div>
+        <div class="bit-legend">
+          <span class="legend-item"><span class="legend-swatch mode"></span> Mode / Domain Control</span>
+          <span class="legend-item"><span class="legend-swatch flag-f"></span> Permission Flags</span>
+          <span class="legend-item" style="margin-left:12px;color:var(--ink-faint);">Shown: Engineering domain — bits 3-4 = 01</span>
+        </div>
+      </div>
+
+      <h3>Domain Code Table</h3>
+      <div class="domain-cols">
+        <div class="domain-col">
+          <div class="domain-bits">00</div>
+          <div class="domain-name">Financial</div>
+          <p class="domain-desc">Default. Full backward compatibility with BitLedger v3.0. Account pairs interpret as financial categories. Currency Code field = currency index.</p>
+        </div>
+        <div class="domain-col active-domain">
+          <div class="domain-bits" style="color:var(--nasa-red);">01</div>
+          <div class="domain-name" style="color:var(--nasa-red);">Engineering</div>
+          <p class="domain-desc">Universal Domain (this document). Account pairs interpret as universal flow archetypes. Currency Code field = quantity type index. Wire format byte-for-byte identical to Financial.</p>
+        </div>
+        <div class="domain-col">
+          <div class="domain-bits">10</div>
+          <div class="domain-name">Hybrid</div>
+          <p class="domain-desc">Both matrices active simultaneously. Financial cost accounting and physical mass or energy flow in the same session. Record-level disambiguation via extension byte.</p>
+        </div>
+        <div class="domain-col">
+          <div class="domain-bits">11</div>
+          <div class="domain-name">Custom</div>
+          <p class="domain-desc">User-defined domain. Extension block transmitted immediately after Layer 1 close, before first batch. Receiver waits for declaration before processing any records.</p>
+        </div>
+      </div>
+
+      <p>Switching domain changes <em>only</em> the semantic interpretation of the 4-bit relationship field and the 6-bit quantity type field. The wire format version (bit 2), all identity fields, all session defaults, the value encoding formula, the CRC-15, the cross-layer validation rules, and the compound continuation mechanism are identical across all four domains.</p>
+
+      <table class="data-table" style="margin-top:20px;">
+        <thead>
+          <tr>
+            <th>Bits 2–4</th>
+            <th>Domain</th>
+            <th>Relationship Field</th>
+            <th>Quantity Field</th>
+            <th>Decoder Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>0 00</code></td>
+            <td>Financial (v1)</td>
+            <td>Account pair codes — Protocol v3.0</td>
+            <td>Currency index</td>
+            <td>Load financial labels and currency table</td>
+          </tr>
+          <tr>
+            <td><code>0 01</code></td>
+            <td>Engineering (v1)</td>
+            <td>Universal flow archetypes — this document</td>
+            <td>Quantity type index</td>
+            <td>Load archetype labels and physical unit table</td>
+          </tr>
+          <tr>
+            <td><code>0 10</code></td>
+            <td>Hybrid (v1)</td>
+            <td>Both matrices active</td>
+            <td>Per-record via extension byte</td>
+            <td>Load both; disambiguate per record</td>
+          </tr>
+          <tr>
+            <td><code>0 11</code></td>
+            <td>Custom (v1)</td>
+            <td>User-declared</td>
+            <td>User-declared</td>
+            <td>Wait for extension block after Layer 1</td>
+          </tr>
+          <tr>
+            <td><code>1 xx</code></td>
+            <td>Version signal</td>
+            <td>—</td>
+            <td>—</td>
+            <td>Read version control byte after Layer 1 before batches</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- ── ARCHETYPES ── -->
+    <section id="archetypes">
+      <p class="eyebrow">4-Bit Relationship Field · Engineering Domain</p>
+      <h2>16 Universal Flow Archetypes</h2>
+      <p class="lead">These 16 archetypes are not domain-specific. They are the fundamental ways that quantities relate between any two entities in any engineered system.</p>
+      <p>In financial mode the 4-bit pair field encodes which two account categories are involved in a transaction. In engineering mode the same 4 bits encode the relationship archetype between any two nodes, subsystems, or entities in the tracked system. A spacecraft subsystem consuming propellant, a satellite accruing a power debt, a factory station transferring work-in-process, and a microcontroller spending battery charge all express one of these 16 archetypes.</p>
+      <p>Click any row to expand full details, activation conditions, and an annotated 5-byte record.</p>
+
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Code</th>
+            <th>Archetype</th>
+            <th>Canonical Meaning</th>
+            <th>Example Systems</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+
+          <tr class="xrow" data-drawer="arch-0000">
+            <td><code>0000</code></td>
+            <td><strong>Unclassified / Custom</strong></td>
+            <td>User-defined or not yet classified</td>
+            <td>Any custom deployment</td>
+            <td><span class="xrow-indicator">▾</span></td>
+          </tr>
+          <tr class="xdrawer" id="arch-0000">
+            <td colspan="5">
+              <div class="xdrawer-inner">
+                <div class="xdrawer-grid">
+                  <div class="xdrawer-section">
+                    <h5>Description</h5>
+                    <p>Reserved for user-defined relationship types or flows not yet classified during development. Receiver must not apply conservation validation without knowing the flow direction convention declared for this code in the session's custom extension block.</p>
+                  </div>
+                  <div class="xdrawer-section">
+                    <h5>Activation Condition</h5>
+                    <p>Bits 33–36 = <code>0000</code>. Use only when no standard archetype adequately describes the relationship, or during prototyping before the final archetype assignment is known.</p>
+                  </div>
+                  <div class="xdrawer-section">
+                    <h5>Record Bits 33–36</h5>
+                    <div class="xdrawer-bits">
+                      <div class="xdrawer-bit">0</div>
+                      <div class="xdrawer-bit">0</div>
+                      <div class="xdrawer-bit">0</div>
+                      <div class="xdrawer-bit">0</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </td>
+          </tr>
+
+          <tr class="xrow" data-drawer="arch-0001">
+            <td><code>0001</code></td>
+            <td><strong>Source-to-Sink</strong></td>
+            <td>Canonical directional flow between two distinct nodes</td>
+            <td>Pipe / wire / supply chain / tank-to-thruster</td>
+            <td><span class="xrow-indicator">▾</span></td>
+          </tr>
+          <tr class="xdrawer" id="arch-0001">
+            <td colspan="5">
+              <div class="xdrawer-inner">
+                <div class="xdrawer-grid">
+                  <div class="xdrawer-section">
+                    <h5>Description</h5>
+                    <p>Direct one-way transfer of a conserved quantity from a source node to a sink node. The most common archetype. The source is debited; the sink is credited. Direction bit = Out. Status = Settled (transfer complete) or Debt (delivery pending).</p>
+                  </div>
+                  <div class="xdrawer-section">
+                    <h5>Activation Condition</h5>
+                    <p>Two clearly distinct nodes where quantity unambiguously originates at one and terminates at the other. No transformation, no obligation structure, no distribution fan-out.</p>
+                  </div>
+                  <div class="xdrawer-section">
+                    <h5>Examples</h5>
+                    <p>Fuel tank to thruster. Battery to payload. Upstream buffer to downstream processor. Solar panel output to battery charge bus. Factory warehouse to assembly station.</p>
+                  </div>
+                  <div class="xdrawer-section">
+                    <h5>Record Bits 33–36</h5>
+                    <div class="xdrawer-bits">
+                      <div class="xdrawer-bit">0</div>
+                      <div class="xdrawer-bit">0</div>
+                      <div class="xdrawer-bit">0</div>
+                      <div class="xdrawer-bit on">1</div>
+                    </div>
+                    <p style="margin-top:8px;">Bit 29 = 1 (Out), Bit 37 = 1 (must match), Bit 30 = 0 (Settled).</p>
+                  </div>
+                </div>
+              </div>
+            </td>
+          </tr>
+
+          <tr class="xrow" data-drawer="arch-0010">
+            <td><code>0010</code></td>
+            <td><strong>Debtor-to-Creditor</strong></td>
+            <td>Obligation incurred — quantity owed, not yet transferred</td>
+            <td>Power debt / delivery pending / service obligation</td>
+            <td><span class="xrow-indicator">▾</span></td>
+          </tr>
+          <tr class="xdrawer" id="arch-0010">
+            <td colspan="5">
+              <div class="xdrawer-inner">
+                <div class="xdrawer-grid">
+                  <div class="xdrawer-section">
+                    <h5>Description</h5>
+                    <p>Records that a quantity is owed but not yet transferred. The debtor node owes the quantity to the creditor node. Bit 30 = 1 (Debt). The obligation exists in the system's accounting until settled by a Creditor-to-Debtor (0011) record or voided by a Correction (1110).</p>
+                  </div>
+                  <div class="xdrawer-section">
+                    <h5>Activation Condition</h5>
+                    <p>Quantity has been drawn or committed but physical transfer is not yet complete, or the accounting entry precedes physical transfer by design (obligation-first recording).</p>
+                  </div>
+                  <div class="xdrawer-section">
+                    <h5>Examples</h5>
+                    <p>Satellite A draws 12,847.50 Wh from Satellite B under a power-sharing agreement; repayment pending. Component delivery committed but not yet arrived at factory station.</p>
+                  </div>
+                  <div class="xdrawer-section">
+                    <h5>Record Bits 33–36</h5>
+                    <div class="xdrawer-bits">
+                      <div class="xdrawer-bit">0</div>
+                      <div class="xdrawer-bit">0</div>
+                      <div class="xdrawer-bit on">1</div>
+                      <div class="xdrawer-bit">0</div>
+                    </div>
+                    <p style="margin-top:8px;">Bit 30 = 1 (Debt), Bit 38 = 1 (must match Bit 30).</p>
+                  </div>
+                </div>
+              </div>
+            </td>
+          </tr>
+
+          <tr class="xrow" data-drawer="arch-0011">
+            <td><code>0011</code></td>
+            <td><strong>Creditor-to-Debtor</strong></td>
+            <td>Obligation settlement — prior debt fulfilled</td>
+            <td>Power repayment / debt closure / service delivery</td>
+            <td><span class="xrow-indicator">▾</span></td>
+          </tr>
+          <tr class="xdrawer" id="arch-0011">
+            <td colspan="5">
+              <div class="xdrawer-inner">
+                <div class="xdrawer-grid">
+                  <div class="xdrawer-section">
+                    <h5>Description</h5>
+                    <p>The counterpart to Debtor-to-Creditor. Records the physical transfer that settles a prior obligation. The creditor delivers the quantity; the debtor's obligation is extinguished. Conservation invariant requires the settlement value to match the obligation value within rounding tolerance.</p>
+                  </div>
+                  <div class="xdrawer-section">
+                    <h5>Examples</h5>
+                    <p>Satellite A returns 12,847.50 Wh to Satellite B, closing the power debt opened by archetype 0010. Factory station delivers committed components; pending obligation cleared from batch.</p>
+                  </div>
+                  <div class="xdrawer-section">
+                    <h5>Record Bits 33–36</h5>
+                    <div class="xdrawer-bits">
+                      <div class="xdrawer-bit">0</div>
+                      <div class="xdrawer-bit">0</div>
+                      <div class="xdrawer-bit on">1</div>
+                      <div class="xdrawer-bit on">1</div>
+                    </div>
+                    <p style="margin-top:8px;">Bit 30 = 0 (Settled — debt now closed).</p>
+                  </div>
+                </div>
+              </div>
+            </td>
+          </tr>
+
+          <tr class="xrow" data-drawer="arch-0100">
+            <td><code>0100</code></td>
+            <td><strong>Generation</strong></td>
+            <td>Quantity created by a process — enters the tracked system</td>
+            <td>Solar panel / electrolysis / resupply docking</td>
+            <td><span class="xrow-indicator">▾</span></td>
+          </tr>
+          <tr class="xdrawer" id="arch-0100">
+            <td colspan="5">
+              <div class="xdrawer-inner">
+                <div class="xdrawer-grid">
+                  <div class="xdrawer-section">
+                    <h5>Description</h5>
+                    <p>Quantity enters the system boundary from a source node that is part of the system (a process or conversion device). The source node is the generation process; the sink node is the system's internal store or bus. For external sources, use External Input (1001).</p>
+                  </div>
+                  <div class="xdrawer-section">
+                    <h5>Examples</h5>
+                    <p>Solar panel generating power: source = Solar Array Assembly, sink = Power Bus. Electrolysis producing O₂: source = ECLSS Electrolyser, sink = Atmosphere O₂ Store. Photovoltaic output to battery charge.</p>
+                  </div>
+                  <div class="xdrawer-section">
+                    <h5>Record Bits 33–36</h5>
+                    <div class="xdrawer-bits">
+                      <div class="xdrawer-bit">0</div>
+                      <div class="xdrawer-bit on">1</div>
+                      <div class="xdrawer-bit">0</div>
+                      <div class="xdrawer-bit">0</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </td>
+          </tr>
+
+          <tr class="xrow" data-drawer="arch-0101">
+            <td><code>0101</code></td>
+            <td><strong>Consumption</strong></td>
+            <td>Quantity destroyed in a process — exits the tracked system</td>
+            <td>Propellant burn / power draw / reagent use</td>
+            <td><span class="xrow-indicator">▾</span></td>
+          </tr>
+          <tr class="xdrawer" id="arch-0101">
+            <td colspan="5">
+              <div class="xdrawer-inner">
+                <div class="xdrawer-grid">
+                  <div class="xdrawer-section">
+                    <h5>Description</h5>
+                    <p>Quantity is destroyed or converted to an untracked form within a process node. The source node is the internal store; the sink node is the consumption process (thruster, reactor, heater). The quantity leaves the tracked system without appearing elsewhere in the batch.</p>
+                  </div>
+                  <div class="xdrawer-section">
+                    <h5>Examples</h5>
+                    <p>Hydrazine propellant burn: source = Propellant Tank, sink = Main Engine (consumed). Battery discharge to payload electronics. Reagent consumed in a chemical process. Electrical power dissipated as heat in a resistive load.</p>
+                  </div>
+                  <div class="xdrawer-section">
+                    <h5>Record Bits 33–36</h5>
+                    <div class="xdrawer-bits">
+                      <div class="xdrawer-bit">0</div>
+                      <div class="xdrawer-bit on">1</div>
+                      <div class="xdrawer-bit">0</div>
+                      <div class="xdrawer-bit on">1</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </td>
+          </tr>
+
+          <tr class="xrow" data-drawer="arch-0110">
+            <td><code>0110</code></td>
+            <td><strong>Distribution</strong></td>
+            <td>One source node to many sink nodes</td>
+            <td>Power bus / broadcast / multicast / manifold</td>
+            <td><span class="xrow-indicator">▾</span></td>
+          </tr>
+          <tr class="xdrawer" id="arch-0110">
+            <td colspan="5">
+              <div class="xdrawer-inner">
+                <div class="xdrawer-grid">
+                  <div class="xdrawer-section">
+                    <h5>Description</h5>
+                    <p>A single source distributes quantity to multiple sinks. Each Distribution record represents one source-to-sink leg. Conservation requires that all legs in the batch sum to the total quantity leaving the source. Use Compound Continuation (1111) to link legs of the same distribution event.</p>
+                  </div>
+                  <div class="xdrawer-section">
+                    <h5>Examples</h5>
+                    <p>Power bus delivering to multiple subsystems simultaneously. Network packet multicast to subscriber list. Hydraulic manifold supplying multiple actuators. Mission control broadcasting power budget to rover subsystems.</p>
+                  </div>
+                  <div class="xdrawer-section">
+                    <h5>Record Bits 33–36</h5>
+                    <div class="xdrawer-bits">
+                      <div class="xdrawer-bit">0</div>
+                      <div class="xdrawer-bit on">1</div>
+                      <div class="xdrawer-bit on">1</div>
+                      <div class="xdrawer-bit">0</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </td>
+          </tr>
+
+          <tr class="xrow" data-drawer="arch-0111">
+            <td><code>0111</code></td>
+            <td><strong>Transformation</strong></td>
+            <td>Quantity changes form within a node</td>
+            <td>Combustion / stamping / chemical reaction / data encode</td>
+            <td><span class="xrow-indicator">▾</span></td>
+          </tr>
+          <tr class="xdrawer" id="arch-0111">
+            <td colspan="5">
+              <div class="xdrawer-inner">
+                <div class="xdrawer-grid">
+                  <div class="xdrawer-section">
+                    <h5>Description</h5>
+                    <p>A quantity enters a node in one form and leaves in a different form. The node itself is the transformation agent. Conservation holds across the transformation: mass in = mass out (plus scrap/loss recorded separately). Typically used with Compound Continuation to record both input and output forms in one event.</p>
+                  </div>
+                  <div class="xdrawer-section">
+                    <h5>Examples</h5>
+                    <p>Factory press: 50 kg steel billet in → 48.2 kg stamped part + 1.8 kg scrap. Chemical reactor: reagent mass in → product mass out. Encoder: raw data in → compressed data out (same KB count if lossless). Combustion chamber: propellant mass in → thrust impulse (use compound with Generation).</p>
+                  </div>
+                  <div class="xdrawer-section">
+                    <h5>Record Bits 33–36</h5>
+                    <div class="xdrawer-bits">
+                      <div class="xdrawer-bit">0</div>
+                      <div class="xdrawer-bit on">1</div>
+                      <div class="xdrawer-bit on">1</div>
+                      <div class="xdrawer-bit on">1</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </td>
+          </tr>
+
+          <tr class="xrow" data-drawer="arch-1000">
+            <td><code>1000</code></td>
+            <td><strong>Aggregation</strong></td>
+            <td>Many source nodes to one sink node</td>
+            <td>Sensor fusion / tributary merge / collection</td>
+            <td><span class="xrow-indicator">▾</span></td>
+          </tr>
+          <tr class="xdrawer" id="arch-1000">
+            <td colspan="5">
+              <div class="xdrawer-inner">
+                <div class="xdrawer-grid">
+                  <div class="xdrawer-section">
+                    <h5>Description</h5>
+                    <p>Multiple sources contribute to a single sink. Each Aggregation record represents one source leg. Conservation requires that all legs in the batch sum to the total quantity arriving at the sink. The mirror image of Distribution (0110).</p>
+                  </div>
+                  <div class="xdrawer-section">
+                    <h5>Examples</h5>
+                    <p>Multiple sensor nodes feeding one gateway processor. Tributary rivers to main storage reservoir. Several production lines feeding one packing station. Multiple charge sources to a shared battery bank.</p>
+                  </div>
+                  <div class="xdrawer-section">
+                    <h5>Record Bits 33–36</h5>
+                    <div class="xdrawer-bits">
+                      <div class="xdrawer-bit on">1</div>
+                      <div class="xdrawer-bit">0</div>
+                      <div class="xdrawer-bit">0</div>
+                      <div class="xdrawer-bit">0</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </td>
+          </tr>
+
+          <tr class="xrow" data-drawer="arch-1001">
+            <td><code>1001</code></td>
+            <td><strong>External Input</strong></td>
+            <td>Quantity enters from outside the system boundary</td>
+            <td>Resupply / environmental ingress / signal reception</td>
+            <td><span class="xrow-indicator">▾</span></td>
+          </tr>
+          <tr class="xdrawer" id="arch-1001">
+            <td colspan="5">
+              <div class="xdrawer-inner">
+                <div class="xdrawer-grid">
+                  <div class="xdrawer-section">
+                    <h5>Description</h5>
+                    <p>Quantity arrives from a node that is outside the tracked system boundary. The source node is external (environment, supplier, upstream system). Use when the origin is beyond the system's accounting scope. Contrast with Generation (0100) where the source is an internal process node.</p>
+                  </div>
+                  <div class="xdrawer-section">
+                    <h5>Examples</h5>
+                    <p>ISS resupply docking: propellant arrives from launch vehicle (external). Solar irradiance entering a thermal model. Raw material delivery from supplier to factory. Incoming satellite uplink from ground station.</p>
+                  </div>
+                  <div class="xdrawer-section">
+                    <h5>Record Bits 33–36</h5>
+                    <div class="xdrawer-bits">
+                      <div class="xdrawer-bit on">1</div>
+                      <div class="xdrawer-bit">0</div>
+                      <div class="xdrawer-bit">0</div>
+                      <div class="xdrawer-bit on">1</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </td>
+          </tr>
+
+          <tr class="xrow" data-drawer="arch-1010">
+            <td><code>1010</code></td>
+            <td><strong>External Output</strong></td>
+            <td>Quantity exits through the system boundary</td>
+            <td>Ejection / exhaust / downlink / delivery to customer</td>
+            <td><span class="xrow-indicator">▾</span></td>
+          </tr>
+          <tr class="xdrawer" id="arch-1010">
+            <td colspan="5">
+              <div class="xdrawer-inner">
+                <div class="xdrawer-grid">
+                  <div class="xdrawer-section">
+                    <h5>Description</h5>
+                    <p>Quantity departs to a node outside the tracked system boundary. The sink is external. Contrast with Consumption (0101) where the sink is an internal process that destroys the quantity. Here the quantity is delivered, not destroyed — it simply leaves scope.</p>
+                  </div>
+                  <div class="xdrawer-section">
+                    <h5>Examples</h5>
+                    <p>Spacecraft venting waste gas to space. Factory finished goods shipped to customer. Satellite transmitting data downlink (KB leave the onboard buffer). Power exported to external grid from a prosumer node.</p>
+                  </div>
+                  <div class="xdrawer-section">
+                    <h5>Record Bits 33–36</h5>
+                    <div class="xdrawer-bits">
+                      <div class="xdrawer-bit on">1</div>
+                      <div class="xdrawer-bit">0</div>
+                      <div class="xdrawer-bit on">1</div>
+                      <div class="xdrawer-bit">0</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </td>
+          </tr>
+
+          <tr class="xrow" data-drawer="arch-1011">
+            <td><code>1011</code></td>
+            <td><strong>Internal Transfer</strong></td>
+            <td>Flow between tracked sub-nodes within the same entity</td>
+            <td>Tank crossfeed / cache-to-register / module handoff</td>
+            <td><span class="xrow-indicator">▾</span></td>
+          </tr>
+          <tr class="xdrawer" id="arch-1011">
+            <td colspan="5">
+              <div class="xdrawer-inner">
+                <div class="xdrawer-grid">
+                  <div class="xdrawer-section">
+                    <h5>Description</h5>
+                    <p>Quantity moves between two sub-nodes within the same parent entity. No net change to the parent entity's total; the conservation invariant holds because both sub-nodes are tracked. Use the Sub-Entity ID field to distinguish the sub-nodes at record level.</p>
+                  </div>
+                  <div class="xdrawer-section">
+                    <h5>Examples</h5>
+                    <p>Tank A crossfeed to Tank B within same spacecraft. CPU register to L1 cache. Assembly sub-station A to sub-station B within one factory cell. Charge transferred between battery bank modules.</p>
+                  </div>
+                  <div class="xdrawer-section">
+                    <h5>Record Bits 33–36</h5>
+                    <div class="xdrawer-bits">
+                      <div class="xdrawer-bit on">1</div>
+                      <div class="xdrawer-bit">0</div>
+                      <div class="xdrawer-bit on">1</div>
+                      <div class="xdrawer-bit on">1</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </td>
+          </tr>
+
+          <tr class="xrow" data-drawer="arch-1100">
+            <td><code>1100</code></td>
+            <td><strong>Accumulation</strong></td>
+            <td>Storage increasing — quantity flowing into a store</td>
+            <td>Tank filling / battery charging / buffer loading</td>
+            <td><span class="xrow-indicator">▾</span></td>
+          </tr>
+          <tr class="xdrawer" id="arch-1100">
+            <td colspan="5">
+              <div class="xdrawer-inner">
+                <div class="xdrawer-grid">
+                  <div class="xdrawer-section">
+                    <h5>Description</h5>
+                    <p>The net state of a store is increasing. Use when the emphasis is on the store's growing inventory rather than the source-to-sink directional flow. Often paired with State Commit (1101) records that snapshot the resulting stored level after accumulation.</p>
+                  </div>
+                  <div class="xdrawer-section">
+                    <h5>Examples</h5>
+                    <p>Propellant tank filling during resupply. Battery charging from solar array. ISS water recovery tank accumulating recovered water. Onboard data buffer accumulating incoming sensor readings.</p>
+                  </div>
+                  <div class="xdrawer-section">
+                    <h5>Record Bits 33–36</h5>
+                    <div class="xdrawer-bits">
+                      <div class="xdrawer-bit on">1</div>
+                      <div class="xdrawer-bit on">1</div>
+                      <div class="xdrawer-bit">0</div>
+                      <div class="xdrawer-bit">0</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </td>
+          </tr>
+
+          <tr class="xrow" data-drawer="arch-1101">
+            <td><code>1101</code></td>
+            <td><strong>Depletion</strong></td>
+            <td>Storage decreasing — quantity flowing out of a store</td>
+            <td>Tank draining / battery discharge / buffer draining</td>
+            <td><span class="xrow-indicator">▾</span></td>
+          </tr>
+          <tr class="xdrawer" id="arch-1101">
+            <td colspan="5">
+              <div class="xdrawer-inner">
+                <div class="xdrawer-grid">
+                  <div class="xdrawer-section">
+                    <h5>Description</h5>
+                    <p>The net state of a store is decreasing. The store is the source; the consumer or loss node is the sink. The mirror image of Accumulation (1100). Conservation requires the depletion to appear as an equal inflow somewhere else in the batch.</p>
+                  </div>
+                  <div class="xdrawer-section">
+                    <h5>Examples</h5>
+                    <p>Propellant tank draining during a burn sequence. Battery discharging to power payload during eclipse. Buffer transmitting queued packets to downlink. Coolant reservoir draining to active cooling loop.</p>
+                  </div>
+                  <div class="xdrawer-section">
+                    <h5>Record Bits 33–36</h5>
+                    <div class="xdrawer-bits">
+                      <div class="xdrawer-bit on">1</div>
+                      <div class="xdrawer-bit on">1</div>
+                      <div class="xdrawer-bit">0</div>
+                      <div class="xdrawer-bit on">1</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </td>
+          </tr>
+
+          <tr class="xrow" data-drawer="arch-1110">
+            <td><code>1110</code></td>
+            <td><strong>Recycling / Recovery</strong></td>
+            <td>Output of a process returns as input — closed loop</td>
+            <td>Water recovery / heat recapture / regenerative braking</td>
+            <td><span class="xrow-indicator">▾</span></td>
+          </tr>
+          <tr class="xdrawer" id="arch-1110">
+            <td colspan="5">
+              <div class="xdrawer-inner">
+                <div class="xdrawer-grid">
+                  <div class="xdrawer-section">
+                    <h5>Description</h5>
+                    <p>Quantity that left the process as waste or output is recovered and re-enters as usable input. The source node is the recovery device; the sink node is the upstream input store. The closed-loop nature means the system's total inventory is preserved rather than depleted by that flow.</p>
+                  </div>
+                  <div class="xdrawer-section">
+                    <h5>Examples</h5>
+                    <p>ISS ECLSS water recovery: condensate recovered and returned to potable water store. Regenerative braking: kinetic energy recovered to battery. Heat exchanger: waste heat recovered into thermal storage. Closed-loop coolant system recirculating.</p>
+                  </div>
+                  <div class="xdrawer-section">
+                    <h5>Record Bits 33–36</h5>
+                    <div class="xdrawer-bits">
+                      <div class="xdrawer-bit on">1</div>
+                      <div class="xdrawer-bit on">1</div>
+                      <div class="xdrawer-bit on">1</div>
+                      <div class="xdrawer-bit">0</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </td>
+          </tr>
+
+          <tr class="xrow" data-drawer="arch-1111">
+            <td><code>1111</code></td>
+            <td><strong>Compound Continuation</strong></td>
+            <td>This record continues a preceding compound group</td>
+            <td>Multi-stage burn / simultaneous flows / multi-leg transfer</td>
+            <td><span class="xrow-indicator">▾</span></td>
+          </tr>
+          <tr class="xdrawer" id="arch-1111">
+            <td colspan="5">
+              <div class="xdrawer-inner">
+                <div class="xdrawer-grid">
+                  <div class="xdrawer-section">
+                    <h5>Description</h5>
+                    <p>Marks a record as the continuation of a compound event opened by the preceding record (which had Bit 39 = 1, Partial). The 1111 code in bits 33–36 signals that this record does not stand alone — it must be interpreted as part of the compound group. Bits 37–38 carry the sub-type (standard continuation, override, etc.).</p>
+                  </div>
+                  <div class="xdrawer-section">
+                    <h5>Activation Condition</h5>
+                    <p>Layer 1 bit 11 = 1 (compound mode active for session). The preceding record had bit 39 = 1 (Partial — compound continuation follows). This record uses 1111 to identify its role in the group.</p>
+                  </div>
+                  <div class="xdrawer-section">
+                    <h5>Examples</h5>
+                    <p>Engine firing consuming propellant (Record 1, Source-to-Sink) simultaneously creates a thermal load obligation on life support (Record 2, Debtor-to-Creditor, archetype 1111). Satellite power settlement across three legs — each leg after the first is a Compound Continuation.</p>
+                  </div>
+                  <div class="xdrawer-section">
+                    <h5>Record Bits 33–36</h5>
+                    <div class="xdrawer-bits">
+                      <div class="xdrawer-bit on">1</div>
+                      <div class="xdrawer-bit on">1</div>
+                      <div class="xdrawer-bit on">1</div>
+                      <div class="xdrawer-bit on">1</div>
+                    </div>
+                    <p style="margin-top:8px;">Bits 37–38 = sub-type. Bit 39 = 0 (Full) closes the compound group.</p>
+                  </div>
+                </div>
+              </div>
+            </td>
+          </tr>
+
+        </tbody>
+      </table>
+    </section>
+
+    <!-- ── QUANTITY TYPE ── -->
+    <section id="quantity-type">
+      <p class="eyebrow">Layer 2 · Bits 36–41 · Engineering Domain</p>
+      <h2>Quantity Type Codes</h2>
+      <p>In financial mode Layer 2 bits 36–41 carry a 6-bit currency index. In engineering mode the same field carries a Quantity Type Code (QTC) — a 6-bit index into a table of physical unit categories. The field width is unchanged: 64 possible codes, seeded with standard physical and relational unit categories.</p>
+      <p>The 12-bit "currency" field in Layer 2 is interpreted as: lower 6 bits = QTC (quantity type), upper 6 bits = reserved/precision modifier. The QTC tells the decoder which physical unit the value block represents. The Scaling Factor (SF) and Decimal Position (D) then set magnitude and precision within that unit.</p>
+
+      <div class="qty-grid">
+        <div class="qty-band">
+          <div class="qty-band-label">Indices 0–15 · Core Physical</div>
+          <div class="qty-band-range">0x00 – 0x0F</div>
+          <ul>
+            <li><code>0</code> — Session default (declared in Layer 1)</li>
+            <li><code>1</code> — Mass · natural unit: grams · D=0</li>
+            <li><code>2</code> — Energy · natural unit: watt-hours · D=2</li>
+            <li><code>3</code> — Data volume · natural unit: kilobytes · D=0</li>
+            <li><code>4</code> — Pressure · natural unit: millibars · D=1</li>
+            <li><code>5</code> — Temperature delta · millidegrees C · D=0</li>
+            <li><code>6</code> — Time duration · milliseconds · D=0</li>
+            <li><code>7</code> — Electrical charge · mAh · D=2</li>
+            <li><code>8</code> — Force / thrust · millinewtons · D=0</li>
+            <li><code>9</code> — Bandwidth · kbps · D=0</li>
+            <li><code>10</code> — Signal strength · dBm×100 offset · D=0</li>
+            <li><code>11</code> — Radiation dose · micrograys · D=0</li>
+            <li><code>12</code> — Angular momentum · milli-Nms · D=2</li>
+            <li><code>13</code> — Fluid volume · millilitres · D=0</li>
+            <li><code>14</code> — Service obligation · minutes · D=2</li>
+            <li><code>15</code> — Resource units · user-defined</li>
+          </ul>
+        </div>
+        <div class="qty-band">
+          <div class="qty-band-label">Indices 16–62 · User-Defined</div>
+          <div class="qty-band-range">0x10 – 0x3E</div>
+          <ul>
+            <li>47 codes available for deployment-specific unit categories</li>
+            <li>Declared at session open via Custom Domain Extension Block</li>
+            <li>Examples: specific propellant types, payload-specific metrics, mission resource scores, contract units</li>
+            <li>Each declaration specifies: index, unit label, default D, signed convention (if applicable)</li>
+          </ul>
+          <div class="qty-band-label" style="margin-top:16px;">Index 63 · Multi-Quantity</div>
+          <div class="qty-band-range">0x3F</div>
+          <ul>
+            <li>Mixed-unit batch active</li>
+            <li>Per-record quantity type via control byte <code>0 001 QQQQ</code> before each record</li>
+            <li>Used when a single batch spans multiple physical unit categories</li>
+          </ul>
+        </div>
+      </div>
+
+      <h3>Scaling Examples</h3>
+      <p>The decode formula <code>Real Quantity = (N × SF) / 10^D</code> is domain-agnostic. SF and D set magnitude and precision within the QTC's natural unit.</p>
+
+      <div class="formula">
+        <div><span class="f-name">450 kg propellant</span></div>
+        <div>QTC=1 (mass, grams) · SF=×1000 · D=0</div>
+        <div>N=450 → (450 × 1000) / 1 = <span class="f-var">450,000 g = 450 kg</span></div>
+        <br>
+        <div><span class="f-name">12,847.50 Wh energy</span></div>
+        <div>QTC=2 (energy, Wh) · SF=×1 · D=2</div>
+        <div>N=1,284,750 → (1,284,750 × 1) / 100 = <span class="f-var">12,847.50 Wh</span></div>
+        <br>
+        <div><span class="f-name">8,192 KB data</span></div>
+        <div>QTC=3 (data, KB) · SF=×1 · D=0</div>
+        <div>N=8,192 → (8,192 × 1) / 1 = <span class="f-var">8,192 KB</span></div>
+        <br>
+        <div><span class="f-name">−73.50 dBm signal strength</span></div>
+        <div>QTC=10 (signal, dBm×100 offset) · stored = (dBm+100)×100</div>
+        <div>N=2,650 → 2,650/100 − 100 = <span class="f-var">−73.50 dBm</span></div>
+      </div>
+
+      <div class="notice">
+        <p><strong>Maximum physical quantity:</strong> At SF×1,000,000,000 and D=0 with QTC=1 (mass, grams), N_max = 33,554,431 → Q_max = 33,554,431 metric tonnes in a single 40-bit record. This exceeds the mass of the International Space Station by a factor of approximately 75 million.</p>
+      </div>
+    </section>
+
+    <!-- ── CONSERVATION ── -->
+    <section id="conservation">
+      <p class="eyebrow">Engineering Integrity · Batch Level</p>
+      <h2>The Conservation Invariant</h2>
+      <p class="lead">For every batch: Σ(signed scalar flows) = 0. The protocol enforces this at the wire level — if the balance fails, the encoder rejects the batch before transmission.</p>
+      <p>In financial mode the batch conservation check confirms that debits equal credits. In engineering mode it confirms that the tracked quantity is conserved across all flows in the batch. The algebraic invariant is identical — only the domain interpretation changes. If propellant leaves Tank A, it must arrive somewhere. If it does not, the batch balance is non-zero. The protocol detects this without any application-level audit.</p>
+
+      <div class="formula">
+        <div><span class="f-name">Mass balance</span></div>
+        <div>mass<sub>in</sub> = mass<sub>out</sub> + mass<sub>stored</sub></div>
+        <div class="f-note">Any non-zero batch balance ⟹ unaccounted flow. Flags leak or sensor fault.</div>
+        <br>
+        <div><span class="f-name">Energy balance</span></div>
+        <div>energy<sub>generated</sub> = energy<sub>consumed</sub> + energy<sub>stored</sub> + energy<sub>lost</sub></div>
+        <div class="f-note">Loss recorded via Consumption (0101) or External Output (1010) with environment sink.</div>
+        <br>
+        <div><span class="f-name">General form (any conserved scalar)</span></div>
+        <div>∑(FLOW OUT values) = ∑(FLOW IN values)</div>
+        <div>∑(signed flow values) = 0 <span class="f-note">(within rounding tolerance)</span></div>
+      </div>
+
+      <h3>Enforcement Mechanisms</h3>
+      <p>Three mechanisms enforce the invariant at different levels:</p>
+      <ol style="font-size:13.5px;color:var(--ink-soft);line-height:1.8;max-width:66ch;">
+        <li>The double-entry structure of every 40-bit record — each record encodes both sides of a flow simultaneously.</li>
+        <li>The Rounding Balance field in Layer 2 — declares net conservation error for the batch. Acceptable tolerance = precision step × Rounding Balance value.</li>
+        <li>The batch close control record count — confirms all records arrived. A count mismatch signals an incomplete batch before any records are posted.</li>
+      </ol>
+
+      <h3>Worked Mass-Balance Batch — Pseudocode</h3>
+      <div class="conserv-worked">
+        <h5>Scenario · Spacecraft propellant transfer and burn · 3 records</h5>
+        <pre style="margin:0;border:none;padding:0;background:none;color:var(--ink);font-size:12px;line-height:1.7;">
+BATCH OPEN — QTC=1 (mass, grams), SF=×1000, D=0
+
+RECORD 1  Source-to-Sink (0001)
+          Tank-A → Tank-B crossfeed (Internal Transfer used here
+          would also be valid; Source-to-Sink when tanks are
+          distinct accountability nodes)
+          N = 200,000 g  →  Flow OUT Tank-A  = +200,000 g
+                            Flow IN  Tank-B  = −200,000 g
+
+RECORD 2  Consumption (0101)
+          Tank-B → Main Engine burn
+          N = 180,000 g  →  Flow OUT Tank-B  = +180,000 g
+                            Flow IN  Engine   = −180,000 g
+                            (engine consumes; exits tracked system)
+
+RECORD 3  Accumulation (1100)
+          Tank-B net state after crossfeed minus burn:
+          remaining in Tank-B = 200,000 − 180,000 = 20,000 g
+          State Commit logged via archetype 1101 snapshot.
+
+BATCH CLOSE
+  Signed sum: (+200,000 − 200,000) + (+180,000 − 180,000) = 0 ✓
+  Rounding Balance = 0. Conservation invariant HOLDS.
+  If any record were missing: sum ≠ 0 → batch REJECTED.
+        </pre>
+      </div>
+
+      <h3>Conservation Tolerance in Physical Systems</h3>
+      <p>Physical measurements have instrument resolution limits. A fuel flow sensor accurate to 1 gram cannot verify conservation to sub-gram precision. The Rounding Balance field and Decimal Position together define the acceptable conservation tolerance:</p>
+      <div class="formula">
+        <div>Acceptable tolerance = Precision Step × Max Rounding Balance</div>
+        <br>
+        <div class="f-note">Example: QTC=1 (mass), SF=×1, D=0 → Precision Step = 1 gram</div>
+        <div class="f-note">Rounding Balance = 3 → Acceptable tolerance = 3 grams</div>
+        <div class="f-note">If actual error exceeds tolerance → Rounding Balance = 1000 (escape)</div>
+        <div class="f-note">Receiver flags anomalous conservation error for investigation.</div>
+      </div>
+    </section>
+
+    <!-- ── EXAMPLES ── -->
+    <section id="examples">
+      <p class="eyebrow">Annotated Records · Full 40-Bit Encoding</p>
+      <h2>Worked Examples</h2>
+      <p>Four complete engineering records with full field annotation. All use wire format v1, engineering domain (bits 2–4 = <code>0 01</code>).</p>
+
+      <!-- Example 1 -->
+      <div class="example-block">
+        <div class="example-head">
+          <span class="example-num">Example 01</span>
+          <span class="example-title">Spacecraft Propellant Burn</span>
+        </div>
+        <div class="example-body">
+          <p>Propulsion subsystem flows 450 kg (450,000 grams) from Tank Assembly to Main Engine Thruster Array. Archetype: Source-to-Sink (0001). Quantity Type = 1 (mass, grams). SF=×1000, D=0. Status = Settled. Exact.</p>
+
+          <div class="bit-display">
+            <div class="bit-display-label">40-bit record — bytes 1–5 — propellant burn 450,000 g</div>
+            <div class="bit-cells">
+              <div class="bit-cell data w17" data-layer="l3" data-tooltip="Bits 1–17: A = 1,757 (floor(450,000/256)). Binary: 00000011011011101">
+                <span class="bit-pos">1–17</span>
+                <span class="bit-val on" style="font-size:13px;">0000001 1011011 101</span>
+                <span class="bit-name">A = 1,757</span>
+              </div>
+              <div class="bit-cell data w8" data-layer="l3" data-tooltip="Bits 18–25: r = 88 (450,000 mod 256). Binary: 01011000">
+                <span class="bit-pos">18–25</span>
+                <span class="bit-val on" style="font-size:13px;">01011000</span>
+                <span class="bit-name">r = 88</span>
+              </div>
+              <div class="bit-cell reserved" data-layer="l3" data-tooltip="Bit 26: 0 = Exact (no rounding applied)">
+                <span class="bit-pos">26</span>
+                <span class="bit-val off">0</span>
+                <span class="bit-name">Exact</span>
+              </div>
+              <div class="bit-cell reserved" data-layer="l3" data-tooltip="Bit 27: 0 = must be 0 when bit 26=0">
+                <span class="bit-pos">27</span>
+                <span class="bit-val off">0</span>
+                <span class="bit-name">Rnd.</span>
+              </div>
+              <div class="bit-cell flag-f" data-layer="l3" data-tooltip="Bit 28: Flat value (not interpolated)">
+                <span class="bit-pos">28</span>
+                <span class="bit-val off">0</span>
+                <span class="bit-name">Flat</span>
+              </div>
+              <div class="bit-cell flag-f" data-layer="l3" data-tooltip="Bit 29: 1 = Out. Quantity leaving Tank Assembly. Must match bit 37.">
+                <span class="bit-pos">29</span>
+                <span class="bit-val on">1</span>
+                <span class="bit-name">Out</span>
+              </div>
+              <div class="bit-cell flag-f" data-layer="l3" data-tooltip="Bit 30: 0 = Settled. Transfer complete.">
+                <span class="bit-pos">30</span>
+                <span class="bit-val off">0</span>
+                <span class="bit-name">Settl.</span>
+              </div>
+              <div class="bit-cell flag-f" data-layer="l3" data-tooltip="Bit 31: 1 = Debit. Tank Assembly is debited.">
+                <span class="bit-pos">31</span>
+                <span class="bit-val on">1</span>
+                <span class="bit-name">Debit</span>
+              </div>
+              <div class="bit-cell flag-f" data-layer="l3" data-tooltip="Bit 32: 0 = flat value">
+                <span class="bit-pos">32</span>
+                <span class="bit-val off">0</span>
+                <span class="bit-name">Flat</span>
+              </div>
+              <div class="bit-cell account w4" data-layer="l3" data-tooltip="Bits 33–36: 0001 = Source-to-Sink archetype">
+                <span class="bit-pos">33–36</span>
+                <span class="bit-val on" style="font-size:13px;">0001</span>
+                <span class="bit-name">Src→Snk</span>
+              </div>
+              <div class="bit-cell flag-f" data-layer="l3" data-tooltip="Bit 37: 1 = Out. Must match bit 29. Cross-layer validation PASSES.">
+                <span class="bit-pos">37</span>
+                <span class="bit-val on">1</span>
+                <span class="bit-name">Out✓</span>
+              </div>
+              <div class="bit-cell flag-f" data-layer="l3" data-tooltip="Bit 38: 0 = Settled. Must match bit 30. Cross-layer validation PASSES.">
+                <span class="bit-pos">38</span>
+                <span class="bit-val off">0</span>
+                <span class="bit-name">Settl✓</span>
+              </div>
+              <div class="bit-cell mode" data-layer="l3" data-tooltip="Bit 39: 0 = Full. No compound continuation follows.">
+                <span class="bit-pos">39</span>
+                <span class="bit-val off">0</span>
+                <span class="bit-name">Full</span>
+              </div>
+              <div class="bit-cell mode" data-layer="l3" data-tooltip="Bit 40: 0 = No extension byte follows.">
+                <span class="bit-pos">40</span>
+                <span class="bit-val off">0</span>
+                <span class="bit-name">No Ext</span>
+              </div>
+            </div>
+            <div class="bit-legend">
+              <span class="legend-item"><span class="legend-swatch data"></span> Value Block (A, r)</span>
+              <span class="legend-item"><span class="legend-swatch flag-f"></span> Status / Direction Flags</span>
+              <span class="legend-item"><span class="legend-swatch account"></span> Archetype Field</span>
+              <span class="legend-item"><span class="legend-swatch mode"></span> Control</span>
+            </div>
+          </div>
+
+          <div class="printout">
+            <div class="ph">─────────────────────────────────────────────────────</div>
+            <div class="ph"> BITLEDGER FLOW RECORD</div>
+            <div class="ph"> Session : Artemis IV / Propulsion Sub (node 03)</div>
+            <div class="ph"> Batch   : Phase 02 / Event 007 / Unit: grams (mass)</div>
+            <div class="ph">─────────────────────────────────────────────────────</div>
+            <div><span class="pl">FLOW OUT  </span><span class="pv">Propellant Tank Assembly          g   450,000</span></div>
+            <div><span class="pl">FLOW IN   </span><span class="pv">Main Engine Thruster Array        g   450,000</span></div>
+            <div class="ph">─────────────────────────────────────────────────────</div>
+            <div><span class="pl">Archetype </span><span class="pv">Source-to-Sink — direct transfer</span></div>
+            <div><span class="pl">Status    </span><span class="pv">Settled — quantity transferred and logged</span></div>
+            <div><span class="pl">Precision </span><span class="pv">Exact</span></div>
+            <div><span class="pl">Encoding  </span><span class="pb">A=1757 r=88  →  (1757×256)+88 = 450,000 g ✓</span></div>
+            <div><span class="pl">Bit 29    </span><span class="pg">= Bit 37 = 1 — cross-layer validation PASS</span></div>
+            <div><span class="pl">Bit 30    </span><span class="pg">= Bit 38 = 0 — cross-layer validation PASS</span></div>
+            <div class="ph">─────────────────────────────────────────────────────</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Example 2 -->
+      <div class="example-block">
+        <div class="example-head">
+          <span class="example-num">Example 02</span>
+          <span class="example-title">Solar Panel Power Generation</span>
+        </div>
+        <div class="example-body">
+          <p>Solar array generates 2.4 kWh during one orbital daylight period. Archetype: Generation (0100). QTC=2 (energy, Wh). SF=×1, D=1. N=24 → (24×1)/10 = 2.4 Wh — or more practically: D=2, N=240 → 2.40 Wh. For a larger generation event showing D=1, SF=×1: N=24 → 2.4 Wh.</p>
+
+          <div class="printout">
+            <div class="ph">─────────────────────────────────────────────────────</div>
+            <div class="ph"> BITLEDGER FLOW RECORD</div>
+            <div class="ph"> Session : LEO Sat-07 / Power System (node 02)</div>
+            <div class="ph"> Batch   : Orbit 089 / Event 001 / Unit: watt-hours</div>
+            <div class="ph">─────────────────────────────────────────────────────</div>
+            <div><span class="pl">FLOW OUT  </span><span class="pv">Solar Array Assembly  (generation process)</span></div>
+            <div><span class="pl">FLOW IN   </span><span class="pv">Main Power Bus                 Wh     2.40</span></div>
+            <div class="ph">─────────────────────────────────────────────────────</div>
+            <div><span class="pl">Archetype </span><span class="pv">Generation (0100) — creation from process</span></div>
+            <div><span class="pl">QTC       </span><span class="pv">2 (energy, Wh)</span></div>
+            <div><span class="pl">Encoding  </span><span class="pb">SF=×1  D=1  N=24 → (24×1)/10 = 2.4 Wh ✓</span></div>
+            <div><span class="pl">Bits 33-36</span><span class="pb">0 1 0 0  — Generation archetype</span></div>
+            <div><span class="pl">Status    </span><span class="pv">Settled</span></div>
+            <div><span class="pl">Bit 29    </span><span class="pg">= Bit 37 = 1 — cross-layer validation PASS</span></div>
+            <div class="ph">─────────────────────────────────────────────────────</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Example 3 -->
+      <div class="example-block">
+        <div class="example-head">
+          <span class="example-num">Example 03</span>
+          <span class="example-title">Factory Material Transformation</span>
+        </div>
+        <div class="example-body">
+          <p>A press station transforms a 50 kg steel billet into a 48.2 kg stamped part plus 1.8 kg of scrap. Archetype: Transformation (0111). QTC=1 (mass, grams). Two records in a compound group: main part output + scrap output. Conservation: 50,000 g in = 48,200 g part + 1,800 g scrap. Batch balance = 0.</p>
+
+          <div class="printout">
+            <div class="ph">─────────────────────────────────────────────────────</div>
+            <div class="ph"> BITLEDGER COMPOUND FLOW RECORD [1 of 2]</div>
+            <div class="ph"> Session : FloorNet / Press Station 04 (node 12)</div>
+            <div class="ph"> Batch   : Shift 3 / Run 047 / Unit: grams (mass)</div>
+            <div class="ph">─────────────────────────────────────────────────────</div>
+            <div><span class="pl">FLOW OUT  </span><span class="pv">Steel Billet Input Store       g   50,000</span></div>
+            <div><span class="pl">FLOW IN   </span><span class="pv">Stamped Part Output Store      g   48,200</span></div>
+            <div class="ph">─────────────────────────────────────────────────────</div>
+            <div><span class="pl">Archetype </span><span class="pv">Transformation (0111) — form change</span></div>
+            <div><span class="pl">Encoding  </span><span class="pb">N=48200: A=188 r=8  →  (188×256)+8 = 48,200 g</span></div>
+            <div><span class="pl">Bit 39    </span><span class="pv">1 = Partial — continuation follows (scrap record)</span></div>
+            <div class="ph">─────────────────────────────────────────────────────</div>
+            <div class="ph"> BITLEDGER COMPOUND FLOW RECORD [2 of 2] — CONTINUATION</div>
+            <div class="ph">─────────────────────────────────────────────────────</div>
+            <div><span class="pl">FLOW OUT  </span><span class="pv">Steel Billet Input Store       g    1,800</span></div>
+            <div><span class="pl">FLOW IN   </span><span class="pv">Scrap Collection Bin           g    1,800</span></div>
+            <div class="ph">─────────────────────────────────────────────────────</div>
+            <div><span class="pl">Archetype </span><span class="pv">Compound Continuation (1111)</span></div>
+            <div><span class="pl">Encoding  </span><span class="pb">N=1800: A=7 r=8   →  (7×256)+8  = 1,800 g</span></div>
+            <div><span class="pl">Bit 39    </span><span class="pv">0 = Full — compound group closed</span></div>
+            <div class="ph">─────────────────────────────────────────────────────</div>
+            <div><span class="pl">Balance   </span><span class="pg">50,000 − 48,200 − 1,800 = 0 g — CONSERVATION HOLDS ✓</span></div>
+            <div class="ph">─────────────────────────────────────────────────────</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Example 4 -->
+      <div class="example-block">
+        <div class="example-head">
+          <span class="example-num">Example 04</span>
+          <span class="example-title">Satellite Power Settlement — 3-Leg Transfer</span>
+        </div>
+        <div class="example-body">
+          <p>Satellite A settles a 0.8 kWh power obligation to Satellite B, routing through Satellite C as relay node. Three-leg compound settlement. Archetype for settlement legs: Creditor-to-Debtor (0011). Final leg: Compound Continuation (1111). QTC=2 (energy, Wh). D=2, SF=×1. N=80 → 0.80 Wh per leg.</p>
+
+          <div class="printout">
+            <div class="ph">─────────────────────────────────────────────────────</div>
+            <div class="ph"> BITLEDGER COMPOUND FLOW RECORD [1 of 3]</div>
+            <div class="ph"> Session : Constellation Ops / Sat-A (node 01)</div>
+            <div class="ph"> Batch   : Orbit 142 / Event 009 / Unit: watt-hours</div>
+            <div class="ph">─────────────────────────────────────────────────────</div>
+            <div><span class="pl">FLOW OUT  </span><span class="pv">Satellite A Power Reserve      Wh     0.80</span></div>
+            <div><span class="pl">FLOW IN   </span><span class="pv">Satellite C Relay Account      Wh     0.80</span></div>
+            <div class="ph">─────────────────────────────────────────────────────</div>
+            <div><span class="pl">Archetype </span><span class="pv">Creditor-to-Debtor (0011) — obligation settlement leg 1</span></div>
+            <div><span class="pl">Encoding  </span><span class="pb">N=80: A=0 r=80  →  (0×256)+80 = 80 → /100 = 0.80 Wh</span></div>
+            <div><span class="pl">Bit 39    </span><span class="pv">1 = Partial — leg 2 follows</span></div>
+            <div class="ph">─────────────────────────────────────────────────────</div>
+            <div class="ph"> BITLEDGER COMPOUND FLOW RECORD [2 of 3] — CONTINUATION</div>
+            <div class="ph">─────────────────────────────────────────────────────</div>
+            <div><span class="pl">FLOW OUT  </span><span class="pv">Satellite C Relay Account      Wh     0.80</span></div>
+            <div><span class="pl">FLOW IN   </span><span class="pv">Satellite B Power Reserve      Wh     0.80</span></div>
+            <div class="ph">─────────────────────────────────────────────────────</div>
+            <div><span class="pl">Archetype </span><span class="pv">Compound Continuation (1111) — leg 2</span></div>
+            <div><span class="pl">Bit 39    </span><span class="pv">1 = Partial — leg 3 follows</span></div>
+            <div class="ph">─────────────────────────────────────────────────────</div>
+            <div class="ph"> BITLEDGER COMPOUND FLOW RECORD [3 of 3] — CONTINUATION</div>
+            <div class="ph">─────────────────────────────────────────────────────</div>
+            <div><span class="pl">TYPE      </span><span class="pv">Debt closure confirmation record</span></div>
+            <div><span class="pl">FLOW OUT  </span><span class="pv">Satellite B Open Debt Account  Wh     0.80</span></div>
+            <div><span class="pl">FLOW IN   </span><span class="pv">Satellite B Settled Account    Wh     0.80</span></div>
+            <div class="ph">─────────────────────────────────────────────────────</div>
+            <div><span class="pl">Archetype </span><span class="pv">Compound Continuation (1111) — group close</span></div>
+            <div><span class="pl">Bit 39    </span><span class="pv">0 = Full — compound settlement complete</span></div>
+            <div><span class="pl">Balance   </span><span class="pg">0.80 − 0.80 − 0.80 + 0.80 = 0 Wh — CONSERVATION HOLDS ✓</span></div>
+            <div class="ph">─────────────────────────────────────────────────────</div>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ── ERROR DETECTION ── -->
+    <section id="error-detection">
+      <p class="eyebrow">Transmission Resilience · Three Independent Mechanisms</p>
+      <h2>Error Detection</h2>
+      <p class="lead">Three independent mechanisms guard every record. At interplanetary distances, cosmic ray bit flips are real threats. Each mechanism catches a different failure mode.</p>
+      <p>The BitLedger error detection architecture was designed for financial data integrity. In engineering deployments — particularly aerospace, deep space, and remote industrial contexts — the same mechanisms provide resilience against physical transmission hazards that financial systems never encounter.</p>
+
+      <div class="error-cols">
+        <div class="error-col">
+          <div class="error-col-label">Session Level</div>
+          <div class="error-col-head">CRC-15</div>
+          <p class="error-col-body">CRC-15 computed over Layer 1 (64 bits total). Detects all burst errors ≤15 bits. All single-bit, double-bit, and odd-count errors in the session header. Protects sender identity, domain declaration, permissions, and session defaults. Cost: 15 bits, computed once per session.</p>
+          <p class="error-col-body" style="margin-top:10px;"><strong>What it catches:</strong> Bit flips in sender identity, domain declaration, or session defaults that would cause all subsequent records to be misinterpreted.</p>
+        </div>
+        <div class="error-col">
+          <div class="error-col-label">Record Level</div>
+          <div class="error-col-head">Cross-Layer Validation</div>
+          <p class="error-col-body">Bit 29 must equal Bit 37. Bit 30 must equal Bit 38. These flag pairs carry the same information in two independent positions. A single-bit flip in either position creates a mismatch that is detected immediately. Cost: zero — uses existing fields.</p>
+          <p class="error-col-body" style="margin-top:10px;"><strong>What it catches:</strong> Direction or status flag corruptions that would post a flow in the wrong direction (propellant recorded as arriving at tank instead of leaving it) or with the wrong settlement status.</p>
+        </div>
+        <div class="error-col">
+          <div class="error-col-label">Batch Level</div>
+          <div class="error-col-head">Conservation Invariant</div>
+          <p class="error-col-body">Any flow record that causes a non-zero batch balance triggers rejection. This catches phantom flows created by corruption, missing records, and duplicated records — failure modes that bit-level CRC cannot see. Cost: 4 bits in Layer 2 (Rounding Balance field).</p>
+          <p class="error-col-body" style="margin-top:10px;"><strong>What it catches:</strong> Semantic errors — corruptions that pass byte-level CRC but create physically impossible conservation states.</p>
+        </div>
+      </div>
+
+      <h3>Deep Space Scenario — Cosmic Ray Bit Flip</h3>
+      <p>At interplanetary distances a single galactic cosmic ray can flip multiple bits in a memory register or transmission buffer. Standard error correction codes at the transport layer (CCSDS, DTN) handle raw bit errors. BitLedger's conservation-invariant validation operates at the semantic layer — it catches errors that byte-level correction misses.</p>
+
+      <div class="compare">
+        <div>
+          <h4>Without BitLedger</h4>
+          <ul>
+            <li>Transport layer CRC passes — bit flip undetected at packet level.</li>
+            <li>Flow record posted with wrong direction.</li>
+            <li>Propellant recorded as arriving at tank instead of leaving it.</li>
+            <li>Mass balance error propagates silently into mission planning.</li>
+            <li>No detection until physical inventory audit — possibly days later.</li>
+          </ul>
+        </div>
+        <div>
+          <h4>With BitLedger</h4>
+          <ul>
+            <li>Cosmic ray flips bit 29 of a flow record mid-transmission.</li>
+            <li>Bit 29 ≠ Bit 37 → cross-layer validation <strong>FAILS</strong>.</li>
+            <li>Record rejected before posting.</li>
+            <li>NACK sent. Retransmission requested.</li>
+            <li>Mass balance preserved. Zero propagation of error.</li>
+          </ul>
+        </div>
+      </div>
+
+      <h3>Comparison to Conventional Telemetry</h3>
+      <table class="comparison-table">
+        <thead>
+          <tr>
+            <th>Capability</th>
+            <th>Raw Telemetry</th>
+            <th>BitLedger Engineering Mode</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Records individual events</td>
+            <td><span class="check">Yes</span></td>
+            <td><span class="check">Yes</span></td>
+          </tr>
+          <tr>
+            <td>Verifies bit integrity</td>
+            <td>CRC on packet only</td>
+            <td>CRC-15 on session + cross-layer validation per record</td>
+          </tr>
+          <tr>
+            <td>Detects lost records</td>
+            <td><span class="cross">No</span> — silent data gap</td>
+            <td><span class="check">Yes</span> — batch close count mismatch</td>
+          </tr>
+          <tr>
+            <td>Enforces conservation</td>
+            <td><span class="cross">No</span> — application must check</td>
+            <td><span class="check">Yes</span> — at wire level, per batch</td>
+          </tr>
+          <tr>
+            <td>Detects phantom flows</td>
+            <td><span class="cross">No</span></td>
+            <td><span class="check">Yes</span> — unpaired flow creates non-zero balance</td>
+          </tr>
+          <tr>
+            <td>Handles compound events</td>
+            <td>Multi-packet, complex parsing</td>
+            <td>Native compound continuation, single stream</td>
+          </tr>
+          <tr>
+            <td>Transmission overhead</td>
+            <td>Variable, schema-dependent</td>
+            <td>Fixed 40 bits per flow record</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- ── HYBRID & CUSTOM ── -->
+    <section id="domains">
+      <p class="eyebrow">Domain Codes 10 and 11</p>
+      <h2>Hybrid &amp; Custom Domains</h2>
+
+      <h3>Hybrid Domain (bits 3–4 = 10)</h3>
+      <p>When bits 3–4 = 10, both semantic layers are active simultaneously. A single batch can contain records that represent financial obligations alongside physical flow records. This is the appropriate domain for systems where engineering operations create financial consequences — mission operations with contractual billing, industrial processes with commodity trading, or infrastructure with financial settlement.</p>
+      <p>In hybrid mode, the decoder uses the account pair field (bits 33–36) together with the debit/credit flag (bit 31) as a domain disambiguation signal. Where the financial pair codes and engineering archetype codes overlap, the extension byte carries a 1-bit domain flag to resolve the ambiguity.</p>
+
+      <div class="notice warn">
+        <p><strong>Hybrid use case:</strong> A Mars supply chain tracks physical mass flows (engineering domain) for mission planning and financial obligations (financial domain) for Earth-side contracts in the same session. One session header. One CRC-15. Both conservation invariants enforced simultaneously — physical mass balance and monetary double-entry balance — on the same batch stream.</p>
+      </div>
+
+      <h3>Custom Domain (bits 3–4 = 11)</h3>
+      <p>When bits 3–4 = 11, the receiver waits for a Custom Domain Extension Block transmitted immediately after Layer 1 close, before the first Layer 2 batch header. This block redefines the 16 relationship codes and up to 64 quantity type codes for the session.</p>
+
+      <div class="printout">
+        <div class="ph">── CUSTOM DOMAIN EXTENSION BLOCK ──────────────────────</div>
+        <div><span class="pl">Byte 1     </span><span class="pv">Block length in bytes (1–255)</span></div>
+        <div><span class="pl">Bytes 2–3  </span><span class="pv">Domain identifier string prefix (2 ASCII chars)</span></div>
+        <div><span class="pc">             'SC' = spacecraft  'MF' = manufacturing</span></div>
+        <div><span class="pc">             'RB' = robotics    'SG' = smart grid</span></div>
+        <div><span class="pl">Byte 4     </span><span class="pv">Number of relationship codes declared (1–16)</span></div>
+        <div><span class="pl">Bytes 5+   </span><span class="pv">Relationship code declarations</span></div>
+        <div><span class="pc">             Each: 1-byte code + 2-byte label index</span></div>
+        <div><span class="pc">             Label index references shared label dictionary</span></div>
+        <div><span class="pl">  ...       </span><span class="pv">Quantity type code declarations (same format)</span></div>
+        <div><span class="pl">Final byte </span><span class="pv">CRC-8 over the block for integrity</span></div>
+        <div class="ph">────────────────────────────────────────────────────────</div>
+        <div><span class="pc">Enhancement Category 1101 (Context Declaration) carries</span></div>
+        <div><span class="pc">the extension block as a structured session parameter</span></div>
+        <div><span class="pc">update. Control byte format: 0 101 VVVV (type 101,</span></div>
+        <div><span class="pc">4-bit payload). Length declared in payload or following</span></div>
+        <div><span class="pc">extension byte chain.</span></div>
+        <div class="ph">────────────────────────────────────────────────────────</div>
+      </div>
+
+      <table class="data-table" style="margin-top:20px;">
+        <thead>
+          <tr>
+            <th>Bits 3–4</th>
+            <th>Domain</th>
+            <th>Declaration Required?</th>
+            <th>Decoder Behaviour</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>00</code></td>
+            <td>Financial</td>
+            <td>No</td>
+            <td>Load financial account pair labels and currency table. Standard Protocol v3.0.</td>
+          </tr>
+          <tr>
+            <td><code>01</code></td>
+            <td>Engineering</td>
+            <td>No</td>
+            <td>Load universal flow archetype labels and physical quantity type table (this document).</td>
+          </tr>
+          <tr>
+            <td><code>10</code></td>
+            <td>Hybrid</td>
+            <td>Partial</td>
+            <td>Load both label sets. Record-level disambiguation via extension byte where ambiguous.</td>
+          </tr>
+          <tr>
+            <td><code>11</code></td>
+            <td>Custom</td>
+            <td>Yes</td>
+            <td>Wait for extension block before processing any batches. CRC-8 validates the block.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- ── TRANSPORT ── -->
+    <section id="transport">
+      <p class="eyebrow">Wire Format · Transport Agnosticism</p>
+      <h2>Transport Compatibility</h2>
+      <p>The Universal Domain record is byte-for-byte identical to the Financial domain record. A financial decoder reading an engineering-domain record sees valid wire structure — it reads the SOH bit, validates the CRC-15, processes the batch header, and reads each 40-bit record without error. What changes is which interpretation table the decoder loads after reading bits 3–4.</p>
+
+      <div class="notice">
+        <p><strong>Domain bits are the interpretation switch:</strong> After Layer 1 CRC validates, the decoder reads bits 3–4 and loads the appropriate label table. If bits 3–4 = 00, it loads account pair names and currency codes. If bits 3–4 = 01, it loads flow archetype names and quantity type codes. The 40-bit records that follow are processed identically by the same state machine in both cases.</p>
+      </div>
+
+      <p>BitLedger records are transport-agnostic. The 40-bit record is a self-contained payload. It can be carried inside any transport protocol without modification:</p>
+
+      <table class="transport-table">
+        <thead>
+          <tr>
+            <th>Transport</th>
+            <th>Context</th>
+            <th>BitLedger Role</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>CCSDS</strong></td>
+            <td>Spacecraft telemetry</td>
+            <td>BitLedger records as CCSDS packet payload. Transport handles routing; BitLedger handles semantic integrity and conservation validation.</td>
+          </tr>
+          <tr>
+            <td><strong>DTN / Bundle Protocol</strong></td>
+            <td>Deep space delay-tolerant networking</td>
+            <td>BitLedger session survives link interruptions. Layer 1 CRC validates session on reconnect. Conservation invariant holds across disrupted delivery.</td>
+          </tr>
+          <tr>
+            <td><strong>MQTT</strong></td>
+            <td>IoT edge networks</td>
+            <td>BitLedger records as MQTT message payload. Broker handles delivery; BitLedger handles conservation. Natural fit for sensor network mass/energy accounting.</td>
+          </tr>
+          <tr>
+            <td><strong>Raw RF</strong></td>
+            <td>Point-to-point embedded systems</td>
+            <td>BitLedger records transmitted directly. No transport overhead. Minimum 5 bytes per flow event. Appropriate for microcontroller-class hardware.</td>
+          </tr>
+          <tr>
+            <td><strong>Ethernet / IP</strong></td>
+            <td>Industrial control, factory floor</td>
+            <td>BitLedger over UDP or TCP. Batch close control record provides application-layer delivery confirmation independent of transport acknowledgement.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>Bandwidth</h3>
+      <div class="formula">
+        <div><span class="f-name">Fixed cost</span> · 40 bits per flow record · 5 bytes</div>
+        <div class="f-note">No schema. No field names. No delimiters. No compression step.</div>
+        <br>
+        <div><span class="f-name">100 flow records</span> · 500 bytes on the wire</div>
+        <div class="f-note">vs. ~15,000 bytes CSV · ~80,000 bytes JSON</div>
+        <br>
+        <div><span class="f-name">Deep space link budget</span> · 1 kbps link</div>
+        <div class="f-note">100 records / second = 500 bytes/s = 4,000 bps → feasible</div>
+        <div class="f-note">Same 100 records in JSON = 80,000 bytes/s = 640 kbps → infeasible</div>
+      </div>
+    </section>
+
+    <!-- ── DEPLOYMENT ── -->
+    <section id="deployment">
+      <p class="eyebrow">Real-World Applications</p>
+      <h2>Engineering Deployments</h2>
+      <p>Five real-world systems with full configuration detail. In every case the wire format is byte-for-byte identical to the financial specification. Only the semantic layer changes.</p>
+
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>System</th>
+            <th>Primary Quantity</th>
+            <th>Domain</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+
+          <tr class="xrow" data-drawer="dep-spacecraft">
+            <td><strong>Spacecraft Propellant Management</strong></td>
+            <td>Mass (grams) · QTC=1</td>
+            <td>Engineering</td>
+            <td><span class="xrow-indicator">▾</span></td>
+          </tr>
+          <tr class="xdrawer" id="dep-spacecraft">
+            <td colspan="4">
+              <div class="xdrawer-inner">
+                <div class="xdrawer-grid">
+                  <div class="xdrawer-section">
+                    <h5>System Description</h5>
+                    <p>Propellant and pressurant mass tracking across all tanks, feed lines, valves, and thrusters. Every burn event is a flow record. Conservation invariant detects leaks, sensor faults, and unaccounted venting in real time.</p>
+                  </div>
+                  <div class="xdrawer-section">
+                    <h5>Archetypes Used</h5>
+                    <p>Source-to-Sink (0001) for tank-to-thruster burns. Internal Transfer (1011) for tank crossfeed. Accumulation (1100) during resupply docking. External Input (1001) for resupply delivery. State Commit (1101 in financial, equivalent Depletion 1101 in engineering) for inventory snapshots.</p>
+                  </div>
+                  <div class="xdrawer-section">
+                    <h5>QTC Selection</h5>
+                    <p>QTC=1 (mass, grams). SF=×1000 for kg-resolution events. SF=×1 for gram-precision calibration records. D=0 for integer-gram precision. Compound continuation links propellant burn records to thrust-produced records (QTC switch via control byte 0 001 QQQQ).</p>
+                  </div>
+                  <div class="xdrawer-section">
+                    <h5>Conservation Invariant Form</h5>
+                    <p><code>mass_tank_out = mass_thruster_in + mass_line_residual</code><br>Any non-zero batch balance → leak or sensor fault alert. Batch close count mismatch → telemetry loss during burn sequence.</p>
+                  </div>
+                  <div class="xdrawer-section">
+                    <h5>Bandwidth</h5>
+                    <p>Typical burn event: 3–5 records (burn, residual, tank state). 5 records × 5 bytes = 25 bytes per event. At 1 kbps, 40 burn events per second recordable — adequate for any maneuvering scenario.</p>
+                  </div>
+                </div>
+              </div>
+            </td>
+          </tr>
+
+          <tr class="xrow" data-drawer="dep-eclss">
+            <td><strong>ISS ECLSS Life Support Tracking</strong></td>
+            <td>Mass (atmosphere gases, water) + Energy</td>
+            <td>Engineering</td>
+            <td><span class="xrow-indicator">▾</span></td>
+          </tr>
+          <tr class="xdrawer" id="dep-eclss">
+            <td colspan="4">
+              <div class="xdrawer-inner">
+                <div class="xdrawer-grid">
+                  <div class="xdrawer-section">
+                    <h5>System Description</h5>
+                    <p>Environmental Control and Life Support System tracks O₂, CO₂, N₂, and water mass flows across generation, consumption, and recovery subsystems. The most complex conservation system on any crewed spacecraft — any undetected mass imbalance is a crew safety issue.</p>
+                  </div>
+                  <div class="xdrawer-section">
+                    <h5>Archetypes Used</h5>
+                    <p>Generation (0100) for O₂ from electrolysis. Consumption (0101) for crew O₂ use and CO₂ production. Recycling/Recovery (1110) for water recovery from condensate and urine. Loss (mapped to External Output 1010) for CO₂ vented via Sabatier. Source-to-Sink (0001) for distribution to crew modules.</p>
+                  </div>
+                  <div class="xdrawer-section">
+                    <h5>QTC Selection</h5>
+                    <p>Multi-quantity batch (QTC=63). Control byte switches between QTC=1 (mass) and QTC=2 (energy) within the same ECLSS batch. Water measured in QTC=13 (fluid volume, mL) for OGA input. Compound continuation links O₂ generation records to power consumption records.</p>
+                  </div>
+                  <div class="xdrawer-section">
+                    <h5>Conservation Invariant Form</h5>
+                    <p><code>O₂ generated + O₂ reserve = O₂ consumed + O₂ vented</code><br><code>water in = water consumed + water recovered + water stored</code><br>Non-zero balance on O₂ or water → automated crew alert. Protocol detects this before any application audit.</p>
+                  </div>
+                  <div class="xdrawer-section">
+                    <h5>Bandwidth</h5>
+                    <p>ECLSS logs approximately 50–100 flow events per hour at steady state. 100 records × 5 bytes = 500 bytes/hr. Negligible bandwidth. Compatible with ISS 1553B internal bus (1 Mbps) or any slow-link backup.</p>
+                  </div>
+                </div>
+              </div>
+            </td>
+          </tr>
+
+          <tr class="xrow" data-drawer="dep-leo">
+            <td><strong>LEO Satellite Power Constellation</strong></td>
+            <td>Energy (watt-hours) · QTC=2</td>
+            <td>Engineering</td>
+            <td><span class="xrow-indicator">▾</span></td>
+          </tr>
+          <tr class="xdrawer" id="dep-leo">
+            <td colspan="4">
+              <div class="xdrawer-inner">
+                <div class="xdrawer-grid">
+                  <div class="xdrawer-section">
+                    <h5>System Description</h5>
+                    <p>Constellation of LEO satellites sharing power across inter-satellite links (ISL). Nodes with surplus solar generation during illuminated phase lend power to nodes in eclipse. Debts recorded in real time; settled at next illuminated phase. BitLedger handles both the power flow accounting and the obligation ledger in one session stream.</p>
+                  </div>
+                  <div class="xdrawer-section">
+                    <h5>Archetypes Used</h5>
+                    <p>Generation (0100) for solar output. Consumption (0101) for payload power draw. Debtor-to-Creditor (0010) when a satellite draws from the constellation pool. Creditor-to-Debtor (0011) to settle. Source-to-Sink (0001) for ISL power routing. Reservation (mapped to Accumulation 1100) for eclipse reserve allocation.</p>
+                  </div>
+                  <div class="xdrawer-section">
+                    <h5>QTC Selection</h5>
+                    <p>QTC=2 (energy, Wh). SF=×1, D=2 for 0.01 Wh precision. A single node ID maps to each satellite. Sub-Entity ID maps to specific power system modules (battery bank, solar array, payload bus). Cross-satellite debts: sender = creditor satellite node ID, receiver = debtor node ID.</p>
+                  </div>
+                  <div class="xdrawer-section">
+                    <h5>Conservation Invariant Form</h5>
+                    <p><code>energy_generated + energy_drawn = energy_consumed + energy_stored + energy_lent</code><br>Batch balance = 0 confirms constellation is energy-neutral for the accounting period. Non-zero balance → unrecorded draw or sensor fault.</p>
+                  </div>
+                  <div class="xdrawer-section">
+                    <h5>Bandwidth</h5>
+                    <p>Constellation of 12 satellites: ~20 power events per orbit × 12 nodes = 240 records per orbit (90 min). 240 × 5 bytes = 1,200 bytes per orbit. At ISL data rate (1+ Mbps), negligible. Compatible with store-and-forward over DTN if ISL is unavailable.</p>
+                  </div>
+                </div>
+              </div>
+            </td>
+          </tr>
+
+          <tr class="xrow" data-drawer="dep-factory">
+            <td><strong>Factory Floor Mass Balance</strong></td>
+            <td>Mass (materials) + Service-Hours · QTC=1,14</td>
+            <td>Hybrid</td>
+            <td><span class="xrow-indicator">▾</span></td>
+          </tr>
+          <tr class="xdrawer" id="dep-factory">
+            <td colspan="4">
+              <div class="xdrawer-inner">
+                <div class="xdrawer-grid">
+                  <div class="xdrawer-section">
+                    <h5>System Description</h5>
+                    <p>Work-in-process tracking across factory stations. Each station is a node. Material flows between stations as Source-to-Sink; transformation at each station records mass input vs. finished output + scrap. Hybrid domain simultaneously records financial obligations (supplier contracts) alongside physical mass flows.</p>
+                  </div>
+                  <div class="xdrawer-section">
+                    <h5>Archetypes Used</h5>
+                    <p>Source-to-Sink (0001) for station-to-station material transfer. Transformation (0111) for in-station processing with scrap. External Input (1001) for raw material delivery from supplier. External Output (1010) for finished goods shipment to customer. Debtor-to-Creditor (0010) for supplier payment obligations (financial domain in hybrid session).</p>
+                  </div>
+                  <div class="xdrawer-section">
+                    <h5>QTC Selection</h5>
+                    <p>QTC=1 (mass, grams) for material tracking. QTC=14 (service obligation, minutes) for machine time accounting. Hybrid domain enables simultaneous financial records (currency index = USD) for supplier payment events in the same session. Control byte switches QTC within multi-quantity batches.</p>
+                  </div>
+                  <div class="xdrawer-section">
+                    <h5>Conservation Invariant Form</h5>
+                    <p><code>raw_material_in = finished_parts_out + scrap_out + in-process_inventory</code><br>Scrap must be explicitly recorded. Any material that leaves a station without an accounting record creates a non-zero balance. Protocol detects yield losses that manual audits miss for days.</p>
+                  </div>
+                  <div class="xdrawer-section">
+                    <h5>Bandwidth</h5>
+                    <p>High-throughput factory: 1,000 part-movements per shift. 1,000 records × 5 bytes = 5,000 bytes per shift = 83 bytes/minute. Trivial over any factory network (Ethernet, MQTT, or OPC-UA). Each record is self-describing — no schema lookup required at receiving workstation.</p>
+                  </div>
+                </div>
+              </div>
+            </td>
+          </tr>
+
+          <tr class="xrow" data-drawer="dep-building">
+            <td><strong>Smart Building Energy Management</strong></td>
+            <td>Energy (kWh) · QTC=2</td>
+            <td>Engineering</td>
+            <td><span class="xrow-indicator">▾</span></td>
+          </tr>
+          <tr class="xdrawer" id="dep-building">
+            <td colspan="4">
+              <div class="xdrawer-inner">
+                <div class="xdrawer-grid">
+                  <div class="xdrawer-section">
+                    <h5>System Description</h5>
+                    <p>Building energy accounting across generation (solar roof, CHP plant), storage (battery bank, thermal store), consumption (HVAC, lighting, IT, EV charging), and grid import/export. Every flow tracked in real time. Conservation invariant confirms that all energy is accounted for — no phantom consumption, no unrecorded export.</p>
+                  </div>
+                  <div class="xdrawer-section">
+                    <h5>Archetypes Used</h5>
+                    <p>Generation (0100) for solar and CHP. Accumulation (1100) for battery charging. Depletion (1101) for battery discharge. Source-to-Sink (0001) for distribution bus to loads. External Input (1001) for grid import. External Output (1010) for grid export (feed-in). Loss/Dissipation mapped to Consumption (0101) for thermal losses.</p>
+                  </div>
+                  <div class="xdrawer-section">
+                    <h5>QTC Selection</h5>
+                    <p>QTC=2 (energy, Wh). D=2 for 0.01 Wh precision on metered flows. SF=×1 for sub-kWh granularity. Each building zone is a node. Sub-Entity ID maps to specific meters or circuits. Grid import/export node IDs declared in Layer 1 as external-boundary nodes.</p>
+                  </div>
+                  <div class="xdrawer-section">
+                    <h5>Conservation Invariant Form</h5>
+                    <p><code>solar + CHP + grid_import = HVAC + lighting + IT + EV + battery_net + grid_export + losses</code><br>Batch period = 15 minutes (standard metering interval). Non-zero balance → unmetered load or meter fault. Alert triggers before billing cycle closes.</p>
+                  </div>
+                  <div class="xdrawer-section">
+                    <h5>Bandwidth</h5>
+                    <p>50-node building: ~200 flow events per 15-min batch. 200 records × 5 bytes = 1,000 bytes per batch = 67 bytes/minute. Fits easily over building BACnet or MQTT infrastructure. No cloud upload required for real-time conservation checking — all validation done at edge by local decoder.</p>
+                  </div>
+                </div>
+              </div>
+            </td>
+          </tr>
+
+        </tbody>
+      </table>
+
+    </section>
+
+  </main>
+</div>
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div>
+      <div class="footer-group-label">Protocol</div>
+      <ul class="footer-links">
+        <li><a href="bitpads-v2.html">BitPads v2</a></li>
+        <li><a href="bitledger.html">BitLedger v3</a></li>
+        <li><a href="universal-domain.html">Universal Domain</a></li>
+        <li><a href="compound-mode.html">Compound Mode</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-group-label">Enhancement</div>
+      <ul class="footer-links">
+        <li><a href="enhancement-grammar.html">Grammar &amp; Signal Slots</a></li>
+        <li><a href="enhancement-commands.html">Commands &amp; Context</a></li>
+        <li><a href="enhancement-telegraph-1.html">Telegraph Emulation I</a></li>
+        <li><a href="enhancement-telegraph-2.html">Telegraph Emulation II</a></li>
+        <li><a href="enhancement-nesting.html">Nesting &amp; Overhead</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-group-label">Resources</div>
+      <ul class="footer-links">
+        <li><a href="engineering.html">Engineering Applications</a></li>
+        <li><a href="guide.html">Implementation Guide</a></li>
+        <li><a href="cli.html">CLI Tools</a></li>
+        <li><a href="reference.html">Reference &amp; Glossary</a></li>
+      </ul>
+    </div>
+    <div class="footer-copy">
+      BitPads Protocol v2.0<br>
+      BitLedger Protocol v3.0<br>
+      Universal Domain v1.0<br>
+      &copy; BABB
+    </div>
+  </div>
+</footer>
+
+<script>
+// TOC active state
+const secs = document.querySelectorAll('section[id]');
+const tocAs = document.querySelectorAll('.toc a');
+const io = new IntersectionObserver(es => {
+  es.forEach(e => {
+    if (e.isIntersecting) {
+      tocAs.forEach(a => a.classList.remove('active'));
+      const a = document.querySelector(`.toc a[href="#${e.target.id}"]`);
+      if (a) a.classList.add('active');
+    }
+  });
+}, { rootMargin: '-15% 0px -70% 0px' });
+secs.forEach(s => io.observe(s));
+
+// Expandable table rows
+document.querySelectorAll('tr.xrow').forEach(row => {
+  row.addEventListener('click', () => {
+    const did = row.dataset.drawer;
+    const drawer = document.getElementById(did);
+    if (!drawer) return;
+    const open = drawer.classList.contains('open');
+    document.querySelectorAll('tr.xdrawer.open').forEach(d => {
+      d.classList.remove('open');
+      d.previousElementSibling?.classList.remove('open');
+    });
+    if (!open) { drawer.classList.add('open'); row.classList.add('open'); }
+  });
+});
+</script>
+</body>
+</html>

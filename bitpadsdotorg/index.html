@@ -1,0 +1,1543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BitPads — The Wire for Transmissions Near and Far</title>
+<link rel="stylesheet" href="bp-style.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Lora:ital,wght@0,400;0,500;1,400;1,500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --cinema-bg:    #07090E;
+  --cinema-panel: #0C0F18;
+  --cinema-panel2:#111520;
+  --cinema-rule:  rgba(255,255,255,0.07);
+  --cinema-ink:   #E8EAF0;
+  --cinema-soft:  rgba(232,234,240,0.6);
+  --cinema-faint: rgba(232,234,240,0.28);
+  --signal:       #3DFFD6;
+  --signal-dim:   rgba(61,255,214,0.12);
+  --signal-glow:  rgba(61,255,214,0.25);
+  --warm:         #EAAA4E;
+  --warm-dim:     rgba(234,170,78,0.14);
+  --violet:       #B08AFF;
+  --violet-dim:   rgba(176,138,255,0.12);
+  --f-disp:       'Syne', sans-serif;
+  --f-body:       'Lora', serif;
+  --f-code:       'JetBrains Mono', monospace;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--cinema-bg);
+  color: var(--cinema-ink);
+  font-family: var(--f-body);
+  overflow-x: hidden;
+}
+
+/* ── NAV OVERRIDE ─────────────────────────────── */
+.topbar {
+  background: rgba(7,9,14,0.88);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--cinema-rule);
+}
+.brand-name { color: var(--cinema-ink); font-family: var(--f-disp); }
+.brand-mark { background: var(--signal); color: var(--cinema-bg); font-family: var(--f-code); }
+.topnav a { color: var(--cinema-faint); font-family: var(--f-code); font-size: 10px; letter-spacing: 0.06em; }
+.topnav a:hover { color: var(--cinema-ink); }
+.topnav a.active { color: var(--signal); border-bottom: 1px solid var(--signal); }
+.nav-dropdown { background: var(--cinema-panel); border: 1px solid var(--cinema-rule); }
+.nav-dropdown a { color: var(--cinema-soft); }
+
+/* No sidebar layout */
+.page { display: block; max-width: none; padding: 0; }
+.sidebar { display: none; }
+main { padding: 0; max-width: none; }
+
+/* ── HERO ─────────────────────────────────────── */
+.hero-cinema {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 120px 64px 80px;
+  overflow: hidden;
+}
+
+#starfield {
+  position: absolute; inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.hero-content { position: relative; z-index: 1; max-width: 1100px; margin: 0 auto; width: 100%; }
+
+.hero-eyebrow {
+  font-family: var(--f-code);
+  font-size: 10px;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: var(--signal);
+  margin-bottom: 32px;
+  opacity: 0;
+  animation: fadeUp .9s .2s forwards;
+}
+
+.hero-wordmark {
+  font-family: var(--f-disp);
+  font-weight: 800;
+  font-size: clamp(80px, 14vw, 180px);
+  line-height: 0.88;
+  letter-spacing: -0.03em;
+  color: var(--cinema-ink);
+  opacity: 0;
+  animation: fadeUp .9s .4s forwards;
+}
+
+.hero-wordmark .accent { color: var(--signal); }
+
+.hero-rule {
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(to right, var(--signal-dim), transparent 60%);
+  margin: 40px 0;
+  opacity: 0;
+  animation: fadeIn .8s .7s forwards;
+}
+
+.hero-bottom {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 48px;
+  align-items: end;
+  opacity: 0;
+  animation: fadeUp .9s .8s forwards;
+}
+
+.hero-tagline {
+  font-family: var(--f-body);
+  font-style: italic;
+  font-size: clamp(18px, 2.2vw, 26px);
+  color: var(--cinema-soft);
+  line-height: 1.55;
+  max-width: 560px;
+}
+
+.hero-tagline strong { color: var(--cinema-ink); font-style: normal; font-weight: 500; }
+
+.hero-stats {
+  display: flex;
+  gap: 36px;
+  flex-shrink: 0;
+}
+
+.hero-stat dt {
+  font-family: var(--f-code);
+  font-size: 8px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--cinema-faint);
+  margin-bottom: 6px;
+}
+
+.hero-stat dd {
+  font-family: var(--f-disp);
+  font-weight: 700;
+  font-size: 26px;
+  color: var(--signal);
+}
+
+.hero-scroll {
+  position: absolute;
+  bottom: 36px;
+  right: 64px;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  opacity: 0;
+  animation: fadeIn 1s 1.2s forwards;
+}
+
+.hero-scroll span {
+  font-family: var(--f-code);
+  font-size: 8px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--cinema-faint);
+  writing-mode: vertical-lr;
+}
+
+.scroll-bar {
+  width: 1px;
+  height: 56px;
+  background: linear-gradient(to bottom, var(--signal), transparent);
+  animation: scrollAnim 2.4s 1.5s infinite;
+}
+
+/* ── SECTION CHROME ───────────────────────────── */
+.cin-wrap {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 100px 64px;
+}
+
+.cin-wrap + .cin-wrap { border-top: 1px solid var(--cinema-rule); }
+
+.s-label {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-family: var(--f-code);
+  font-size: 9px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--signal);
+  margin-bottom: 24px;
+}
+
+.s-label::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(to right, var(--signal-dim), transparent);
+}
+
+.cin-h2 {
+  font-family: var(--f-disp);
+  font-weight: 700;
+  font-size: clamp(30px, 4.5vw, 52px);
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  color: var(--cinema-ink);
+  margin-bottom: 24px;
+}
+
+.cin-lead {
+  font-family: var(--f-body);
+  font-size: clamp(16px, 1.6vw, 19px);
+  line-height: 1.75;
+  color: var(--cinema-soft);
+  max-width: 660px;
+}
+
+.cin-lead strong { color: var(--cinema-ink); font-weight: 500; }
+.cin-lead em { color: var(--signal); font-style: italic; }
+
+/* ── SECTION 1 — GENERAL ──────────────────────── */
+.concept-cols {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 48px 64px;
+  margin-top: 56px;
+}
+
+@media (max-width: 720px) { .concept-cols { grid-template-columns: 1fr; } }
+
+.concept-item {
+  border-top: 1px solid var(--cinema-rule);
+  padding-top: 24px;
+  position: relative;
+}
+
+.concept-item::before {
+  content: '';
+  position: absolute;
+  top: -1px; left: 0;
+  width: 48px; height: 2px;
+  background: var(--signal);
+  transition: width .4s;
+}
+
+.concept-item:hover::before { width: 100%; }
+
+.concept-glyph {
+  font-family: var(--f-code);
+  font-size: 11px;
+  color: var(--signal);
+  letter-spacing: 0.15em;
+  margin-bottom: 14px;
+}
+
+.concept-item h3 {
+  font-family: var(--f-disp);
+  font-weight: 700;
+  font-size: 21px;
+  color: var(--cinema-ink);
+  margin-bottom: 10px;
+}
+
+.concept-item p {
+  font-family: var(--f-body);
+  font-size: 14.5px;
+  line-height: 1.78;
+  color: var(--cinema-soft);
+}
+
+/* ── VISUAL 1: PROTOCOL STACK SVG ─────────────── */
+.vis-wrap {
+  background: var(--cinema-panel);
+  border: 1px solid var(--cinema-rule);
+  margin: 64px 0 0;
+  padding: 48px;
+  position: relative;
+  overflow: hidden;
+}
+
+.vis-wrap::after {
+  content: '';
+  position: absolute;
+  top: 0; right: 0;
+  width: 300px; height: 300px;
+  background: radial-gradient(circle at top right, var(--signal-dim), transparent 70%);
+  pointer-events: none;
+}
+
+.vis-label {
+  font-family: var(--f-code);
+  font-size: 9px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--cinema-faint);
+  margin-bottom: 32px;
+}
+
+/* ── SECTION 2 — DECISION MAKER ───────────────── */
+.use-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  background: var(--cinema-rule);
+  margin-top: 56px;
+  border: 1px solid var(--cinema-rule);
+}
+
+@media (max-width: 820px) { .use-grid { grid-template-columns: 1fr; } }
+
+.use-card {
+  background: var(--cinema-panel);
+  padding: 32px 28px;
+  position: relative;
+  overflow: hidden;
+  transition: background .2s;
+}
+
+.use-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: transparent;
+  transition: background .2s;
+}
+
+.use-card:hover { background: var(--cinema-panel2); }
+.use-card:hover::before { background: var(--signal); }
+
+.use-glyph {
+  font-family: var(--f-code);
+  font-size: 22px;
+  color: var(--signal);
+  margin-bottom: 18px;
+  opacity: 0.7;
+}
+
+.use-title {
+  font-family: var(--f-disp);
+  font-weight: 700;
+  font-size: 19px;
+  color: var(--cinema-ink);
+  margin-bottom: 10px;
+}
+
+.use-desc {
+  font-family: var(--f-body);
+  font-size: 14px;
+  line-height: 1.75;
+  color: var(--cinema-soft);
+  margin-bottom: 20px;
+}
+
+.use-spec {
+  font-family: var(--f-code);
+  font-size: 9.5px;
+  line-height: 1.9;
+  color: var(--cinema-faint);
+  border-top: 1px solid var(--cinema-rule);
+  padding-top: 14px;
+}
+
+.use-spec .uh { color: var(--signal); }
+
+/* ── VISUAL 2: 40-BIT BITLEDGER ──────────────── */
+.ledger-vis {
+  background: var(--cinema-panel);
+  border: 1px solid var(--cinema-rule);
+  padding: 48px;
+  margin: 64px 0 0;
+  position: relative;
+}
+
+.ledger-vis-hd {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 36px;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.ledger-vis-hd h3 {
+  font-family: var(--f-disp);
+  font-weight: 700;
+  font-size: 24px;
+  color: var(--cinema-ink);
+}
+
+.ledger-vis-hd .formula {
+  font-family: var(--f-code);
+  font-size: 13px;
+  color: var(--signal);
+  background: var(--signal-dim);
+  padding: 6px 16px;
+  border: 1px solid var(--signal-dim);
+  letter-spacing: 0.05em;
+}
+
+.bit-rows { display: flex; flex-direction: column; gap: 6px; }
+
+.bit-row-group { display: flex; gap: 2px; }
+
+.bit-c {
+  flex: 1;
+  min-width: 0;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--f-code);
+  font-size: 8.5px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all .15s;
+  border: 1px solid transparent;
+  position: relative;
+  user-select: none;
+}
+
+.bit-c:hover { transform: translateY(-3px); z-index: 5; border-color: rgba(255,255,255,0.2); }
+.bit-c.active { transform: translateY(-3px); border-color: white !important; }
+
+.bit-c[data-g="v"]  { background: var(--signal-dim);           color: var(--signal);  }
+.bit-c[data-g="f"]  { background: var(--warm-dim);             color: var(--warm);    }
+.bit-c[data-g="ap"] { background: var(--violet-dim);           color: var(--violet);  }
+.bit-c[data-g="xv"] { background: rgba(244,114,182,0.1);       color: #F472B6;        }
+.bit-c[data-g="cf"] { background: rgba(96,165,250,0.1);        color: #60A5FA;        }
+
+.bit-c[data-g="v"]:hover,  .bit-c[data-g="v"].active  { background: rgba(61,255,214,0.22); }
+.bit-c[data-g="f"]:hover,  .bit-c[data-g="f"].active  { background: rgba(234,170,78,0.26); }
+.bit-c[data-g="ap"]:hover, .bit-c[data-g="ap"].active { background: rgba(176,138,255,0.24); }
+.bit-c[data-g="xv"]:hover, .bit-c[data-g="xv"].active { background: rgba(244,114,182,0.22); }
+.bit-c[data-g="cf"]:hover, .bit-c[data-g="cf"].active { background: rgba(96,165,250,0.22); }
+
+.bit-row-labels {
+  display: flex;
+  gap: 2px;
+  margin-top: 2px;
+}
+
+.bit-row-label-seg {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--f-code);
+  font-size: 8px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 5px 4px;
+  border-top: 1px solid;
+}
+
+.bit-row-label-seg[data-g="v"]  { color: var(--signal);  border-color: var(--signal-dim); flex: 25; }
+.bit-row-label-seg[data-g="f"]  { color: var(--warm);    border-color: var(--warm-dim);   flex: 7;  }
+.bit-row-label-seg[data-g="ap"] { color: var(--violet);  border-color: var(--violet-dim); flex: 4;  }
+.bit-row-label-seg[data-g="xv"] { color: #F472B6;        border-color: rgba(244,114,182,0.25); flex: 2; }
+.bit-row-label-seg[data-g="cf"] { color: #60A5FA;        border-color: rgba(96,165,250,0.25);  flex: 2; }
+
+.bit-legend {
+  display: flex; gap: 28px; margin-top: 24px; flex-wrap: wrap;
+}
+
+.bit-legend-item {
+  display: flex; align-items: center; gap: 9px;
+  font-family: var(--f-code); font-size: 10px; color: var(--cinema-faint);
+}
+
+.bldot { width: 10px; height: 10px; border-radius: 2px; }
+
+.bit-info {
+  margin-top: 28px;
+  padding: 22px 28px;
+  background: rgba(0,0,0,0.25);
+  border-left: 2px solid var(--signal);
+  min-height: 90px;
+  transition: all .2s;
+}
+
+.bit-info-name {
+  font-family: var(--f-disp);
+  font-weight: 700;
+  font-size: 18px;
+  color: var(--cinema-ink);
+  margin-bottom: 6px;
+}
+
+.bit-info-body {
+  font-family: var(--f-code);
+  font-size: 11.5px;
+  line-height: 1.8;
+  color: var(--cinema-soft);
+}
+
+/* ── SECTION 3 — TECHNICAL ────────────────────── */
+.tech-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-top: 56px;
+}
+
+@media (max-width: 700px) { .tech-grid { grid-template-columns: 1fr; } }
+
+.spec-block {
+  background: var(--cinema-panel);
+  border: 1px solid var(--cinema-rule);
+  padding: 28px 32px;
+  position: relative;
+}
+
+.spec-block::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 2px;
+  background: linear-gradient(to right, var(--signal-dim), transparent);
+}
+
+.spec-tag {
+  font-family: var(--f-code);
+  font-size: 8.5px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--signal);
+  margin-bottom: 18px;
+}
+
+.spec-lines { display: flex; flex-direction: column; gap: 2px; }
+
+.spec-line {
+  display: grid;
+  grid-template-columns: 1fr 1.4fr;
+  gap: 12px;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  font-family: var(--f-code);
+  font-size: 11.5px;
+}
+
+.spec-line:last-child { border-bottom: none; }
+.spec-k { color: var(--cinema-faint); }
+.spec-v { color: var(--cinema-ink); }
+.spec-v .hi { color: var(--signal); }
+
+.code-excerpt {
+  margin-top: 40px;
+  background: #030508;
+  border: 1px solid var(--cinema-rule);
+  border-left: 3px solid var(--signal);
+  padding: 32px 36px;
+  font-family: var(--f-code);
+  font-size: 11.5px;
+  line-height: 2.1;
+  color: var(--cinema-soft);
+  overflow-x: auto;
+}
+
+.code-excerpt .cm  { color: var(--cinema-faint); }
+.code-excerpt .kw  { color: var(--signal); }
+.code-excerpt .nm  { color: var(--warm); }
+.code-excerpt .st  { color: #88CEFF; }
+.code-excerpt .op  { color: var(--cinema-faint); }
+
+/* ── VISUAL 3: WAVE CATEGORIES ────────────────── */
+.wave-vis {
+  background: var(--cinema-panel);
+  border: 1px solid var(--cinema-rule);
+  padding: 48px;
+  margin: 64px 0 0;
+}
+
+.wave-grid {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 3px;
+  margin-top: 32px;
+}
+
+@media (max-width: 680px) { .wave-grid { grid-template-columns: repeat(4, 1fr); } }
+
+.wc {
+  aspect-ratio: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(61,255,214,0.03);
+  border: 1px solid rgba(61,255,214,0.07);
+  cursor: default;
+  position: relative;
+  overflow: hidden;
+  transition: all .25s;
+  padding: 6px 2px;
+}
+
+.wc:hover {
+  background: var(--signal-dim);
+  border-color: var(--signal);
+  transform: scale(1.06);
+  z-index: 2;
+}
+
+.wc-hex {
+  font-family: var(--f-code);
+  font-weight: 500;
+  font-size: clamp(12px, 1.8vw, 16px);
+  color: var(--signal);
+  line-height: 1;
+}
+
+.wc-name {
+  font-family: var(--f-code);
+  font-size: clamp(6px, 0.85vw, 8px);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--cinema-faint);
+  text-align: center;
+  margin-top: 5px;
+  line-height: 1.2;
+}
+
+.wc { animation: wPulse 6s infinite; }
+.wc:nth-child(1)  { animation-delay:  0.0s; }
+.wc:nth-child(2)  { animation-delay:  0.4s; }
+.wc:nth-child(3)  { animation-delay:  0.8s; }
+.wc:nth-child(4)  { animation-delay:  1.2s; }
+.wc:nth-child(5)  { animation-delay:  1.6s; }
+.wc:nth-child(6)  { animation-delay:  2.0s; }
+.wc:nth-child(7)  { animation-delay:  2.4s; }
+.wc:nth-child(8)  { animation-delay:  2.8s; }
+.wc:nth-child(9)  { animation-delay:  3.2s; }
+.wc:nth-child(10) { animation-delay:  3.6s; }
+.wc:nth-child(11) { animation-delay:  4.0s; }
+.wc:nth-child(12) { animation-delay:  4.4s; }
+.wc:nth-child(13) { animation-delay:  4.8s; }
+.wc:nth-child(14) { animation-delay:  5.2s; }
+.wc:nth-child(15) { animation-delay:  5.6s; }
+.wc:nth-child(16) { animation-delay:  6.0s; }
+
+/* ── CTA ──────────────────────────────────────── */
+.cta-wrap {
+  background: linear-gradient(180deg, var(--cinema-bg) 0%, #050811 100%);
+  border-top: 1px solid var(--cinema-rule);
+  padding: 100px 64px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.cta-wrap::before {
+  content: '';
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 600px; height: 600px;
+  background: radial-gradient(circle, rgba(61,255,214,0.04) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.cta-inner { position: relative; z-index: 1; }
+
+.cta-h2 {
+  font-family: var(--f-disp);
+  font-weight: 800;
+  font-size: clamp(36px, 6vw, 72px);
+  color: var(--cinema-ink);
+  letter-spacing: -0.02em;
+  line-height: 1;
+  margin-bottom: 16px;
+}
+
+.cta-h2 .accent { color: var(--signal); }
+
+.cta-sub {
+  font-family: var(--f-body);
+  font-style: italic;
+  font-size: 18px;
+  color: var(--cinema-soft);
+  margin-bottom: 64px;
+  max-width: 480px;
+  margin-left: auto;
+  margin-right: auto;
+  line-height: 1.6;
+}
+
+.repo-cards {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 64px;
+}
+
+.repo-card {
+  background: var(--cinema-panel);
+  border: 1px solid var(--cinema-rule);
+  padding: 32px 28px;
+  text-decoration: none;
+  width: 260px;
+  text-align: left;
+  transition: all .2s;
+  position: relative;
+  overflow: hidden;
+  display: block;
+}
+
+.repo-card::before {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 2px;
+  background: var(--signal);
+  transform: scaleX(0);
+  transition: transform .25s;
+}
+
+.repo-card:hover {
+  border-color: rgba(61,255,214,0.3);
+  transform: translateY(-6px);
+  box-shadow: 0 24px 48px rgba(0,0,0,0.4);
+}
+
+.repo-card:hover::before { transform: scaleX(1); }
+
+.repo-tag {
+  font-family: var(--f-code);
+  font-size: 8px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--signal);
+  margin-bottom: 14px;
+}
+
+.repo-name {
+  font-family: var(--f-disp);
+  font-weight: 700;
+  font-size: 20px;
+  color: var(--cinema-ink);
+  margin-bottom: 10px;
+  line-height: 1.1;
+}
+
+.repo-desc {
+  font-family: var(--f-body);
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--cinema-soft);
+  margin-bottom: 18px;
+}
+
+.repo-handle {
+  font-family: var(--f-code);
+  font-size: 9px;
+  color: var(--cinema-faint);
+  letter-spacing: 0.05em;
+}
+
+.cta-conviction {
+  font-family: var(--f-body);
+  font-style: italic;
+  font-size: clamp(15px, 1.6vw, 18px);
+  line-height: 1.8;
+  color: var(--cinema-soft);
+  max-width: 620px;
+  margin: 0 auto;
+  padding-top: 48px;
+  border-top: 1px solid var(--cinema-rule);
+}
+
+.cta-conviction strong {
+  color: var(--cinema-ink);
+  font-style: normal;
+  font-weight: 500;
+}
+
+/* ── FOOTER ───────────────────────────────────── */
+footer {
+  border-top: 1px solid var(--cinema-rule);
+  padding: 28px 64px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: var(--f-code);
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  color: rgba(232,234,240,0.55);
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+/* ── SCROLL REVEAL ────────────────────────────── */
+.reveal {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity .75s, transform .75s;
+}
+.reveal.vis { opacity: 1; transform: none; }
+.rd1 { transition-delay: .1s; }
+.rd2 { transition-delay: .2s; }
+.rd3 { transition-delay: .3s; }
+.rd4 { transition-delay: .4s; }
+.rd5 { transition-delay: .5s; }
+
+/* ── KEYFRAMES ────────────────────────────────── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(22px); }
+  to   { opacity: 1; transform: none; }
+}
+@keyframes fadeIn {
+  from { opacity: 0; } to { opacity: 1; }
+}
+@keyframes scrollAnim {
+  0%,100% { opacity: .3; transform: scaleY(1); }
+  50%      { opacity: 1;  transform: scaleY(1.15); }
+}
+@keyframes wPulse {
+  0%,88%,100% { background: rgba(61,255,214,0.03); }
+  91%          { background: rgba(61,255,214,0.11); }
+}
+@keyframes traceIn {
+  from { stroke-dashoffset: 1000; opacity: 0; }
+  to   { stroke-dashoffset: 0;    opacity: 1; }
+}
+
+/* ── RESPONSIVE ───────────────────────────────── */
+@media (max-width: 600px) {
+  .hero-cinema { padding: 100px 24px 64px; }
+  .cin-wrap    { padding: 72px 24px; }
+  .cta-wrap    { padding: 72px 24px; }
+  footer       { padding: 24px; }
+  .hero-bottom { grid-template-columns: 1fr; gap: 24px; }
+  .hero-stats  { gap: 24px; }
+  .vis-wrap, .ledger-vis, .wave-vis { padding: 24px; }
+}
+</style>
+</head>
+<body>
+<script>if(window!==window.top)document.documentElement.classList.add('in-iframe');</script>
+<style>.in-iframe header.topbar{display:none!important;}</style>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="index.html">
+      <span class="brand-mark">BP</span>
+      <span class="brand-name">BitPads Protocol</span>
+    </a>
+    <nav class="topnav">
+      <a href="overview.html">Overview</a>
+      <a href="bitpads-v2.html">BitPads v2</a>
+      <a href="bitledger.html" class="active">BitLedger</a>
+      <a href="universal-domain.html">Universal Domain</a>
+      <div class="nav-group">
+        <a href="enhancement-grammar.html">Enhancement</a>
+        <div class="nav-dropdown">
+          <a href="enhancement-grammar.html">Grammar &amp; Signal Slots</a>
+          <a href="enhancement-commands.html">Commands &amp; Context</a>
+          <a href="enhancement-telegraph-1.html">Telegraph Emulation I</a>
+          <a href="enhancement-telegraph-2.html">Telegraph Emulation II</a>
+          <a href="enhancement-nesting.html">Nesting &amp; Overhead</a>
+        </div>
+      </div>
+      <a href="compound-mode.html">Compound Mode</a>
+      <a href="engineering.html">Engineering</a>
+      <a href="guide.html">Guide</a>
+      <a href="cli.html">CLI</a>
+      <a href="reference.html">Reference</a>
+    </nav>
+  </div>
+</header>
+
+<!-- ══ HERO ══════════════════════════════════════════════ -->
+<section class="hero-cinema">
+  <canvas id="starfield"></canvas>
+
+  <div class="hero-content">
+    <p class="hero-eyebrow">Open Protocol · v2.0 · Free to Implement</p>
+
+    <h1 class="hero-wordmark">
+      Bit<span class="accent">Pads</span>
+    </h1>
+
+    <div class="hero-rule"></div>
+
+    <div class="hero-bottom">
+      <p class="hero-tagline">
+        <strong>The best wire for transmissions near and far.</strong><br>
+        A compact, self-describing binary protocol for any medium — from a sensor
+        on a factory floor to an account ledger in orbit.
+      </p>
+      <dl class="hero-stats">
+        <div class="hero-stat">
+          <dt>Max Frame</dt>
+          <dd>4<span style="font-size:14px;color:var(--cinema-faint)"> B</span></dd>
+        </div>
+        <div class="hero-stat">
+          <dt>Wave Categories</dt>
+          <dd>16</dd>
+        </div>
+        <div class="hero-stat">
+          <dt>Ledger bits</dt>
+          <dd>40</dd>
+        </div>
+        <div class="hero-stat">
+          <dt>Layers</dt>
+          <dd>L1–L3</dd>
+        </div>
+      </dl>
+    </div>
+  </div>
+
+  <div class="hero-scroll">
+    <div class="scroll-bar"></div>
+    <span>Scroll</span>
+  </div>
+</section>
+
+<!-- ══ SECTION 1 — GENERAL READER ════════════════════════ -->
+<div class="cin-wrap">
+  <p class="s-label reveal">01 &mdash; What It Is</p>
+
+  <h2 class="cin-h2 reveal rd1">
+    Every transmission,<br>in its smallest honest form.
+  </h2>
+
+  <p class="cin-lead reveal rd2">
+    BitPads is a <strong>binary framing protocol</strong>. It takes any signal — a temperature reading,
+    a financial transaction, a machine command, a time reference — and wraps it in
+    <em>one to four bytes</em> of precise, self-contained metadata. No negotiation.
+    No schema files. No preamble. The header tells every listener exactly what category
+    of data is arriving, which protocol layer applies, and how to decode what follows.
+  </p>
+
+  <div class="concept-cols">
+    <div class="concept-item reveal rd1">
+      <p class="concept-glyph">WAVE MODE</p>
+      <h3>Signal First</h3>
+      <p>A single byte can carry a complete, routable signal. Wave mode transmits category,
+        intent, and acknowledgement request in one byte — optimised for real-time telemetry,
+        alerts, and status broadcasts where every microsecond and every bit counts.</p>
+    </div>
+    <div class="concept-item reveal rd2">
+      <p class="concept-glyph">RECORD MODE</p>
+      <h3>Structure on Demand</h3>
+      <p>When structure is needed, Record mode activates the full component system —
+        identity blocks, time references, value encoding, signal slots, and extension bytes.
+        Complexity attaches precisely where it is required. Absent modules cost zero bits.</p>
+    </div>
+    <div class="concept-item reveal rd3">
+      <p class="concept-glyph">LAYER 3 — BITLEDGER</p>
+      <h3>Accounting in 5 Bytes</h3>
+      <p>BitLedger encodes a complete double-entry financial transaction in 40 bits:
+        a 25-bit value block, 7 integrity flags, and an 8-bit account pair. The formula
+        <code style="font-family:var(--f-code);font-size:12px;color:var(--signal);background:var(--signal-dim);padding:2px 6px;border:none;">N = A × 2<sup>S</sup> + r</code>
+        achieves sub-cent precision without floating point.</p>
+    </div>
+    <div class="concept-item reveal rd4">
+      <p class="concept-glyph">ENHANCEMENT GRAMMAR</p>
+      <h3>Control, Extended</h3>
+      <p>C0 control codes gain a 3-bit Presence/Addressing/Context flag layer. Twenty-nine
+        unconditional controls become context-aware signals across 13 named signal slots —
+        enabling rich, auditable command sequences without added framing overhead.</p>
+    </div>
+  </div>
+
+  <!-- VISUAL 1: PROTOCOL STACK -->
+  <div class="vis-wrap reveal">
+    <p class="vis-label">Visual 01 — Protocol Layer Stack</p>
+    <svg id="stack-svg" width="100%" viewBox="0 0 900 320" fill="none" xmlns="http://www.w3.org/2000/svg"
+         style="max-width:900px;display:block;margin:0 auto;">
+
+      <!-- Background guides -->
+      <line x1="140" y1="20" x2="140" y2="300" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+      <line x1="760" y1="20" x2="760" y2="300" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+
+      <!-- L1 IDENTITY — full width -->
+      <rect x="140" y="240" width="620" height="46" fill="rgba(176,138,255,0.08)" stroke="rgba(176,138,255,0.25)" stroke-width="1"/>
+      <text x="450" y="268" text-anchor="middle" fill="#B08AFF" font-family="JetBrains Mono, monospace" font-size="11" letter-spacing="2">LAYER 1 — IDENTITY BLOCK · 64 bits · Session ID · CRC-15</text>
+
+      <!-- L2 BITLEDGER -->
+      <rect x="140" y="172" width="620" height="52" fill="rgba(234,170,78,0.08)" stroke="rgba(234,170,78,0.25)" stroke-width="1"/>
+      <!-- Value block -->
+      <rect x="148" y="180" width="350" height="36" fill="rgba(61,255,214,0.1)" stroke="rgba(61,255,214,0.3)" stroke-width="1"/>
+      <text x="323" y="202" text-anchor="middle" fill="#3DFFD6" font-family="JetBrains Mono, monospace" font-size="10">25-BIT VALUE · N = A × 2^S + r</text>
+      <!-- Flags -->
+      <rect x="506" y="180" width="98" height="36" fill="rgba(234,170,78,0.12)" stroke="rgba(234,170,78,0.3)" stroke-width="1"/>
+      <text x="555" y="202" text-anchor="middle" fill="#EAAA4E" font-family="JetBrains Mono, monospace" font-size="10">7 FLAGS</text>
+      <!-- Acct -->
+      <rect x="612" y="180" width="140" height="36" fill="rgba(176,138,255,0.1)" stroke="rgba(176,138,255,0.3)" stroke-width="1"/>
+      <text x="682" y="202" text-anchor="middle" fill="#B08AFF" font-family="JetBrains Mono, monospace" font-size="10">8-BIT ACCT PAIR</text>
+      <!-- L2 label -->
+      <text x="450" y="230" text-anchor="middle" fill="rgba(234,170,78,0.4)" font-family="JetBrains Mono, monospace" font-size="7.5" letter-spacing="1.5">LAYER 2/3 — BITLEDGER · 40 BITS TOTAL</text>
+
+      <!-- META BYTES -->
+      <rect x="140" y="100" width="620" height="58" fill="rgba(61,255,214,0.06)" stroke="rgba(61,255,214,0.2)" stroke-width="1"/>
+      <!-- Meta 1 -->
+      <rect x="148" y="108" width="260" height="42" fill="rgba(61,255,214,0.08)" stroke="rgba(61,255,214,0.25)" stroke-width="1"/>
+      <text x="278" y="126" text-anchor="middle" fill="#3DFFD6" font-family="JetBrains Mono, monospace" font-size="10">META BYTE 1</text>
+      <text x="278" y="140" text-anchor="middle" fill="rgba(61,255,214,0.5)" font-family="JetBrains Mono, monospace" font-size="8">Mode · ACK · Fragment · Category</text>
+      <!-- Meta 2 -->
+      <rect x="416" y="108" width="260" height="42" fill="rgba(61,255,214,0.05)" stroke="rgba(61,255,214,0.15)" stroke-width="1"/>
+      <text x="546" y="126" text-anchor="middle" fill="rgba(61,255,214,0.7)" font-family="JetBrains Mono, monospace" font-size="10">META BYTE 2</text>
+      <text x="546" y="140" text-anchor="middle" fill="rgba(61,255,214,0.4)" font-family="JetBrains Mono, monospace" font-size="8">Archetype · Time · Domain · Slots</text>
+      <!-- label moved below META rect -->
+      <text x="450" y="165" text-anchor="middle" fill="rgba(61,255,214,0.28)" font-family="JetBrains Mono, monospace" font-size="7.5" letter-spacing="1.5">META LAYER — UP TO 2 BYTES · SELF-DESCRIBING FRAME HEADER</text>
+
+      <!-- WAVE label at top -->
+      <rect x="140" y="40" width="620" height="48" fill="rgba(61,255,214,0.03)" stroke="rgba(61,255,214,0.12)" stroke-width="1" stroke-dasharray="4 3"/>
+      <text x="300" y="60" text-anchor="middle" fill="rgba(61,255,214,0.6)" font-family="JetBrains Mono, monospace" font-size="10" letter-spacing="1">WAVE MODE</text>
+      <text x="300" y="75" text-anchor="middle" fill="rgba(61,255,214,0.35)" font-family="JetBrains Mono, monospace" font-size="8">1 byte complete signal</text>
+      <text x="620" y="60" text-anchor="middle" fill="rgba(61,255,214,0.4)" font-family="JetBrains Mono, monospace" font-size="10" letter-spacing="1">RECORD MODE</text>
+      <text x="620" y="75" text-anchor="middle" fill="rgba(61,255,214,0.25)" font-family="JetBrains Mono, monospace" font-size="8">1–44 bytes · full structure</text>
+
+      <!-- Side labels -->
+      <text x="120" y="69"  text-anchor="end" fill="rgba(255,255,255,0.2)" font-family="JetBrains Mono, monospace" font-size="9">SIGNAL</text>
+      <text x="120" y="133" text-anchor="end" fill="rgba(255,255,255,0.2)" font-family="JetBrains Mono, monospace" font-size="9">META</text>
+      <text x="120" y="202" text-anchor="end" fill="rgba(255,255,255,0.2)" font-family="JetBrains Mono, monospace" font-size="9">L2/L3</text>
+      <text x="120" y="266" text-anchor="end" fill="rgba(255,255,255,0.2)" font-family="JetBrains Mono, monospace" font-size="9">L1</text>
+
+      <!-- Arrows -->
+      <line x1="760" y1="215" x2="800" y2="215" stroke="rgba(61,255,214,0.3)" stroke-width="1"/>
+      <polygon points="800,211 808,215 800,219" fill="rgba(61,255,214,0.4)"/>
+      <text x="815" y="219" fill="rgba(61,255,214,0.5)" font-family="JetBrains Mono, monospace" font-size="8">→ 5 bytes</text>
+
+      <line x1="760" y1="130" x2="800" y2="130" stroke="rgba(61,255,214,0.2)" stroke-width="1"/>
+      <text x="808" y="134" fill="rgba(61,255,214,0.35)" font-family="JetBrains Mono, monospace" font-size="8">→ 2 bytes</text>
+
+      <line x1="760" y1="266" x2="800" y2="266" stroke="rgba(176,138,255,0.25)" stroke-width="1"/>
+      <text x="808" y="270" fill="rgba(176,138,255,0.4)" font-family="JetBrains Mono, monospace" font-size="8">→ 8 bytes</text>
+    </svg>
+  </div>
+</div>
+
+<!-- ══ SECTION 2 — DECISION MAKER ════════════════════════ -->
+<div class="cin-wrap" style="background: linear-gradient(180deg, var(--cinema-bg) 0%, var(--cinema-panel) 100%);">
+  <p class="s-label reveal">02 &mdash; Why It Matters</p>
+
+  <h2 class="cin-h2 reveal rd1">
+    For every domain<br>where precision is non-negotiable.
+  </h2>
+
+  <p class="cin-lead reveal rd2">
+    Protocol overhead is never free. In <strong>low-bandwidth radio links, embedded microcontrollers,
+    satellite uplinks, and high-frequency industrial buses</strong>, every extraneous byte has a cost.
+    BitPads eliminates that cost without eliminating structure — delivering a protocol that fits
+    the economics of both a warehouse scanner and a deep-space transponder.
+  </p>
+
+  <div class="use-grid reveal rd2">
+
+    <div class="use-card">
+      <div class="use-glyph">▦</div>
+      <div class="use-title">Industrial &amp; IoT</div>
+      <p class="use-desc">Machine telemetry, sensor arrays, PLC command buses. Wave mode delivers
+        status, alert, and command signals in a single byte — no TCP handshake, no JSON parsing,
+        no schema file on device.</p>
+      <div class="use-spec">
+        <div><span class="uh">Key:</span> 1-byte status broadcast</div>
+        <div><span class="uh">Key:</span> Priority alert in real time</div>
+        <div><span class="uh">Key:</span> Zero-config self-describing frame</div>
+      </div>
+    </div>
+
+    <div class="use-card">
+      <div class="use-glyph">⬡</div>
+      <div class="use-title">Financial Systems</div>
+      <p class="use-desc">BitLedger's 40-bit transaction carries a complete double-entry record
+        — value, rounding flag, account pair, and integrity check — across any transport without
+        floating-point ambiguity or schema drift.</p>
+      <div class="use-spec">
+        <div><span class="uh">Key:</span> Sub-cent precision, no float</div>
+        <div><span class="uh">Key:</span> 16 account pair archetypes</div>
+        <div><span class="uh">Key:</span> CRC-15 integrity on every record</div>
+      </div>
+    </div>
+
+    <div class="use-card">
+      <div class="use-glyph">◈</div>
+      <div class="use-title">Space &amp; Deep-Link</div>
+      <p class="use-desc">Bandwidth across orbital or deep-space links is finite and expensive.
+        BitPads compresses an identity-verified, time-referenced transaction to under 20 bytes —
+        a complete record that survives any delay-tolerant network.</p>
+      <div class="use-spec">
+        <div><span class="uh">Key:</span> Full record in ≤44 bytes</div>
+        <div><span class="uh">Key:</span> Tier 1/2 time references</div>
+        <div><span class="uh">Key:</span> Fragment-aware framing</div>
+      </div>
+    </div>
+
+    <div class="use-card">
+      <div class="use-glyph">⊕</div>
+      <div class="use-title">Healthcare &amp; Monitoring</div>
+      <p class="use-desc">Structured observation data — vital signs, dosage events, device state —
+        with built-in identity attribution, time reference, and integrity checks. HIPAA-aware
+        by design: sender ID is always verifiable.</p>
+      <div class="use-spec">
+        <div><span class="uh">Key:</span> Identity-verified records</div>
+        <div><span class="uh">Key:</span> Temporal precision to milliseconds</div>
+        <div><span class="uh">Key:</span> Absent modules cost zero bits</div>
+      </div>
+    </div>
+
+    <div class="use-card">
+      <div class="use-glyph">⊞</div>
+      <div class="use-title">Logistics &amp; Retail</div>
+      <p class="use-desc">From warehouse scan-gun to point-of-sale, BitLedger encodes every
+        debit, credit, and transfer in a single transmissible record — auditable, reproducible,
+        and compact enough for RFID and BLE.</p>
+      <div class="use-spec">
+        <div><span class="uh">Key:</span> Double-entry conservation enforced</div>
+        <div><span class="uh">Key:</span> 16 scaling factor presets</div>
+        <div><span class="uh">Key:</span> Session-chained records</div>
+      </div>
+    </div>
+
+    <div class="use-card">
+      <div class="use-glyph">⊛</div>
+      <div class="use-title">Edge &amp; Embedded</div>
+      <p class="use-desc">No runtime negotiation. No schema server. A BitPads decoder is
+        a deterministic state machine — implementable on bare metal, in WASM, in a browser,
+        or on a microcontroller with kilobytes of RAM.</p>
+      <div class="use-spec">
+        <div><span class="uh">Key:</span> Deterministic state machine</div>
+        <div><span class="uh">Key:</span> No external dependencies</div>
+        <div><span class="uh">Key:</span> 1-byte SOH trigger, zero preamble</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- VISUAL 2: INTERACTIVE 40-BIT BITLEDGER -->
+  <div class="ledger-vis reveal">
+    <div class="ledger-vis-hd">
+      <div>
+        <h3>BitLedger Layer 3 — 40-Bit Transaction</h3>
+        <p style="font-family:var(--f-code);font-size:10px;color:var(--cinema-faint);margin-top:6px;">
+          Click any bit segment to inspect its field definition
+        </p>
+      </div>
+      <div class="formula">N = A × 2<sup style="font-size:9px">S</sup> + r</div>
+    </div>
+
+    <div class="bit-rows">
+      <div class="bit-row-group" id="bit-row"></div>
+      <div class="bit-row-labels">
+        <div class="bit-row-label-seg" data-g="v">25-Bit Value Block — N (bits 1–25)</div>
+        <div class="bit-row-label-seg" data-g="f">7 Flag Bits (bits 26–32)</div>
+        <div class="bit-row-label-seg" data-g="ap">4-bit Acct Pair (33–36)</div>
+        <div class="bit-row-label-seg" data-g="xv">Cross-Val (37–38)</div>
+        <div class="bit-row-label-seg" data-g="cf">Ctrl (39–40)</div>
+      </div>
+    </div>
+
+    <div class="bit-legend">
+      <div class="bit-legend-item">
+        <div class="bldot" style="background:var(--signal-dim);border:1px solid var(--signal)"></div>
+        Value Block (1–25)
+      </div>
+      <div class="bit-legend-item">
+        <div class="bldot" style="background:var(--warm-dim);border:1px solid var(--warm)"></div>
+        Flag Bits (26–32)
+      </div>
+      <div class="bit-legend-item">
+        <div class="bldot" style="background:var(--violet-dim);border:1px solid var(--violet)"></div>
+        Account Pair (33–36)
+      </div>
+      <div class="bit-legend-item">
+        <div class="bldot" style="background:rgba(244,114,182,0.1);border:1px solid #F472B6"></div>
+        Cross-Val Echo (37–38)
+      </div>
+      <div class="bit-legend-item">
+        <div class="bldot" style="background:rgba(96,165,250,0.1);border:1px solid #60A5FA"></div>
+        Control Flags (39–40)
+      </div>
+    </div>
+
+    <div class="bit-info" id="bit-info">
+      <div class="bit-info-name">BitLedger — 40-Bit Layer 3</div>
+      <div class="bit-info-body">
+        A complete double-entry transaction in five bytes. Click any bit to inspect its role.<br>
+        <span style="color:var(--signal)">■</span> 25-bit value N = A × 2<sup>S</sup> + r &nbsp;·&nbsp;
+        <span style="color:var(--warm)">■</span> 7 flag bits &nbsp;·&nbsp;
+        <span style="color:var(--violet)">■</span> 4-bit account pair (14 archetypes) &nbsp;·&nbsp;
+        <span style="color:#F472B6">■</span> 2 cross-validation echo bits &nbsp;·&nbsp;
+        <span style="color:#60A5FA">■</span> Completeness + Extension flag
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ══ SECTION 3 — TECHNICAL EVALUATOR ═══════════════════ -->
+<div class="cin-wrap">
+  <p class="s-label reveal">03 &mdash; Precision by Design</p>
+
+  <h2 class="cin-h2 reveal rd1">
+    A protocol you can<br>hold in your head and implement today.
+  </h2>
+
+  <p class="cin-lead reveal rd2">
+    BitPads is not a platform. It is a <strong>specification</strong> — formally defined, openly published,
+    and designed so that a competent engineer can write a conformant decoder in an afternoon.
+    The CLI reference implementation ships with every primitive. The standard is the source of truth.
+  </p>
+
+  <div class="tech-grid">
+
+    <div class="spec-block reveal rd1">
+      <div class="spec-tag">BitPads v2.0 — Wire Format</div>
+      <div class="spec-lines">
+        <div class="spec-line"><span class="spec-k">Frame size</span>      <span class="spec-v"><span class="hi">1–4 bytes</span> header · unlimited payload</span></div>
+        <div class="spec-line"><span class="spec-k">Modes</span>            <span class="spec-v">Wave (real-time) · Record (structured)</span></div>
+        <div class="spec-line"><span class="spec-k">Wave categories</span>  <span class="spec-v"><span class="hi">16</span> (0x0–0xF) + 256 extended</span></div>
+        <div class="spec-line"><span class="spec-k">Trigger</span>          <span class="spec-v">SOH 0x01 · bit 1 of Meta Byte 1</span></div>
+        <div class="spec-line"><span class="spec-k">Fragmentation</span>    <span class="spec-v">Bit 3 flag · session-reassembled</span></div>
+        <div class="spec-line"><span class="spec-k">Identity</span>         <span class="spec-v">64-bit Layer 1 · CRC-15 integrity</span></div>
+        <div class="spec-line"><span class="spec-k">Enhancement</span>      <span class="spec-v">C0 + P/A/C flags · 13 signal slots</span></div>
+        <div class="spec-line"><span class="spec-k">Cipher</span>           <span class="spec-v">Session-negotiated · bit 6 flag</span></div>
+      </div>
+    </div>
+
+    <div class="spec-block reveal rd2">
+      <div class="spec-tag">BitLedger v3.0 — Transaction Layer</div>
+      <div class="spec-lines">
+        <div class="spec-line"><span class="spec-k">Transaction width</span><span class="spec-v"><span class="hi">40 bits</span> · 5 bytes on wire</span></div>
+        <div class="spec-line"><span class="spec-k">Value encoding</span>   <span class="spec-v">N = A × 2<sup>S</sup> + r · 25-bit N</span></div>
+        <div class="spec-line"><span class="spec-k">Precision</span>        <span class="spec-v">Sub-cent · no floating point</span></div>
+        <div class="spec-line"><span class="spec-k">Account pairs</span>    <span class="spec-v"><span class="hi">16</span> archetypes · double-entry</span></div>
+        <div class="spec-line"><span class="spec-k">Flag block</span>       <span class="spec-v">Rounding · sign · SF · direction</span></div>
+        <div class="spec-line"><span class="spec-k">Integrity</span>        <span class="spec-v">CRC-15 in Layer 1 identity block</span></div>
+        <div class="spec-line"><span class="spec-k">Cross-layer check</span><span class="spec-v">bit29=bit37 · bit30=bit38</span></div>
+        <div class="spec-line"><span class="spec-k">Conservation</span>    <span class="spec-v">Debit + Credit = 0 invariant</span></div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="code-excerpt reveal rd3">
+<span class="cm">// BitLedger encode — 5 bytes out, no external deps</span>
+<span class="kw">function</span> encode(value, sf, S, debitAcct, creditAcct) {
+  <span class="kw">const</span> N  = Math.round(value * <span class="nm">1e4</span> / sf);   <span class="cm">// 25-bit value</span>
+  <span class="kw">const</span> A  = N &gt;&gt; S;                           <span class="cm">// mantissa</span>
+  <span class="kw">const</span> r  = N &amp; ((1 &lt;&lt; S) - 1);              <span class="cm">// remainder</span>
+  <span class="kw">const</span> isExact = Math.abs(N - value * <span class="nm">1e4</span> / sf) &lt; <span class="nm">1e-9</span>;
+  <span class="kw">const</span> flags = (isExact ? <span class="nm">0</span> : <span class="nm">0x40</span>);          <span class="cm">// bit26 = rounding</span>
+  <span class="kw">const</span> acct  = ((debitAcct &amp; <span class="nm">0xF</span>) &lt;&lt; <span class="nm">4</span>) | (creditAcct &amp; <span class="nm">0xF</span>);
+  <span class="kw">return</span> pack40(N, flags, acct);               <span class="cm">// → Uint8Array(5)</span>
+}
+</div>
+
+  <!-- VISUAL 3: WAVE CATEGORY GRID -->
+  <div class="wave-vis reveal rd1">
+    <div class="vis-label">Visual 03 — 16 Wave Categories · The Transmission Spectrum</div>
+    <p style="font-family:var(--f-body);font-size:13.5px;line-height:1.7;color:var(--cinema-faint);max-width:580px;margin-bottom:4px;">
+      Every BitPads frame declares one of sixteen wave categories in Meta Byte 1 bits 5–8.
+      The category tells the receiver — before any payload arrives — what domain of information
+      is in transit. Hover to inspect.
+    </p>
+
+    <div class="wave-grid" id="wave-grid">
+      <!-- Filled by JS -->
+    </div>
+
+    <div id="wave-info" style="margin-top:24px;padding:16px 22px;background:rgba(0,0,0,0.2);border-left:2px solid var(--signal);font-family:var(--f-code);font-size:11.5px;line-height:1.8;color:var(--cinema-soft);min-height:52px;transition:all .2s;">
+      <span style="color:var(--cinema-faint)">Hover a category to see its role</span>
+    </div>
+  </div>
+
+</div>
+
+<!-- ══ CTA ════════════════════════════════════════════════ -->
+<section class="cta-wrap">
+  <div class="cta-inner">
+    <p class="s-label reveal" style="justify-content:center;">04 &mdash; Implement &amp; Experiment</p>
+
+    <h2 class="cta-h2 reveal rd1">
+      The wire is<br><span class="accent">open.</span>
+    </h2>
+
+    <p class="cta-sub reveal rd2">
+      Three repositories. One specification. Zero barriers to a working implementation.
+    </p>
+
+    <div class="repo-cards reveal rd2">
+
+      <a class="repo-card" href="https://github.com/babbworks/bitpads-cli" target="_blank" rel="noopener">
+        <div class="repo-tag">Reference Implementation</div>
+        <div class="repo-name">BitPads CLI</div>
+        <p class="repo-desc">The assembly-line CLI. Encode, decode, and transmit BitPads frames from the command line. Every primitive, every layer, one tool.</p>
+        <div class="repo-handle">github.com/babbworks/bitpads-cli</div>
+      </a>
+
+      <a class="repo-card" href="https://github.com/babbworks/bitpads-standard" target="_blank" rel="noopener">
+        <div class="repo-tag">Protocol Standard</div>
+        <div class="repo-name">BitPads Standard</div>
+        <p class="repo-desc">The canonical specification. Wire format, layer definitions, account archetypes, value encoding, and conformance requirements.</p>
+        <div class="repo-handle">github.com/babbworks/bitpads-standard</div>
+      </a>
+
+      <a class="repo-card" href="https://github.com/babbworks/bitpads" target="_blank" rel="noopener">
+        <div class="repo-tag">Open Source Hub</div>
+        <div class="repo-name">BitPads Project</div>
+        <p class="repo-desc">The hub for the open protocol ecosystem — issues, RFCs, community implementations, and the roadmap for what comes next.</p>
+        <div class="repo-handle">github.com/babbworks/bitpads</div>
+      </a>
+
+    </div>
+
+    <div class="cta-conviction reveal rd3">
+      A transmitter should never have to explain itself twice.
+      A ledger record should be verifiable without a server.
+      A protocol designed for Earth should work just as well
+      <strong>beyond it</strong>. BitPads is the wire that makes that possible —
+      compact enough for a beacon, precise enough for a bank,
+      and open enough for whatever comes next.
+    </div>
+
+    <div class="reveal rd4" style="margin-top:48px;">
+      <a href="overview.html" style="
+        display:inline-block;
+        font-family:'Barlow Condensed',var(--f-disp),sans-serif;
+        font-weight:700;
+        font-size:13px;
+        text-transform:uppercase;
+        letter-spacing:0.15em;
+        color:#fff;
+        background:var(--nasa-red,#FC3D21);
+        padding:14px 36px;
+        text-decoration:none;
+        border:none;
+        transition:background .15s, transform .15s;
+      " onmouseover="this.style.background='#e02d14'" onmouseout="this.style.background='var(--nasa-red,#FC3D21)'">
+        Begin Overview
+      </a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <span>BitPads Protocol &mdash; Open Standard</span>
+  <span style="display:flex;gap:24px;align-items:center;">
+    <a href="https://babb.tel" target="_blank" rel="noopener"
+       style="color:rgba(232,234,240,0.55);text-decoration:none;font-family:var(--f-code);font-size:9px;letter-spacing:0.12em;">
+      BABB.TEL
+    </a>
+    <a href="https://github.com/babbworks/bitpads" target="_blank" rel="noopener"
+       style="color:rgba(232,234,240,0.55);text-decoration:none;font-family:var(--f-code);font-size:9px;letter-spacing:0.12em;">
+      GITHUB
+    </a>
+    <a href="reference.html"
+       style="color:rgba(232,234,240,0.55);text-decoration:none;font-family:var(--f-code);font-size:9px;letter-spacing:0.12em;">
+      REFERENCE
+    </a>
+    <a href="guide.html"
+       style="color:rgba(232,234,240,0.55);text-decoration:none;font-family:var(--f-code);font-size:9px;letter-spacing:0.12em;">
+      IMPLEMENT
+    </a>
+  </span>
+</footer>
+
+<script>
+// ── STARFIELD ─────────────────────────────────────────────
+(function() {
+  const canvas = document.getElementById('starfield');
+  const ctx = canvas.getContext('2d');
+  let stars = [];
+  let W, H;
+
+  function resize() {
+    W = canvas.width  = canvas.offsetWidth;
+    H = canvas.height = canvas.offsetHeight;
+  }
+
+  function initStars(n) {
+    stars = Array.from({ length: n }, () => ({
+      x: Math.random() * W,
+      y: Math.random() * H,
+      r: Math.random() * 1.2 + 0.2,
+      a: Math.random(),
+      speed: Math.random() * 0.004 + 0.001,
+      phase: Math.random() * Math.PI * 2,
+    }));
+  }
+
+  function draw(t) {
+    ctx.clearRect(0, 0, W, H);
+    stars.forEach(s => {
+      const alpha = (Math.sin(t * s.speed + s.phase) * 0.5 + 0.5) * 0.6 + 0.1;
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(61,255,214,${alpha * 0.6})`;
+      ctx.fill();
+    });
+    // occasional signal trace
+    if (Math.floor(t / 600) % 2 === 0) {
+      const prog = (t % 600) / 600;
+      const x = prog * W;
+      ctx.beginPath();
+      ctx.moveTo(0, H * 0.6);
+      ctx.lineTo(x, H * 0.6);
+      ctx.strokeStyle = 'rgba(61,255,214,0.04)';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+    }
+    requestAnimationFrame(draw);
+  }
+
+  window.addEventListener('resize', () => { resize(); initStars(180); });
+  resize();
+  initStars(180);
+  requestAnimationFrame(draw);
+})();
+
+// ── SCROLL REVEAL ─────────────────────────────────────────
+(function() {
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('vis'); io.unobserve(e.target); } });
+  }, { threshold: 0.12 });
+  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+})();
+
+// ── 40-BIT BITLEDGER VISUAL ───────────────────────────────
+(function() {
+  const bitData = [
+    // VALUE BLOCK bits 1-25
+    { n:1,  g:'v', name:'Bit 1 — Value MSB',           body:'Most significant bit of the 25-bit integer N. N encodes any amount 0–33,554,431 using N = A × 2^S + r, where S (Optimal Split) comes from the Layer 2 batch header.' },
+    { n:2,  g:'v', name:'Bit 2 — Value',               body:'Part of the 25-bit value block N. At default S=8: bits 1–17 form the mantissa A (0–131,071), bits 18–25 form the remainder r (0–255).' },
+    { n:3,  g:'v', name:'Bit 3 — Value',               body:'Part of the 25-bit value block N.' },
+    { n:4,  g:'v', name:'Bit 4 — Value',               body:'Part of the 25-bit value block N.' },
+    { n:5,  g:'v', name:'Bit 5 — Value',               body:'Part of the 25-bit value block N.' },
+    { n:6,  g:'v', name:'Bit 6 — Value',               body:'Part of the 25-bit value block N.' },
+    { n:7,  g:'v', name:'Bit 7 — Value',               body:'Part of the 25-bit value block N.' },
+    { n:8,  g:'v', name:'Bit 8 — Value',               body:'Part of the 25-bit value block N. End of byte 1 on wire.' },
+    { n:9,  g:'v', name:'Bit 9 — Value',               body:'Part of the 25-bit value block N. Start of byte 2 on wire.' },
+    { n:10, g:'v', name:'Bit 10 — Value',              body:'Part of the 25-bit value block N.' },
+    { n:11, g:'v', name:'Bit 11 — Value',              body:'Part of the 25-bit value block N.' },
+    { n:12, g:'v', name:'Bit 12 — Value',              body:'Part of the 25-bit value block N.' },
+    { n:13, g:'v', name:'Bit 13 — Value',              body:'Part of the 25-bit value block N.' },
+    { n:14, g:'v', name:'Bit 14 — Value',              body:'Part of the 25-bit value block N.' },
+    { n:15, g:'v', name:'Bit 15 — Value',              body:'Part of the 25-bit value block N.' },
+    { n:16, g:'v', name:'Bit 16 — Value',              body:'Part of the 25-bit value block N. End of byte 2 on wire.' },
+    { n:17, g:'v', name:'Bit 17 — Value / Mantissa end', body:'At default S=8, this is the last bit of mantissa A. Upper 17 bits (1–17) = A; lower 8 bits (18–25) = remainder r.' },
+    { n:18, g:'v', name:'Bit 18 — Remainder start',   body:'At S=8: start of 8-bit remainder r. When bit 32 (Qty Present) = 1, the remainder field carries a quantity rather than a sub-unit remainder.' },
+    { n:19, g:'v', name:'Bit 19 — Remainder',         body:'Part of the 8-bit remainder r at default split S=8.' },
+    { n:20, g:'v', name:'Bit 20 — Remainder',         body:'Part of the 8-bit remainder r.' },
+    { n:21, g:'v', name:'Bit 21 — Remainder',         body:'Part of the 8-bit remainder r.' },
+    { n:22, g:'v', name:'Bit 22 — Remainder',         body:'Part of the 8-bit remainder r.' },
+    { n:23, g:'v', name:'Bit 23 — Remainder',         body:'Part of the 8-bit remainder r.' },
+    { n:24, g:'v', name:'Bit 24 — Remainder',         body:'Part of the 8-bit remainder r.' },
+    { n:25, g:'v', name:'Bit 25 — Value LSB',         body:'Least significant bit of N. Maximum encodable N = 33,554,431. Combined with Layer 2 Scaling Factor and Decimal Position: Real Value = (N × SF) / 10^D.' },
+    // FLAG BLOCK bits 26-32
+    { n:26, g:'f', name:'Bit 26 — Rounding Flag',     body:'0 = encoded value is exact. 1 = value was rounded. Bit 27 then specifies direction. State 01 (bit26=0, bit27=1) is a protocol error — an independent integrity detection surface.' },
+    { n:27, g:'f', name:'Bit 27 — Rounding Direction',body:'Valid only when bit 26=1. 0 = rounded down (floor). 1 = rounded up (ceiling). The invalid state 01 provides a third error-detection layer beyond CRC-15.' },
+    { n:28, g:'f', name:'Bit 28 — Split Order',       body:'0 = use session default Optimal Split S from Layer 2 header. 1 = reverse the default for this record only. Allows a single record to deviate from batch encoding parameters.' },
+    { n:29, g:'f', name:'Bit 29 — Direction +/− (echo →bit37)', body:'0 = Plus / In (receiving). 1 = Minus / Out (disbursing). This value MUST equal bit 37 in the accounting block. Mismatch = corrupt record (cross-layer validation rule 1).' },
+    { n:30, g:'f', name:'Bit 30 — Status P/F (echo →bit38)',    body:'0 = Paid (settled, cash basis). 1 = Debt (accrued/unpaid). MUST equal bit 38 in the accounting block. Mismatch = corrupt record (cross-layer validation rule 2).' },
+    { n:31, g:'f', name:'Bit 31 — Debit/Credit Primary',        body:'0 = Credit side is primary. 1 = Debit side is primary. Resolves which account in the pair takes the debit role for this transaction.' },
+    { n:32, g:'f', name:'Bit 32 — Quantity Present',            body:'0 = flat total value (all 25 bits = single amount). 1 = Optimal Split active: upper bits encode unit price, lower bits encode quantity. Enables line-item encoding.' },
+    // ACCOUNTING BLOCK — account pair
+    { n:33, g:'ap', name:'Bit 33 — Account Pair [3] MSB',  body:'High bit of the 4-bit Account Pair code. The 4-bit code (bits 33–36) selects one of 14 valid double-entry pair archetypes (e.g. 0000 = Asset/Expense, 0110 = Revenue/Liability). Code 1111 is the compound continuation marker.' },
+    { n:34, g:'ap', name:'Bit 34 — Account Pair [2]',      body:'Part of the 4-bit Account Pair code.' },
+    { n:35, g:'ap', name:'Bit 35 — Account Pair [1]',      body:'Part of the 4-bit Account Pair code.' },
+    { n:36, g:'ap', name:'Bit 36 — Account Pair [0] LSB',  body:'Low bit of the 4-bit Account Pair code. Together bits 33–36 identify both the debit and credit account categories from the 14-pair archetype table.' },
+    // ACCOUNTING BLOCK — cross-validation echo bits
+    { n:37, g:'xv', name:'Bit 37 — Direction Echo (=bit29)', body:'MUST equal bit 29 (flag block Direction). A mismatch immediately signals a corrupt record. This redundancy costs zero additional bytes — the validation surfaces naturally from the accounting block layout.' },
+    { n:38, g:'xv', name:'Bit 38 — Status Echo (=bit30)',    body:'MUST equal bit 30 (flag block Status P/F). A mismatch signals corruption. Together, bits 29=bit37 and 30=bit38 form two independent cross-layer validation checks per record.' },
+    // ACCOUNTING BLOCK — control flags
+    { n:39, g:'cf', name:'Bit 39 — Completeness',            body:'0 = transaction is complete in this record. 1 = partial transaction, more records follow. In compound mode (account pair 1111): 1 = more continuation legs, 0 = final leg of the compound entry.' },
+    { n:40, g:'cf', name:'Bit 40 — Extension Flag',          body:'0 = record is complete at 40 bits. 1 = an extension byte follows, carrying additional context: quantity override, currency code, timestamp, or opposing account specification.' },
+  ];
+
+  const row = document.getElementById('bit-row');
+  const info = document.getElementById('bit-info');
+
+  bitData.forEach(b => {
+    const el = document.createElement('div');
+    el.className = 'bit-c';
+    el.dataset.g = b.g;
+    el.textContent = b.n;
+    el.title = b.name;
+    el.addEventListener('click', () => {
+      document.querySelectorAll('.bit-c').forEach(c => c.classList.remove('active'));
+      el.classList.add('active');
+      const colMap = { v:'var(--signal)', f:'var(--warm)', ap:'var(--violet)', xv:'#F472B6', cf:'#60A5FA' };
+      const col = colMap[b.g] || 'var(--signal)';
+      info.style.borderLeftColor = col;
+      info.innerHTML = `<div class="bit-info-name">${b.name}</div><div class="bit-info-body">${b.body}</div>`;
+    });
+    row.appendChild(el);
+  });
+})();
+
+// ── WAVE CATEGORY GRID ────────────────────────────────────
+(function() {
+  const cats = [
+    { hex:'0x0', name:'Null',      desc:'Minimal presence signal or keepalive. No payload. The most compact possible transmission — a heartbeat in one byte.' },
+    { hex:'0x1', name:'Status',    desc:'Device or system status broadcast. Sensor readings, battery level, health reports — any numeric state signal.' },
+    { hex:'0x2', name:'Command',   desc:'Directed command transmission. Command byte follows, with optional parameters. Layer 1 targets a specific recipient.' },
+    { hex:'0x3', name:'Data',      desc:'General structured data payload. When category alone cannot classify the content, Data carries arbitrary structured payloads.' },
+    { hex:'0x4', name:'Alert',     desc:'Time-sensitive alarm or alert. Severity in high nibble, type in low nibble. Highest-priority category in most receiver implementations.' },
+    { hex:'0x5', name:'Discovery', desc:'Broadcast discovery and capability exchange. Receivers announce supported protocol features without requiring Layer 1 attribution.' },
+    { hex:'0x6', name:'Config',    desc:'System or device configuration push. Setup, parameters, and profile updates delivered to a target via Layer 1 identity.' },
+    { hex:'0x7', name:'Sync',      desc:'Clock synchronisation or time reference broadcast. Tier 1 and Tier 2 time formats. Authority for distributed time consensus.' },
+    { hex:'0x8', name:'Record',    desc:'Structured record payload requiring full identity context. Layer 1 mandatory. Used for auditable data requiring sender verification.' },
+    { hex:'0x9', name:'Batch',     desc:'Batch data transmission. Groups multiple payloads under a single session frame. Fragment bit (bit 3) manages reassembly.' },
+    { hex:'0xA', name:'Query',     desc:'Request-response pattern. A query wave prompts a conformant receiver to respond with the requested data or status.' },
+    { hex:'0xB', name:'Diagnostic',desc:'Diagnostic data for system analysis. Error logs, performance counters, state snapshots. Traceability via Layer 1 recommended.' },
+    { hex:'0xC', name:'Financial', desc:'Financial signal wave (v2.0). Lightweight value indication. For complete transaction records, use Record mode with BitLedger.' },
+    { hex:'0xD', name:'Identity',  desc:'Identity signal (v2.0). Transmits identity attestation or credential data. Layer 1 required for verified attribution.' },
+    { hex:'0xE', name:'Control',   desc:'Protocol control and session management (v2.0). Session initiation, teardown, band change, version negotiation.' },
+    { hex:'0xF', name:'Extended',  desc:'Extended category. Next byte is an Extended Category Byte providing 256 additional codes. Layer 1 always required.' },
+  ];
+
+  const grid = document.getElementById('wave-grid');
+  const winfo = document.getElementById('wave-info');
+
+  cats.forEach((c, i) => {
+    const el = document.createElement('div');
+    el.className = 'wc';
+    el.innerHTML = `<span class="wc-hex">${c.hex}</span><span class="wc-name">${c.name}</span>`;
+    el.addEventListener('mouseenter', () => {
+      winfo.innerHTML = `<span style="color:var(--signal);font-weight:500;margin-right:10px;">${c.hex} ${c.name}</span>${c.desc}`;
+    });
+    el.addEventListener('mouseleave', () => {
+      winfo.innerHTML = `<span style="color:var(--cinema-faint)">Hover a category to see its role</span>`;
+    });
+    grid.appendChild(el);
+  });
+})();
+</script>
+</body>
+</html>
