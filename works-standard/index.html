@@ -17,7 +17,7 @@
     --ink-soft:  oklch(0.42  0.008 80);
     --rule:      oklch(0.86  0.010 85);
     --rule-soft: oklch(0.91  0.010 85);
-    --accent:    oklch(0.52  0.085 65);
+    --accent:    oklch(0.6 0.18 260);
     --accent-soft: oklch(0.92 0.025 70);
     --serif: "IBM Plex Serif", Georgia, "Times New Roman", serif;
     --sans:  "IBM Plex Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
@@ -1229,6 +1229,220 @@
       <p style="margin-top: 32px; font-family: var(--mono); font-size: 12px; color: var(--ink-soft); text-transform: uppercase; letter-spacing: 0.06em;">
         v0.1 establishes stable building contracts, Stream invariants, and conveyance rules. Future revisions continue through proposal and review.
       </p>
+    </section>
+
+    <!-- COMPOUND FLOW DIAGRAM ──────────────────── -->
+    <section id="flow" aria-labelledby="flow-title">
+      <p class="eyebrow">13 · Compound flow</p>
+      <h2 id="flow-title">How a chunk moves through the compound.</h2>
+      <p>From Actor submission through Intake, across the Stream, through Gate's decision, and onward to Mill, Dispatch, or Vault. Governance from Office and Barrel reaches Gate from below. Every transition is a Stream event.</p>
+
+      <svg viewBox="0 0 960 530" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Works compound data flow diagram showing connections between all nine buildings" style="width:100%;max-width:960px;display:block;margin:32px 0;border:1px solid var(--rule);">
+        <defs>
+          <!-- Content flow arrowhead (amber) -->
+          <marker id="cf-end" markerWidth="9" markerHeight="7" refX="8" refY="3.5" orient="auto">
+            <polygon points="0 0, 9 3.5, 0 7" fill="#8c5a2b"/>
+          </marker>
+          <marker id="cf-start" markerWidth="9" markerHeight="7" refX="1" refY="3.5" orient="auto-start-reverse">
+            <polygon points="0 0, 9 3.5, 0 7" fill="#8c5a2b"/>
+          </marker>
+          <!-- Governance arrowhead (dark) -->
+          <marker id="gov-end" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+            <polygon points="0 0, 8 3, 0 6" fill="#26221d"/>
+          </marker>
+          <!-- Reject loop arrowhead (smaller, amber) -->
+          <marker id="rej-end" markerWidth="7" markerHeight="6" refX="6" refY="3" orient="auto">
+            <polygon points="0 0, 7 3, 0 6" fill="#8c5a2b"/>
+          </marker>
+        </defs>
+
+        <!-- ── Background ── -->
+        <rect width="960" height="530" fill="#f7f3ec"/>
+
+        <!-- ── ACTORS outer frame ── -->
+        <rect x="6" y="6" width="948" height="518" fill="none" stroke="#c8c0b5" stroke-width="1" stroke-dasharray="5 4"/>
+        <text x="14" y="20" font-family="'IBM Plex Mono',ui-monospace,monospace" font-size="9" fill="#5a4a3a" letter-spacing="1.5">ACTORS — Human · Agent · Automated · External</text>
+
+        <!-- ═══════════════════════════════════════════
+             TOP ROW: INTAKE | BENCH | DISPATCH
+        ════════════════════════════════════════════ -->
+
+        <!-- INTAKE B/01 -->
+        <rect x="10" y="18" width="150" height="84" fill="#f7f3ec" stroke="#26221d" stroke-width="1.5"/>
+        <text x="85" y="38" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,monospace" font-size="8" fill="#8c5a2b" letter-spacing="2">B / 01</text>
+        <text x="85" y="60" text-anchor="middle" font-family="'IBM Plex Serif',Georgia,serif" font-size="18" fill="#26221d">Intake</text>
+        <text x="85" y="76" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,monospace" font-size="8" fill="#5a4a3a">CRC verify · structural check</text>
+        <text x="85" y="90" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,monospace" font-size="8" fill="#5a4a3a">chunk admit · financial ID</text>
+        <!-- Actor submit label above Intake -->
+        <text x="85" y="14" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,monospace" font-size="8" fill="#8c5a2b">submit ↓</text>
+
+        <!-- BENCH B/04 -->
+        <rect x="388" y="18" width="184" height="52" fill="#f0ece4" stroke="#8c5a2b" stroke-width="1" stroke-dasharray="4 3"/>
+        <text x="480" y="36" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,monospace" font-size="8" fill="#8c5a2b" letter-spacing="2">B / 04</text>
+        <text x="480" y="54" text-anchor="middle" font-family="'IBM Plex Serif',Georgia,serif" font-size="14" fill="#26221d">Bench — actor working memory</text>
+
+        <!-- DISPATCH B/07 -->
+        <rect x="800" y="18" width="150" height="84" fill="#f7f3ec" stroke="#26221d" stroke-width="1.5"/>
+        <text x="875" y="38" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,monospace" font-size="8" fill="#8c5a2b" letter-spacing="2">B / 07</text>
+        <text x="875" y="60" text-anchor="middle" font-family="'IBM Plex Serif',Georgia,serif" font-size="18" fill="#26221d">Dispatch</text>
+        <text x="875" y="76" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,monospace" font-size="8" fill="#5a4a3a">delivery · D deliver event</text>
+        <text x="875" y="90" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,monospace" font-size="8" fill="#5a4a3a">archives to Vault after delivery</text>
+        <!-- deliver label -->
+        <text x="875" y="14" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,monospace" font-size="8" fill="#8c5a2b">↓ deliver</text>
+
+        <!-- ═══════════════════════════════════════════
+             STREAM BAND
+        ════════════════════════════════════════════ -->
+        <rect x="10" y="112" width="940" height="50" fill="#ede9e2" stroke="#26221d" stroke-width="1.5"/>
+        <text x="22" y="132" font-family="'IBM Plex Mono',ui-monospace,monospace" font-size="10" fill="#26221d" font-weight="600" letter-spacing="2">STREAM</text>
+        <text x="90" y="132" font-family="'IBM Plex Mono',ui-monospace,monospace" font-size="8.5" fill="#5a4a3a" letter-spacing="0.5"> — append-only log · event bus · replay engine · all buildings emit here</text>
+        <text x="22" y="150" font-family="'IBM Plex Serif',Georgia,serif" font-size="12" fill="#26221d">Pacioli guarantee: no event modified or deleted  ·  Hollerith encoding: ts  op  a  b  ctx</text>
+
+        <!-- ═══════════════════════════════════════════
+             BUILDING GRID (below stream, y=172+)
+             Col 1: Store + Vault   x=10
+             Col 2: Gate + Mill     x=174
+             Col 3: Barrel + Office x=382
+             Routing lane:          x=552–798
+        ════════════════════════════════════════════ -->
+
+        <!-- STORE B/02 -->
+        <rect x="10" y="172" width="150" height="86" fill="#f7f3ec" stroke="#26221d" stroke-width="1"/>
+        <text x="85" y="191" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,monospace" font-size="8" fill="#8c5a2b" letter-spacing="2">B / 02</text>
+        <text x="85" y="213" text-anchor="middle" font-family="'IBM Plex Serif',Georgia,serif" font-size="17" fill="#26221d">Store</text>
+        <text x="85" y="230" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,monospace" font-size="8" fill="#5a4a3a">Row × Level × Bin</text>
+        <text x="85" y="244" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,monospace" font-size="8" fill="#5a4a3a">addressable working storage</text>
+
+        <!-- VAULT B/09 -->
+        <rect x="10" y="270" width="150" height="70" fill="#f7f3ec" stroke="#26221d" stroke-width="1"/>
+        <text x="85" y="289" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,monospace" font-size="8" fill="#8c5a2b" letter-spacing="2">B / 09</text>
+        <text x="85" y="311" text-anchor="middle" font-family="'IBM Plex Serif',Georgia,serif" font-size="17" fill="#26221d">Vault</text>
+        <text x="85" y="328" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,monospace" font-size="8" fill="#5a4a3a">permanent archive — write-once</text>
+
+        <!-- GATE B/06 — tall box showing all 5 decisions -->
+        <rect x="174" y="172" width="194" height="172" fill="#e8e3d8" stroke="#26221d" stroke-width="2"/>
+        <text x="271" y="191" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,monospace" font-size="8" fill="#8c5a2b" letter-spacing="2">B / 06</text>
+        <text x="271" y="213" text-anchor="middle" font-family="'IBM Plex Serif',Georgia,serif" font-size="18" fill="#26221d">Gate</text>
+        <text x="271" y="228" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,monospace" font-size="8" fill="#5a4a3a">stateless decision point</text>
+        <line x1="174" y1="237" x2="368" y2="237" stroke="#26221d" stroke-width="0.75"/>
+        <!-- 5 decisions -->
+        <text x="188" y="252" font-family="'IBM Plex Mono',ui-monospace,monospace" font-size="9" fill="#26221d" font-weight="600">→ approve</text>
+        <text x="290" y="252" font-family="'IBM Plex Mono',ui-monospace,monospace" font-size="8" fill="#5a4a3a">chunk → Mill → Dispatch</text>
+        <text x="188" y="268" font-family="'IBM Plex Mono',ui-monospace,monospace" font-size="9" fill="#26221d" font-weight="600">→ archive</text>
+        <text x="290" y="268" font-family="'IBM Plex Mono',ui-monospace,monospace" font-size="8" fill="#5a4a3a">chunk → Vault, G archive</text>
+        <text x="188" y="284" font-family="'IBM Plex Mono',ui-monospace,monospace" font-size="9" fill="#26221d" font-weight="600">→ reject</text>
+        <text x="290" y="284" font-family="'IBM Plex Mono',ui-monospace,monospace" font-size="8" fill="#5a4a3a">G reject → Stream</text>
+        <text x="188" y="300" font-family="'IBM Plex Mono',ui-monospace,monospace" font-size="9" fill="#26221d" font-weight="600">→ hold</text>
+        <text x="290" y="300" font-family="'IBM Plex Mono',ui-monospace,monospace" font-size="8" fill="#5a4a3a">S hold → Stream, waits</text>
+        <text x="188" y="316" font-family="'IBM Plex Mono',ui-monospace,monospace" font-size="9" fill="#26221d" font-weight="600">→ reroute</text>
+        <text x="290" y="316" font-family="'IBM Plex Mono',ui-monospace,monospace" font-size="8" fill="#5a4a3a">new destination assigned</text>
+        <!-- Right-of-Assembly note -->
+        <text x="271" y="334" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,monospace" font-size="7.5" fill="#8c5a2b">Right of Assembly — no exit without Gate</text>
+
+        <!-- MILL B/03 -->
+        <rect x="174" y="356" width="194" height="72" fill="#f7f3ec" stroke="#26221d" stroke-width="1"/>
+        <text x="271" y="374" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,monospace" font-size="8" fill="#8c5a2b" letter-spacing="2">B / 03</text>
+        <text x="271" y="396" text-anchor="middle" font-family="'IBM Plex Serif',Georgia,serif" font-size="17" fill="#26221d">Mill</text>
+        <text x="271" y="413" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,monospace" font-size="8" fill="#5a4a3a">lens pipeline transform</text>
+
+        <!-- BARREL B/05 -->
+        <rect x="382" y="172" width="156" height="86" fill="#f7f3ec" stroke="#26221d" stroke-width="1"/>
+        <text x="460" y="191" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,monospace" font-size="8" fill="#8c5a2b" letter-spacing="2">B / 05</text>
+        <text x="460" y="213" text-anchor="middle" font-family="'IBM Plex Serif',Georgia,serif" font-size="17" fill="#26221d">Barrel</text>
+        <text x="460" y="230" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,monospace" font-size="8" fill="#5a4a3a">stored programs</text>
+        <text x="460" y="244" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,monospace" font-size="8" fill="#5a4a3a">orchestrates multi-step ops</text>
+
+        <!-- OFFICE B/08 -->
+        <rect x="382" y="270" width="156" height="70" fill="#f7f3ec" stroke="#26221d" stroke-width="1"/>
+        <text x="460" y="289" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,monospace" font-size="8" fill="#8c5a2b" letter-spacing="2">B / 08</text>
+        <text x="460" y="311" text-anchor="middle" font-family="'IBM Plex Serif',Georgia,serif" font-size="17" fill="#26221d">Office</text>
+        <text x="460" y="328" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,monospace" font-size="8" fill="#5a4a3a">tokens · registry · veto</text>
+
+        <!-- ═══════════════════════════════════════════
+             FLOW ARROWS — CONTENT PATH (amber, solid)
+        ════════════════════════════════════════════ -->
+
+        <!-- 1. Intake → Stream (T post) -->
+        <line x1="85" y1="102" x2="85" y2="112" stroke="#8c5a2b" stroke-width="2" marker-end="url(#cf-end)"/>
+        <text x="90" y="110" font-family="'IBM Plex Mono',ui-monospace,monospace" font-size="8" fill="#8c5a2b">T post</text>
+
+        <!-- 2. Stream → Gate (chunk route) -->
+        <line x1="271" y1="162" x2="271" y2="172" stroke="#8c5a2b" stroke-width="2" marker-end="url(#cf-end)"/>
+        <text x="276" y="170" font-family="'IBM Plex Mono',ui-monospace,monospace" font-size="8" fill="#8c5a2b">chunk route</text>
+
+        <!-- 3. Gate → Mill (G approve) -->
+        <line x1="271" y1="344" x2="271" y2="356" stroke="#8c5a2b" stroke-width="2" marker-end="url(#cf-end)"/>
+        <text x="276" y="354" font-family="'IBM Plex Mono',ui-monospace,monospace" font-size="8" fill="#8c5a2b">G approve</text>
+
+        <!-- 4. Mill → Dispatch (long routing path through right lane) -->
+        <polyline points="368,392 700,392 700,59 800,59" fill="none" stroke="#8c5a2b" stroke-width="2" marker-end="url(#cf-end)"/>
+        <text x="510" y="387" font-family="'IBM Plex Mono',ui-monospace,monospace" font-size="8" fill="#8c5a2b">transformed chunk</text>
+        <!-- vertical segment label -->
+        <text x="706" y="250" font-family="'IBM Plex Mono',ui-monospace,monospace" font-size="8" fill="#8c5a2b" transform="rotate(90,706,250)">→ Dispatch</text>
+
+        <!-- 5. Gate → Vault (G archive) -->
+        <!-- Route: Gate left (174) → left through gap → Vault right (160) at y=295 -->
+        <line x1="174" y1="295" x2="160" y2="295" stroke="#8c5a2b" stroke-width="2" marker-end="url(#cf-end)"/>
+        <text x="105" y="291" font-family="'IBM Plex Mono',ui-monospace,monospace" font-size="8" fill="#8c5a2b">G archive</text>
+
+        <!-- 6. G reject loop — thin arc from Gate top back to Stream -->
+        <path d="M240,172 C210,148 195,135 220,124" fill="none" stroke="#8c5a2b" stroke-width="1.5" stroke-dasharray="3 2" marker-end="url(#rej-end)"/>
+        <text x="196" y="145" font-family="'IBM Plex Mono',ui-monospace,monospace" font-size="8" fill="#8c5a2b">G reject</text>
+        <text x="196" y="155" font-family="'IBM Plex Mono',ui-monospace,monospace" font-size="8" fill="#8c5a2b">→ Stream</text>
+
+        <!-- 7. Dispatch → Vault after delivery (thin, dashed) -->
+        <polyline points="800,70 740,70 740,452 160,452" fill="none" stroke="#8c5a2b" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#cf-end)"/>
+        <text x="430" y="447" font-family="'IBM Plex Mono',ui-monospace,monospace" font-size="8" fill="#8c5a2b">D deliver → Vault archive after delivery</text>
+
+        <!-- ═══════════════════════════════════════════
+             GOVERNANCE ARROWS (dark, dashed)
+             Barrel → Gate  and  Office → Gate
+             route through bottom channel
+        ════════════════════════════════════════════ -->
+
+        <!-- Barrel → Gate: right edge of Gate (368) ← left edge of Barrel (382) at y=210 -->
+        <line x1="382" y1="210" x2="368" y2="210" stroke="#26221d" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#gov-end)"/>
+        <text x="370" y="206" font-family="'IBM Plex Mono',ui-monospace,monospace" font-size="7.5" fill="#26221d">program ←</text>
+
+        <!-- Office → Gate: route through gap between Gate and Barrel columns, then up into Gate right -->
+        <!-- Path: Office left-top (382,278) → up through gap → Gate right at y=268 -->
+        <polyline points="382,285 372,285 372,265 368,265" fill="none" stroke="#26221d" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#gov-end)"/>
+        <text x="370" y="279" font-family="'IBM Plex Mono',ui-monospace,monospace" font-size="7.5" fill="#26221d">veto · token</text>
+
+        <!-- ═══════════════════════════════════════════
+             STREAM EMISSION TICKS (thin olive lines)
+             showing each building emits to Stream
+        ════════════════════════════════════════════ -->
+        <!-- Store → Stream -->
+        <line x1="85" y1="172" x2="85" y2="162" stroke="#6a7a38" stroke-width="1" stroke-dasharray="2 2"/>
+        <!-- Mill → Stream (via same channel as content flow, just show tick) -->
+        <line x1="271" y1="356" x2="271" y2="162" stroke="none"/><!-- handled by main flow arrow -->
+        <!-- Barrel → Stream -->
+        <line x1="460" y1="172" x2="460" y2="162" stroke="#6a7a38" stroke-width="1" stroke-dasharray="2 2"/>
+        <!-- Office → Stream -->
+        <line x1="460" y1="270" x2="460" y2="162" stroke="#6a7a38" stroke-width="1" stroke-dasharray="2 2"/>
+        <!-- Vault → Stream -->
+        <line x1="85" y1="270" x2="85" y2="162" stroke="#6a7a38" stroke-width="1" stroke-dasharray="2 2"/>
+
+        <!-- ═══════════════════════════════════════════
+             LEGEND
+        ════════════════════════════════════════════ -->
+        <line x1="10" y1="468" x2="940" y2="468" stroke="#c8c0b5" stroke-width="0.75"/>
+        <!-- Legend items -->
+        <line x1="16" y1="484" x2="48" y2="484" stroke="#8c5a2b" stroke-width="2" marker-end="url(#cf-end)"/>
+        <text x="54" y="488" font-family="'IBM Plex Mono',ui-monospace,monospace" font-size="8.5" fill="#5a4a3a">content flow (chunk path)</text>
+        <line x1="210" y1="484" x2="242" y2="484" stroke="#8c5a2b" stroke-width="1.5" stroke-dasharray="4 2" marker-end="url(#rej-end)"/>
+        <text x="248" y="488" font-family="'IBM Plex Mono',ui-monospace,monospace" font-size="8.5" fill="#5a4a3a">post-delivery archive</text>
+        <line x1="390" y1="484" x2="422" y2="484" stroke="#26221d" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#gov-end)"/>
+        <text x="428" y="488" font-family="'IBM Plex Mono',ui-monospace,monospace" font-size="8.5" fill="#5a4a3a">governance (Barrel · Office → Gate)</text>
+        <line x1="680" y1="484" x2="712" y2="484" stroke="#6a7a38" stroke-width="1" stroke-dasharray="2 2"/>
+        <text x="718" y="488" font-family="'IBM Plex Mono',ui-monospace,monospace" font-size="8.5" fill="#5a4a3a">event emission → Stream</text>
+
+        <!-- ═══════════════════════════════════════════
+             CAPTION
+        ════════════════════════════════════════════ -->
+        <text x="10" y="510" font-family="'IBM Plex Mono',ui-monospace,monospace" font-size="8.5" fill="#5a4a3a">Works compound — nine buildings, one Stream backbone. Gate is the only exit from the compound. Office and Barrel govern Gate; they do not sit on the content path.</text>
+      </svg>
     </section>
 
   </main>

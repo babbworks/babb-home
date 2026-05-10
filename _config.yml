@@ -41,7 +41,9 @@ header_pages:
   - pages/Releases/releases.md
   - pages/works.md
   - pages/basics.md
+  - pages/bitpadsdotorg.md
   - pages/bitpadsbitledger.md
+  - pages/compound.md
 
 # tests
 #frontier
