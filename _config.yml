@@ -39,10 +39,11 @@ plugins:
 header_pages:
   - pages/Tools/tools.md
   - pages/Releases/releases.md
-  - pages/works.md
   - pages/basics.md
   - pages/bitpadsdotorg.md
   - pages/bitpadsbitledger.md
+  - pages/workwarrior.md
+  - pages/works.md
   - pages/compound.md
 
 # tests

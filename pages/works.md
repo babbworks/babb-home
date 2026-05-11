@@ -1,6 +1,6 @@
 ---
 layout: fullframe
-title: WORKS
+title: Works
 permalink: /works/
 ---
 

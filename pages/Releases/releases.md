@@ -1,6 +1,6 @@
 ---
 layout: default
-title: RELEASES
+title: Releases
 permalink: /releases
 ---
 <style>
