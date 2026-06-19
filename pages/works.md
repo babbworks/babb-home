@@ -1,7 +1,7 @@
 ---
 layout: fullframe
 title: Works
-permalink: /works/
+permalink: /works-app/
 ---
 
-<iframe src="/works-standard/" style="width:100%;height:100%;border:none;display:block;"></iframe>
+<iframe src="/app/works-standard/index.html"></iframe>

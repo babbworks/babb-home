@@ -1,7 +1,7 @@
 ---
 layout: fullframe
 title: Workpads
-permalink: /workpads/
+permalink: /workpads-app/
 ---
 
-<iframe src="/workpads/index.html" style="width:100%;height:100%;border:none;display:block;"></iframe>
+<iframe src="/app/workpads/index.html"></iframe>

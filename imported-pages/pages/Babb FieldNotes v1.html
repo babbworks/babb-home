@@ -1,0 +1,688 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Field Notes — Hamilton steel mill — Babb</title>
+<meta name="description" content="Editor's and director's notes from the Hamilton steel mill standing story — chronological, anchored back to Angles, B-Roll, and Dailies." />
+<style>
+  :root{
+    --paper:#faf8f3; --paper-2:#f3efe5; --card:#ffffff;
+    --ink:#1a1a1a; --ink-2:#444141; --muted:#807d75;
+    --hair:#d8d3c4; --hair-2:#e8e3d4;
+    --alt:#a14a00; --alt-soft:#f5e9d8;
+    --live:#2f7a3a;
+    --term-bg:#141312; --term-fg:#e8e3d4; --term-link:#ffd58a; --term-subj:#b7d99a;
+    --mono: ui-monospace,"SF Mono",SFMono-Regular,"JetBrains Mono",Menlo,Consolas,monospace;
+    --gutter:24px; --maxw:1240px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--paper);color:var(--ink);
+    font:14px/1.55 var(--mono);
+    -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
+    font-feature-settings:"ss01","cv11"}
+  a{color:inherit;text-decoration:none}
+  a:hover{text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px}
+  h1,h2,h3,h4{font-family:var(--mono);font-weight:600;margin:0;letter-spacing:-.01em}
+  .shell{max-width:var(--maxw);margin:0 auto;padding:0 var(--gutter)}
+
+  /* shared chrome */
+  .sysbar{border-bottom:1px solid var(--hair);background:var(--paper);
+    font-size:11px;color:var(--muted);letter-spacing:.04em}
+  .sysbar .row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;gap:16px}
+  .dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--live);
+    box-shadow:0 0 0 0 rgba(47,122,58,.55);animation:pulse 2.6s infinite;vertical-align:middle;margin-right:6px}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(47,122,58,.55)}70%{box-shadow:0 0 0 7px rgba(47,122,58,0)}100%{box-shadow:0 0 0 0 rgba(47,122,58,0)}}
+  .sysbar .right{display:flex;gap:14px;align-items:center}
+  .sysbar a:hover{color:var(--ink)}
+
+  header.masthead{border-bottom:1px solid var(--hair);padding:22px 0 20px}
+  .masthead .row{display:flex;justify-content:space-between;align-items:flex-end;gap:24px}
+  .wordmark{font-size:34px;font-weight:700;letter-spacing:-.04em;line-height:.9}
+  .wordmark .punct{color:var(--alt)}
+  .tagline{font-size:11px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-top:8px}
+  nav.primary{display:flex;gap:22px;font-size:13px;padding-bottom:4px}
+  nav.primary a{color:var(--ink-2);position:relative;padding:2px 0}
+  nav.primary a:hover{color:var(--ink);text-decoration:none}
+  nav.primary a.here{color:var(--ink)}
+  nav.primary a.here::after{content:"";position:absolute;left:0;right:0;bottom:-4px;height:2px;background:var(--ink)}
+
+  /* context bar */
+  .ctx{border-bottom:1px solid var(--hair);background:rgba(250,248,243,.96);font-size:12px}
+  .ctx .row{display:flex;justify-content:space-between;align-items:center;gap:18px;padding:9px 0;flex-wrap:wrap}
+  .ctx .back{display:inline-flex;align-items:center;gap:8px;color:var(--ink-2)}
+  .ctx .back .arr{color:var(--alt)}
+  .ctx .back b{color:var(--ink);font-weight:600;letter-spacing:-.02em}
+  .ctx .here{color:var(--muted);letter-spacing:.06em;font-size:11px}
+  .ctx .here .now{color:var(--ink);font-weight:500}
+  .ctx .more{display:flex;gap:14px;font-size:11.5px;color:var(--ink-2)}
+  .ctx .more a{color:var(--ink-2);border-bottom:1px solid var(--hair-2)}
+  .ctx .more a.here{color:var(--ink);font-weight:600;border-bottom-color:var(--alt)}
+
+  /* section marker */
+  .smark{display:flex;align-items:baseline;gap:12px;margin:36px 0 18px;
+    font-size:11px;color:var(--muted);letter-spacing:.16em;text-transform:uppercase}
+  .smark .num{color:var(--ink);font-weight:600}
+  .smark .rule{flex:1;height:1px;background:var(--hair);transform:translateY(-3px)}
+  .smark .meta{color:var(--muted)}
+
+  /* ─── title block ─── */
+  .ttl{display:grid;grid-template-columns:1.55fr 1fr;gap:36px;
+    margin:18px 0 18px;padding-bottom:18px;border-bottom:1px solid var(--hair)}
+  .ttl h1{font-size:44px;line-height:1.05;letter-spacing:-.03em;font-weight:700}
+  .ttl h1 .punct{color:var(--alt)}
+  .ttl .intro{font-size:14.5px;line-height:1.6;color:var(--ink-2);margin-top:14px;max-width:54ch;text-wrap:pretty}
+  .ttl .intro a{color:var(--ink);border-bottom:1px solid var(--hair)}
+  .ttl .right{display:flex;flex-direction:column;gap:14px;align-self:end}
+  .ttl .stat-bx{border:1px solid var(--hair);background:var(--card);padding:14px 16px;
+    display:grid;grid-template-columns:1fr 1fr;gap:10px 24px}
+  .ttl .stat-bx .k{font-size:10px;color:var(--muted);letter-spacing:.16em;text-transform:uppercase}
+  .ttl .stat-bx .v{font-size:22px;font-weight:600;letter-spacing:-.02em;margin-top:2px}
+  .ttl .stat-bx .v small{font-size:11px;color:var(--muted);font-weight:400;letter-spacing:0;text-transform:none;margin-left:6px}
+
+  /* ─── filter strip ─── */
+  .tools{display:flex;flex-wrap:wrap;gap:18px 28px;align-items:center;
+    margin:0 0 12px;padding:12px 0;border-bottom:1px solid var(--hair-2)}
+  .tools .group{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+  .tools .lbl{font-size:10px;color:var(--muted);letter-spacing:.16em;text-transform:uppercase}
+  .tools input[type=search]{font:inherit;font-size:12.5px;border:1px solid var(--hair);background:var(--card);padding:5px 10px;outline:none;color:var(--ink);min-width:220px}
+  .tools input[type=search]:focus{border-color:var(--ink)}
+  .pill-row{display:flex;gap:0;flex-wrap:wrap;font-size:12px}
+  .pill-row button{font:inherit;background:var(--card);border:1px solid var(--hair);color:var(--ink-2);
+    padding:4px 11px;cursor:pointer;margin:-1px 0 0 -1px;letter-spacing:.02em;
+    transition:background .12s ease,color .12s ease,border-color .12s ease;display:inline-flex;align-items:baseline;gap:6px}
+  .pill-row button:hover{border-color:var(--ink);color:var(--ink)}
+  .pill-row button[aria-pressed="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+  .pill-row button .n{font-size:9.5px;color:var(--muted);letter-spacing:.12em}
+  .pill-row button[aria-pressed="true"] .n{color:var(--alt-soft)}
+  .tools .util{margin-left:auto;font-size:11.5px;color:var(--ink-2)}
+  .tools .util a{color:var(--ink-2);border-bottom:1px solid var(--hair-2)}
+
+  /* ─── two-col body ─── */
+  .body-row{display:grid;grid-template-columns:1.6fr 1fr;gap:42px;margin-top:18px}
+
+  /* ─── day grouping ─── */
+  .day{margin-bottom:18px}
+  .day .day-head{display:grid;grid-template-columns:130px 1fr;gap:18px;
+    padding:14px 0 10px;border-bottom:1px solid var(--hair);align-items:baseline}
+  .day .day-head .d{font-size:11px;color:var(--muted);letter-spacing:.12em;text-transform:uppercase}
+  .day .day-head .d b{display:block;font-size:30px;color:var(--ink);font-weight:700;letter-spacing:-.025em;line-height:1.05;text-transform:none;letter-spacing:0;margin-top:4px}
+  .day .day-head .d .when{display:block;font-size:10.5px;color:var(--ink-2);letter-spacing:.04em;margin-top:6px;font-weight:400;text-transform:none}
+  .day .day-head .summary{font-size:13px;color:var(--ink-2);line-height:1.6;max-width:60ch;text-wrap:pretty}
+  .day .day-head .summary em{font-style:normal;color:var(--ink);background:var(--alt-soft);padding:0 4px}
+
+  /* ─── note card ─── */
+  .notes{display:flex;flex-direction:column;gap:12px;padding:14px 0 0}
+  .note{background:var(--card);border:1px solid var(--hair);border-left:3px solid var(--alt);
+    padding:16px 22px;display:flex;flex-direction:column;gap:10px;scroll-margin-top:30px;
+    transition:border-color .15s ease, background .15s ease}
+  .note:target,.note:hover{border-color:var(--ink);border-left-color:var(--alt);background:#fbf7e9}
+  .note .head{display:flex;justify-content:space-between;align-items:baseline;gap:14px;flex-wrap:wrap}
+  .note .head .ts{font-size:10.5px;color:var(--muted);letter-spacing:.12em;text-transform:uppercase}
+  .note .head .ts .nu{color:var(--ink);font-weight:600;margin-right:8px}
+  .note .head .anchor{font-size:10.5px;color:var(--alt);letter-spacing:.06em;display:inline-flex;align-items:baseline;gap:6px}
+  .note .head .anchor::before{content:"↳";color:var(--muted);margin-right:4px}
+  .note .head .anchor a{color:var(--alt);border-bottom:1px dotted #d8a988}
+  .note .head .anchor a:hover{color:var(--ink);text-decoration:none}
+  .note .head .anchor.general{color:var(--muted)}
+  .note .head .anchor.general::before{content:"·"}
+  .note .body{font-size:15px;line-height:1.6;color:var(--ink);text-wrap:pretty;max-width:62ch}
+  .note .body em{color:var(--alt);font-style:normal;font-weight:600}
+  .note .body strong{font-weight:600;background:var(--alt-soft);padding:0 4px;color:var(--ink)}
+  .note .body a{color:var(--ink);border-bottom:1px solid var(--ink)}
+  .note .body a:hover{color:var(--alt);border-color:var(--alt);text-decoration:none}
+  .note .foot{display:flex;justify-content:space-between;align-items:baseline;gap:14px;font-size:11px;color:var(--muted);letter-spacing:.04em;flex-wrap:wrap;padding-top:8px;border-top:1px dotted var(--hair-2)}
+  .note .foot .by .nm{color:var(--ink-2);font-weight:500}
+  .note .foot .util{display:flex;gap:14px;font-size:10.5px}
+  .note .foot .util a{color:var(--ink-2);border-bottom:1px solid var(--hair-2)}
+  .note .foot .util a:hover{color:var(--alt);text-decoration:none}
+
+  /* sidebar */
+  .sidebar{display:flex;flex-direction:column;gap:18px;position:sticky;top:20px;align-self:start;max-height:calc(100vh - 40px);overflow:auto}
+  .sb-box{border:1px solid var(--hair);background:var(--card);padding:14px 16px}
+  .sb-box h4{font-size:10px;color:var(--muted);letter-spacing:.16em;text-transform:uppercase;font-weight:600;margin-bottom:10px}
+  .sb-box ul{margin:0;padding:0;list-style:none}
+  .sb-box li{font-size:12.5px;line-height:1.5;padding:5px 0;border-bottom:1px dotted var(--hair-2);
+    display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+  .sb-box li:last-child{border-bottom:none}
+  .sb-box li a{color:var(--ink-2);flex:1}
+  .sb-box li a:hover{color:var(--alt);text-decoration:none}
+  .sb-box li .meta{font-size:10px;color:var(--muted);letter-spacing:.04em;flex-shrink:0}
+
+  /* stats grid (sidebar) */
+  .stats{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .stat .k{font-size:10px;color:var(--muted);letter-spacing:.12em;text-transform:uppercase}
+  .stat .v{font-size:24px;font-weight:600;letter-spacing:-.02em;margin-top:2px}
+  .stat .v small{font-size:11px;color:var(--muted);font-weight:400;letter-spacing:0;text-transform:none;margin-left:5px}
+
+  /* tag clouds */
+  .tagcloud{display:flex;flex-wrap:wrap;gap:0;font-size:11px}
+  .tagcloud a{border:1px solid var(--hair);background:var(--paper);color:var(--ink-2);padding:3px 9px;margin:-1px 0 0 -1px;letter-spacing:.02em;display:inline-flex;align-items:baseline;gap:5px}
+  .tagcloud a:hover{border-color:var(--ink);color:var(--ink);text-decoration:none}
+  .tagcloud a .n{font-size:9px;color:var(--muted);letter-spacing:.12em}
+
+  /* author legend */
+  .authors{display:flex;flex-direction:column;gap:6px;font-size:12.5px}
+  .authors .row{display:grid;grid-template-columns:14px 1fr 30px;gap:10px;align-items:baseline;padding:5px 0;border-bottom:1px dotted var(--hair-2)}
+  .authors .row:last-child{border-bottom:none}
+  .authors .row .sw{width:10px;height:10px;background:var(--alt);margin-top:3px}
+  .authors .row .sw.b{background:var(--ink)}
+  .authors .row .sw.c{background:var(--live)}
+  .authors .row .nm{color:var(--ink-2)}
+  .authors .row .c{font-size:10.5px;color:var(--muted);text-align:right;letter-spacing:.04em}
+
+  /* footer (shared) */
+  footer.colophon{margin-top:56px;border-top:1px solid var(--hair);
+    padding:32px 0 48px;color:var(--ink-2);font-size:12.5px}
+  .col-grid{display:grid;grid-template-columns:1.6fr 1fr 1fr 1fr;gap:30px;margin-bottom:28px}
+  .col h4{font-size:10.5px;color:var(--muted);letter-spacing:.16em;text-transform:uppercase;margin-bottom:12px;font-weight:600}
+  .col ul{list-style:none;padding:0;margin:0} .col li{padding:3px 0}
+  .col li a:hover{color:var(--alt);text-decoration:none}
+  .col .tag{font-size:10.5px;color:var(--muted);margin-left:6px;letter-spacing:.06em}
+  .col-id .mark{font-size:28px;font-weight:700;letter-spacing:-.04em;line-height:.9}
+  .col-id .mark .punct{color:var(--alt)}
+  .col-id p{margin:10px 0 14px;line-height:1.55;max-width:36ch}
+  .col-id .addr{font-size:11px;color:var(--muted);line-height:1.6}
+  .col-foot{display:flex;justify-content:space-between;align-items:center;gap:20px;padding-top:18px;border-top:1px solid var(--hair-2);font-size:11px;color:var(--muted);letter-spacing:.04em}
+  .col-foot .right{display:flex;gap:14px}
+
+  /* author variant — second author = ink border-left */
+  .note.au-b{border-left-color:var(--ink)}
+  .note.au-b .head .anchor::before{content:"↳"}
+  .note.au-c{border-left-color:var(--live)}
+
+  @media (max-width:1100px){
+    .ttl{grid-template-columns:1fr}
+    .body-row{grid-template-columns:1fr}
+    .sidebar{position:static;max-height:none}
+    .col-grid{grid-template-columns:1fr 1fr}
+  }
+  @media (max-width:640px){
+    .wordmark{font-size:28px}
+    .ttl h1{font-size:32px}
+    .day .day-head{grid-template-columns:1fr;gap:6px}
+    .stats{grid-template-columns:1fr 1fr}
+    nav.primary{flex-wrap:wrap;gap:14px}
+    .col-grid{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+
+<!-- sysbar -->
+<div class="sysbar">
+  <div class="shell row">
+    <div><span class="dot"></span>babb<span style="color:var(--muted)"> / places / hamilton-steel-mill / field-notes</span></div>
+    <div class="right">
+      <span>build 2026.05.18</span><span>·</span>
+      <span id="clock">--:--:-- UTC</span><span>·</span>
+      <a href="/feed.xml?cat=places/hamilton-steel-mill/field-notes">rss</a>
+    </div>
+  </div>
+</div>
+
+<!-- masthead -->
+<header class="masthead">
+  <div class="shell row">
+    <div>
+      <a href="Babb Homepage v1.html" style="text-decoration:none"><div class="wordmark">babb<span class="punct">.</span></div></a>
+      <div class="tagline">A media outfit · A product company</div>
+    </div>
+    <nav class="primary" aria-label="Primary">
+      <a href="Babb Worlds v1.html">Worlds</a>
+      <a class="here" href="Babb Place v1.html">Places</a>
+      <a href="Babb Products v1.html">Products</a>
+      <a href="Babb Updates v1.html">Updates</a>
+      <a href="Babb About v1.html">About</a>
+    </nav>
+  </div>
+</header>
+
+<!-- context bar -->
+<div class="ctx">
+  <div class="shell row">
+    <a class="back" href="Babb Place v1.html"><span class="arr">←</span> <span>From</span> <b>Hamilton steel mill</b></a>
+    <span class="here">Field Notes &middot; <span class="now">14 notes &middot; 2 editors</span></span>
+    <div class="more">
+      <a href="Babb Article v1.html">Dispatch</a>
+      <a href="Babb Audio v1.html">Audio</a>
+      <a href="Babb Video v1.html">Video</a>
+      <a href="Babb BRoll v1.html">B-Roll</a>
+      <a class="here" href="Babb FieldNotes v1.html">Field Notes (here)</a>
+    </div>
+  </div>
+</div>
+
+<div class="shell">
+
+  <section class="ttl">
+    <div>
+      <h1>Field Notes<span class="punct">.</span></h1>
+      <p class="intro">Director&rsquo;s and editor&rsquo;s voice from inside the standing story &mdash; chronological, anchored. Each note is a short observation, a decision, or something we want to come back to. <a href="Babb Place v1.html">The Place page</a> shows the recent four; this archive is the complete record.</p>
+    </div>
+    <div class="right">
+      <div class="stat-bx">
+        <div><div class="k">Notes</div><div class="v">14 <small>total</small></div></div>
+        <div><div class="k">Editors</div><div class="v">2 <small>authors</small></div></div>
+        <div><div class="k">Anchored</div><div class="v">9 <small>of 14</small></div></div>
+        <div><div class="k">Last note</div><div class="v" style="font-size:14px">2d ago</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- filters -->
+  <div class="tools" role="navigation" aria-label="Filters">
+    <div class="group">
+      <input id="search" type="search" placeholder="Search notes…" aria-label="Search" />
+    </div>
+    <div class="group">
+      <span class="lbl">Author</span>
+      <div class="pill-row" id="authorFilter">
+        <button data-au="all" aria-pressed="true"><span>All</span><span class="n">14</span></button>
+        <button data-au="a"><span>Editor A</span><span class="n">9</span></button>
+        <button data-au="b"><span>Editor B</span><span class="n">4</span></button>
+        <button data-au="c"><span>Director / Sound</span><span class="n">1</span></button>
+      </div>
+    </div>
+    <div class="group">
+      <span class="lbl">Anchored to</span>
+      <div class="pill-row" id="anchorFilter">
+        <button data-an="all" aria-pressed="true">All</button>
+        <button data-an="floor">The Floor</button>
+        <button data-an="owners">The Owners</button>
+        <button data-an="town">The Town</button>
+        <button data-an="future">The Future</button>
+        <button data-an="general">General</button>
+      </div>
+    </div>
+    <div class="util">
+      <a href="/feed.xml?cat=places/hamilton-steel-mill/field-notes">RSS &middot; this archive</a>
+    </div>
+  </div>
+
+  <!-- ─── BODY ─── -->
+  <section class="body-row">
+
+    <div id="dayCol">
+
+      <!-- ═════ DAY 4 — 2026-05-12 ═════ -->
+      <div class="day">
+        <div class="day-head">
+          <div class="d">May 12<b>Day 04</b><span class="when">2026-05-12 · Tuesday</span></div>
+          <div class="summary">Final pour day. <em>Three notes</em> from the floor &mdash; one about the cover image, two anchored to <a href="Babb Angle v1.html">The Floor</a>. Crew breaks down at noon.</div>
+        </div>
+        <div class="notes">
+
+          <div class="note au-a" id="n14" data-au="a" data-an="floor" data-text="third shift was unexpectedly the most photogenic reconsider the cover image">
+            <div class="head">
+              <span class="ts"><span class="nu">N 14</span>17:42 ET &middot; on site</span>
+              <span class="anchor">anchored to <a href="Babb Angle v1.html">The Floor</a> &middot; <a href="Babb BRoll v1.html">dawn strip</a></span>
+            </div>
+            <div class="body">The third shift was unexpectedly the most photogenic <em>&mdash; reconsider the cover image.</em> Talk to the shoot crew about returning at 05:00 local next pass. The dawn light hits the bays at an angle nothing else does, and the floor is quieter so the people fill the frame.</div>
+            <div class="foot">
+              <span class="by">— <span class="nm">Editor A</span></span>
+              <span class="util"><a href="#n14">permalink</a><a href="Babb Place v1.html#dailies">in Dailies</a></span>
+            </div>
+          </div>
+
+          <div class="note au-a" id="n13" data-au="a" data-an="floor" data-text="cost per ton chart doesn't read like a spreadsheet paper ledger handwritten weeks">
+            <div class="head">
+              <span class="ts"><span class="nu">N 13</span>14:08 ET</span>
+              <span class="anchor">anchored to <a href="Babb Angle v1.html">The Floor &middot; Numbers</a></span>
+            </div>
+            <div class="body">Find a chart for cost-per-ton that <em>doesn&rsquo;t read like a spreadsheet</em>. Maybe a paper-ledger style with handwritten weeks. The version <a href="/people/marisol/">Marisol</a> showed us in the office at lunch had columns drawn in pencil and was more legible than anything we&rsquo;ve produced.</div>
+            <div class="foot">
+              <span class="by">— <span class="nm">Editor A</span></span>
+              <span class="util"><a href="#n13">permalink</a><a href="Babb Article v1.html">dispatch graf 9</a></span>
+            </div>
+          </div>
+
+          <div class="note au-c" id="n12" data-au="c" data-an="floor" data-text="ambient mic placement pulpit door corridor cooler signal">
+            <div class="head">
+              <span class="ts"><span class="nu">N 12</span>09:30 ET</span>
+              <span class="anchor">anchored to <a href="Babb Audio v1.html">Audio &middot; ambient</a></span>
+            </div>
+            <div class="body">The corridor outside the pulpit gives a cleaner ambient signal than the pulpit itself; less HVAC hum, more cast hum bleeding through the door. Recording the next loop from there. <strong>Replace the AMB 01 mix on the Place page after the next pass</strong>.</div>
+            <div class="foot">
+              <span class="by">— <span class="nm">D.L.</span>, sound</span>
+              <span class="util"><a href="#n12">permalink</a><a href="Babb BRoll v1.html#audio">B-Roll · audio</a></span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ═════ DAY 3 — 2026-05-11 ═════ -->
+      <div class="day">
+        <div class="day-head">
+          <div class="d">May 11<b>Day 03</b><span class="when">2026-05-11 · Monday</span></div>
+          <div class="summary">Tony R.&rsquo;s long interview day. Four notes &mdash; including the one that changed how we treat <em>ladle metallurgy</em> on every page going forward.</div>
+        </div>
+        <div class="notes">
+
+          <div class="note au-a" id="n11" data-au="a" data-an="floor" data-text="ladle metallurgy glossary hover popup move to glossary not body">
+            <div class="head">
+              <span class="ts"><span class="nu">N 11</span>11:42 ET</span>
+              <span class="anchor">anchored to <a href="Babb Angle v1.html">Glossary &middot; on every page</a></span>
+            </div>
+            <div class="body">&ldquo;Ladle metallurgy&rdquo; deserves its own popup on hover wherever it appears. <em>Move to glossary, not body.</em> Same for tap-to-tap, EAF, DRI, scope-3. The Angle is already too jargon-heavy; the prose shouldn&rsquo;t apologize for being specific but it should let the reader catch up.</div>
+            <div class="foot">
+              <span class="by">— <span class="nm">Editor A</span></span>
+              <span class="util"><a href="#n11">permalink</a><a href="/glossary/">glossary</a></span>
+            </div>
+          </div>
+
+          <div class="note au-a" id="n10" data-au="a" data-an="floor" data-text="tony quote console keeps the number we keep everything else pullquote">
+            <div class="head">
+              <span class="ts"><span class="nu">N 10</span>14:42 ET</span>
+              <span class="anchor">anchored to <a href="Babb Audio v1.html">Audio &middot; Tony R. · 14:42</a></span>
+            </div>
+            <div class="body">&ldquo;The console keeps the number. We keep everything else.&rdquo; <strong>That&rsquo;s the line.</strong> Lead the Article pull-quote with this, not with the floor-doesn&rsquo;t-behave one. The floor-doesn&rsquo;t-behave line is more T-shirt; this one is more newspaper.</div>
+            <div class="foot">
+              <span class="by">— <span class="nm">Editor A</span></span>
+              <span class="util"><a href="#n10">permalink</a><a href="Babb Article v1.html">dispatch</a></span>
+            </div>
+          </div>
+
+          <div class="note au-b" id="n09" data-au="b" data-an="general" data-text="cross link this place to building manufacturing only re-line construction story">
+            <div class="head">
+              <span class="ts"><span class="nu">N 09</span>16:18 ET</span>
+              <span class="anchor general">general &middot; <a href="Babb Worlds v1.html#building">Building</a></span>
+            </div>
+            <div class="body">Cross-link this Place to <em>Building</em>. The mill is also a civil-scale construction story whenever they re-line the furnace. We&rsquo;ve been treating it as Manufacturing-only and missing the 2028 rebuild as an angle in itself. Add Building as a secondary World; consider whether <a href="/places/hamilton-steel-mill/angles/the-future/">The Future</a> deserves to split into two.</div>
+            <div class="foot">
+              <span class="by">— <span class="nm">Editor B</span></span>
+              <span class="util"><a href="#n09">permalink</a><a href="Babb Updates v1.html">noted in editor&rsquo;s notes</a></span>
+            </div>
+          </div>
+
+          <div class="note au-a" id="n08" data-au="a" data-an="future" data-text="2028 rebuild marisol tony different answers come back to this">
+            <div class="head">
+              <span class="ts"><span class="nu">N 08</span>17:08 ET</span>
+              <span class="anchor">anchored to <a href="/places/hamilton-steel-mill/angles/the-future/">The Future</a></span>
+            </div>
+            <div class="body"><a href="/people/marisol/">Marisol</a> and <a href="/people/tony-r/">Tony R.</a> have different answers about the 2028 rebuild cycle. The Angle currently presents the question without choosing; <em>don&rsquo;t resolve it yet</em>. We&rsquo;ll come back at the 2027 shutdown brief and again at the start of 2028 work.</div>
+            <div class="foot">
+              <span class="by">— <span class="nm">Editor A</span></span>
+              <span class="util"><a href="#n08">permalink</a></span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ═════ DAY 2 — 2026-05-10 ═════ -->
+      <div class="day">
+        <div class="day-head">
+          <div class="d">May 10<b>Day 02</b><span class="when">2026-05-10 · Sunday</span></div>
+          <div class="summary">Town walk after second shift. Three notes &mdash; one on photographs vs. textures, two on East-end framing.</div>
+        </div>
+        <div class="notes">
+
+          <div class="note au-a" id="n07" data-au="a" data-an="town" data-text="east end walk after shift bar gate 4 framing daylight cooler">
+            <div class="head">
+              <span class="ts"><span class="nu">N 07</span>20:42 ET</span>
+              <span class="anchor">anchored to <a href="/places/hamilton-steel-mill/angles/the-town/">The Town</a></span>
+            </div>
+            <div class="body">Walk after the second shift &mdash; the route from gate 4 to Tony&rsquo;s street is its own beat. Bar opposite gate 4, the walkway over the train yard, the school across the road, the harbour bridge view. <strong>Build the Town angle around this route.</strong> A series, not a single hero photo.</div>
+            <div class="foot">
+              <span class="by">— <span class="nm">Editor A</span></span>
+              <span class="util"><a href="#n07">permalink</a><a href="Babb BRoll v1.html">B-Roll · town</a></span>
+            </div>
+          </div>
+
+          <div class="note au-b" id="n06" data-au="b" data-an="general" data-text="photographs vs textures css placeholders honest about rendering vs captured">
+            <div class="head">
+              <span class="ts"><span class="nu">N 06</span>22:14 ET</span>
+              <span class="anchor general">general &middot; design system</span>
+            </div>
+            <div class="body">Until B.K. signs off on photo selects, the Worlds plates and the Place hero stay as CSS textures. <em>Be honest about what is rendering and what was captured.</em> Don&rsquo;t paste in stock or AI-generated stand-ins. Editor&rsquo;s note draft in progress &mdash; should publish before the Place page goes live.</div>
+            <div class="foot">
+              <span class="by">— <span class="nm">Editor B</span></span>
+              <span class="util"><a href="#n06">permalink</a><a href="Babb Updates v1.html">notes archive</a></span>
+            </div>
+          </div>
+
+          <div class="note au-a" id="n05" data-au="a" data-an="town" data-text="school across road framing kids work people both shifts">
+            <div class="head">
+              <span class="ts"><span class="nu">N 05</span>08:08 ET</span>
+              <span class="anchor">anchored to <a href="/places/hamilton-steel-mill/angles/the-town/">The Town</a></span>
+            </div>
+            <div class="body">The school across the road is the cleanest visual argument for how the mill and the town interleave. Drop-off at 08:00 ET overlaps with first-shift arrival; pickup at 15:00 overlaps with the first-to-second handoff. <strong>Frame at least two photographs on this clock.</strong></div>
+            <div class="foot">
+              <span class="by">— <span class="nm">Editor A</span></span>
+              <span class="util"><a href="#n05">permalink</a></span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ═════ DAY 1 — 2026-05-09 ═════ -->
+      <div class="day">
+        <div class="day-head">
+          <div class="d">May 09<b>Day 01</b><span class="when">2026-05-09 · Saturday</span></div>
+          <div class="summary">Arrival day. Two notes setting the framework for the week ahead, including the decision to lead the page with the dawn photograph.</div>
+        </div>
+        <div class="notes">
+
+          <div class="note au-a" id="n04" data-au="a" data-an="floor" data-text="dawn light third shift lead place page cover image 5am next visit">
+            <div class="head">
+              <span class="ts"><span class="nu">N 04</span>06:14 ET &middot; first frame</span>
+              <span class="anchor">anchored to <a href="Babb Angle v1.html">The Floor</a> &middot; <a href="Babb BRoll v1.html">dawn strip</a></span>
+            </div>
+            <div class="body">Dawn light through the high windows at 06:14 local. <em>This is the cover image.</em> Decision made standing in the pulpit at 05:58. Next visit should arrive at 03:00 to be standing there by 04:00 with the cameras set. Mark on the schedule.</div>
+            <div class="foot">
+              <span class="by">— <span class="nm">Editor A</span></span>
+              <span class="util"><a href="#n04">permalink</a><a href="Babb Place v1.html">the Place page lead</a></span>
+            </div>
+          </div>
+
+          <div class="note au-b" id="n03" data-au="b" data-an="owners" data-text="ownership timeline 1910 today chart headcount absolute not percentage">
+            <div class="head">
+              <span class="ts"><span class="nu">N 03</span>10:08 ET</span>
+              <span class="anchor">anchored to <a href="/places/hamilton-steel-mill/angles/the-owners/">The Owners &middot; timeline</a></span>
+            </div>
+            <div class="body">The headcount-over-a-century chart on <a href="/places/hamilton-steel-mill/angles/the-owners/">The Owners</a> reads better in <strong>absolute numbers, not percentages</strong>. People know what 4,200 people means. They don&rsquo;t know what 38% of peak workforce means. Switch the Y-axis before publish.</div>
+            <div class="foot">
+              <span class="by">— <span class="nm">Editor B</span></span>
+              <span class="util"><a href="#n03">permalink</a></span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ═════ PRE-TRIP — 2026-04-25 ═════ -->
+      <div class="day">
+        <div class="day-head">
+          <div class="d">Apr 25<b>Pre-trip</b><span class="when">2026-04-25 · standing story opened</span></div>
+          <div class="summary">Notes from the scoping calls, ten days before crew arrived. The bylaws that shaped the week.</div>
+        </div>
+        <div class="notes">
+
+          <div class="note au-b" id="n02" data-au="b" data-an="general" data-text="bylaws how we work mill cadence show up count what you see write it down">
+            <div class="head">
+              <span class="ts"><span class="nu">N 02</span>scoping call &middot; 11:42 ET</span>
+              <span class="anchor general">general &middot; <a href="Babb About v1.html">posture</a></span>
+            </div>
+            <div class="body">Frame the standing story around the mill&rsquo;s own bylaws: show up, count what you see, write it down honestly. <em>Don&rsquo;t bring an arc to the floor.</em> The floor has its own. The Dailies are the through-line; the Angles are the slow read; the dispatch is the cut.</div>
+            <div class="foot">
+              <span class="by">— <span class="nm">Editor B</span></span>
+              <span class="util"><a href="#n02">permalink</a><a href="Babb About v1.html">posture / about</a></span>
+            </div>
+          </div>
+
+          <div class="note au-a" id="n01" data-au="a" data-an="general" data-text="four angles floor owners town future canonical lenses come back to standing story">
+            <div class="head">
+              <span class="ts"><span class="nu">N 01</span>scoping call &middot; 14:08 ET</span>
+              <span class="anchor general">general &middot; <a href="Babb Place v1.html">Place setup</a></span>
+            </div>
+            <div class="body">Four canonical Angles for v1 of this Place: <strong>The Floor</strong>, <strong>The Owners</strong>, <strong>The Town</strong>, <strong>The Future</strong>. <em>Hold the line at four until we&rsquo;ve been back twice.</em> Add more only when the material demands it; resist the urge to chase the day&rsquo;s shiny thing.</div>
+            <div class="foot">
+              <span class="by">— <span class="nm">Editor A</span></span>
+              <span class="util"><a href="#n01">permalink</a></span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <p style="text-align:center;font-size:11px;color:var(--muted);letter-spacing:.12em;text-transform:uppercase;padding:14px 0 0">— end of archive · standing story opened 2026-04-25 —</p>
+
+    </div>
+
+    <!-- sidebar -->
+    <aside class="sidebar" aria-label="Field notes sidebar">
+
+      <div class="sb-box">
+        <h4>Notes at a glance</h4>
+        <div class="stats">
+          <div class="stat"><div class="k">Total</div><div class="v">14</div></div>
+          <div class="stat"><div class="k">Anchored</div><div class="v">9 <small>of 14</small></div></div>
+          <div class="stat"><div class="k">General</div><div class="v">5</div></div>
+          <div class="stat"><div class="k">Recent 7d</div><div class="v">7</div></div>
+        </div>
+      </div>
+
+      <div class="sb-box">
+        <h4>By author</h4>
+        <div class="authors">
+          <div class="row"><span class="sw"></span><span class="nm"><a href="/people/editor-a/">Editor A.</a> &middot; lead</span><span class="c">9</span></div>
+          <div class="row"><span class="sw b"></span><span class="nm"><a href="/people/editor-b/">Editor B.</a> &middot; deputy</span><span class="c">4</span></div>
+          <div class="row"><span class="sw c"></span><span class="nm"><a href="/people/dl/">D.L.</a> &middot; sound</span><span class="c">1</span></div>
+        </div>
+        <p style="font-size:10.5px;color:var(--muted);margin:10px 0 0;letter-spacing:.04em">Colour-coded on the left edge of each card.</p>
+      </div>
+
+      <div class="sb-box">
+        <h4>By anchor &middot; jump</h4>
+        <div class="tagcloud">
+          <a href="#n14" data-an="floor">The Floor<span class="n">6</span></a>
+          <a href="#n08" data-an="future">The Future<span class="n">2</span></a>
+          <a href="#n07" data-an="town">The Town<span class="n">2</span></a>
+          <a href="#n03" data-an="owners">The Owners<span class="n">1</span></a>
+          <a href="#n09" data-an="general">General<span class="n">5</span></a>
+        </div>
+      </div>
+
+      <div class="sb-box">
+        <h4>Anchored elsewhere</h4>
+        <ul>
+          <li><a href="Babb Article v1.html">Dispatch</a><span class="meta">4 notes</span></li>
+          <li><a href="Babb Audio v1.html">Audio &middot; Tony R.</a><span class="meta">2 notes</span></li>
+          <li><a href="Babb BRoll v1.html">B-Roll</a><span class="meta">3 notes</span></li>
+          <li><a href="Babb Place v1.html">Place page</a><span class="meta">5 notes</span></li>
+        </ul>
+      </div>
+
+      <div class="sb-box">
+        <h4>Editor&rsquo;s notes &middot; site-wide</h4>
+        <ul>
+          <li><a href="Babb Updates v1.html">All editor&rsquo;s notes</a><span class="meta">18</span></li>
+          <li><a href="/feed.xml?cat=notes">RSS &middot; notes</a><span class="meta">↪</span></li>
+        </ul>
+      </div>
+
+    </aside>
+
+  </section>
+
+</div>
+
+<!-- footer -->
+<div class="shell">
+<footer class="colophon">
+  <div class="col-grid">
+    <div class="col col-id">
+      <div class="mark">babb<span class="punct">.</span></div>
+      <p>Tools for the frontier. A media outfit reporting from the working world and a product company building for it.</p>
+      <div class="addr">babb works · est. 2024<br/><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="ed8588818182ad8f8c8f8fc3998881">[email&#160;protected]</a><br/>rss · twitter · github · instagram</div>
+    </div>
+    <div class="col">
+      <h4>Worlds</h4>
+      <ul>
+        <li><a href="Babb Worlds v1.html#manufacturing">Manufacturing</a><span class="tag">here</span></li>
+        <li><a href="Babb Worlds v1.html#farming">Farming</a></li>
+        <li><a href="Babb Worlds v1.html#building">Building</a></li>
+        <li><a href="Babb Worlds v1.html">All Worlds →</a></li>
+      </ul>
+    </div>
+    <div class="col">
+      <h4>This Place</h4>
+      <ul>
+        <li><a href="Babb Place v1.html">Hamilton steel mill</a></li>
+        <li><a href="Babb Angle v1.html">↳ The Floor</a></li>
+        <li><a href="Babb BRoll v1.html">↳ B-Roll</a></li>
+        <li><a href="#">↳ Field Notes</a><span class="tag">here</span></li>
+        <li><a href="Babb Audio v1.html">↳ Audio · Tony R.</a></li>
+        <li><a href="Babb Video v1.html">↳ Video · The Pour</a></li>
+      </ul>
+    </div>
+    <div class="col">
+      <h4>Subscribe</h4>
+      <ul>
+        <li><a href="/feed.xml?cat=places/hamilton-steel-mill/field-notes">Field Notes RSS</a></li>
+        <li><a href="/feed.xml?cat=places/hamilton-steel-mill">This Place RSS</a></li>
+        <li><a href="/updates/email/">Email digest</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="col-foot">
+    <div>© 2024–2026 Babb Works · CC BY-NC where noted</div>
+    <div class="right">
+      <a href="/colophon/">Colophon</a>
+      <a href="Babb About v1.html">About</a>
+      <a href="/cdn-cgi/l/email-protection#0f676a6363604f6d6e6d6d217b6a63">Contact</a>
+      <span class="ascii">build 2026.05.18</span>
+    </div>
+  </div>
+</footer>
+</div>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+  (function(){
+    const el=document.getElementById("clock");
+    const f=n=>String(n).padStart(2,"0");
+    function tick(){const d=new Date();el.textContent=f(d.getUTCHours())+":"+f(d.getUTCMinutes())+":"+f(d.getUTCSeconds())+" UTC";}
+    tick();setInterval(tick,1000);
+  })();
+
+  /* ─── filters ─── */
+  (function(){
+    const search = document.getElementById("search");
+    const auBtns = document.querySelectorAll("#authorFilter button");
+    const anBtns = document.querySelectorAll("#anchorFilter button");
+    const notes = document.querySelectorAll(".note");
+    const days = document.querySelectorAll(".day");
+    let q = "", au = "all", an = "all";
+
+    function setPressed(group, b){ group.forEach(x => x.setAttribute("aria-pressed", x===b)); }
+    function apply(){
+      notes.forEach(n => {
+        const okA = au==="all" || n.dataset.au === au;
+        const okN = an==="all" || n.dataset.an === an;
+        const okQ = !q || (n.dataset.text + " " + n.textContent).toLowerCase().includes(q);
+        n.style.display = okA && okN && okQ ? "" : "none";
+      });
+      /* hide day groups that have nothing visible */
+      days.forEach(d => {
+        const visible = [...d.querySelectorAll(".note")].some(n => n.style.display !== "none");
+        d.style.display = visible ? "" : "none";
+      });
+    }
+    search.addEventListener("input", () => { q = search.value.trim().toLowerCase(); apply(); });
+    auBtns.forEach(b => b.addEventListener("click", () => { au=b.dataset.au; setPressed(auBtns,b); apply(); }));
+    anBtns.forEach(b => b.addEventListener("click", () => { an=b.dataset.an; setPressed(anBtns,b); apply(); }));
+
+    /* sidebar tag clicks trigger the anchor filter too */
+    document.querySelectorAll(".tagcloud a[data-an]").forEach(a => a.addEventListener("click", e => {
+      const target = a.dataset.an;
+      const match = [...anBtns].find(b => b.dataset.an === target);
+      if(match){ an = target; setPressed(anBtns, match); apply(); }
+      /* still allow the anchor jump */
+    }));
+  })();
+</script>
+</body>
+</html>

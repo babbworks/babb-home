@@ -1,0 +1,252 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>World page wireframe — Farming</title>
+<style>
+  :root { --line:#bbb; --ink:#333; --muted:#888; --alt:#a14a00; --bg:#fafaf8; }
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--bg);color:var(--ink);
+    font:14px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace}
+  .page{max-width:1180px;margin:0 auto;padding:24px}
+  .box{border:1px dashed var(--line);padding:12px;background:#fff}
+  .lbl{color:var(--muted);font-size:11px;letter-spacing:.08em;
+    text-transform:uppercase;margin-bottom:6px;display:block}
+  .placeholder{background:repeating-linear-gradient(45deg,#f1f1ee 0 8px,#fff 8px 16px);
+    border:1px dashed var(--line);display:flex;align-items:center;
+    justify-content:center;color:var(--muted);font-size:12px}
+  h1,h2{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;margin:0}
+  h1{font-size:22px}
+  h2{font-size:14px}
+  .tag{color:var(--alt);font-size:11px}
+  .note{font-size:11px;color:var(--muted);font-style:italic}
+  hr.sb{border:none;border-top:1px solid #e5e5e0;margin:28px 0}
+  .anno{background:#fff8e0;border:1px solid #e7d488;padding:6px 10px;
+    font-size:11px;color:#665;margin:6px 0 14px}
+  .crumbs{font-size:12px;color:var(--muted);margin-bottom:6px}
+  .crumbs a{color:var(--ink)}
+  .pill{display:inline-block;border:1px solid #ccc;padding:2px 8px;
+    font-size:11px;margin:2px 4px 2px 0;border-radius:99px}
+  .sub-worlds{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+  .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+  .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .grid-2-rail{display:grid;grid-template-columns:2fr 1fr;gap:20px}
+  .placeholder.hero{height:280px}
+  .placeholder.tile{height:160px}
+  .placeholder.tall{height:200px}
+  .feed-item{padding:10px 0;border-top:1px dotted #ddd}
+  .feed-item:first-child{border-top:none}
+  .feed-item a{color:var(--ink);text-decoration:underline}
+  .feed-item .desc{font-size:12px;color:#555;margin:4px 0 6px}
+  .feed-item .tags{font-size:11px;color:var(--muted)}
+  .feed-item .tags .primary{color:var(--alt)}
+
+  /* world selector inside title block */
+  .world-select{display:flex;flex-wrap:wrap;gap:4px;margin:6px 0 10px}
+  .world-select button{font:inherit;font-size:11px;
+    background:#fff;border:1px solid #ccc;padding:3px 9px;border-radius:99px;
+    color:var(--ink);cursor:pointer}
+  .world-select button[aria-pressed="true"]{
+    background:var(--ink);color:#fff;border-color:var(--ink)}
+  .title-block{min-height:180px}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="anno">Wireframe v1 · World landing page template. Title block doubles as a
+    <b>World selector</b> — pick any World and the block swaps to that World's
+    content (same size). URL: <code>/worlds/&lt;world&gt;</code>.</div>
+
+  <!-- HEADER -->
+  <header class="box" style="margin-bottom:20px;">
+    <span class="lbl">Site header (same as homepage)</span>
+    <div style="display:flex;justify-content:space-between;align-items:center;">
+      <a href="#" style="text-decoration:none;color:inherit;"><b>babb</b></a>
+      <nav>Worlds · Places · Products · Updates · About</nav>
+    </div>
+  </header>
+
+  <!-- TITLE BLOCK / WORLD SELECTOR -->
+  <section class="box title-block" style="margin-bottom:20px;">
+    <span class="lbl">World title block · select a World</span>
+    <div class="world-select" id="worldSelect">
+      <button data-w="selling">Selling</button>
+      <button data-w="banking">Banking</button>
+      <button data-w="farming" aria-pressed="true">Farming</button>
+      <button data-w="building">Building</button>
+      <button data-w="manufacturing">Manufacturing</button>
+      <button data-w="communications">Communications</button>
+      <button data-w="management">Management</button>
+    </div>
+    <div class="crumbs"><a href="#">babb</a> / <a href="#">worlds</a> / <span id="wSlug">farming</span></div>
+    <h1 id="wTitle">Worlds · Farming</h1>
+    <p id="wIntro">One-paragraph editorial framing for this World — what we cover here, posture, who it's for. Working Worlds tagline can live here.</p>
+    <div class="sub-worlds">
+      <span class="note" style="margin-right:6px;">Sub-Worlds:</span>
+      <span id="wSubs">
+        <span class="pill">dairy</span><span class="pill">grain</span>
+        <span class="pill">livestock</span><span class="pill">orchards</span>
+      </span>
+      <span class="pill note">+ more as the slate grows</span>
+    </div>
+  </section>
+
+
+  <!-- HERO / LATEST DISPATCH -->
+  <section style="margin-bottom:24px;">
+    <span class="lbl">Hero — featured dispatch / film in this World</span>
+    <div class="placeholder hero">[ feature image / video poster ]</div>
+    <div class="box" style="margin-top:-1px;">
+      <h2 id="wHeroTitle">Two days on a feed-lot in Sioux Falls</h2>
+      <p class="note" id="wHeroLine">babb@tel farming/livestock % long-form dispatch — read · watch · listen</p>
+    </div>
+  </section>
+
+  <!-- TWO-COL: places in this world + dispatches rail -->
+  <section class="grid-2-rail" style="margin-bottom:24px;">
+    <div class="box">
+      <span class="lbl">Places in this World (cross-linked, many-to-many)</span>
+      <div class="grid-3" id="wPlaces" style="margin-top:8px;"></div>
+    </div>
+
+    <aside class="box">
+      <span class="lbl" id="wDispatchLbl">Dispatches rail — Jekyll posts tagged "farming"</span>
+      <div id="wDispatches"></div>
+      <div class="feed-item note" id="wDispatchFoot">[ pulls from Jekyll category "farming" ]</div>
+    </aside>
+  </section>
+
+  <hr class="sb" />
+
+  <!-- READ / WATCH / LISTEN -->
+  <section style="margin-bottom:24px;">
+    <span class="lbl">Read · Watch · Listen — media library for this World</span>
+    <div class="grid-3">
+      <div class="box"><h2>Read</h2><ul id="wRead" style="padding-left:18px;margin:6px 0;"></ul></div>
+      <div class="box"><h2>Watch</h2><ul id="wWatch" style="padding-left:18px;margin:6px 0;"></ul></div>
+      <div class="box"><h2>Listen</h2><ul id="wListen" style="padding-left:18px;margin:6px 0;"></ul></div>
+    </div>
+  </section>
+
+  <!-- PRODUCTS USED IN THIS WORLD -->
+  <section style="margin-bottom:24px;">
+    <span class="lbl">Products active in this World</span>
+    <div class="grid-3" id="wProducts"></div>
+  </section>
+
+  <!-- PEOPLE / CONTRIBUTORS -->
+  <section style="margin-bottom:24px;">
+    <span class="lbl">People & contributors covering this World</span>
+    <div class="grid-3" id="wPeople"></div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="note" style="border-top:1px solid #ddd;padding-top:14px;">
+    © Babb · subscribe to <span id="wRssName">Farming</span> RSS · contact
+  </footer>
+
+</div>
+
+  <script>
+    const WORLDS = {
+      selling:        { title:"Selling",        intro:"How things get sold — from market stalls to enterprise floors. The craft of moving goods and ideas.", subs:["retail","wholesale","direct","markets"],
+        hero:{title:"A weekend at a tailgate market", line:"babb@tel selling/markets % long-form dispatch — read · watch · listen"},
+        places:[["Tailgate market · Asheville","tailgate-asheville"],["Cash-and-carry · Queens","cnc-queens"],["Route: Sunbelt sales loop","route-sunbelt"]],
+        dispatches:[["Workpads","Selling on rainy days — what crews do","selling/markets · dispatch"],["Editorial","The honest price tag","selling/retail"],["Bitpads","Card readers that don't quit","selling · hardware"]],
+        read:["Long-form: tailgate diaries","Plain-English: card-network fees","Op-ed: the return of the catalog"],
+        watch:["Mini-doc: a closing shift","Short: market tear-down"],
+        listen:["Interview: a third-generation seller","Ambient: opening hour"],
+        products:["Workpads · for floor staff","Bitpads · POS pucks",".tel · vendor directory"],
+        people:[["Reporter name","on the ground · 3 dispatches"],["Reporter name","2 dispatches"],["Partner / source","market manager"]] },
+      banking:        { title:"Banking",        intro:"Money in motion — community banks, credit unions, treasury desks, and the quiet plumbing underneath.", subs:["community","credit unions","treasury","payments"],
+        hero:{title:"A morning behind the teller line", line:"babb@tel banking/community % long-form dispatch — read · watch · listen"},
+        places:[["Community bank · Hudson","hudson-bank"],["Credit union · Akron","akron-cu"],["Route: Rust-Belt treasuries","route-rustbelt-treasury"]],
+        dispatches:[["Editorial","What a community bank actually is","banking/community"],["Workpads","Branch ops, plainly","banking · ops"],["Bitpads","Cash recyclers, up close","banking · hardware"]],
+        read:["Long-form: the last teller","Plain-English: ACH timelines","Op-ed: small banks, real money"],
+        watch:["Mini-doc: open-the-vault","Short: a board meeting"],
+        listen:["Interview: a CU chair","Ambient: drive-through at 9am"],
+        products:["Workpads · for branch staff","Bitpads · counting aids",".tel · staff directory"],
+        people:[["Reporter name","3 dispatches"],["Reporter name","2 dispatches"],["Partner / source","CU contact"]] },
+      farming:        { title:"Farming",        intro:"On the ground in the places that feed us — dairies, grain elevators, feed-lots, orchards.", subs:["dairy","grain","livestock","orchards"],
+        hero:{title:"Two days on a feed-lot in Sioux Falls", line:"babb@tel farming/livestock % long-form dispatch — read · watch · listen"},
+        places:[["Hamilton Dairy Co-op","hamilton-dairy"],["Sioux Falls Feed-lot","sioux-falls-feedlot"],["Route: Midwest Dairy Run","midwest-dairy-run"]],
+        dispatches:[["Workpads","Field test recap — Workpads","farming/livestock · dispatch"],["Editorial","Co-op governance, plainly","farming/dairy"],["Bitpads","Soil sensors, one season later","farming/grain"]],
+        read:["Long-form: feed-lot diaries","Plain-English: USDA loan rules","Op-ed: who owns the seed"],
+        watch:["Mini-doc: morning milking","Short: grain elevator tour"],
+        listen:["Interview: co-op chair","Ambient: a barn at 5am"],
+        products:["Workpads · for crews","Bitpads · field sensors",".tel · directory"],
+        people:[["Reporter name","on the ground · 4 dispatches"],["Reporter name","3 dispatches"],["Partner / source","co-op contact"]] },
+      building:       { title:"Building",       intro:"Job sites, trades, and the people putting things up. From single-house crews to large pours.", subs:["trades","job sites","renovation","civil"],
+        hero:{title:"A 6am pour in the Bronx", line:"babb@tel building/civil % long-form dispatch — read · watch · listen"},
+        places:[["Brownstone reno · Brooklyn","brownstone-bk"],["Tower job site · Austin","tower-atx"],["Route: I-90 bridge crews","route-i90-bridges"]],
+        dispatches:[["Workpads","Punch lists that actually close","building/trades"],["Editorial","Foreman, briefly","building/job-sites"],["Bitpads","Site sensors in the cold","building · hardware"]],
+        read:["Long-form: the punch list","Plain-English: lien waivers","Op-ed: who builds the city"],
+        watch:["Mini-doc: a single pour","Short: scaffold up"],
+        listen:["Interview: a master carpenter","Ambient: site, 6am"],
+        products:["Workpads · for foremen","Bitpads · site sensors",".tel · trade directory"],
+        people:[["Reporter name","2 dispatches"],["Reporter name","4 dispatches"],["Partner / source","GC contact"]] },
+      manufacturing:  { title:"Manufacturing",  intro:"Inside the factories — floor work, supply, and the long shift toward automation.", subs:["steel","food","electronics","textiles"],
+        hero:{title:"Inside a Hamilton steel mill", line:"babb@tel manufacturing/steel % long-form dispatch — read · watch · listen"},
+        places:[["Hamilton steel mill","hamilton-steel-mill"],["Food cannery · Modesto","modesto-cannery"],["Route: Carolina textile loop","route-carolina-textile"]],
+        dispatches:[["Editorial","Ladle metallurgy, plainly","manufacturing/steel"],["Workpads","Shift handoff, redesigned","manufacturing · ops"],["Bitpads","Floor wearables, year one","manufacturing · hardware"]],
+        read:["Long-form: the third shift","Plain-English: just-in-time","Op-ed: bring it back"],
+        watch:["Mini-doc: the pour","Short: a line restart"],
+        listen:["Interview: the foreman","Ambient: a floor at midnight"],
+        products:["Workpads · for floor crews","Bitpads · wearables",".tel · plant directory"],
+        people:[["Reporter name","5 dispatches"],["Reporter name","3 dispatches"],["Partner / source","plant manager"]] },
+      communications: { title:"Communications", intro:"How people stay in touch at work — radios, directories, schedules, and the soft skills around them.", subs:["directory","presence","voice","async"],
+        hero:{title:"What the dispatcher sees", line:"babb@tel communications/voice % long-form dispatch — read · watch · listen"},
+        places:[["911 dispatch · Cleveland","dispatch-cle"],["Trucking yard · KC","yard-kc"],["Route: Long-haul night shift","route-longhaul-night"]],
+        dispatches:[[".tel","Directory hygiene","communications/directory"],["Workpads","Async handoffs that work","communications/async"],["Editorial","The voice on the other end","communications/voice"]],
+        read:["Long-form: the radio room","Plain-English: spectrum 101","Op-ed: against pings"],
+        watch:["Mini-doc: a dispatch shift","Short: a radio check"],
+        listen:["Interview: a dispatcher","Ambient: a quiet channel"],
+        products:[".tel · directory","Workpads · for dispatchers","Bitpads · radios"],
+        people:[["Reporter name","3 dispatches"],["Reporter name","2 dispatches"],["Partner / source","dispatch lead"]] },
+      management:     { title:"Management",     intro:"The work of organizing work — foremen, dispatchers, ops leads, and the tools they live in.", subs:["foremen","dispatch","ops","governance"],
+        hero:{title:"A week with an ops lead", line:"babb@tel management/ops % long-form dispatch — read · watch · listen"},
+        places:[["Ops room · Detroit","ops-det"],["Co-op HQ · St. Paul","coop-stp"],["Route: Great Lakes ops tour","route-gl-ops"]],
+        dispatches:[["Workpads","One-on-ones, plainly","management/ops"],["Editorial","The shift bid","management/governance"],["Babb Works","Roles that hold","management · org"]],
+        read:["Long-form: an ops year","Plain-English: shift bids","Op-ed: stop the dashboard"],
+        watch:["Mini-doc: a Monday plan","Short: a hand-off"],
+        listen:["Interview: a shop steward","Ambient: an ops room"],
+        products:["Babb Works · org host","Workpads · for leads",".tel · staff directory"],
+        people:[["Reporter name","4 dispatches"],["Reporter name","2 dispatches"],["Partner / source","ops lead"]] }
+    };
+
+    const $ = id => document.getElementById(id);
+    function renderWorld(key){
+      const w = WORLDS[key];
+      $("wSlug").textContent = key;
+      $("wTitle").textContent = "Worlds · " + w.title;
+      $("wIntro").textContent = w.intro;
+      $("wSubs").innerHTML = w.subs.map(s => `<span class="pill">${s}</span>`).join("");
+      $("wHeroTitle").textContent = w.hero.title;
+      $("wHeroLine").textContent = w.hero.line;
+      $("wPlaces").innerHTML = w.places.map(([t,slug])=>
+        `<div><div class="placeholder tile">[ Place card ]</div><b>${t}</b><div class="note">/places/${slug}${slug.startsWith("route-")?" · <i>route variant</i>":""}</div></div>`).join("");
+      $("wDispatchLbl").textContent = `Dispatches rail — Jekyll posts tagged "${key}"`;
+      $("wDispatchFoot").textContent = `[ pulls from Jekyll category "${key}" ]`;
+      $("wDispatches").innerHTML = w.dispatches.map(([p,t,tags])=>
+        `<div class="feed-item"><a href="#">${t}</a><div class="tags"><span class="primary">${p}</span> · ${tags}</div></div>`).join("");
+      $("wRead").innerHTML   = w.read.map(t=>`<li><a href="#">${t}</a></li>`).join("");
+      $("wWatch").innerHTML  = w.watch.map(t=>`<li><a href="#">${t}</a></li>`).join("");
+      $("wListen").innerHTML = w.listen.map(t=>`<li><a href="#">${t}</a></li>`).join("");
+      $("wProducts").innerHTML = w.products.map(p=>`<div class="placeholder tall">${p}</div>`).join("");
+      $("wPeople").innerHTML = w.people.map(([n,r])=>
+        `<div class="box"><div class="placeholder" style="height:100px;">[ portrait ]</div><b>${n}</b><div class="note">${r}</div></div>`).join("");
+      $("wRssName").textContent = w.title;
+    }
+
+    const sel = document.getElementById("worldSelect");
+    sel.addEventListener("click", e => {
+      const b = e.target.closest("button[data-w]"); if(!b) return;
+      sel.querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", x===b));
+      renderWorld(b.dataset.w);
+    });
+    renderWorld("farming");
+  </script>
+
+</body>
+</html>

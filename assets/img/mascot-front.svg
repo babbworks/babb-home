@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 360" width="280" height="360">
+  <!-- left pillar: white fill (no stroke so inner edge stays clean) -->
+  <polygon points="88,254 124,254 124,360 70,360" fill="white" stroke="none"/>
+  <!-- left pillar: stroke only outer edge + bottom (skip inner/right edge) -->
+  <polyline points="88,254 70,360 124,360" fill="none" stroke="black" stroke-width="11" stroke-linejoin="round" stroke-linecap="round"/>
+
+  <!-- right pillar: white fill -->
+  <polygon points="156,254 192,254 210,360 156,360" fill="white" stroke="none"/>
+  <!-- right pillar: stroke only bottom + outer edge (skip inner/left edge) -->
+  <polyline points="156,360 210,360 192,254" fill="none" stroke="black" stroke-width="11" stroke-linejoin="round" stroke-linecap="round"/>
+
+  <!-- head circle on top — white fill covers tops of pillars and gap between them -->
+  <circle cx="140" cy="140" r="126" fill="white" stroke="black" stroke-width="12"/>
+  <!-- left eye: longer dash, outer end dips -->
+  <line x1="78"  y1="114" x2="118" y2="122" stroke="black" stroke-width="7.5" stroke-linecap="round"/>
+  <!-- right eye: mirror -->
+  <line x1="162" y1="122" x2="202" y2="114" stroke="black" stroke-width="7.5" stroke-linecap="round"/>
+  <!-- smile -->
+  <path d="M 92 178 Q 140 218 188 178" fill="none" stroke="black" stroke-width="6" stroke-linecap="round"/>
+</svg>

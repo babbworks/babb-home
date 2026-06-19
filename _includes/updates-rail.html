@@ -1,0 +1,43 @@
+<aside class="rail" aria-label="Updates rail">
+  <div class="rail-head">
+    <span>Updates</span>
+    <span class="live">LIVE &middot; /feed.xml</span>
+  </div>
+  <div class="rail-viewport" id="rail">
+    <div class="rail-track" id="railTrack">
+      {% for post in site.posts %}
+      <article class="upd">
+        <div class="tt"><a href="{{ post.url }}">{{ post.title }}</a><span class="when">{{ post.date | date: "%b %-d" }}</span></div>
+        {% if post.excerpt %}<div class="desc">{{ post.excerpt | strip_html | truncate: 120 }}</div>{% endif %}
+        <div class="tags">{% if post.product %}<span class="p">{{ post.product }}</span><span class="sep">/</span>{% endif %}{% for tag in post.tags %}{{ tag }}{% unless forloop.last %}<span class="sep">/</span>{% endunless %}{% endfor %}</div>
+      </article>
+      {% else %}
+      <article class="upd">
+        <div class="tt"><a href="#">Two days on a feed-lot in Sioux Falls</a><span class="when">2d</span></div>
+        <div class="desc">Workpads field crew rides the third shift with the operations lead.</div>
+        <div class="tags"><span class="p">Workpads</span><span class="sep">/</span>farming<span class="sep">/</span>dispatch</div>
+      </article>
+      <article class="upd">
+        <div class="tt"><a href="#">Bitpads firmware 0.4 &mdash; lower idle current</a><span class="when">4d</span></div>
+        <div class="desc">New radio stack, 38% drop in standby draw, full changelog inside.</div>
+        <div class="tags"><span class="p">Bitpads</span><span class="sep">/</span>hardware<span class="sep">/</span>release</div>
+      </article>
+      <article class="upd">
+        <div class="tt"><a href="#">Clarkware P1 V1 &mdash; job lifecycle shipped</a><span class="when">5d</span></div>
+        <div class="desc">Full state machine for jobs: draft, active, paused, completed, voided, reopened.</div>
+        <div class="tags"><span class="p">Clarkware</span><span class="sep">/</span>manufacturing<span class="sep">/</span>release</div>
+      </article>
+      <article class="upd">
+        <div class="tt"><a href="#">Workwarrior &mdash; 627 rules, one engine</a><span class="when">1w</span></div>
+        <div class="desc">The heuristic NL engine is compiled and passing. LLM fallback optional.</div>
+        <div class="tags"><span class="p">Workwarrior</span><span class="sep">/</span>software</div>
+      </article>
+      <article class="upd">
+        <div class="tt"><a href="#">.tel &mdash; the connective layer, explained plainly</a><span class="when">1w</span></div>
+        <div class="desc">A short on what .tel is, why it matters, and what plants on it next.</div>
+        <div class="tags"><span class="p">.tel</span><span class="sep">/</span>infra<span class="sep">/</span>explainer</div>
+      </article>
+      {% endfor %}
+    </div>
+  </div>
+</aside>

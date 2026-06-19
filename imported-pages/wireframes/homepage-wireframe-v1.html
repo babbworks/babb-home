@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Homepage Wireframe v1 — Babb</title>
+<style>
+  :root { --line:#bbb; --ink:#333; --muted:#888; --alt:#a14a00; --bg:#fafaf8; }
+  * { box-sizing:border-box; }
+  html,body { margin:0; background:var(--bg); color:var(--ink);
+    font:14px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace; }
+  .page { max-width:1180px; margin:0 auto; padding:24px; }
+  .box { border:1px dashed var(--line); padding:12px; background:#fff; }
+  .lbl { color:var(--muted); font-size:11px; letter-spacing:.08em;
+    text-transform:uppercase; margin-bottom:6px; display:block; }
+  .row { display:grid; gap:16px; margin-bottom:24px; }
+  .placeholder { background:repeating-linear-gradient(45deg,#f1f1ee 0 8px,#fff 8px 16px);
+    border:1px dashed var(--line); display:flex; align-items:center;
+    justify-content:center; color:var(--muted); font-size:12px; }
+  h1,h2,h3 { font-family:ui-monospace,SFMono-Regular,Menlo,monospace; margin:0; }
+  h1 { font-size:18px; }
+  h2 { font-size:14px; }
+  ul { margin:0; padding-left:18px; }
+  li { margin:4px 0; }
+  .tag { color:var(--alt); font-size:11px; }
+  .note { font-size:11px; color:var(--muted); font-style:italic; }
+  hr.section-break { border:none; border-top:1px solid #e5e5e0; margin:32px 0; }
+  /* fullbleed slideshow */
+  .fullbleed { position:relative; width:100%; }
+  .fullbleed .placeholder { height:340px; }
+  .terminal-overlay { position:absolute; top:14px; right:14px;
+    background:#111; color:#eee; padding:6px 10px; font-size:12px;
+    max-width:60%; }
+  .terminal-overlay .subj { color:#9ec; }
+  /* updates rail */
+  .updates-rail { max-height:520px; overflow:hidden; }
+  .update-item { padding:10px 0; border-top:1px dotted #ddd; }
+  .update-item:first-child { border-top:none; }
+  .update-item a { color:var(--ink); text-decoration:underline; }
+  .update-item .desc { font-size:12px; color:#555; margin:4px 0 6px; }
+  .update-item .tags { font-size:11px; color:var(--muted); }
+  .update-item .tags .primary { color:var(--alt); }
+  /* product cards */
+  .product-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; }
+  .product-card { aspect-ratio:1/1; }
+  /* product intro rows */
+  .intro-row { display:grid; grid-template-columns:1fr 1fr; gap:16px;
+    margin-bottom:16px; }
+  .intro-row .placeholder { height:200px; }
+  /* telemetry printout */
+  .telemetry { background:#0e0e0e; color:#cfcfcf; padding:14px;
+    font-size:12px; min-height:160px; }
+  .telemetry .line { white-space:nowrap; overflow:hidden;
+    text-overflow:ellipsis; padding:2px 0; }
+  .telemetry .subj { color:#f0a060; }
+  .telemetry .ts { color:#666; margin-right:8px; }
+  .telemetry .cursor { color:#cfcfcf; }
+  /* footer */
+  footer { border-top:1px solid #ddd; margin-top:32px; padding-top:18px;
+    color:var(--muted); font-size:12px; }
+  /* annotations */
+  .anno { background:#fff8e0; border:1px solid #e7d488; padding:6px 10px;
+    font-size:11px; color:#665; margin:6px 0 14px; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="anno">
+    Wireframe v1 — low-intensity layout sketch only. No styling work, no real content.
+    Annotates structure from design notes 01, 02, 04. Removed the
+    <code>--- Babb Works · 2026</code> line above header per note 01.
+  </div>
+
+  <!-- HEADER -->
+  <header class="box" style="margin-bottom:24px;">
+    <span class="lbl">Header</span>
+    <div style="display:flex; justify-content:space-between; align-items:center;">
+      <h1>babb</h1>
+      <nav>Worlds &nbsp;·&nbsp; Places &nbsp;·&nbsp; Products &nbsp;·&nbsp; Updates &nbsp;·&nbsp; About</nav>
+    </div>
+  </header>
+
+  <!-- SECTION 1 — left content + right Updates rail -->
+  <section style="display:grid; grid-template-columns:2fr 1fr; gap:20px;
+                  margin-bottom:24px;">
+    <div class="box">
+      <span class="lbl">Section 1 · Left column — primary intro / framing</span>
+      <h2 style="margin-bottom:8px;">Working Worlds</h2>
+      <p>Short framing copy about Babb as a media + tools outfit reporting
+      from places of work and life. Worlds: Selling · Banking · Farming ·
+      Building · Manufacturing · Communications · Management.</p>
+      <p class="note">Placeholder copy — actual editorial TBD.</p>
+    </div>
+
+    <aside class="box">
+      <span class="lbl">Section 1 · Right column — Updates rail (auto-scroll, hover-pause)</span>
+      <div class="updates-rail">
+        <div class="update-item">
+          <a href="#">Workpads field test in Sioux Falls</a>
+          <div class="desc">Two days on a feed-lot with the operations crew.</div>
+          <div class="tags"><span class="primary">Workpads</span> · farming · dispatch</div>
+        </div>
+        <div class="update-item">
+          <a href="#">.tel goes live on Mars (kidding)</a>
+          <div class="desc">Brand monument shoot recap — what we learned.</div>
+          <div class="tags"><span class="primary">.tel</span> · brand · imagery</div>
+        </div>
+        <div class="update-item">
+          <a href="#">Bitpads firmware drop 0.4</a>
+          <div class="desc">New radio stack, lower idle current.</div>
+          <div class="tags"><span class="primary">Bitpads</span> · hardware · release</div>
+        </div>
+        <div class="update-item">
+          <a href="#">Inside a Hamilton steel mill</a>
+          <div class="desc">First Place page — coming soon.</div>
+          <div class="tags"><span class="primary">Places</span> · manufacturing · preview</div>
+        </div>
+        <div class="update-item">
+          <a href="#">Editor's note: Worlds, one year in</a>
+          <div class="desc">Where the editorial slate is heading.</div>
+          <div class="tags"><span class="primary">Editorial</span> · worlds</div>
+        </div>
+        <div class="update-item note">[ continues scrolling; pauses on hover ]</div>
+      </div>
+    </aside>
+  </section>
+
+  <!-- SECTION 2 — edge-to-edge slideshow with terminal overlay -->
+  <section class="fullbleed" style="margin-bottom:32px;">
+    <span class="lbl">Section 2 · Edge-to-edge slideshow (uniform viewport, terminal overlay top-right)</span>
+    <div class="placeholder">[ hero image — same fixed viewport regardless of source size ]</div>
+    <div class="terminal-overlay">
+      <span class="subj">babb@tel workpads</span> % field test recap —
+      <a href="#" style="color:#9cf;">read</a> /
+      <a href="#" style="color:#9cf;">photos</a>
+    </div>
+    <p class="note">Sequence: image → terminal bar prints → text + links fade in.
+       Bar width = text width + padding on desktop. Left-aligned text.</p>
+  </section>
+
+  <hr class="section-break" />
+
+  <!-- SECTION 3 — product cards (existing, keep) -->
+  <section style="margin-bottom:32px;">
+    <span class="lbl">Section 3 · Product cards grid (keep from current site)</span>
+    <div class="product-grid">
+      <div class="placeholder product-card">Workpads</div>
+      <div class="placeholder product-card">Bitpads</div>
+      <div class="placeholder product-card">.tel</div>
+      <div class="placeholder product-card">Babb Products</div>
+    </div>
+  </section>
+
+  <!-- SECTION 4 — product intro rows (two-col, screenshots right, intro left) -->
+  <section style="margin-bottom:32px;">
+    <span class="lbl">Section 4 · Product intro rows — explanations left, screenshots right (one row per product)</span>
+
+    <div class="intro-row">
+      <div class="box">
+        <h2>Workpads</h2>
+        <p>One-paragraph intro: who it's for, why it exists, what it does.
+           Inline link to product page.</p>
+      </div>
+      <div class="placeholder">[ Workpads screenshot ]</div>
+    </div>
+
+    <div class="intro-row">
+      <div class="box">
+        <h2>Bitpads</h2>
+        <p>Hardware companion. Short intro copy.</p>
+      </div>
+      <div class="placeholder">[ Bitpads photo / render ]</div>
+    </div>
+
+    <div class="intro-row">
+      <div class="box">
+        <h2>.tel</h2>
+        <p>The connective layer. Short intro copy.</p>
+      </div>
+      <div class="placeholder">[ .tel screenshot ]</div>
+    </div>
+  </section>
+
+  <hr class="section-break" />
+
+  <!-- SECTION 5 — telemetry printout -->
+  <section style="margin-bottom:32px;">
+    <span class="lbl">Section 5 · Telemetry printout — manual feed, prints a line, pushes prior down (grows, not fixed)</span>
+    <div class="telemetry">
+      <div class="line"><span class="ts">17:42:08</span>
+        <span class="subj">workpads</span> &gt; field unit 03 returned from Sioux Falls.</div>
+      <div class="line"><span class="ts">17:38:55</span>
+        <span class="subj">.tel</span> &gt; new monument render queued for review.</div>
+      <div class="line"><span class="ts">17:31:02</span>
+        <span class="subj">places</span> &gt; Hamilton mill page draft started.</div>
+      <div class="line"><span class="ts">17:24:17</span>
+        <span class="subj">bitpads</span> &gt; firmware 0.4 tag cut.</div>
+      <div class="line"><span class="ts">17:18:44</span>
+        <span class="subj">editorial</span> &gt; Worlds slate refresh published.</div>
+      <div class="line"><span class="cursor">▌</span></div>
+    </div>
+    <p class="note">Each new manually-written line prints at top (or bottom),
+       pushing prior lines. Section height grows — not fixed.</p>
+  </section>
+
+  <!-- FOOTER w/ Updates -->
+  <footer>
+    <span class="lbl">Footer · Updates (from working /updates RSS — currently mocked on live site)</span>
+    <ul>
+      <li><a href="#">Workpads field test in Sioux Falls</a> <span class="tag">· workpads</span></li>
+      <li><a href="#">Bitpads firmware 0.4</a> <span class="tag">· bitpads</span></li>
+      <li><a href="#">Editor's note: Worlds, one year in</a> <span class="tag">· editorial</span></li>
+      <li><a href="#">Places preview — Hamilton mill</a> <span class="tag">· places</span></li>
+    </ul>
+    <p class="note">© Babb · contact · rss</p>
+  </footer>
+
+</div>
+</body>
+</html>

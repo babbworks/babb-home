@@ -1,0 +1,12 @@
+<header class="masthead">
+  <div class="shell row">
+    <div>
+      <a href="/" class="wordmark">babb<span class="punct">.</span></a>
+      <div class="tagline">Media | Tools | Technology</div>
+    </div>
+    <nav class="primary" aria-label="Primary">
+      {% for item in site.data.nav %}<a href="{{ item.url }}"{% if page.nav_active == item.id %} class="here"{% endif %}>{{ item.label }}</a>
+      {% endfor %}
+    </nav>
+  </div>
+</header>

@@ -1,7 +1,7 @@
 ---
 layout: fullframe
-title: Battle
-permalink: /battle/
+title: Workwarrior
+permalink: /workwarrior-app/
 ---
 
-<iframe src="/workwarrior/index.html" style="width:100%;height:100%;border:none;display:block;"></iframe>
+<iframe src="/app/workwarrior/index.html"></iframe>

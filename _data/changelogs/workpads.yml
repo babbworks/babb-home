@@ -1,0 +1,29 @@
+- ver: v2.3.1
+  date: 2026-05-09
+  head: Bunk-flag follow-up.
+  body: Entries flagged "slow to bunk" now auto-reappear on the next-day rotation card.
+  changes: 3
+
+- ver: v2.3.0
+  date: 2026-04-21
+  head: Audio on every entry.
+  body: Tap-and-hold to record. On-device transcription. Per-Place opt-out.
+  changes: 11
+
+- ver: v2.2.4
+  date: 2026-03-30
+  head: Branch-close redesign.
+  body: Hudson-bank-shaped flow lands for all Banking deployments.
+  changes: 7
+
+- ver: v2.2.0
+  date: 2026-02-18
+  head: Webhook signing.
+  body: Outbound webhooks now carry an HMAC. Old payloads continue unsigned for 90 days.
+  changes: 14
+
+- ver: v2.1.0
+  date: 2026-01-12
+  head: Multi-place permissions.
+  body: One account, multiple Places, scoped per role and per shift.
+  changes: 22

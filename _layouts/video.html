@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+{%- include head.html -%}
+<body>
+
+<div class="sysbar">
+  <div class="shell row">
+    <div><span class="dot"></span>babb<span class="ascii"> / places / {{ page.place_slug }} / video / {{ page.slug }}</span></div>
+    <div class="right">
+      <span class="ascii">build {{ site.time | date: "%Y.%m.%d" }}</span>
+      <span class="ascii">·</span>
+      <span id="clock" aria-live="off">--:--:-- UTC</span>
+      <span class="ascii">·</span>
+      <a href="/feed.xml?cat=video">video.rss</a>
+    </div>
+  </div>
+</div>
+
+{%- include masthead.html -%}
+
+<div class="ctx">
+  <div class="shell row">
+    <a class="back" href="/places/{{ page.place_slug }}/"><span class="arr">←</span> <span>From</span> <b>{{ page.place_title }}</b></a>
+    <span class="here">Video &middot; <span class="now">{{ page.title }}{% if page.duration %} · {{ page.duration }}{% endif %}</span></span>
+    <div class="more">
+      {% for link in page.ctx_links %}
+      <a href="{{ link.url }}"{% if link.current %} class="here"{% endif %}>{{ link.label }}</a>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+{{ content }}
+
+{%- include colophon.html -%}
+
+<script>
+(function(){
+  const el=document.getElementById("clock"),f=n=>String(n).padStart(2,"0");
+  function t(){const d=new Date();el.textContent=f(d.getUTCHours())+":"+f(d.getUTCMinutes())+":"+f(d.getUTCSeconds())+" UTC";}
+  t();setInterval(t,1000);
+})();
+
+// chapter seek
+(function(){
+  const chaps=document.querySelectorAll(".chap[data-t]");
+  chaps.forEach(c=>c.addEventListener("click",()=>{
+    chaps.forEach(x=>x.classList.remove("now"));
+    c.classList.add("now");
+  }));
+  const trs=document.querySelectorAll(".tr[data-t]");
+  trs.forEach(t=>t.addEventListener("click",()=>{
+    trs.forEach(x=>x.classList.remove("now"));
+    t.classList.add("now");
+  }));
+})();
+</script>
+</body>
+</html>

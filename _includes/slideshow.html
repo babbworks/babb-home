@@ -1,0 +1,74 @@
+{% assign hero_posts = "" | split: "" %}
+{% for post in site.posts %}
+  {% if post.hero_image %}
+    {% if hero_posts.size < 5 %}
+      {% assign hero_posts = hero_posts | push: post %}
+    {% endif %}
+  {% endif %}
+{% endfor %}
+
+{% if hero_posts.size > 0 %}
+<div class="smark shell"><span class="num">§ 02</span><span>Featured</span>
+  <span class="rule"></span><span class="meta">Latest dispatches</span></div>
+
+<section class="slideshow bleed" aria-label="Featured dispatches" id="slideshow">
+  {% for post in hero_posts %}
+  <div class="slide{% if forloop.first %} on{% endif %}" data-slide="{{ forloop.index0 }}" style="background-image:url('{{ post.hero_image }}');">
+    <span class="frame-id">FRAME {{ forloop.index | prepend: '0' | slice: -2, 2 }} / {{ hero_posts.size | prepend: '0' | slice: -2, 2 }}</span>
+    <span class="scene">{{ post.hero_scene | default: post.title | upcase }}</span>
+  </div>
+  {% endfor %}
+
+  <div class="slide-dots" id="dots">
+    {% for post in hero_posts %}
+    <div class="d{% if forloop.first %} on{% endif %}" data-go="{{ forloop.index0 }}"></div>
+    {% endfor %}
+  </div>
+
+  <div class="term" id="term" aria-live="polite">
+    <div class="pad">
+      <span class="subj" id="termSubj">{{ hero_posts.first.title }}</span><span class="pct">%</span>
+      <span id="termBody">{{ hero_posts.first.date | date: "%B %-d, %Y" }} &mdash; <a href="{{ hero_posts.first.url }}">read &rarr;</a></span>
+      <span class="blink"></span>
+    </div>
+  </div>
+</section>
+
+<script>
+(function(){
+  var captions = [
+    {% for post in hero_posts %}
+    { subj: {{ post.title | jsonify }},
+      body: '{{ post.date | date: "%B %-d, %Y" }} &mdash; <a href="{{ post.url }}">read &rarr;</a>' }{% unless forloop.last %},{% endunless %}
+    {% endfor %}
+  ];
+
+  var slides = document.querySelectorAll(".slide");
+  var dots   = document.querySelectorAll(".slide-dots .d");
+  var term   = document.getElementById("term");
+  var termSubj = document.getElementById("termSubj");
+  var termBody = document.getElementById("termBody");
+  if(!slides.length || !term) return;
+
+  var i = 0;
+  function show(n){
+    i = (n + slides.length) % slides.length;
+    slides.forEach(function(s,k){ s.classList.toggle("on", k===i); });
+    dots.forEach(function(d,k){ d.classList.toggle("on", k===i); });
+    term.classList.remove("on");
+    setTimeout(function(){
+      termSubj.textContent = captions[i].subj;
+      termBody.innerHTML   = captions[i].body;
+      void term.offsetWidth;
+      term.classList.add("on");
+    }, 280);
+  }
+  setTimeout(function(){ term.classList.add("on"); }, 350);
+  dots.forEach(function(d){ d.addEventListener("click", function(){ show(+d.dataset.go); }); });
+  var timer = setInterval(function(){ show(i+1); }, 6500);
+  var ss = document.getElementById("slideshow");
+  ss.addEventListener("mouseenter", function(){ clearInterval(timer); timer=null; });
+  ss.addEventListener("mouseleave", function(){ if(!timer) timer=setInterval(function(){ show(i+1); }, 6500); });
+})();
+</script>
+{% endif %}

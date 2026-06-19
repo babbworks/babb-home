@@ -1,0 +1,53 @@
+---
+---
+<!DOCTYPE html>
+<html lang="{{ page.lang | default: site.lang | default: "en" }}">
+{%- include head.html -%}
+<body>
+
+{%- include sysbar.html -%}
+
+<header class="np-masthead">
+  <div class="shell">
+    <div class="np-rule np-thick"></div>
+    <div class="np-rule"></div>
+    <div class="np-banner">
+      <div class="np-meta-l">
+        <span>Vol.&nbsp;I</span>
+        <span class="np-dot">&middot;</span>
+        <span>{{ site.time | date: "%Y" }}</span>
+      </div>
+      <a href="/dispatch/" class="np-title">Dispatch</a>
+      <div class="np-meta-r">{{ site.time | date: "%A, %B %-d, %Y" }}</div>
+    </div>
+    <div class="np-rule"></div>
+    <div class="np-subline">Media &middot; Tools &middot; Technology &mdash; Reporting from the working world.</div>
+    <div class="np-rule"></div>
+    <nav class="np-nav" aria-label="Section navigation">
+      {% for item in site.data.nav %}<a href="{{ item.url }}"{% if page.nav_active == item.id %} class="here"{% endif %}>{{ item.label }}</a>{% endfor %}
+    </nav>
+    <div class="np-rule np-thick"></div>
+  </div>
+</header>
+
+<main>
+  {{ content }}
+</main>
+
+{%- include colophon.html -%}
+
+<script>
+(function(){
+  const el = document.getElementById("clock");
+  if(!el) return;
+  function tick(){
+    const d = new Date();
+    const f = n => String(n).padStart(2,"0");
+    el.textContent = f(d.getUTCHours())+":"+f(d.getUTCMinutes())+":"+f(d.getUTCSeconds())+" UTC";
+  }
+  tick(); setInterval(tick, 1000);
+})();
+</script>
+
+</body>
+</html>

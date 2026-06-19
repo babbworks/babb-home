@@ -1,0 +1,27 @@
+{% comment %}
+  Context bar for place sub-pages.
+  Usage:
+    {% include ctx.html place_slug="hamilton-steel-mill" place_title="Hamilton steel mill" section="Angle" current="The Floor" mode="anchors" %}
+  mode: "anchors" (angle), "more" (audio/video/broll/fieldnotes)
+  anchors: comma-separated list of "id:label" pairs for mode=anchors
+  more_links: array context not easily passed — use mode="more" and provide links in the include call
+{% endcomment %}
+<div class="ctx">
+  <div class="shell row">
+    <a class="back" href="/places/{{ include.place_slug }}/"><span class="arr">←</span> <span>From</span> <b>{{ include.place_title }}</b></a>
+    <span class="here">{{ include.section }}{% if include.current %} &middot; <span class="now">{{ include.current }}</span>{% endif %}</span>
+    {% if include.mode == "anchors" and include.anchors %}
+    <div class="anchors">
+      {% assign anc_items = include.anchors | split: "," %}
+      {% for item in anc_items %}
+        {% assign parts = item | split: ":" %}
+        <a href="#{{ parts[0] | strip }}" data-anc="{{ parts[0] | strip }}">{{ parts[1] | strip }}</a>
+      {% endfor %}
+    </div>
+    {% elsif include.mode == "more" %}
+    <div class="more">
+      {{ include.more_links }}
+    </div>
+    {% endif %}
+  </div>
+</div>

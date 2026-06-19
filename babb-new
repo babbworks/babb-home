@@ -1,0 +1,1090 @@
+#!/usr/bin/env ruby
+# babb-new — content scaffolder for babb.tel (Jekyll)
+
+require 'yaml'
+require 'fileutils'
+require 'date'
+require 'set'
+require 'shellwords'
+require 'json'
+require 'time'
+
+SITE_ROOT = File.expand_path('..', __FILE__)
+
+# ── ANSI ────────────────────────────────────────────────────────────────────
+module C
+  R   = "\e[0m"
+  B   = "\e[1m"
+  DIM = "\e[2m"
+  GRN = "\e[32m"
+  YLW = "\e[33m"
+  CYN = "\e[36m"
+  RED = "\e[31m"
+  MAG = "\e[35m"
+  def self.b(s)    = "#{B}#{s}#{R}"
+  def self.g(s)    = "#{GRN}#{s}#{R}"
+  def self.y(s)    = "#{YLW}#{s}#{R}"
+  def self.c(s)    = "#{CYN}#{s}#{R}"
+  def self.r(s)    = "#{RED}#{s}#{R}"
+  def self.m(s)    = "#{MAG}#{s}#{R}"
+  def self.dim(s)  = "#{DIM}#{s}#{R}"
+end
+
+# ── I/O HELPERS ─────────────────────────────────────────────────────────────
+def hr(char = '─', width = 62)
+  puts C.dim(char * width)
+end
+
+def section(title)
+  puts
+  hr
+  puts "  #{C.b(title)}"
+  hr
+end
+
+def ask(msg, default: nil)
+  hint = default && !default.empty? ? C.dim(" [#{default}]") : ''
+  print "  #{C.c('›')} #{msg}#{hint}: "
+  val = $stdin.gets&.chomp
+  (val.nil? || val.strip.empty?) ? default : val.strip
+end
+
+# ── MENU HELPERS ────────────────────────────────────────────────────────────
+
+# items: array of { label:, **rest } hashes or plain strings
+# returns the chosen item, nil (skip), or :new
+def menu(title, items, allow_skip: true, allow_new: false, new_label: 'Enter manually', skip_label: 'skip')
+  puts
+  puts "  #{C.b(title)}"
+  items.each_with_index do |item, i|
+    label = item.is_a?(Hash) ? (item[:label] || item.values.first.to_s) : item.to_s
+    puts "  #{C.y(format('%2d', i + 1))}  #{label}"
+  end
+  puts "   #{C.y('0')}  #{C.dim(skip_label)}" if allow_skip
+  puts "   #{C.y('n')}  #{C.dim(new_label)}"  if allow_new
+  loop do
+    print "  #{C.c('›')} Choice: "
+    raw = $stdin.gets&.chomp&.strip&.downcase
+    return nil    if allow_skip  && raw == '0'
+    return :new   if allow_new   && raw == 'n'
+    idx = raw.to_i
+    return items[idx - 1] if idx >= 1 && idx <= items.size
+    puts "  #{C.r('Invalid.')} Enter a number#{allow_skip ? ', 0 to skip' : ''}#{allow_new ? ', n for new' : ''}."
+  end
+end
+
+# returns array of selected items (same type as input items)
+def multi_menu(title, items, required: false)
+  puts
+  puts "  #{C.b(title)} #{C.dim('(space-separated numbers, 0 to skip)')}"
+  items.each_with_index do |item, i|
+    label = item.is_a?(Hash) ? (item[:label] || item.values.first.to_s) : item.to_s
+    puts "  #{C.y(format('%2d', i + 1))}  #{label}"
+  end
+  loop do
+    print "  #{C.c('›')} Choices: "
+    raw = $stdin.gets&.chomp&.strip
+    return [] if !required && (raw.nil? || raw == '0' || raw.empty?)
+    selected = raw.to_s.split(/\s+/).filter_map do |n|
+      idx = n.to_i
+      items[idx - 1] if idx >= 1 && idx <= items.size
+    end
+    return selected unless selected.empty? && required
+    puts "  #{C.r('Select at least one.')}"
+  end
+end
+
+# ── DATA LOADERS ────────────────────────────────────────────────────────────
+def load_worlds
+  YAML.load_file(File.join(SITE_ROOT, '_data/worlds.yml')) rescue []
+end
+
+def load_places
+  YAML.load_file(File.join(SITE_ROOT, '_data/places_index.yml')) rescue []
+end
+
+def load_products
+  YAML.load_file(File.join(SITE_ROOT, '_data/products.yml')) rescue []
+end
+
+def discover_people
+  people = {}
+
+  # authoritative: _people/*.html front matter
+  Dir.glob(File.join(SITE_ROOT, '_people', '*.html')).each do |f|
+    slug = File.basename(f, '.html')
+    content = File.read(f)
+    if content =~ /\A---\s*\n(.*?)\n---/m
+      fm = YAML.safe_load($1) rescue {}
+      people[slug] = fm['title'] || fm['name'] || humanize(slug)
+    end
+  end
+
+  # fallback: scan site files for href="/people/:slug/"
+  Dir.glob(File.join(SITE_ROOT, '**', '*.{html,md}')).each do |f|
+    next if f.include?('_site/') || f.include?('imported-pages/') || f.include?('babb-new')
+    begin
+      File.read(f).scan(%r{href="/people/([a-z0-9_-]+)/"}) do |m|
+        slug = m[0]
+        people[slug] ||= humanize(slug)
+      end
+    rescue
+      next
+    end
+  end
+
+  people.sort_by { |_, name| name }
+        .map { |slug, name| { slug: slug, label: "#{name}  #{C.dim("(#{slug})")}" } }
+end
+
+def discover_tags
+  tags = SortedSet.new rescue Set.new
+  Dir.glob(File.join(SITE_ROOT, '_posts', '**', '*.md')).each do |f|
+    content = File.read(f)
+    next unless content =~ /\A---\s*\n(.*?)\n---/m
+    fm = YAML.safe_load($1) rescue {}
+    Array(fm['tags']).each { |t| tags << t.to_s }
+  end
+  tags.to_a.sort
+rescue
+  []
+end
+
+def ctx_links_for(place_slug)
+  base = File.join(SITE_ROOT, 'places', place_slug)
+  return [] unless Dir.exist?(base)
+  Dir.glob(File.join(base, '*', 'index.html')).map do |f|
+    section_slug = File.basename(File.dirname(f))
+    fm = read_front_matter(f)
+    title = fm&.dig('title') || humanize(section_slug)
+    { url: "/places/#{place_slug}/#{section_slug}/", title: title }
+  end.sort_by { |l| l[:url] }
+end
+
+def read_front_matter(path)
+  return nil unless File.exist?(path)
+  content = File.read(path)
+  return nil unless content =~ /\A---\s*\n(.*?)\n---/m
+  YAML.safe_load($1) rescue nil
+end
+
+# ── EDITOR DETECTION ────────────────────────────────────────────────────────
+EDITORS = [
+  { val: 'code', label: 'VS Code',       cmd: 'code',          terminal: false },
+  { val: 'subl', label: 'Sublime Text',  cmd: 'subl',          terminal: false },
+  { val: 'nano', label: 'nano',          cmd: 'nano',          terminal: true  },
+  { val: 'open', label: 'Default editor (open)', cmd: 'open',  terminal: false },
+].freeze
+
+def available_editors
+  EDITORS.select { |e| system("which #{e[:cmd]} > /dev/null 2>&1") }
+end
+
+def open_in_editor(editor, full_path)
+  return unless editor
+  cmd = editor[:cmd]
+  puts "  #{C.c('→')} Opening in #{editor[:label]}…"
+  if editor[:terminal]
+    system("#{cmd} #{full_path.shellescape}")
+  else
+    spawn("#{cmd} #{full_path.shellescape}")
+  end
+end
+
+# ── BODY INPUT ──────────────────────────────────────────────────────────────
+
+# Returns [body_text_or_nil, editor_or_nil]
+# body_text nil  → use placeholder
+# editor non-nil → open file in that editor after writing
+def read_body
+  editors = available_editors
+
+  items = [
+    { val: 'skip',     label: "Skip             #{C.dim('— leave placeholder, fill in editor later')}" },
+    { val: 'plain',    label: "Plain text       #{C.dim('— blank line = paragraph  ·  \\\\ at line end = line break')}" },
+    { val: 'markdown', label: "Paste Markdown   #{C.dim('— taken as-is, no transformation')}" },
+  ]
+  editors.each do |e|
+    items << { val: "editor:#{e[:val]}", label: "Open in #{e[:label].ljust(20)} #{C.dim('— write front matter, open file to edit body')}" }
+  end
+
+  puts
+  mode_item = menu('Body content', items, allow_skip: false)
+  return [nil, nil] unless mode_item
+
+  val = mode_item[:val]
+
+  if val.start_with?('editor:')
+    editor_key = val.sub('editor:', '')
+    editor = editors.find { |e| e[:val] == editor_key }
+    return [nil, editor]
+  end
+
+  return [nil, nil] if val == 'skip'
+
+  puts
+  case val
+  when 'plain'
+    puts "  #{C.dim('Type your content.')}"
+    puts "  #{C.dim('  Blank line          → paragraph break')}"
+    puts "  #{C.dim('  \\\\ at end of line  → hard line break (within a paragraph)')}"
+  when 'markdown'
+    puts "  #{C.dim('Paste your Markdown. Formatting is preserved exactly.')}"
+  end
+  puts "  #{C.dim('Finish: type . on its own line, or press Ctrl+D.')}"
+  puts
+
+  lines = []
+  loop do
+    print "  "
+    line = $stdin.gets
+    break if line.nil?
+    line = line.chomp
+    break if line == '.'
+    lines << line
+  end
+
+  body = lines.empty? ? nil : (val == 'plain' ? plain_to_md(lines) : lines.join("\n"))
+  [body, nil]
+end
+
+def plain_to_md(lines)
+  paragraphs = []
+  current    = []
+  lines.each do |line|
+    if line.strip.empty?
+      paragraphs << current.join("\n") unless current.empty?
+      current = []
+    else
+      current << line.sub(/\\\\$/, "  ")  # \\ → two trailing spaces (Markdown hard break)
+    end
+  end
+  paragraphs << current.join("\n") unless current.empty?
+  paragraphs.join("\n\n")
+end
+
+# ── UTILITIES ───────────────────────────────────────────────────────────────
+def humanize(slug)
+  slug.to_s.tr('-_', ' ').split.map(&:capitalize).join(' ')
+end
+
+def slugify(str)
+  str.to_s.downcase
+     .gsub(/[''`]/, '')
+     .gsub(/[^a-z0-9\s-]/, ' ')
+     .strip
+     .gsub(/\s+/, '-')
+     .gsub(/-+/, '-')
+end
+
+def preview(rel_path, content)
+  puts
+  hr('═')
+  puts "  #{C.b('Preview')}  →  #{C.g(rel_path)}"
+  hr('═')
+  lines = content.lines
+  lines.first(35).each { |l| puts "  #{C.dim(l.rstrip)}" }
+  puts "  #{C.dim('…  (' + (lines.size - 35).to_s + ' more lines)')}" if lines.size > 35
+  hr('═')
+end
+
+def confirm(msg = 'Write this file?')
+  print "  #{C.c('›')} #{msg} #{C.dim('[Y/n]')}: "
+  ans = $stdin.gets&.chomp&.downcase
+  ans.nil? || ans.empty? || ans == 'y'
+end
+
+def safe_write(rel_path, content)
+  full = File.join(SITE_ROOT, rel_path)
+  if File.exist?(full)
+    puts "  #{C.y('!')} File already exists: #{rel_path}"
+    return unless confirm('Overwrite?')
+  end
+  FileUtils.mkdir_p(File.dirname(full))
+  File.write(full, content)
+  puts "  #{C.g('✓')} Written: #{C.b(rel_path)}"
+end
+
+def fm_block(hash)
+  # Produce clean YAML front matter, skipping nil/empty values
+  data = hash.reject { |_, v| v.nil? || v == '' || v == [] }
+  data.to_yaml
+end
+
+# ── DISPATCH / ARTICLE FLOW ─────────────────────────────────────────────────
+def flow_dispatch
+  section 'New Dispatch / Article'
+
+  title = ask('Title')
+  return puts "  #{C.r('Title is required.')}" if title.nil? || title.empty?
+
+  date_str  = ask('Date', default: Date.today.to_s)
+  date      = (Date.parse(date_str) rescue Date.today)
+
+  layout_item = menu('Layout', [
+    { val: 'dispatch', label: "dispatch  #{C.dim('— article with sidebar, TOC, related links')}" },
+    { val: 'article',  label: "article   #{C.dim('— standalone long read, no sidebar')}" }
+  ], allow_skip: false)
+  return unless layout_item
+  layout = layout_item[:val]
+
+  worlds   = load_worlds
+  places   = load_places
+  products = load_products
+  people   = discover_people
+  tag_pool = discover_tags
+
+  world_item = menu('World',
+    worlds.map { |w| { val: w['id'], label: "#{w['num'].ljust(5)} #{w['name'].ljust(16)} #{C.dim(w['line'])}" } },
+    allow_skip: true, skip_label: 'no world tag')
+  world_val = world_item.is_a?(Hash) ? world_item[:val] : nil
+
+  place_item = menu('Place',
+    places.map { |p| { val: p['slug'], label: p['title'] } },
+    allow_skip: true, skip_label: 'no place tag')
+  place_val = place_item.is_a?(Hash) ? place_item[:val] : nil
+
+  product_item = menu('Product',
+    products.map { |p| { val: p['id'], label: "#{p['name'].ljust(16)} #{C.dim(p['line'])}" } },
+    allow_skip: true, skip_label: 'no product tag')
+  product_val = product_item.is_a?(Hash) ? product_item[:val] : nil
+
+  author_item = menu('Author', people,
+    allow_skip: true, skip_label: 'no author',
+    allow_new: true,  new_label:  'type a name manually')
+  if author_item == :new
+    author_val = ask('Author name')
+  elsif author_item.is_a?(Hash)
+    author_val = people.find { |p| p == author_item }&.dig(:label)
+                  &.sub(/\s+#{Regexp.escape(C.dim(''))}.*/, '')  # strip ANSI hint
+    # simpler: just humanize the slug
+    author_val = humanize(author_item[:slug])
+  else
+    author_val = nil
+  end
+
+  chosen_tags = tag_pool.empty? ? [] : multi_menu('Tags', tag_pool)
+
+  raw_slug  = slugify(title)
+  slug      = ask('Slug', default: raw_slug)
+
+  rel_path  = "_posts/#{date.strftime('%Y-%m-%d')}-#{slug}.md"
+
+  fm = { 'layout'  => layout,
+         'title'   => title,
+         'date'    => date.to_s,
+         'world'   => world_val,
+         'place'   => place_val,
+         'product' => product_val,
+         'author'  => author_val,
+         'tags'    => chosen_tags.empty? ? nil : chosen_tags }
+
+  body, editor = read_body
+  content = "#{fm_block(fm)}---\n\n#{body || '<!-- body -->'}\n"
+  preview(rel_path, content)
+  if confirm
+    safe_write(rel_path, content)
+    open_in_editor(editor, File.join(SITE_ROOT, rel_path))
+  end
+end
+
+# ── WORLD FLOW ──────────────────────────────────────────────────────────────
+def flow_world
+  section 'World'
+  worlds = load_worlds
+
+  action = menu('Action', [
+    { val: 'existing', label: "Existing world  #{C.dim('— generate or refresh index page')}" },
+    { val: 'new',      label: "New world       #{C.dim('— add to worlds.yml + generate index')}" }
+  ], allow_skip: false)
+  return unless action
+
+  if action[:val] == 'new'
+    puts
+    id      = ask('ID (lowercase-hyphen, e.g. "logistics")')
+    return puts "  #{C.r('ID required.')}" if id.nil? || id.empty?
+    name    = ask('Display name')
+    num     = ask('Number (e.g. "08")')
+    tagline = ask('One-line tagline')
+
+    new_entry = { 'id' => id, 'num' => num, 'name' => name,
+                  'url' => "/worlds/#{id}/", 'line' => tagline }
+    worlds << new_entry
+    data_path = File.join(SITE_ROOT, '_data/worlds.yml')
+    File.write(data_path, worlds.to_yaml)
+    puts "  #{C.g('✓')} Patched _data/worlds.yml"
+  else
+    world_item = menu('Select world',
+      worlds.map { |w| { **w.transform_keys(&:to_sym), label: "#{w['num']}  #{w['name']}" } },
+      allow_skip: false)
+    return unless world_item
+    id      = world_item[:id]
+    name    = world_item[:name]
+    tagline = world_item[:line]
+    num     = world_item[:num]
+  end
+
+  rel_path = "worlds/#{id}/index.html"
+  content = <<~HTML
+    ---
+    layout: default
+    title: "#{name}"
+    world_id: #{id}
+    ---
+
+    <div class="shell">
+      <div class="crumbs">
+        <a href="/">babb</a><span class="sep">/</span>
+        <span class="here">#{name}</span>
+      </div>
+    </div>
+
+    <section class="shell">
+      <div class="world-head">
+        <div class="num">#{num}</div>
+        <h1>#{name}</h1>
+        <p class="lede">#{tagline}</p>
+      </div>
+
+      <div class="world-index">
+        {% assign world_posts = site.posts | where: "world", "#{id}" %}
+        {% if world_posts.size > 0 %}
+          {% for post in world_posts %}
+          <article class="wi-row">
+            <a href="{{ post.url }}">{{ post.title }}</a>
+            <time datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: "%B %-d, %Y" }}</time>
+          </article>
+          {% endfor %}
+        {% else %}
+          <p class="empty">No dispatches yet.</p>
+        {% endif %}
+      </div>
+    </section>
+  HTML
+
+  preview(rel_path, content)
+  safe_write(rel_path, content) if confirm
+
+  puts
+  flow_world_subpages(id, name) if confirm('Scaffold sub-pages for this world?')
+end
+
+def scaffold_rwl_pages(world_id, world_name)
+  %w[read watch listen].each do |mode|
+    rel_path = "worlds/#{world_id}/#{mode}/index.html"
+    sibling_nav = %w[read watch listen].map do |m|
+      curr = m == mode ? ' aria-current="page"' : ''
+      "      <a href=\"/worlds/#{world_id}/#{m}/\"#{curr}>#{m.capitalize}</a>"
+    end.join("\n")
+
+    content = <<~HTML
+      ---
+      layout: default
+      title: "#{world_name} — #{mode.capitalize}"
+      world_id: #{world_id}
+      rwl_mode: #{mode}
+      ---
+
+      <div class="shell">
+        <div class="crumbs">
+          <a href="/">babb</a><span class="sep">/</span>
+          <a href="/worlds/##{world_id}">#{world_name}</a><span class="sep">/</span>
+          <span class="here">#{mode.capitalize}</span>
+        </div>
+        <nav class="rwl-nav">
+      #{sibling_nav}
+        </nav>
+      </div>
+
+      <section class="shell rwl-list">
+        {% assign posts = site.posts | where: "world", "#{world_id}" %}
+        {% for post in posts %}
+        <article class="wi-row">
+          <a href="{{ post.url }}">{{ post.title }}</a>
+          <time datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: "%B %-d, %Y" }}</time>
+        </article>
+        {% endfor %}
+      </section>
+    HTML
+
+    safe_write(rel_path, content)
+  end
+  puts "  #{C.g('✓')} Wrote read / watch / listen pages"
+end
+
+def scaffold_sub_worlds(world_id, world_name)
+  puts
+  puts "  #{C.dim('Sub-world slugs — space or comma separated (e.g. dairy grain livestock orchards)')}"
+  print "  #{C.c('›')} Slugs: "
+  raw = $stdin.gets&.chomp&.strip
+  return if raw.nil? || raw.empty?
+
+  subs = raw.split(/[\s,]+/).map(&:strip).reject(&:empty?)
+  subs.each do |sub|
+    sub_name = humanize(sub)
+    rel_path = "worlds/#{world_id}/#{sub}/index.html"
+    content = <<~HTML
+      ---
+      layout: default
+      title: "#{world_name} — #{sub_name}"
+      world_id: #{world_id}
+      sub_world: #{sub}
+      ---
+
+      <div class="shell">
+        <div class="crumbs">
+          <a href="/">babb</a><span class="sep">/</span>
+          <a href="/worlds/##{world_id}">#{world_name}</a><span class="sep">/</span>
+          <span class="here">#{sub_name}</span>
+        </div>
+      </div>
+
+      <section class="shell">
+        {% assign posts = site.posts | where: "world", "#{world_id}/#{sub}" %}
+        {% for post in posts %}
+        <article class="wi-row">
+          <a href="{{ post.url }}">{{ post.title }}</a>
+          <time datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: "%B %-d, %Y" }}</time>
+        </article>
+        {% endfor %}
+      </section>
+    HTML
+
+    safe_write(rel_path, content)
+  end
+  puts "  #{C.g('✓')} Wrote #{subs.size} sub-world page#{'s' if subs.size != 1}: #{subs.join(', ')}"
+end
+
+def flow_world_subpages(id, name)
+  action = menu('World sub-pages', [
+    { val: 'rwl',  label: "RWL trio    #{C.dim('— read / watch / listen index pages')}" },
+    { val: 'subs', label: "Sub-worlds  #{C.dim('— enter slugs, each gets a dispatch index')}" },
+    { val: 'both', label: "Both" }
+  ], allow_skip: true, skip_label: 'skip for now')
+  return unless action
+
+  scaffold_rwl_pages(id, name)      if %w[rwl both].include?(action[:val])
+  scaffold_sub_worlds(id, name)     if %w[subs both].include?(action[:val])
+end
+
+# ── PLACE SUB-PAGE FLOW ─────────────────────────────────────────────────────
+SUB_TYPES = [
+  { val: 'angle',       label: "angle       #{C.dim('— narrative profile page (text + sidebar)')}" },
+  { val: 'audio',       label: "audio       #{C.dim('— audio player with transcript + chapters')}" },
+  { val: 'video',       label: "video       #{C.dim('— video player with chapters + transcript')}" },
+  { val: 'broll',       label: "broll       #{C.dim('— photo/media grid with lightbox')}" },
+  { val: 'field-notes', label: "field-notes #{C.dim('— daily field notes journal with filter')}" },
+].freeze
+
+def ctx_links_yaml(links, indent: 2)
+  return '' if links.empty?
+  pad = ' ' * indent
+  lines = links.map { |l| "#{pad}- url: #{l[:url]}\n#{pad}  title: \"#{l[:title]}\"" }
+  "ctx_links:\n#{lines.join("\n")}\n"
+end
+
+def build_subpage(type, place_slug, place_title, section_title, section_slug, ctx_links)
+  cl = ctx_links_yaml(ctx_links)
+  case type
+  when 'angle'
+    <<~FM
+      ---
+      layout: angle
+      title: "#{section_title}"
+      place_slug: #{place_slug}
+      place_title: "#{place_title}"
+      #{cl}---
+
+      <!-- angle content: use .plate .body-row .sb-box .pq .tech etc. -->
+    FM
+  when 'audio'
+    <<~FM
+      ---
+      layout: audio
+      title: "#{section_title}"
+      place_slug: #{place_slug}
+      place_title: "#{place_title}"
+      #{cl}---
+
+      <!-- audio: .eph .wave .controls .chapters .transcript -->
+    FM
+  when 'video'
+    <<~FM
+      ---
+      layout: video
+      title: "#{section_title}"
+      place_slug: #{place_slug}
+      place_title: "#{place_title}"
+      #{cl}---
+
+      <!-- video: .player-wrap .player .player-bar .vtitle .director-notes -->
+    FM
+  when 'broll'
+    <<~FM
+      ---
+      layout: broll
+      title: "#{section_title}"
+      place_slug: #{place_slug}
+      place_title: "#{place_title}"
+      #{cl}---
+
+      <!-- broll: .ttl .stat-bx .tools .grid .tile .lb lightbox -->
+    FM
+  when 'field-notes'
+    <<~FM
+      ---
+      layout: field-notes
+      title: "#{section_title}"
+      place_slug: #{place_slug}
+      place_title: "#{place_title}"
+      #{cl}---
+
+      <!-- field-notes: .day .day-head .notes .note .stats .tagcloud -->
+    FM
+  end
+end
+
+def flow_place_subpage(place_slug, place_title)
+  type_item = menu('Sub-page type', SUB_TYPES, allow_skip: false)
+  return unless type_item
+  type = type_item[:val]
+
+  default_title = "#{place_title} — #{humanize(type)}"
+  section_title = ask('Section title', default: default_title)
+  section_slug  = ask('Section slug (URL segment)', default: type)
+
+  # auto-scan existing sub-pages for ctx_links
+  ctx = ctx_links_for(place_slug)
+  new_url = "/places/#{place_slug}/#{section_slug}/"
+  ctx << { url: new_url, title: section_title } unless ctx.any? { |l| l[:url] == new_url }
+  ctx.sort_by! { |l| l[:url] }
+
+  rel_path = "places/#{place_slug}/#{section_slug}/index.html"
+  content  = build_subpage(type, place_slug, place_title, section_title, section_slug, ctx)
+
+  preview(rel_path, content)
+  safe_write(rel_path, content) if confirm
+
+  puts
+  flow_place_subpage(place_slug, place_title) if confirm('Add another sub-page for this place?')
+end
+
+# ── PLACE FLOW ──────────────────────────────────────────────────────────────
+def flow_place
+  section 'Place'
+  places = load_places
+  worlds = load_worlds
+
+  action = menu('Action', [
+    { val: 'existing', label: "Existing place  #{C.dim('— add a sub-page to a known place')}" },
+    { val: 'new',      label: "New place       #{C.dim('— register in places_index.yml + create collection file')}" }
+  ], allow_skip: false)
+  return unless action
+
+  if action[:val] == 'existing'
+    place = menu('Select place',
+      places.map { |p| { slug: p['slug'], title: p['title'],
+                          label: p['title'] } },
+      allow_skip: false)
+    return unless place
+    flow_place_subpages(place[:slug], place[:title])
+    return
+  end
+
+  # ── New place ──────────────────────────────────────────────────────────────
+  puts
+  title = ask('Place title (e.g. "Galveston shipping terminal")')
+  return puts "  #{C.r('Title required.')}" if title.nil? || title.empty?
+
+  slug    = ask('Slug', default: slugify(title))
+  route   = ask('Is this a route? (y/N)', default: 'n')&.downcase == 'y'
+  dailies = ask('Dailies count (0 if unknown)', default: '0').to_i
+
+  world_items = worlds.map { |w| { val: w['name'], label: "#{w['num']}  #{w['name']}" } }
+  chosen      = multi_menu('Worlds (pick 1–3)', world_items)
+  world_names = chosen.map { |w| w[:val] }
+
+  new_entry = { 'slug'    => slug,
+                'title'   => title,
+                'worlds'  => world_names,
+                'route'   => route,
+                'dailies' => dailies }
+  places << new_entry
+  data_path = File.join(SITE_ROOT, '_data/places_index.yml')
+  File.write(data_path, places.to_yaml)
+  puts "  #{C.g('✓')} Patched _data/places_index.yml"
+
+  # _places collection file
+  worlds_yaml = world_names.map { |n| "  - #{n}" }.join("\n")
+  place_rel  = "_places/#{slug}.html"
+  place_body = <<~HTML
+    ---
+    layout: default
+    title: "#{title}"
+    slug: #{slug}
+    route: #{route}
+    worlds:
+    #{worlds_yaml}
+    ---
+
+    <!-- place landing: links to sub-pages will appear via places_index -->
+  HTML
+
+  preview(place_rel, place_body)
+  safe_write(place_rel, place_body) if confirm('Write _places collection file?')
+
+  puts
+  flow_place_subpages(slug, title) if confirm('Scaffold sub-pages for this place now?')
+end
+
+PLACE_SETS = {
+  'full'  => %w[angle field-notes broll],
+  'light' => %w[angle field-notes],
+}.freeze
+
+def flow_place_batch(place_slug, place_title, types)
+  puts
+  puts "  #{C.dim('Title for each sub-page (Enter to accept default):')}"
+
+  # Collect titles upfront
+  pages = types.map do |type|
+    default_title = "#{place_title} — #{humanize(type)}"
+    title = ask("  #{type}", default: default_title)
+    { type: type, slug: type, title: title }
+  end
+
+  # Build full ctx_links for the whole set + any already on disk
+  existing_ctx = ctx_links_for(place_slug)
+  batch_ctx    = pages.map { |p| { url: "/places/#{place_slug}/#{p[:slug]}/", title: p[:title] } }
+  all_ctx      = (existing_ctx + batch_ctx).uniq { |l| l[:url] }.sort_by { |l| l[:url] }
+
+  puts
+  pages.each do |p|
+    rel_path = "places/#{place_slug}/#{p[:slug]}/index.html"
+    content  = build_subpage(p[:type], place_slug, place_title, p[:title], p[:slug], all_ctx)
+    safe_write(rel_path, content)
+  end
+  puts "  #{C.g('✓')} #{pages.size} sub-pages written, ctx_links cross-wired"
+end
+
+def flow_place_subpages(place_slug, place_title)
+  set_item = menu('Sub-page setup', [
+    { val: 'full',   label: "Full standard  #{C.dim('— angle + field-notes + broll')}" },
+    { val: 'light',  label: "Light set      #{C.dim('— angle + field-notes')}" },
+    { val: 'custom', label: "Custom         #{C.dim('— add pages one at a time')}" }
+  ], allow_skip: true, skip_label: 'skip for now')
+  return unless set_item
+
+  case set_item[:val]
+  when 'full', 'light'
+    flow_place_batch(place_slug, place_title, PLACE_SETS[set_item[:val]])
+  when 'custom'
+    flow_place_subpage(place_slug, place_title)
+  end
+end
+
+# ── PERSON FLOW ─────────────────────────────────────────────────────────────
+def flow_person
+  section 'New Person'
+
+  type_item = menu('Person type', [
+    { val: 'subject',     label: "subject      #{C.dim('— person featured in place coverage')}" },
+    { val: 'contributor', label: "contributor  #{C.dim('— staff, editor, photographer, author')}" }
+  ], allow_skip: false)
+  return unless type_item
+  ptype = type_item[:val]
+
+  name = ask('Full name')
+  return puts "  #{C.r('Name required.')}" if name.nil? || name.empty?
+
+  slug      = ask('Slug', default: slugify(name))
+  role      = ask('Role / title')
+  bio_short = ask('Short bio (one sentence, optional)')
+
+  rel_path = "_people/#{slug}.html"
+  fm = { 'layout'    => 'person',
+         'title'     => name,
+         'slug'      => slug,
+         'type'      => ptype,
+         'role'      => role,
+         'bio_short' => bio_short }
+
+  content = "#{fm_block(fm)}---\n\n<!-- bio, timeline, coverage links -->\n"
+  preview(rel_path, content)
+  safe_write(rel_path, content) if confirm
+end
+
+# ── PRODUCT FLOW ────────────────────────────────────────────────────────────
+def flow_product
+  section 'Product'
+  products = load_products
+
+  action = menu('Action', [
+    { val: 'new',      label: "New product      #{C.dim('— add to products.yml + scaffold product page')}" },
+    { val: 'existing', label: "Existing product #{C.dim('— regenerate / scaffold product page')}" }
+  ], allow_skip: false)
+  return unless action
+
+  if action[:val] == 'existing'
+    prod = menu('Select product',
+      products.map { |p| { **p.transform_keys(&:to_sym),
+                            label: "#{p['num'].ljust(8)} #{p['name'].ljust(14)} #{C.dim(p['line'])}" } },
+      allow_skip: false)
+    return unless prod
+    id     = prod[:id]
+    name   = prod[:name]
+    line   = prod[:line]
+    meta   = prod[:meta]
+    ver    = prod[:ver]
+    status = prod[:status]
+  else
+    puts
+    existing_nums = products.map { |p| p['num'] }
+    next_n = products.size + 1
+    id     = ask('ID (lowercase-hyphen, e.g. "fieldkit")')
+    return puts "  #{C.r('ID required.')}" if id.nil? || id.empty?
+    name   = ask('Display name')
+    num    = ask('Number string', default: "#{format('%02d', next_n)} / #{format('%02d', next_n)}")
+    line   = ask('One-line tagline')
+    meta   = ask('Meta string (e.g. "software · mobile")')
+    ver    = ask('Version / stage (e.g. "v1.0", "alpha", "spec")')
+    status_item = menu('Status', [
+      { val: 'active', label: 'active' },
+      { val: 'alpha',  label: 'alpha' },
+      { val: 'beta',   label: 'beta' },
+      { val: 'sunset', label: 'sunset' }
+    ], allow_skip: false)
+    status = status_item[:val]
+
+    new_entry = { 'id' => id, 'num' => num, 'name' => name,
+                  'url' => "/products/#{id}/", 'line' => line,
+                  'meta' => meta, 'ver' => ver, 'status' => status }
+    products << new_entry
+    data_path = File.join(SITE_ROOT, '_data/products.yml')
+    File.write(data_path, products.to_yaml)
+    puts "  #{C.g('✓')} Patched _data/products.yml"
+  end
+
+  rel_path = "products/#{id}/index.html"
+  content = <<~HTML
+    ---
+    layout: default
+    title: "#{name}"
+    product_id: #{id}
+    ---
+
+    <div class="shell">
+      <div class="crumbs">
+        <a href="/">babb</a><span class="sep">/</span>
+        <a href="/products/">products</a><span class="sep">/</span>
+        <span class="here">#{name}</span>
+      </div>
+    </div>
+
+    <div class="shell ptitle">
+      <h1>#{name}</h1>
+      <p class="lede">#{line}</p>
+      <table class="status-table">
+        <tr><td>Version</td><td>#{ver}</td></tr>
+        <tr><td>Status</td><td>#{status}</td></tr>
+        <tr><td>Meta</td><td>#{meta}</td></tr>
+      </table>
+    </div>
+
+    <section class="shell">
+      <!-- §01 overview -->
+    </section>
+  HTML
+
+  preview(rel_path, content)
+  safe_write(rel_path, content) if confirm
+end
+
+# ── PAGE FLOW ────────────────────────────────────────────────────────────────
+PAGE_LAYOUTS = [
+  { val: 'default',  label: "default  #{C.dim('— base chrome, no special body class')}" },
+  { val: 'updates',  label: "updates  #{C.dim('— updates feed layout')}" },
+  { val: 'dispatch', label: "dispatch #{C.dim('— article with sidebar')}" },
+  { val: 'article',  label: "article  #{C.dim('— standalone long read')}" },
+].freeze
+
+def flow_page
+  section 'Standalone Page'
+
+  title = ask('Page title')
+  return puts "  #{C.r('Title required.')}" if title.nil? || title.empty?
+
+  slug = ask('Slug / filename (no extension)', default: slugify(title))
+
+  location_item = menu('Location', [
+    { val: 'pages',    label: "pages/        #{C.dim('— standard pages directory')}" },
+    { val: 'root',     label: "root          #{C.dim('— site root (e.g. index.html)')}" },
+    { val: 'custom',   label: "custom path   #{C.dim('— type your own directory')}" }
+  ], allow_skip: false)
+  return unless location_item
+
+  case location_item[:val]
+  when 'pages'
+    dir = 'pages'
+  when 'root'
+    dir = ''
+  when 'custom'
+    dir = ask('Directory path (no leading slash)')
+  end
+
+  ext_item = menu('File type', [
+    { val: 'md',   label: "Markdown (.md)    #{C.dim('— body in Markdown')}" },
+    { val: 'html', label: "HTML (.html)      #{C.dim('— body in HTML')}" }
+  ], allow_skip: false)
+  return unless ext_item
+  ext = ext_item[:val]
+
+  layout_item = menu('Layout', PAGE_LAYOUTS, allow_skip: false)
+  return unless layout_item
+  layout = layout_item[:val]
+
+  permalink = ask('Permalink (optional, e.g. /about/)')
+
+  fm = { 'layout' => layout, 'title' => title }
+  fm['permalink'] = permalink if permalink && !permalink.empty?
+
+  filename = dir.empty? ? "#{slug}.#{ext}" : "#{dir}/#{slug}.#{ext}"
+  body_text, editor = if ext == 'md'
+    read_body
+  else
+    ['<!-- body in HTML -->', nil]
+  end
+  content = "#{fm_block(fm)}---\n\n#{body_text || '<!-- body -->'}\n"
+
+  preview(filename, content)
+  if confirm
+    safe_write(filename, content)
+    open_in_editor(editor, File.join(SITE_ROOT, filename))
+  end
+end
+
+# ── CHANGELOG FLOW ──────────────────────────────────────────────────────────
+def bump_patch(ver)
+  return nil if ver.nil?
+  ver.to_s =~ /^(v?\d+\.\d+\.)(\d+)$/ ? "#{$1}#{$2.to_i + 1}" :
+  ver.to_s =~ /^(v?\d+\.)(\d+)$/      ? "#{$1}#{$2.to_i + 1}" : nil
+end
+
+def flow_changelog
+  section 'Changelog Entry'
+  products = load_products
+
+  prod = menu('Product', products.map { |p|
+    { val: p['id'], label: "#{p['name'].ljust(16)} #{C.dim("currently #{p['ver']}")}" }
+  }, allow_skip: false)
+  return unless prod
+  prod_id = prod[:val]
+
+  clog_path = File.join(SITE_ROOT, '_data', 'changelogs', "#{prod_id}.yml")
+  existing  = File.exist?(clog_path) ? (YAML.load_file(clog_path) || []) : []
+  latest_ver = existing.first&.dig('ver')
+  suggested  = bump_patch(latest_ver)
+
+  puts
+  puts "  #{C.dim("Latest: #{latest_ver || 'none'}  →  suggesting #{suggested || 'no suggestion'}")}" if latest_ver
+  ver     = ask('Version', default: suggested)
+  date    = ask('Date', default: Date.today.to_s)
+  head    = ask('Summary headline (becomes bold — one tight sentence)')
+  body    = ask('Detail (optional — rest of the sentence/paragraph)')
+  changes = ask('Individual change count', default: '1').to_i
+
+  new_entry = { 'ver' => ver, 'date' => date, 'head' => head,
+                'body' => (body && !body.empty? ? body : nil),
+                'changes' => changes }.compact
+
+  puts
+  puts "  #{C.b('Entry:')}"
+  puts "  #{C.y(ver)}  #{C.dim(date)}  #{C.b(head)} #{body}  #{C.dim("(#{changes} changes)")}"
+  puts
+
+  return unless confirm('Prepend to changelog?')
+
+  existing.unshift(new_entry)
+  FileUtils.mkdir_p(File.dirname(clog_path))
+  File.write(clog_path, existing.to_yaml)
+  puts "  #{C.g('✓')} _data/changelogs/#{prod_id}.yml  #{C.dim("(#{existing.size} entries total)")}"
+
+  # Offer to also update the ver string in products.yml
+  if confirm("Update products.yml version to #{ver}?")
+    prods = load_products
+    target = prods.find { |p| p['id'] == prod_id }
+    if target
+      target['ver'] = ver
+      File.write(File.join(SITE_ROOT, '_data/products.yml'), prods.to_yaml)
+      puts "  #{C.g('✓')} products.yml ver → #{ver}"
+    end
+  end
+end
+
+# ── TELEMETRY FLOW ───────────────────────────────────────────────────────────
+TELEM_PATH     = 'feed/telemetry.json'
+TELEM_SUBJECTS = %w[workpads bitpads .tel places editorial babb].freeze
+TELEM_MAX      = 24
+
+def flow_telemetry
+  section 'Telemetry Entry'
+
+  subj_item = menu('Subject / channel',
+    TELEM_SUBJECTS.map { |s| { val: s, label: s } },
+    allow_skip: false, allow_new: true, new_label: 'type a custom subject')
+  return unless subj_item
+  subj = subj_item == :new ? ask('Subject') : subj_item[:val]
+  return puts "  #{C.r('Subject required.')}" if subj.nil? || subj.empty?
+
+  msg = ask('Message (short, terminal-style — no caps, no period)')
+  return puts "  #{C.r('Message required.')}" if msg.nil? || msg.empty?
+
+  ts   = Time.now.strftime('%H:%M:%S')
+  line = { 'ts' => ts, 'subj' => subj, 'msg' => msg }
+
+  puts
+  puts "  #{C.b('Line:')}  #{C.dim(ts)}  #{C.y(subj)}  #{msg}"
+  puts
+  return unless confirm('Add to telemetry.json?')
+
+  json_path = File.join(SITE_ROOT, TELEM_PATH)
+  data = JSON.parse(File.read(json_path)) rescue { 'lines' => [] }
+  data['lines'].unshift(line)
+  data['lines'] = data['lines'].first(TELEM_MAX)
+  File.write(json_path, JSON.pretty_generate(data))
+  puts "  #{C.g('✓')} #{TELEM_PATH}  #{C.dim("(#{data['lines'].size} / #{TELEM_MAX} lines)")}"
+end
+
+# ── MAIN ────────────────────────────────────────────────────────────────────
+def main
+  puts
+  puts "  #{C.b('babb-new')}  #{C.dim('· content scaffolder for babb.tel')}"
+  hr
+
+  top = menu('What are you creating?', [
+    { val: 'dispatch',   label: "Dispatch / Article  #{C.dim('— editorial content, appears in updates feed')}" },
+    { val: 'world',      label: "World               #{C.dim('— thematic domain index (selling, farming, …)')}" },
+    { val: 'place',      label: "Place               #{C.dim('— location or route, with sub-pages')}" },
+    { val: 'product',    label: "Product             #{C.dim('— add to products.yml + scaffold product page')}" },
+    { val: 'person',     label: "Person              #{C.dim('— subject or contributor profile')}" },
+    { val: 'page',       label: "Page                #{C.dim('— standalone page outside posts/places/products')}" },
+    { val: 'changelog',  label: "Changelog entry     #{C.dim('— prepend a release note to a product changelog')}" },
+    { val: 'telemetry',  label: "Telemetry line      #{C.dim('— add a line to the homepage activity feed')}" }
+  ], allow_skip: false)
+
+  case top&.dig(:val)
+  when 'dispatch'  then flow_dispatch
+  when 'world'     then flow_world
+  when 'place'     then flow_place
+  when 'product'   then flow_product
+  when 'person'    then flow_person
+  when 'page'      then flow_page
+  when 'changelog' then flow_changelog
+  when 'telemetry' then flow_telemetry
+  else puts "  #{C.dim('Nothing created.')}"
+  end
+
+  puts
+end
+
+main

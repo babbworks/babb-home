@@ -1,0 +1,34 @@
+{
+  "lines": [
+    {
+      "ts": "04:11:45",
+      "subj": "babb",
+      "msg": "little Babb has found the website"
+    },
+    {
+      "ts": "17:42:08",
+      "subj": "workpads",
+      "msg": "field unit 03 returned from Sioux Falls — recap"
+    },
+    {
+      "ts": "17:38:55",
+      "subj": ".tel",
+      "msg": "monument render pass 12 queued for review"
+    },
+    {
+      "ts": "17:31:02",
+      "subj": "clarkware",
+      "msg": "P1 V1 job lifecycle — state machine tests passing"
+    },
+    {
+      "ts": "17:24:17",
+      "subj": "bitpads",
+      "msg": "firmware 0.4 tag cut — release notes published"
+    },
+    {
+      "ts": "17:18:44",
+      "subj": "workwarrior",
+      "msg": "627 heuristic rules compiled — NL engine ready"
+    }
+  ]
+}

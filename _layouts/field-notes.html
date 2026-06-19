@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+{%- include head.html -%}
+<body>
+
+<div class="sysbar">
+  <div class="shell row">
+    <div><span class="dot"></span>babb<span class="ascii"> / places / {{ page.place_slug }} / field-notes</span></div>
+    <div class="right">
+      <span class="ascii">build {{ site.time | date: "%Y.%m.%d" }}</span>
+      <span class="ascii">·</span>
+      <span id="clock" aria-live="off">--:--:-- UTC</span>
+      <span class="ascii">·</span>
+      <a href="/feed.xml?cat=places/{{ page.place_slug }}/field-notes">rss</a>
+    </div>
+  </div>
+</div>
+
+{%- include masthead.html -%}
+
+<div class="ctx">
+  <div class="shell row">
+    <a class="back" href="/places/{{ page.place_slug }}/"><span class="arr">←</span> <span>From</span> <b>{{ page.place_title }}</b></a>
+    <span class="here">Field Notes{% if page.note_count %} &middot; <span class="now">{{ page.note_count }} notes</span>{% endif %}</span>
+    <div class="more">
+      {% for link in page.ctx_links %}
+      <a href="{{ link.url }}"{% if link.current %} class="here"{% endif %}>{{ link.label }}</a>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+{{ content }}
+
+{%- include colophon.html -%}
+
+<script>
+(function(){
+  const el=document.getElementById("clock"),f=n=>String(n).padStart(2,"0");
+  function t(){const d=new Date();el.textContent=f(d.getUTCHours())+":"+f(d.getUTCMinutes())+":"+f(d.getUTCSeconds())+" UTC";}
+  t();setInterval(t,1000);
+})();
+
+// note filters
+(function(){
+  const search=document.getElementById("search");
+  const notes=document.querySelectorAll(".note");
+  const days=document.querySelectorAll(".day");
+  let q="",author="all",anchor="all";
+
+  function setPressed(group,b){group.forEach(x=>x.setAttribute("aria-pressed",x===b?"true":"false"));}
+
+  function apply(){
+    notes.forEach(n=>{
+      const ma=author==="all"||n.dataset.au===author;
+      const mn=anchor==="all"||n.dataset.an===anchor;
+      const mq=!q||(n.dataset.text||"").toLowerCase().includes(q)||(n.querySelector(".body")?.textContent||"").toLowerCase().includes(q);
+      n.hidden=!(ma&&mn&&mq);
+    });
+    days.forEach(d=>{
+      const visible=d.querySelectorAll(".note:not([hidden])").length>0;
+      d.hidden=!visible;
+    });
+  }
+
+  document.querySelectorAll("#authorFilter button").forEach(b=>b.addEventListener("click",()=>{author=b.dataset.au;setPressed(document.querySelectorAll("#authorFilter button"),b);apply();}));
+  document.querySelectorAll("#anchorFilter button").forEach(b=>b.addEventListener("click",()=>{anchor=b.dataset.an;setPressed(document.querySelectorAll("#anchorFilter button"),b);apply();}));
+  if(search)search.addEventListener("input",e=>{q=e.target.value.trim().toLowerCase();apply();});
+})();
+</script>
+</body>
+</html>

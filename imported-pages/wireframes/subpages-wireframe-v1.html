@@ -1,0 +1,685 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Subpages wireframe — Babb</title>
+<style>
+  :root{--line:#bbb;--ink:#333;--muted:#888;--alt:#a14a00;--bg:#fafaf8}
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--bg);color:var(--ink);
+    font:14px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace}
+  .shell{display:grid;grid-template-columns:220px 1fr;min-height:100vh}
+  .navrail{border-right:1px solid #ddd;background:#fff;padding:18px 14px;
+    position:sticky;top:0;align-self:start;height:100vh;overflow:auto}
+  .navrail h1{font-size:13px;margin:0 0 10px 0;letter-spacing:.06em}
+  .navrail .group{font-size:10px;color:var(--muted);letter-spacing:.08em;
+    text-transform:uppercase;margin:14px 0 4px}
+  .navrail a{display:block;padding:4px 6px;color:var(--ink);
+    text-decoration:none;font-size:12px;border-left:2px solid transparent}
+  .navrail a:hover{background:#f4f1ea}
+  .navrail a.active{border-left-color:var(--ink);background:#f4f1ea;font-weight:600}
+  .pane{padding:24px;max-width:1080px}
+  .box{border:1px dashed var(--line);padding:12px;background:#fff}
+  .lbl{color:var(--muted);font-size:11px;letter-spacing:.08em;
+    text-transform:uppercase;margin-bottom:6px;display:block}
+  .placeholder{background:repeating-linear-gradient(45deg,#f1f1ee 0 8px,#fff 8px 16px);
+    border:1px dashed var(--line);display:flex;align-items:center;
+    justify-content:center;color:var(--muted);font-size:12px}
+  h2,h3{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;margin:0}
+  h2{font-size:20px}
+  h3{font-size:14px}
+  .note{font-size:11px;color:var(--muted);font-style:italic}
+  .anno{background:#fff8e0;border:1px solid #e7d488;padding:6px 10px;
+    font-size:11px;color:#665;margin:0 0 14px}
+  .pill{display:inline-block;border:1px solid #ccc;padding:2px 8px;
+    font-size:11px;margin:2px 4px 2px 0;border-radius:99px}
+  .pill.alt{color:var(--alt);border-color:#d8a988}
+  .crumbs{font-size:12px;color:var(--muted);margin-bottom:6px}
+  .crumbs a{color:var(--ink)}
+  hr.sb{border:none;border-top:1px solid #e5e5e0;margin:24px 0}
+  .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+  .grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+  .grid-5{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+  .grid-6{display:grid;grid-template-columns:repeat(6,1fr);gap:8px}
+  .grid-2-rail{display:grid;grid-template-columns:2fr 1fr;gap:20px}
+  .placeholder.hero{height:320px}
+  .placeholder.tile{height:140px}
+  .placeholder.thumb{height:80px}
+  .placeholder.square{aspect-ratio:1/1}
+  .placeholder.tall{height:200px}
+
+  .page-tpl{display:none}
+  .page-tpl.active{display:block}
+
+  /* shared widgets */
+  .audio{display:flex;gap:10px;align-items:center;border:1px solid #ccc;
+    padding:6px 10px;background:#fff;font-size:12px}
+  .audio .bar{flex:1;height:4px;background:#eee;position:relative}
+  .audio .bar::after{content:"";position:absolute;left:0;top:0;height:100%;
+    width:30%;background:#888}
+  .video{position:relative}
+  .video .play{position:absolute;inset:0;display:flex;align-items:center;
+    justify-content:center;color:#fff;font-size:32px;text-shadow:0 0 6px #000}
+  .meta{font-size:11px;color:var(--muted)}
+  .meta a{color:var(--ink)}
+  .feed-item{padding:10px 0;border-top:1px dotted #ddd}
+  .feed-item:first-child{border-top:none}
+  .feed-item a{color:var(--ink);text-decoration:underline}
+  .feed-item .desc{font-size:12px;color:#555;margin:4px 0 6px}
+  .feed-item .tags{font-size:11px;color:var(--muted)}
+  .feed-item .tags .primary{color:var(--alt)}
+  .fieldnote{border-left:3px solid var(--alt);background:#fff8ef;
+    padding:8px 12px;font-size:13px;margin:8px 0}
+  .fieldnote .by{font-size:11px;color:var(--muted)}
+  .toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:8px 0}
+  .toolbar input,.toolbar select{font:inherit;border:1px solid #ccc;
+    padding:3px 8px;background:#fff}
+  .crumbs.sticky-mock{padding:8px 12px;background:#fff;border:1px dashed var(--line);
+    margin-bottom:10px}
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <!-- LEFT NAV -->
+  <nav class="navrail" id="navrail">
+    <h1>Subpages · wireframe</h1>
+    <div class="note">Click any to switch. Shared = used from both Worlds &amp; Places.</div>
+
+    <div class="group">Shared</div>
+    <a data-tpl="article" class="active">Article / Dispatch</a>
+    <a data-tpl="video">Video</a>
+    <a data-tpl="audio">Audio episode</a>
+    <a data-tpl="person">Person · Contributor</a>
+    <a data-tpl="people-index">People index</a>
+
+    <div class="group">Place subpages</div>
+    <a data-tpl="angle">Angle detail</a>
+    <a data-tpl="angles-index">All Angles</a>
+    <a data-tpl="broll">B-Roll gallery</a>
+    <a data-tpl="fieldnotes">Field Notes archive</a>
+    <a data-tpl="dailies">Dailies archive</a>
+
+    <div class="group">World subpages</div>
+    <a data-tpl="rwl">Read · Watch · Listen index</a>
+
+    <div class="group">Reference</div>
+    <a href="homepage-wireframe-v1.html">← Homepage</a>
+    <a href="worlds-wireframe-v1.html">← Worlds</a>
+    <a href="places-wireframe-v1.html">← Places</a>
+    <a href="products-wireframe-v1.html">← Products</a>
+  </nav>
+
+  <!-- MAIN PANE -->
+  <main class="pane">
+
+    <!-- ============================================================ -->
+    <!-- ARTICLE / DISPATCH -->
+    <section id="tpl-article" class="page-tpl active">
+      <div class="anno">Subpage · <b>Article / Dispatch</b> — single long-form post.
+        Linked from Updates rail, Dispatches rail (World), Dailies (Place), and Read (World RWL).</div>
+      <div class="crumbs sticky-mock">
+        <a href="#">babb</a> / <a href="#">worlds</a> / <a href="#">farming</a> /
+        <a href="#">livestock</a> / <span>field test recap — workpads</span>
+      </div>
+
+      <div class="box">
+        <span class="lbl">Header block</span>
+        <div class="meta">Dispatch · <a href="#">Farming / Livestock</a> · 12 min read · 2026-05-12</div>
+        <h2 style="margin:6px 0;">Two days on a feed-lot in Sioux Falls</h2>
+        <p class="note">Dek / standfirst — one sentence framing.</p>
+        <div class="meta">By <a href="#">Reporter Name</a> · with <a href="#">Photographer Name</a></div>
+      </div>
+
+      <div class="placeholder hero" style="margin:12px 0;">[ lead image ]</div>
+
+      <div class="grid-2-rail">
+        <article class="box">
+          <span class="lbl">Article body</span>
+          <p>Lead paragraph. The piece runs as prose with inline pull-quotes and embedded media.</p>
+          <p class="note">[ paragraph paragraph paragraph ]</p>
+          <div class="fieldnote">"A pull-quote that earns its place." <div class="by">— Cal, operations lead</div></div>
+          <p class="note">[ paragraph paragraph ]</p>
+          <div class="placeholder tile">[ inline photo ]</div>
+          <p class="note">[ paragraph paragraph ]</p>
+          <div class="audio"><span>▶</span><span>Inline clip · Cal on pen rotation</span><div class="bar"></div></div>
+          <p class="note">[ paragraph paragraph ]</p>
+        </article>
+
+        <aside>
+          <div class="box" style="margin-bottom:10px;">
+            <span class="lbl">In this piece</span>
+            <div class="meta">Place · <a href="#">Sioux Falls feed-lot</a></div>
+            <div class="meta">World · <a href="#">Farming</a> / <a href="#">Livestock</a></div>
+            <div class="meta">Products · <a href="#">Workpads</a> · <a href="#">Bitpads</a></div>
+          </div>
+          <div class="box" style="margin-bottom:10px;">
+            <span class="lbl">Table of contents</span>
+            <ol style="padding-left:18px;margin:6px 0;font-size:12px;">
+              <li><a href="#">Arrival</a></li>
+              <li><a href="#">Pens &amp; rotation</a></li>
+              <li><a href="#">The crew</a></li>
+              <li><a href="#">The math</a></li>
+              <li><a href="#">Leaving</a></li>
+            </ol>
+          </div>
+          <div class="box">
+            <span class="lbl">Related</span>
+            <div class="meta">↳ <a href="#">Soil sensors, one season later</a></div>
+            <div class="meta">↳ <a href="#">Co-op governance, plainly</a></div>
+          </div>
+        </aside>
+      </div>
+
+      <hr class="sb"/>
+      <div class="box">
+        <span class="lbl">Footer · subscribe + share + comments</span>
+        <p class="meta">Subscribe to Farming RSS · share · 12 comments (drawer)</p>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- VIDEO -->
+    <section id="tpl-video" class="page-tpl">
+      <div class="anno">Subpage · <b>Video</b> — mini-doc / short. Linked from Watch.</div>
+      <div class="crumbs sticky-mock">
+        <a href="#">babb</a> / <a href="#">worlds</a> / <a href="#">manufacturing</a> /
+        <a href="#">watch</a> / <span>the pour</span>
+      </div>
+
+      <div class="placeholder hero video" style="height:480px;">
+        [ video player ]<div class="play">▶</div>
+      </div>
+
+      <div class="grid-2-rail" style="margin-top:14px;">
+        <div class="box">
+          <span class="lbl">Title + intro</span>
+          <h2>Mini-doc — The Pour</h2>
+          <div class="meta">12:08 · captions available · transcript drawer</div>
+          <p>Standfirst: one paragraph of editorial framing.</p>
+          <div class="meta">Directed by <a href="#">Name</a> · cinematography <a href="#">Name</a></div>
+          <hr class="sb"/>
+          <span class="lbl">Chapters</span>
+          <ol style="padding-left:18px;margin:6px 0;font-size:12px;">
+            <li><a href="#">00:00 · cold start</a></li>
+            <li><a href="#">02:14 · charging the furnace</a></li>
+            <li><a href="#">05:42 · the pour</a></li>
+            <li><a href="#">09:30 · cooling</a></li>
+          </ol>
+        </div>
+
+        <aside>
+          <div class="box" style="margin-bottom:10px;">
+            <span class="lbl">In this video</span>
+            <div class="meta">Place · <a href="#">Hamilton steel mill</a></div>
+            <div class="meta">World · <a href="#">Manufacturing</a> / <a href="#">Steel</a></div>
+            <div class="meta">People · <a href="#">Tony R., foreman</a></div>
+          </div>
+          <div class="box">
+            <span class="lbl">More from this World</span>
+            <div class="meta">▸ <a href="#">Short: a line restart</a></div>
+            <div class="meta">▸ <a href="#">Interview: the foreman</a></div>
+          </div>
+        </aside>
+      </div>
+
+      <hr class="sb"/>
+      <div class="box">
+        <span class="lbl">Transcript (collapsible drawer)</span>
+        <p class="note">[ scrollable transcript aligned to chapter timestamps ]</p>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- AUDIO -->
+    <section id="tpl-audio" class="page-tpl">
+      <div class="anno">Subpage · <b>Audio episode</b> — interview / ambient. Linked from Listen.</div>
+      <div class="crumbs sticky-mock">
+        <a href="#">babb</a> / <a href="#">places</a> /
+        <a href="#">hamilton-steel-mill</a> / <a href="#">audio</a> / <span>interview · the foreman</span>
+      </div>
+
+      <div class="grid-2-rail">
+        <div>
+          <div class="box">
+            <span class="lbl">Episode header</span>
+            <h2>Interview — Tony R., foreman</h2>
+            <div class="meta">38:12 · Place: <a href="#">Hamilton steel mill</a> · World: <a href="#">Manufacturing</a></div>
+            <div class="audio" style="margin-top:8px;">
+              <span>▶</span><span>Now playing</span>
+              <div class="bar"></div><span class="note">04:18 / 38:12</span>
+            </div>
+            <div class="toolbar">
+              <span class="pill">1.0×</span><span class="pill">1.25×</span><span class="pill">1.5×</span>
+              <span class="meta">· download · share · subscribe to Place feed</span>
+            </div>
+          </div>
+
+          <div class="box" style="margin-top:10px;">
+            <span class="lbl">Transcript (synced)</span>
+            <p class="note"><b>00:00</b> &nbsp;[ Q ] How long have you been on this floor?</p>
+            <p class="note"><b>00:12</b> &nbsp;[ A ] Thirty years next March…</p>
+            <p class="note"><b>02:04</b> &nbsp;[ Q ] What's changed most?</p>
+            <p class="note">[ click any timestamp to seek; hover a paragraph to play just that segment ]</p>
+          </div>
+        </div>
+
+        <aside>
+          <div class="box" style="margin-bottom:10px;">
+            <span class="lbl">Chapters</span>
+            <ol style="padding-left:18px;margin:6px 0;font-size:12px;">
+              <li><a href="#">00:00 · arrival on the floor</a></li>
+              <li><a href="#">06:40 · the apprenticeship</a></li>
+              <li><a href="#">14:20 · automation</a></li>
+              <li><a href="#">26:55 · the town</a></li>
+            </ol>
+          </div>
+          <div class="box">
+            <span class="lbl">Pull-quotes</span>
+            <div class="fieldnote">"…short, sharp quote pulled from transcript…"
+              <div class="by">— 14:42</div></div>
+            <div class="fieldnote">"…another resonant line…"
+              <div class="by">— 28:10</div></div>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- PERSON / CONTRIBUTOR -->
+    <section id="tpl-person" class="page-tpl">
+      <div class="anno">Subpage · <b>Person / Contributor profile</b>.
+        Used for both subjects of stories and Babb-side reporters/photographers/editors.
+        Linked from any place a name appears.</div>
+      <div class="crumbs sticky-mock">
+        <a href="#">babb</a> / <a href="#">people</a> / <span>tony-r</span>
+      </div>
+
+      <div class="grid-2-rail">
+        <div>
+          <div class="box">
+            <span class="lbl">Header</span>
+            <div style="display:grid;grid-template-columns:140px 1fr;gap:14px;">
+              <div class="placeholder square">[ portrait ]</div>
+              <div>
+                <h2>Tony R.</h2>
+                <div class="meta">Foreman · subject of coverage</div>
+                <p>One-paragraph bio. How they came to this work. Why they're being covered.</p>
+                <div>
+                  <span class="pill alt">Manufacturing</span>
+                  <span class="pill alt">Building</span>
+                  <span class="pill">Hamilton steel mill</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="box" style="margin-top:10px;">
+            <span class="lbl">Appearances</span>
+            <div class="feed-item"><a href="#"><b>Inside a Hamilton steel mill</b></a>
+              <div class="desc">Long-form dispatch · feature subject.</div>
+              <div class="tags"><span class="primary">Dispatch</span> · 2026-05</div></div>
+            <div class="feed-item"><a href="#"><b>Interview — the foreman</b></a>
+              <div class="desc">Audio · 38:12.</div>
+              <div class="tags"><span class="primary">Listen</span> · 2026-05</div></div>
+            <div class="feed-item"><a href="#"><b>Day 3 — interview</b></a>
+              <div class="desc">Daily field update.</div>
+              <div class="tags"><span class="primary">Dailies</span> · 2026-05</div></div>
+          </div>
+        </div>
+
+        <aside>
+          <div class="box" style="margin-bottom:10px;">
+            <span class="lbl">At a glance</span>
+            <div class="meta">Role · Foreman</div>
+            <div class="meta">Place · <a href="#">Hamilton steel mill</a></div>
+            <div class="meta">Years on the floor · 30</div>
+            <div class="meta">First coverage · 2026-04</div>
+          </div>
+          <div class="box">
+            <span class="lbl">Audio sampler</span>
+            <div class="audio"><span>▶</span><span>2-min sampler</span><div class="bar"></div></div>
+          </div>
+        </aside>
+      </div>
+      <p class="note" style="margin-top:10px;">Two variants of this template:
+        <b>Subject</b> (covered) and <b>Contributor</b> (Babb staff / commissioned reporters).
+        Contributor variant adds: bylines list, contact, beat areas.</p>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- PEOPLE INDEX -->
+    <section id="tpl-people-index" class="page-tpl">
+      <div class="anno">Subpage · <b>People index</b> — all contributors &amp; subjects.
+        Filterable by World, Place, role.
+        Linked from World page "People &amp; contributors" section and from Place "People" section "see all".</div>
+      <div class="crumbs sticky-mock">
+        <a href="#">babb</a> / <span>people</span>
+      </div>
+
+      <div class="box">
+        <span class="lbl">Filters</span>
+        <div class="toolbar">
+          <input placeholder="Search by name, role, place…" style="min-width:240px;" />
+          <select><option>Any World</option><option>Farming</option><option>Manufacturing</option></select>
+          <select><option>Any role</option><option>Subject</option><option>Contributor</option></select>
+          <span class="pill">recent</span><span class="pill">a–z</span>
+        </div>
+      </div>
+
+      <div class="grid-4" style="margin-top:14px;">
+        <div class="box"><div class="placeholder square">[ portrait ]</div>
+          <b>Tony R.</b><div class="meta">Foreman · Hamilton mill</div></div>
+        <div class="box"><div class="placeholder square">[ portrait ]</div>
+          <b>Cal</b><div class="meta">Ops · Sioux Falls feedlot</div></div>
+        <div class="box"><div class="placeholder square">[ portrait ]</div>
+          <b>Marisol</b><div class="meta">Owner's rep · steel</div></div>
+        <div class="box"><div class="placeholder square">[ portrait ]</div>
+          <b>Greta</b><div class="meta">Co-op chair · dairy</div></div>
+        <div class="box"><div class="placeholder square">[ portrait ]</div>
+          <b>Lou</b><div class="meta">Branch manager · Hudson</div></div>
+        <div class="box"><div class="placeholder square">[ portrait ]</div>
+          <b>Glenn</b><div class="meta">Market manager · Asheville</div></div>
+        <div class="box"><div class="placeholder square">[ portrait ]</div>
+          <b>Marcus</b><div class="meta">Driver · Midwest dairy</div></div>
+        <div class="box"><div class="placeholder square">[ portrait ]</div>
+          <b>Reporter A</b><div class="meta">Contributor · 12 bylines</div></div>
+      </div>
+      <p class="note" style="margin-top:10px;">[ pagination · "load more" · keyboard nav ]</p>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- ANGLE DETAIL -->
+    <section id="tpl-angle" class="page-tpl">
+      <div class="anno">Subpage · <b>Angle detail</b> — one Angle of a Place, expanded.
+        Most Angles open in a drawer/overlay on the Place page;
+        this is the canonical deep-link page for direct linking + heavier content.</div>
+      <div class="crumbs sticky-mock">
+        <a href="#">babb</a> / <a href="#">places</a> /
+        <a href="#">hamilton-steel-mill</a> / <a href="#">angles</a> / <span>the floor</span>
+      </div>
+
+      <div class="placeholder hero">[ angle image — full bleed within column ]</div>
+
+      <div class="box" style="margin-top:12px;">
+        <span class="lbl">Title block</span>
+        <div class="meta">Angle · <a href="#">Hamilton steel mill</a> · 4 of 4</div>
+        <h2>The Floor</h2>
+        <p>Long-form treatment of this single Angle. Prose, photo strips, embedded clips,
+           specific glossary popups for jargon.</p>
+        <div class="meta">prev <a href="#">The Town</a> · next <a href="#">The Future</a></div>
+      </div>
+
+      <div class="grid-2-rail" style="margin-top:12px;">
+        <div class="box">
+          <span class="lbl">Body</span>
+          <p class="note">[ paragraph ]</p>
+          <div class="grid-3">
+            <div class="placeholder tile">[ photo ]</div>
+            <div class="placeholder tile">[ photo ]</div>
+            <div class="placeholder tile">[ photo ]</div>
+          </div>
+          <p class="note">[ paragraph ]</p>
+          <div class="fieldnote">Pull-quote tied to this Angle.
+            <div class="by">— foreman</div></div>
+          <p class="note">[ paragraph ]</p>
+        </div>
+        <aside class="box">
+          <span class="lbl">In this Angle</span>
+          <div class="meta">Glossary · <a href="#">ladle metallurgy</a> · <a href="#">tap-to-tap</a></div>
+          <div class="meta">People · <a href="#">Tony R.</a></div>
+          <div class="meta">B-Roll · <a href="#">9 photos in this Angle</a></div>
+          <div class="meta">Field Notes · <a href="#">2 notes</a></div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- ALL ANGLES INDEX -->
+    <section id="tpl-angles-index" class="page-tpl">
+      <div class="anno">Subpage · <b>All Angles</b> — index of every Angle across all Places.
+        Filterable by Place &amp; World. Linked from Places nav and from "Angles" anchor's "see all".</div>
+      <div class="crumbs sticky-mock"><a href="#">babb</a> / <span>angles</span></div>
+
+      <div class="box">
+        <div class="toolbar">
+          <input placeholder="Search angles, places, glossary terms…" style="min-width:280px;" />
+          <select><option>Any Place</option><option>Hamilton steel mill</option></select>
+          <select><option>Any World</option><option>Manufacturing</option></select>
+        </div>
+      </div>
+
+      <div class="grid-3" style="margin-top:14px;">
+        <div class="box"><div class="placeholder tile">[ img ]</div>
+          <b>The Floor</b> <div class="meta">Hamilton steel mill</div></div>
+        <div class="box"><div class="placeholder tile">[ img ]</div>
+          <b>The Owners</b> <div class="meta">Hamilton steel mill</div></div>
+        <div class="box"><div class="placeholder tile">[ img ]</div>
+          <b>The Town</b> <div class="meta">Hamilton steel mill</div></div>
+        <div class="box"><div class="placeholder tile">[ img ]</div>
+          <b>The Future</b> <div class="meta">Hamilton steel mill</div></div>
+        <div class="box"><div class="placeholder tile">[ img ]</div>
+          <b>The Pens</b> <div class="meta">Sioux Falls feedlot</div></div>
+        <div class="box"><div class="placeholder tile">[ img ]</div>
+          <b>The Crew</b> <div class="meta">Sioux Falls feedlot</div></div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- B-ROLL GALLERY -->
+    <section id="tpl-broll" class="page-tpl">
+      <div class="anno">Subpage · <b>B-Roll gallery</b> — full archive for a Place
+        (or a World aggregate). Photos + short loops + ambient audio.
+        Linked from the Place's B-Roll section "see all".</div>
+      <div class="crumbs sticky-mock">
+        <a href="#">babb</a> / <a href="#">places</a> /
+        <a href="#">hamilton-steel-mill</a> / <span>b-roll</span>
+      </div>
+
+      <div class="box">
+        <div class="toolbar">
+          <input placeholder="Search captions / tags…" />
+          <select><option>All media</option><option>Photos</option><option>Loops</option><option>Audio</option></select>
+          <select><option>Any Angle</option><option>The Floor</option><option>The Town</option></select>
+          <select><option>All shifts</option><option>Day</option><option>Night</option></select>
+          <span class="meta">view · <span class="pill">grid</span><span class="pill">contact-sheet</span></span>
+        </div>
+      </div>
+
+      <div class="grid-6" style="margin-top:12px;">
+        <div class="placeholder thumb">[ ph ]</div><div class="placeholder thumb">[ ph ]</div>
+        <div class="placeholder thumb">[ ph ]</div><div class="placeholder thumb">[ ph ]</div>
+        <div class="placeholder thumb">[ ph ]</div><div class="placeholder thumb">[ ph ]</div>
+        <div class="placeholder thumb">[ ph ]</div><div class="placeholder thumb">[ ph ]</div>
+        <div class="placeholder thumb">[ loop ]</div><div class="placeholder thumb">[ ph ]</div>
+        <div class="placeholder thumb">[ audio ]</div><div class="placeholder thumb">[ ph ]</div>
+        <div class="placeholder thumb">[ ph ]</div><div class="placeholder thumb">[ ph ]</div>
+        <div class="placeholder thumb">[ ph ]</div><div class="placeholder thumb">[ ph ]</div>
+        <div class="placeholder thumb">[ ph ]</div><div class="placeholder thumb">[ ph ]</div>
+        <div class="placeholder thumb">[ loop ]</div><div class="placeholder thumb">[ ph ]</div>
+        <div class="placeholder thumb">[ ph ]</div><div class="placeholder thumb">[ ph ]</div>
+        <div class="placeholder thumb">[ ph ]</div><div class="placeholder thumb">[ +120 more ]</div>
+      </div>
+      <p class="note" style="margin-top:10px;">Click any tile → full-bleed overlay viewer (←/→/Esc) with
+        caption, EXIF if useful, related Angle link, and a "use in piece" action.</p>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- FIELD NOTES ARCHIVE -->
+    <section id="tpl-fieldnotes" class="page-tpl">
+      <div class="anno">Subpage · <b>Field Notes archive</b> — director/editor voice,
+        chronological. Per Place by default; can also aggregate across a World.</div>
+      <div class="crumbs sticky-mock">
+        <a href="#">babb</a> / <a href="#">places</a> /
+        <a href="#">hamilton-steel-mill</a> / <span>field-notes</span>
+      </div>
+
+      <div class="box">
+        <div class="toolbar">
+          <input placeholder="Search notes…" />
+          <select><option>All authors</option><option>Editor A</option><option>Editor B</option></select>
+          <select><option>All months</option><option>2026-05</option><option>2026-04</option></select>
+        </div>
+      </div>
+
+      <div style="margin-top:10px;">
+        <div class="meta" style="margin:14px 0 4px">2026-05-09 · day 3</div>
+        <div class="fieldnote">"Ladle metallurgy" deserves its own popup on hover wherever it appears.
+          <div class="by">— editor</div></div>
+        <div class="meta" style="margin:14px 0 4px">2026-05-08 · day 2</div>
+        <div class="fieldnote">The third shift was unexpectedly the most photogenic — reconsider the cover image.
+          <div class="by">— editor, on site</div></div>
+        <div class="fieldnote">Cross-link to Angle "The Floor" — these notes belong there too.
+          <div class="by">— editor</div></div>
+        <div class="meta" style="margin:14px 0 4px">2026-05-07 · day 1</div>
+        <div class="fieldnote">Find a chart for cost-per-head that doesn't read like a spreadsheet.
+          <div class="by">— editor</div></div>
+      </div>
+      <p class="note" style="margin-top:10px;">Each note can deep-link back to the Angle / Daily / piece
+        it was anchored on, via a small "anchor" affordance per note.</p>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- DAILIES ARCHIVE -->
+    <section id="tpl-dailies" class="page-tpl">
+      <div class="anno">Subpage · <b>Dailies archive</b> — on-the-ground updates,
+        chronological + calendar. Per Place by default; World aggregate variant exists.</div>
+      <div class="crumbs sticky-mock">
+        <a href="#">babb</a> / <a href="#">places</a> /
+        <a href="#">hamilton-steel-mill</a> / <span>dailies</span>
+      </div>
+
+      <div class="box">
+        <div class="toolbar">
+          <input placeholder="Search dailies…" />
+          <select><option>All media</option><option>Photo</option><option>Video</option><option>Audio</option></select>
+          <select><option>All weeks</option><option>This week</option><option>Last 30 days</option></select>
+          <span class="meta">view · <span class="pill">list</span><span class="pill">calendar</span><span class="pill">map</span></span>
+        </div>
+      </div>
+
+      <div class="grid-2-rail" style="margin-top:10px;">
+        <div class="box">
+          <span class="lbl">Timeline</span>
+          <div class="feed-item">
+            <div class="meta">2026-05-12 · 17:42</div>
+            <a href="#"><b>Day 4 — final pour</b></a>
+            <div class="desc">Short field update with 3 photos.</div>
+            <div class="tags"><span class="primary">photo</span> · <a href="#">The Floor</a></div>
+          </div>
+          <div class="feed-item">
+            <div class="meta">2026-05-11 · 14:08</div>
+            <a href="#"><b>Day 3 — interview, foreman</b></a>
+            <div class="desc">Audio + transcript drawer.</div>
+            <div class="tags"><span class="primary">audio</span> · <a href="#">Tony R.</a></div>
+          </div>
+          <div class="feed-item">
+            <div class="meta">2026-05-10 · 22:55</div>
+            <a href="#"><b>Day 2 — third shift</b></a>
+            <div class="desc">Photo essay, 18 images.</div>
+            <div class="tags"><span class="primary">photo</span> · <a href="#">The Floor</a></div>
+          </div>
+          <div class="feed-item">
+            <div class="meta">2026-05-09 · 06:14</div>
+            <a href="#"><b>Day 1 — arrival</b></a>
+            <div class="desc">Field note + 4 photos.</div>
+            <div class="tags"><span class="primary">photo</span></div>
+          </div>
+        </div>
+        <aside>
+          <div class="box" style="margin-bottom:10px;">
+            <span class="lbl">Calendar (mini)</span>
+            <div class="grid-5" style="font-size:11px;text-align:center;">
+              <div>M</div><div>T</div><div>W</div><div>T</div><div>F</div>
+              <div>1</div><div>2</div><div>3</div><div>4·</div><div>5</div>
+              <div>8·</div><div>9··</div><div>10·</div><div>11·</div><div>12·</div>
+            </div>
+            <p class="note" style="margin-top:6px;">dot per daily; click date to jump.</p>
+          </div>
+          <div class="box">
+            <span class="lbl">Subscribe</span>
+            <div class="meta">RSS for this Place · email digest · ICS calendar</div>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- READ / WATCH / LISTEN INDEX -->
+    <section id="tpl-rwl" class="page-tpl">
+      <div class="anno">Subpage · <b>Read · Watch · Listen index</b> for a World.
+        Linked from the World page's RWL section "see all". One template, three modes via tab.</div>
+      <div class="crumbs sticky-mock">
+        <a href="#">babb</a> / <a href="#">worlds</a> /
+        <a href="#">farming</a> / <span>read</span>
+      </div>
+
+      <div class="box">
+        <div class="toolbar">
+          <span class="pill alt">Read</span><span class="pill">Watch</span><span class="pill">Listen</span>
+          <input placeholder="Search…" style="margin-left:8px;" />
+          <select><option>Any sub-World</option><option>Dairy</option><option>Livestock</option></select>
+          <select><option>Any author</option></select>
+          <select><option>Newest</option><option>Most read</option></select>
+        </div>
+      </div>
+
+      <div class="grid-3" style="margin-top:14px;">
+        <div class="box">
+          <div class="placeholder tile">[ cover ]</div>
+          <div class="meta">Long-form · 14 min</div>
+          <b>Feed-lot diaries</b>
+          <div class="meta">Farming/livestock · 2026-05</div>
+        </div>
+        <div class="box">
+          <div class="placeholder tile">[ cover ]</div>
+          <div class="meta">Plain-English · 6 min</div>
+          <b>USDA loan rules</b>
+          <div class="meta">Farming · 2026-04</div>
+        </div>
+        <div class="box">
+          <div class="placeholder tile">[ cover ]</div>
+          <div class="meta">Op-ed · 5 min</div>
+          <b>Who owns the seed</b>
+          <div class="meta">Farming/grain · 2026-03</div>
+        </div>
+        <div class="box">
+          <div class="placeholder tile">[ cover ]</div>
+          <div class="meta">Dispatch · 9 min</div>
+          <b>Co-op governance, plainly</b>
+          <div class="meta">Farming/dairy · 2026-03</div>
+        </div>
+        <div class="box">
+          <div class="placeholder tile">[ cover ]</div>
+          <div class="meta">Long-form · 18 min</div>
+          <b>The last teller (cross-posted)</b>
+          <div class="meta">Banking · 2026-02</div>
+        </div>
+        <div class="box">
+          <div class="placeholder tile">[ cover ]</div>
+          <div class="meta">Dispatch · 7 min</div>
+          <b>Soil sensors, one season later</b>
+          <div class="meta">Farming/grain · 2026-01</div>
+        </div>
+      </div>
+      <p class="note" style="margin-top:10px;">Watch and Listen tabs reuse the same card grid with
+        type-appropriate cover (poster / waveform) and duration.</p>
+    </section>
+
+  </main>
+</div>
+
+<script>
+  const nav = document.getElementById("navrail");
+  const all = document.querySelectorAll(".page-tpl");
+  nav.addEventListener("click", e => {
+    const a = e.target.closest("a[data-tpl]"); if(!a) return;
+    e.preventDefault();
+    nav.querySelectorAll("a[data-tpl]").forEach(x => x.classList.toggle("active", x===a));
+    all.forEach(s => s.classList.toggle("active", s.id === "tpl-" + a.dataset.tpl));
+    window.scrollTo({top:0});
+  });
+</script>
+</body>
+</html>

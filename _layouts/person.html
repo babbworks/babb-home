@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+{%- include head.html -%}
+<body>
+
+<div class="sysbar">
+  <div class="shell row">
+    <div><span class="dot"></span>babb<span class="ascii"> / people / {{ page.slug }}</span></div>
+    <div class="right">
+      <span class="ascii">build {{ site.time | date: "%Y.%m.%d" }}</span>
+      <span class="ascii">·</span>
+      <span id="clock" aria-live="off">--:--:-- UTC</span>
+      <span class="ascii">·</span>
+      <a href="/feed.xml?cat=people">rss</a>
+    </div>
+  </div>
+</div>
+
+{%- include masthead.html -%}
+
+<div class="shell">
+  <div class="crumbs">
+    <a href="/">babb</a><span class="sep">/</span>
+    <a href="/people/">people</a><span class="sep">/</span>
+    <span class="here">{{ page.slug }}</span>
+  </div>
+</div>
+
+{{ content }}
+
+{%- include colophon.html -%}
+
+<script>
+(function(){
+  const el=document.getElementById("clock"),f=n=>String(n).padStart(2,"0");
+  function t(){const d=new Date();el.textContent=f(d.getUTCHours())+":"+f(d.getUTCMinutes())+":"+f(d.getUTCSeconds())+" UTC";}
+  t();setInterval(t,1000);
+})();
+</script>
+</body>
+</html>

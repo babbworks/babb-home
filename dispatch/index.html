@@ -1,0 +1,194 @@
+---
+layout: newspaper
+title: Dispatch
+nav_active: dispatch
+---
+
+<div class="shell np-page">
+
+  <!-- ── § 01  LEAD STORY ─────────────────────────────────── -->
+  {% assign posts = site.posts %}
+  {% assign lead  = posts.first %}
+
+  {% if lead %}
+  <div class="np-section-mark">
+    <span class="np-sm-num">§ 01</span>
+    <span class="np-sm-label">Lead Story</span>
+    <span class="np-sm-rule"></span>
+    <span class="np-sm-meta">{{ lead.date | date: "%B %-d, %Y" }}</span>
+  </div>
+
+  <div class="np-lead">
+    <div class="np-lead-copy">
+      {% if lead.world %}<div class="np-kicker">{{ lead.world }}</div>{% endif %}
+      <h2 class="np-lead-hed"><a href="{{ lead.url }}">{{ lead.title }}</a></h2>
+      {% if lead.dek %}<p class="np-lead-dek">{{ lead.dek }}</p>{% endif %}
+      <div class="np-lead-byline">
+        {% if lead.author %}<span>{{ lead.author }}</span><span class="np-bull"> &middot; </span>{% endif %}
+        <time datetime="{{ lead.date | date_to_xmlschema }}">{{ lead.date | date: "%B %-d, %Y" }}</time>
+        {% if lead.product %}<span class="np-bull"> &middot; </span><span class="np-prod-tag">{{ lead.product }}</span>{% endif %}
+      </div>
+      <div class="np-lead-excerpt">
+        {{ lead.excerpt | strip_html | truncatewords: 70 }}
+        <a href="{{ lead.url }}" class="np-continue">Continue reading &rarr;</a>
+      </div>
+    </div>
+    <div class="np-lead-art" aria-hidden="true"></div>
+  </div>
+  {% else %}
+  <div class="np-section-mark">
+    <span class="np-sm-num">§ 01</span>
+    <span class="np-sm-label">Lead Story</span>
+    <span class="np-sm-rule"></span>
+  </div>
+  <div class="np-placeholder">No dispatches filed yet. <a href="/updates/">Browse updates.</a></div>
+  {% endif %}
+
+
+  <!-- ── § 02  RECENT COVERAGE ────────────────────────────── -->
+  {% assign secondary = posts | offset: 1 | limit: 4 %}
+  {% if secondary.size > 0 %}
+  <div class="np-rule"></div>
+  <div class="np-section-mark">
+    <span class="np-sm-num">§ 02</span>
+    <span class="np-sm-label">Recent Coverage</span>
+    <span class="np-sm-rule"></span>
+  </div>
+
+  <div class="np-grid">
+    {% for post in secondary %}
+    <article class="np-story">
+      {% if post.world %}<div class="np-kicker">{{ post.world }}</div>{% endif %}
+      <h3><a href="{{ post.url }}">{{ post.title }}</a></h3>
+      {% if post.dek %}<p class="np-dek">{{ post.dek }}</p>{% endif %}
+      <div class="np-story-meta">
+        {% if post.author %}<span>{{ post.author }}</span><span class="np-bull"> &middot; </span>{% endif %}
+        <time datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: "%b %-d" }}</time>
+        {% if post.product %}<span class="np-bull"> &middot; </span><span class="np-prod-tag">{{ post.product }}</span>{% endif %}
+      </div>
+    </article>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+
+  {% comment %}
+  <!-- ── § 03  WORKING WORLDS — HIDDEN (see MANAGEMENT/2026-06-18-hide-worlds-places.md) ── -->
+  {% endcomment %}
+
+
+  <!-- ── § 05  PRODUCTS & FIELD NOTES ─────────────────────── -->
+  <div class="np-rule"></div>
+  <div class="np-section-mark">
+    <span class="np-sm-num">§ 05</span>
+    <span class="np-sm-label">Products &amp; Field Notes</span>
+    <span class="np-sm-rule"></span>
+  </div>
+
+  <div class="np-products">
+    {% for prod in site.data.products %}
+    <div class="np-prod-block">
+      <div class="np-prod-head">
+        <a href="{{ prod.url }}" class="np-prod-name">{{ prod.name }}</a>
+        <span class="np-prod-ver">{{ prod.ver }}</span>
+        <span class="np-prod-status {% if prod.status == 'alpha' %}np-alpha{% endif %}">{{ prod.status }}</span>
+      </div>
+      <p class="np-prod-line">{{ prod.line }}</p>
+      {% assign clog = site.data.changelogs[prod.id] %}
+      {% if clog %}
+      <div class="np-clog">
+        {% for entry in clog limit: 2 %}
+        <div class="np-clog-row">
+          <span class="np-clog-ver">{{ entry.ver }}</span>
+          <span class="np-clog-date">{{ entry.date | date: "%b %-d" }}</span>
+          <span class="np-clog-msg"><b>{{ entry.head }}</b>{% if entry.body %} {{ entry.body }}{% endif %}</span>
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+    </div>
+    {% endfor %}
+  </div>
+
+
+  <!-- ── § 06  TELEMETRY ──────────────────────────────────── -->
+  <div class="np-rule"></div>
+  <div class="np-section-mark">
+    <span class="np-sm-num">§ 06</span>
+    <span class="np-sm-label">Telemetry</span>
+    <span class="np-sm-rule"></span>
+    <span class="np-sm-meta">The live wire &middot; manually keyed</span>
+  </div>
+
+  <section class="telem" aria-label="Telemetry feed">
+    <div class="head">
+      <span>babb-telemetry &mdash; channel 01</span>
+      <span class="live">LIVE</span>
+    </div>
+    <div class="tlines" id="tlines">
+      <!-- seeded from /feed/telemetry.json via JS -->
+    </div>
+    <div class="foot">
+      <span>printed continuously &middot; pauses on hover &middot; runs the session</span>
+      <span>uptime 99.99%&nbsp;<span class="cur"></span></span>
+    </div>
+  </section>
+
+</div><!-- /.shell.np-page -->
+
+<script>
+(function(){
+  const track = document.getElementById("railTrack");
+  if(track) track.innerHTML += track.innerHTML;
+})();
+
+(function(){
+  const host = document.getElementById("tlines");
+  if(!host) return;
+
+  function pad(n){ return String(n).padStart(2,"0"); }
+  function now(){
+    const d = new Date();
+    return pad(d.getHours())+":"+pad(d.getMinutes())+":"+pad(d.getSeconds());
+  }
+  function renderSeeds(lines){
+    host.innerHTML = lines.slice(0,12).map(l=>
+      '<div class="tline" style="opacity:1">'+
+      '<span class="ts">'+l.ts+'</span>'+
+      '<span class="subj">'+l.subj+'</span>'+
+      '<span class="msg">'+l.msg+'</span></div>'
+    ).join("");
+  }
+  function emit(item){
+    const line = document.createElement("div");
+    line.className = "tline appear";
+    line.innerHTML =
+      '<span class="ts">'+now()+'</span>'+
+      '<span class="subj">'+item.subj+'</span>'+
+      '<span class="msg">'+item.msg+'</span>';
+    host.prepend(line);
+    while(host.children.length > 24) host.removeChild(host.lastElementChild);
+  }
+
+  let queue=[], qi=0, nextTimer;
+  function schedule(){
+    const wait = 6000 + Math.random()*5000;
+    nextTimer = setTimeout(()=>{ if(queue.length) emit(queue[qi++ % queue.length]); schedule(); }, wait);
+  }
+
+  fetch("/feed/telemetry.json")
+    .then(r=>r.json())
+    .then(data=>{
+      if(data.lines && data.lines.length){
+        renderSeeds(data.lines);
+        queue = data.lines.slice().reverse();
+      }
+      setTimeout(()=>{ if(queue.length) emit(queue[qi++ % queue.length]); schedule(); }, 4000);
+    })
+    .catch(()=>{ setTimeout(schedule, 4000); });
+
+  const telem = host.closest(".telem");
+  telem.addEventListener("mouseenter",()=>{ clearTimeout(nextTimer); nextTimer=null; });
+  telem.addEventListener("mouseleave",()=>{ if(!nextTimer) schedule(); });
+})();
+</script>

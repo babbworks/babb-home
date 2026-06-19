@@ -1,0 +1,296 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Products page wireframe — Babb</title>
+<style>
+  :root { --line:#bbb; --ink:#333; --muted:#888; --alt:#a14a00; --bg:#fafaf8; }
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--bg);color:var(--ink);
+    font:14px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace}
+  .page{max-width:1180px;margin:0 auto;padding:24px}
+  .box{border:1px dashed var(--line);padding:12px;background:#fff}
+  .lbl{color:var(--muted);font-size:11px;letter-spacing:.08em;
+    text-transform:uppercase;margin-bottom:6px;display:block}
+  .placeholder{background:repeating-linear-gradient(45deg,#f1f1ee 0 8px,#fff 8px 16px);
+    border:1px dashed var(--line);display:flex;align-items:center;
+    justify-content:center;color:var(--muted);font-size:12px}
+  h1,h2,h3{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;margin:0}
+  h1{font-size:22px}
+  h2{font-size:15px}
+  h3{font-size:13px}
+  .tag{color:var(--alt);font-size:11px}
+  .note{font-size:11px;color:var(--muted);font-style:italic}
+  .anno{background:#fff8e0;border:1px solid #e7d488;padding:6px 10px;
+    font-size:11px;color:#665;margin:6px 0 14px}
+  hr.sb{border:none;border-top:1px solid #e5e5e0;margin:28px 0}
+  .crumbs{font-size:12px;color:var(--muted);margin-bottom:6px}
+  .pill{display:inline-block;border:1px solid #ccc;padding:2px 8px;
+    font-size:11px;margin:2px 4px 2px 0;border-radius:99px}
+  .pill.alt{color:var(--alt);border-color:#d8a988}
+  /* status chips */
+  .status{display:inline-block;font-size:10px;letter-spacing:.06em;
+    text-transform:uppercase;padding:1px 6px;border:1px solid #aaa;margin-right:6px}
+  .status.shipping{border-color:#3a7;color:#185}
+  .status.beta{border-color:#a83;color:#763}
+  .status.draft{border-color:#888;color:#666}
+  .status.research{border-color:#a14a00;color:#a14a00}
+  .status.archived{border-color:#bbb;color:#999}
+
+  .index{display:flex;gap:8px;flex-wrap:wrap;font-size:12px;margin:8px 0 0}
+  .index a{color:var(--ink);border-bottom:1px dotted #aaa;text-decoration:none}
+
+  .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+  .grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+
+  .placeholder.tile{height:140px}
+  .placeholder.thumb{height:80px}
+
+  .item{padding:10px 0;border-top:1px dotted #ddd}
+  .item:first-child{border-top:none}
+  .item .row1{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+  .item .row1 a{color:var(--ink);text-decoration:underline}
+  .item .desc{font-size:12px;color:#555;margin:4px 0 6px}
+  .item .tags{font-size:11px;color:var(--muted)}
+  .item .tags .primary{color:var(--alt)}
+
+  section.s{margin-bottom:28px;scroll-margin-top:20px}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="anno">Wireframe v1 · Products page. Line includes
+    <b>Software</b>, <b>Hardware research</b>, <b>Standards</b>, and <b>Protocols</b>.
+    Low-intensity layout only.</div>
+
+  <!-- HEADER -->
+  <header class="box" style="margin-bottom:20px;">
+    <span class="lbl">Site header (same as homepage)</span>
+    <div style="display:flex;justify-content:space-between;align-items:center;">
+      <a href="#" style="text-decoration:none;color:inherit;"><b>babb</b></a>
+      <nav>Worlds · Places · Products · Updates · About</nav>
+    </div>
+  </header>
+
+  <!-- TITLE BLOCK + INDEX -->
+  <section class="box" style="margin-bottom:20px;">
+    <span class="lbl">Title block</span>
+    <div class="crumbs">babb / products</div>
+    <h1>Products</h1>
+    <p>What Babb makes — software shipped today, hardware in research, and
+       the standards and protocols that connect them. Cross-linked to the
+       Worlds they serve.</p>
+    <div class="index">
+      <span class="note">jump to:</span>
+      <a href="#software">Software</a> ·
+      <a href="#hardware">Hardware research</a> ·
+      <a href="#standards">Standards</a> ·
+      <a href="#protocols">Protocols</a>
+    </div>
+    <div style="margin-top:10px;">
+      <span class="lbl" style="margin:0;display:inline">filter by world:</span>
+      <span class="pill">All</span><span class="pill">Selling</span>
+      <span class="pill">Banking</span><span class="pill">Farming</span>
+      <span class="pill">Building</span><span class="pill">Manufacturing</span>
+      <span class="pill">Communications</span><span class="pill">Management</span>
+    </div>
+  </section>
+
+  <!-- FEATURED / SPOTLIGHT -->
+  <section style="margin-bottom:24px;">
+    <span class="lbl">Spotlight — one current focus across the line</span>
+    <div class="grid-2">
+      <div class="placeholder" style="height:240px;">[ feature image / short loop ]</div>
+      <div class="box">
+        <span class="status shipping">shipping</span>
+        <span class="pill alt">Workpads</span>
+        <h2 style="margin-top:6px;">A productivity surface for crews on the ground</h2>
+        <p>Short framing of why this product matters this quarter. Links
+           through to its dedicated page and field dispatches.</p>
+        <p class="note">Used in Worlds: farming, manufacturing, building.</p>
+      </div>
+    </div>
+  </section>
+
+  <hr class="sb" />
+
+  <!-- SOFTWARE -->
+  <section id="software" class="s">
+    <span class="lbl">1 · Software — shipping &amp; in active development</span>
+    <h2>Software</h2>
+    <div class="grid-3" style="margin-top:10px;">
+      <div class="box">
+        <div class="placeholder tile">[ screenshot ]</div>
+        <div style="margin-top:8px;">
+          <span class="status shipping">shipping</span><b>Workpads</b>
+        </div>
+        <p class="note">Crew-first work surface. iOS · Android · web.</p>
+        <div class="tag">farming · manufacturing · building</div>
+      </div>
+      <div class="box">
+        <div class="placeholder tile">[ screenshot ]</div>
+        <div style="margin-top:8px;">
+          <span class="status beta">beta</span><b>Babb Works</b>
+        </div>
+        <p class="note">The host environment that runs Workpads at depth.</p>
+        <div class="tag">communications · management</div>
+      </div>
+      <div class="box">
+        <div class="placeholder tile">[ screenshot ]</div>
+        <div style="margin-top:8px;">
+          <span class="status shipping">shipping</span><b>.tel directory</b>
+        </div>
+        <p class="note">Lightweight contact + presence layer.</p>
+        <div class="tag">communications</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HARDWARE -->
+  <section id="hardware" class="s">
+    <span class="lbl">2 · Hardware research — prototypes, field tests, papers</span>
+    <h2>Hardware research</h2>
+    <div class="grid-2" style="margin-top:10px;">
+      <div class="box">
+        <div class="placeholder" style="height:160px;">[ device photo / render ]</div>
+        <div style="margin-top:8px;">
+          <span class="status research">research</span><b>Bitpads</b>
+        </div>
+        <p class="note">Pocket-scale field sensor / radio. Firmware 0.4 in test.</p>
+        <div class="tag">farming · manufacturing</div>
+      </div>
+      <div class="box">
+        <div class="placeholder" style="height:160px;">[ device photo / render ]</div>
+        <div style="margin-top:8px;">
+          <span class="status research">research</span><b>Babb Products — stone goods</b>
+        </div>
+        <p class="note">Studio line: tessellated stones, carved objects.
+           Catalog format.</p>
+        <div class="tag">brand · objects</div>
+      </div>
+    </div>
+    <div class="grid-3" style="margin-top:12px;">
+      <div class="box">
+        <span class="status draft">paper</span><b>Field power budgeting on LoRa</b>
+        <div class="note">Draft · last revised 2026-04-22 · PDF</div>
+      </div>
+      <div class="box">
+        <span class="status draft">paper</span><b>Sealed enclosure for dairy environments</b>
+        <div class="note">Draft · 2026-03-10 · PDF</div>
+      </div>
+      <div class="box">
+        <span class="status archived">archived</span><b>Keycap form-factor study</b>
+        <div class="note">2025 · superseded</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- STANDARDS -->
+  <section id="standards" class="s">
+    <span class="lbl">3 · Standards — published specifications we author or contribute to</span>
+    <h2>Standards</h2>
+    <div class="box" style="margin-top:10px;">
+      <div class="item">
+        <div class="row1">
+          <span class="status shipping">v1.0</span>
+          <a href="#"><b>BABB-CAT</b> — Categories &amp; tags for working media</a>
+        </div>
+        <div class="desc">How Worlds, Places, and posts relate. The basis for the Updates rail.</div>
+        <div class="tags"><span class="primary">editorial</span> · spec · 14p</div>
+      </div>
+      <div class="item">
+        <div class="row1">
+          <span class="status draft">draft</span>
+          <a href="#"><b>BABB-PLACE</b> — Place page schema</a>
+        </div>
+        <div class="desc">Six standard sections, front-matter, route variant.</div>
+        <div class="tags"><span class="primary">places</span> · schema</div>
+      </div>
+      <div class="item">
+        <div class="row1">
+          <span class="status draft">draft</span>
+          <a href="#"><b>BABB-FIELD</b> — Field-recording metadata</a>
+        </div>
+        <div class="desc">Audio/photo/video tagging for on-the-ground reporting.</div>
+        <div class="tags"><span class="primary">dailies</span> · metadata</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROTOCOLS -->
+  <section id="protocols" class="s">
+    <span class="lbl">4 · Protocols — runtime / wire / data agreements</span>
+    <h2>Protocols</h2>
+    <div class="box" style="margin-top:10px;">
+      <div class="item">
+        <div class="row1">
+          <span class="status shipping">stable</span>
+          <a href="#"><b>tel://</b> — directory &amp; presence resolution</a>
+        </div>
+        <div class="desc">How clients find each other across .tel.</div>
+        <div class="tags"><span class="primary">.tel</span> · wire</div>
+      </div>
+      <div class="item">
+        <div class="row1">
+          <span class="status beta">beta</span>
+          <a href="#"><b>pad-sync</b> — offline-first sync for Workpads</a>
+        </div>
+        <div class="desc">Conflict resolution for crews working without signal.</div>
+        <div class="tags"><span class="primary">Workpads</span> · sync</div>
+      </div>
+      <div class="item">
+        <div class="row1">
+          <span class="status research">research</span>
+          <a href="#"><b>bit-tx</b> — low-power telemetry framing</a>
+        </div>
+        <div class="desc">Bitpads radio framing under research.</div>
+        <div class="tags"><span class="primary">Bitpads</span> · radio</div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="sb" />
+
+  <!-- ROADMAP / RELEASES STRIP -->
+  <section class="s">
+    <span class="lbl">Releases — recent across the line (auto-feed)</span>
+    <div class="box">
+      <div class="item">
+        <div class="row1"><span class="status shipping">release</span>
+          <b>Bitpads firmware 0.4</b> <span class="note">· 2026-05-12</span></div>
+        <div class="desc">New radio stack, lower idle current.</div>
+      </div>
+      <div class="item">
+        <div class="row1"><span class="status draft">draft</span>
+          <b>BABB-PLACE 0.3</b> <span class="note">· 2026-05-09</span></div>
+        <div class="desc">Adds Route variant; tightens front-matter.</div>
+      </div>
+      <div class="item">
+        <div class="row1"><span class="status beta">beta</span>
+          <b>Workpads 3.7-beta</b> <span class="note">· 2026-05-03</span></div>
+        <div class="desc">Crew handoff flow, audio capture in Dailies.</div>
+      </div>
+      <div class="item note">[ pulls from product release tags + changelog feed ]</div>
+    </div>
+  </section>
+
+  <!-- CROSS-LINKS -->
+  <section class="s">
+    <span class="lbl">See products in the field — Worlds &amp; Places</span>
+    <div class="grid-4">
+      <div class="placeholder thumb">[ World · Farming ]</div>
+      <div class="placeholder thumb">[ World · Manufacturing ]</div>
+      <div class="placeholder thumb">[ Place · Hamilton mill ]</div>
+      <div class="placeholder thumb">[ Place · Sioux Falls feed-lot ]</div>
+    </div>
+  </section>
+
+  <footer class="note" style="border-top:1px solid #ddd;padding-top:14px;">
+    © Babb · subscribe to product releases · contact
+  </footer>
+
+</div>
+</body>
+</html>

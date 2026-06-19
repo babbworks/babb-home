@@ -1,0 +1,33 @@
+---
+layout: default
+title: Places
+nav_active: places
+---
+
+<div class="shell">
+  <div class="smark"><span class="num">§ 01</span><span>Places</span>
+    <span class="rule"></span><span class="meta">Standing stories</span></div>
+
+  <div style="padding:48px 0;max-width:56ch;">
+    <p style="font-size:15px;color:var(--ink-2);line-height:1.65;">
+      Places are standing stories &mdash; locations Babb returns to over time. Each Place page covers
+      one site across six standard sections: overview, people, operations, dispatches, products in use,
+      and context.
+    </p>
+  </div>
+
+  {% assign place_list = site.places %}
+  {% if place_list.size > 0 %}
+  <div style="display:grid;gap:1px;border-top:1px solid var(--hair);">
+    {% for place in place_list %}
+    <div style="padding:20px 0;border-bottom:1px solid var(--hair);">
+      <a href="{{ place.url }}" style="font-size:18px;font-weight:700;">{{ place.title }}</a>
+      {% if place.world %}<span style="font-size:11px;color:var(--muted);margin-left:12px;letter-spacing:.06em;">{{ place.world }}</span>{% endif %}
+      {% if place.description %}<p style="font-size:13px;color:var(--ink-2);margin:6px 0 0;">{{ place.description }}</p>{% endif %}
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <p style="font-size:13px;color:var(--muted);padding:24px 0;">First Place pages coming soon.</p>
+  {% endif %}
+</div>

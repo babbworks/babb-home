@@ -1,0 +1,750 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Babb — Tools for the frontier</title>
+<meta name="description" content="Babb is a media outfit reporting from the working world — and a product company building tools for it." />
+<style>
+  /* ─────────────────────────────────────────────────────────────
+     DESIGN TOKENS  (→ becomes _sass/_tokens.scss on Jekyll port)
+     ───────────────────────────────────────────────────────────── */
+  :root{
+    /* paper / ink */
+    --paper:        #faf8f3;
+    --paper-2:      #f3efe5;     /* recessed surface */
+    --card:         #ffffff;
+    --ink:          #1a1a1a;
+    --ink-2:        #444141;
+    --muted:        #807d75;
+    --hair:         #d8d3c4;
+    --hair-2:       #e8e3d4;
+
+    /* signals */
+    --alt:          #a14a00;     /* primary tag / subject color */
+    --alt-soft:     #f5e9d8;
+    --live:         #2f7a3a;     /* status dot / live channel */
+    --term-bg:      #141312;
+    --term-fg:      #e8e3d4;
+    --term-link:    #ffd58a;
+    --term-subj:    #b7d99a;
+
+    /* type */
+    --mono: ui-monospace, "SF Mono", SFMono-Regular, "JetBrains Mono", Menlo, Consolas, monospace;
+
+    /* rhythm */
+    --gutter: 24px;
+    --maxw: 1240px;
+  }
+
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--paper);color:var(--ink);
+    font:14px/1.55 var(--mono);
+    -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
+    font-feature-settings:"ss01","cv11";}
+  a{color:inherit;text-decoration:none}
+  a:hover{text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px}
+  h1,h2,h3,h4{font-family:var(--mono);font-weight:600;margin:0;letter-spacing:-.01em}
+
+  /* shell ------------------------------------------------------- */
+  .shell{max-width:var(--maxw);margin:0 auto;padding:0 var(--gutter)}
+  .bleed{width:100%}
+
+  /* ─── @include: system-bar.html ───────────────────────────── */
+  .sysbar{border-bottom:1px solid var(--hair);background:var(--paper);
+    font-size:11px;color:var(--muted);letter-spacing:.04em;}
+  .sysbar .row{display:flex;justify-content:space-between;align-items:center;
+    padding:7px 0;gap:16px}
+  .dot{display:inline-block;width:7px;height:7px;border-radius:50%;
+    background:var(--live);box-shadow:0 0 0 0 rgba(47,122,58,.55);
+    animation:pulse 2.6s infinite;vertical-align:middle;margin-right:6px}
+  @keyframes pulse{
+    0%{box-shadow:0 0 0 0 rgba(47,122,58,.55)}
+    70%{box-shadow:0 0 0 7px rgba(47,122,58,0)}
+    100%{box-shadow:0 0 0 0 rgba(47,122,58,0)}
+  }
+  .sysbar .right{display:flex;gap:14px;align-items:center}
+  .sysbar a:hover{color:var(--ink)}
+
+  /* ─── @include: header.html ──────────────────────────────── */
+  header.masthead{border-bottom:1px solid var(--hair);padding:22px 0 20px}
+  .masthead .row{display:flex;justify-content:space-between;align-items:flex-end;gap:24px}
+  .wordmark{font-size:34px;font-weight:700;letter-spacing:-.04em;line-height:.9}
+  .wordmark .punct{color:var(--alt)}
+  .tagline{font-size:11px;color:var(--muted);letter-spacing:.08em;
+    text-transform:uppercase;margin-top:8px}
+  nav.primary{display:flex;gap:22px;font-size:13px;padding-bottom:4px}
+  nav.primary a{color:var(--ink-2);position:relative;padding:2px 0}
+  nav.primary a:hover{color:var(--ink);text-decoration:none}
+  nav.primary a.here{color:var(--ink)}
+  nav.primary a.here::after{content:"";position:absolute;left:0;right:0;bottom:-4px;
+    height:2px;background:var(--ink)}
+
+  /* section header (§ marker w/ leader rule) ------------------- */
+  .smark{display:flex;align-items:center;gap:12px;margin:46px 0 16px;
+    font-size:11px;color:var(--muted);letter-spacing:.16em;text-transform:uppercase}
+  .smark .num{color:var(--ink);font-weight:600}
+  .smark .rule{flex:1;height:1px;background:var(--hair)}
+  .smark .meta{color:var(--muted)}
+
+  /* ─── @include: hero.html  (two-col framing + Updates rail) ─── */
+  .hero{display:grid;grid-template-columns:1.55fr 1fr;gap:36px;margin-bottom:8px}
+  .lede{padding-top:6px}
+  .lede h1{font-size:48px;line-height:1.02;letter-spacing:-.03em;font-weight:700;
+    max-width:14ch;text-wrap:balance}
+  .lede h1 .em{color:var(--alt)}
+  .lede .sub{font-size:16px;line-height:1.5;color:var(--ink-2);
+    margin-top:18px;max-width:54ch}
+  .lede .sub a{border-bottom:1px solid var(--ink);padding-bottom:1px}
+  .lede .sub a:hover{text-decoration:none;background:#f0eadd}
+
+  .worlds-list{margin-top:28px;border-top:1px solid var(--hair);
+    border-bottom:1px solid var(--hair);padding:14px 0;
+    display:flex;flex-wrap:wrap;gap:0;}
+  .worlds-list .w{display:flex;align-items:baseline;gap:8px;padding:6px 18px 6px 0;
+    border-right:1px dotted var(--hair-2);margin-right:6px;font-size:13px}
+  .worlds-list .w:last-child{border-right:none}
+  .worlds-list .w .n{font-size:10px;color:var(--muted);letter-spacing:.06em}
+  .worlds-list .w a{color:var(--ink)}
+  .worlds-list .w a:hover{color:var(--alt);text-decoration:none}
+  .worlds-foot{font-size:11px;color:var(--muted);margin-top:10px;letter-spacing:.04em}
+  .worlds-foot a{color:var(--ink);border-bottom:1px solid var(--hair)}
+
+  /* updates rail ----------------------------------------------- */
+  .rail{border:1px solid var(--hair);background:var(--card);position:relative;
+    height:520px;overflow:hidden}
+  .rail-head{display:flex;justify-content:space-between;align-items:center;
+    padding:10px 14px;border-bottom:1px solid var(--hair);
+    font-size:11px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;
+    background:var(--paper)}
+  .rail-head .live{color:var(--live);font-weight:600}
+  .rail-head .live::before{content:"●";margin-right:5px;animation:blink 1.6s infinite}
+  @keyframes blink{50%{opacity:.35}}
+  .rail-viewport{height:calc(100% - 38px);overflow:hidden;position:relative;
+    mask-image:linear-gradient(to bottom,transparent 0,#000 18px,#000 calc(100% - 24px),transparent 100%)}
+  .rail-track{will-change:transform;padding:6px 14px 22px;animation:scroll 64s linear infinite}
+  .rail:hover .rail-track{animation-play-state:paused}
+  @keyframes scroll{from{transform:translateY(0)}to{transform:translateY(-50%)}}
+  .upd{padding:14px 0;border-top:1px dotted var(--hair-2)}
+  .upd:first-child{border-top:none}
+  .upd .tt{font-size:13.5px;line-height:1.35;color:var(--ink);font-weight:600}
+  .upd .tt a:hover{color:var(--alt);text-decoration:none}
+  .upd .desc{font-size:12px;color:var(--ink-2);margin:4px 0 7px;line-height:1.5}
+  .upd .tags{font-size:10.5px;color:var(--muted);letter-spacing:.04em;
+    text-transform:uppercase}
+  .upd .tags .p{color:var(--alt);font-weight:600}
+  .upd .tags .sep{margin:0 6px;color:var(--hair)}
+  .upd .when{float:right;font-size:10.5px;color:var(--muted);font-weight:400}
+
+  /* ─── @include: slideshow.html  (edge-to-edge + terminal) ──── */
+  .slideshow{position:relative;background:var(--paper-2);
+    border-top:1px solid var(--hair);border-bottom:1px solid var(--hair);
+    height:520px;overflow:hidden}
+  .slide{position:absolute;inset:0;opacity:0;transition:opacity 1.2s ease;
+    display:flex;align-items:center;justify-content:center;color:var(--muted);
+    font-size:11px;letter-spacing:.16em;text-transform:uppercase}
+  .slide.on{opacity:1}
+  /* SVG-backed placeholder textures, slide-specific */
+  .slide.t1{background:
+    repeating-linear-gradient(45deg, #efe8d6 0 10px, #f5efe0 10px 20px)}
+  .slide.t2{background:
+    repeating-linear-gradient(0deg, #ece4d0 0 2px, #f4eedf 2px 9px)}
+  .slide.t3{background:
+    radial-gradient(circle at 1px 1px, #d8cfb6 1px, transparent 1.5px) 0 0/14px 14px,
+    #f1ead7}
+  .slide.t4{background:
+    linear-gradient(180deg, #efe7d2 0%, #e6dcc1 100%)}
+  .slide .frame-id{position:absolute;left:20px;bottom:18px;
+    font-family:var(--mono);font-size:10.5px;color:rgba(20,20,20,.55);
+    letter-spacing:.18em;}
+  .slide .scene{position:absolute;right:20px;bottom:18px;
+    font-family:var(--mono);font-size:10.5px;color:rgba(20,20,20,.5);
+    letter-spacing:.18em;}
+
+  /* terminal overlay ------------------------------------------- */
+  .term{position:absolute;top:22px;right:22px;max-width:560px;
+    background:var(--term-bg);color:var(--term-fg);font-family:var(--mono);
+    font-size:13px;line-height:1.45;padding:0;
+    box-shadow:0 8px 28px rgba(0,0,0,.18);
+    overflow:hidden;
+    width:0; /* prints in */
+    transition:width .5s cubic-bezier(.2,.6,.2,1);
+    white-space:nowrap;}
+  .term .pad{padding:9px 14px;display:flex;align-items:baseline;gap:8px;opacity:0;
+    transition:opacity .35s ease .45s}
+  .term.on{width:auto}
+  .term.on .pad{opacity:1}
+  .term .subj{color:var(--term-subj)}
+  .term .pct{color:#888}
+  .term a{color:var(--term-link);border-bottom:1px dotted #b88c4d}
+  .term a:hover{color:#fff;text-decoration:none}
+  .term .blink{display:inline-block;width:7px;height:14px;background:var(--term-fg);
+    animation:blink 1.1s infinite;vertical-align:-2px;margin-left:2px}
+
+  .slide-dots{position:absolute;left:22px;bottom:50px;display:flex;gap:7px;z-index:2}
+  .slide-dots .d{width:18px;height:2px;background:rgba(20,20,20,.18);cursor:pointer}
+  .slide-dots .d.on{background:rgba(20,20,20,.7)}
+
+  /* ─── @include: products-grid.html ───────────────────────── */
+  .prod-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+  .prod{background:var(--card);border:1px solid var(--hair);padding:18px;
+    aspect-ratio:1/1;display:flex;flex-direction:column;justify-content:space-between;
+    position:relative;transition:border-color .15s ease, transform .15s ease}
+  .prod:hover{border-color:var(--ink);transform:translateY(-1px)}
+  .prod .num{font-size:10.5px;color:var(--muted);letter-spacing:.16em}
+  .prod .name{font-size:26px;font-weight:700;letter-spacing:-.025em;margin-top:8px}
+  .prod .name .punct{color:var(--alt)}
+  .prod .line{font-size:12px;color:var(--ink-2);line-height:1.45;margin-top:8px}
+  .prod .meta{font-size:10.5px;color:var(--muted);letter-spacing:.08em;
+    text-transform:uppercase;display:flex;justify-content:space-between;align-items:end}
+  .prod .meta .ver{color:var(--ink)}
+  .prod .glyph{position:absolute;top:14px;right:14px;width:34px;height:34px;
+    color:var(--alt);opacity:.85}
+
+  /* ─── @include: products-intro.html ──────────────────────── */
+  .intro{display:grid;grid-template-columns:1fr 1fr;gap:32px;
+    padding:28px 0;border-top:1px solid var(--hair-2)}
+  .intro:first-child{border-top:none}
+  .intro .copy h3{font-size:24px;letter-spacing:-.02em}
+  .intro .copy h3 .punct{color:var(--alt)}
+  .intro .copy .kicker{font-size:10.5px;color:var(--muted);letter-spacing:.16em;
+    text-transform:uppercase;margin-bottom:10px}
+  .intro .copy p{font-size:14.5px;line-height:1.6;color:var(--ink-2);max-width:48ch;
+    margin:10px 0}
+  .intro .copy .cta{margin-top:14px;display:flex;gap:18px;font-size:12px}
+  .intro .copy .cta a{border-bottom:1px solid var(--ink)}
+  .intro .copy .specs{margin-top:18px;display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));gap:6px 18px;
+    font-size:11px;color:var(--muted);max-width:380px}
+  .intro .copy .specs b{color:var(--ink);font-weight:600}
+
+  .shot{background:var(--paper-2);border:1px solid var(--hair);
+    min-height:280px;padding:18px;position:relative;
+    background-image:repeating-linear-gradient(45deg, transparent 0 18px, rgba(0,0,0,.025) 18px 19px);}
+  .shot::before{content:attr(data-label);position:absolute;top:10px;left:12px;
+    font-size:10px;color:var(--muted);letter-spacing:.16em;text-transform:uppercase}
+  .shot.right{order:2}.shot.left{order:0}
+
+  /* ─── @include: telemetry.html ───────────────────────────── */
+  .telem{background:var(--term-bg);color:var(--term-fg);font-family:var(--mono);
+    font-size:12.5px;padding:18px 22px;border:1px solid #2a2723;
+    position:relative;overflow:hidden}
+  .telem .head{display:flex;justify-content:space-between;align-items:center;
+    font-size:10.5px;color:#9a948a;letter-spacing:.16em;text-transform:uppercase;
+    padding-bottom:10px;margin-bottom:8px;border-bottom:1px solid #2a2723}
+  .telem .head .live{color:#a3d181}
+  .telem .head .live::before{content:"●";margin-right:6px;animation:blink 1.6s infinite}
+  .tlines{display:flex;flex-direction:column;gap:3px}
+  .tline{display:grid;grid-template-columns:74px 110px 1fr;gap:14px;
+    align-items:baseline;
+    opacity:0;animation:fadein .35s ease forwards}
+  .tline.appear{animation:typein .45s ease forwards}
+  @keyframes fadein{to{opacity:1}}
+  @keyframes typein{
+    from{opacity:0;transform:translateY(-2px)}
+    to{opacity:1;transform:translateY(0)}
+  }
+  .tline .ts{color:#6a655b}
+  .tline .subj{color:#e6b35a;letter-spacing:.04em;text-transform:lowercase}
+  .tline .msg{color:#e8e3d4}
+  .tline .msg .lk{color:#ffd58a;border-bottom:1px dotted #8a6630}
+  .telem .cur{display:inline-block;width:7px;height:13px;background:var(--term-fg);
+    animation:blink 1.1s infinite;vertical-align:-2px;margin-left:4px}
+  .telem .foot{font-size:10px;color:#6a655b;letter-spacing:.12em;
+    text-transform:uppercase;margin-top:14px;padding-top:10px;border-top:1px solid #2a2723;
+    display:flex;justify-content:space-between}
+
+  /* ─── @include: footer.html  ─────────────────────────────── */
+  footer.colophon{margin-top:56px;border-top:1px solid var(--hair);
+    padding:32px 0 48px;color:var(--ink-2);font-size:12.5px}
+  .col-grid{display:grid;grid-template-columns:1.6fr 1fr 1fr 1fr;gap:30px;
+    margin-bottom:28px}
+  .col h4{font-size:10.5px;color:var(--muted);letter-spacing:.16em;
+    text-transform:uppercase;margin-bottom:12px;font-weight:600}
+  .col ul{list-style:none;padding:0;margin:0}
+  .col li{padding:3px 0}
+  .col li a:hover{color:var(--alt);text-decoration:none}
+  .col .tag{font-size:10.5px;color:var(--muted);margin-left:6px;letter-spacing:.06em}
+  .col-id .mark{font-size:28px;font-weight:700;letter-spacing:-.04em;line-height:.9}
+  .col-id .mark .punct{color:var(--alt)}
+  .col-id p{margin:10px 0 14px;line-height:1.55;max-width:36ch}
+  .col-id .addr{font-size:11px;color:var(--muted);line-height:1.6}
+
+  .col-foot{display:flex;justify-content:space-between;align-items:center;gap:20px;
+    padding-top:18px;border-top:1px solid var(--hair-2);
+    font-size:11px;color:var(--muted);letter-spacing:.04em}
+  .col-foot .right{display:flex;gap:14px}
+
+  /* utilities -------------------------------------------------- */
+  .ascii{color:var(--muted)}
+  .em-alt{color:var(--alt)}
+  .small{font-size:11px;color:var(--muted)}
+  .ruler{height:1px;background:var(--hair);margin:48px 0}
+
+  @media (max-width:1020px){
+    .hero{grid-template-columns:1fr}
+    .rail{height:380px}
+    .prod-grid{grid-template-columns:repeat(2,1fr)}
+    .intro{grid-template-columns:1fr}
+    .lede h1{font-size:38px}
+    .col-grid{grid-template-columns:1fr 1fr}
+  }
+  @media (max-width:640px){
+    .wordmark{font-size:28px}
+    .lede h1{font-size:30px}
+    .prod-grid{grid-template-columns:1fr 1fr}
+    .col-grid{grid-template-columns:1fr}
+    nav.primary{flex-wrap:wrap;gap:14px}
+    .term{left:16px;right:16px;max-width:none;top:14px}
+    .slideshow{height:380px}
+  }
+</style>
+</head>
+<body>
+
+<!-- ─── @include: system-bar.html ─────────────────────────── -->
+<div class="sysbar">
+  <div class="shell row">
+    <div><span class="dot"></span>babb<span class="ascii"> / </span>tools for the frontier</div>
+    <div class="right">
+      <span class="ascii">build 2026.05.18</span>
+      <span class="ascii">·</span>
+      <span id="clock" aria-live="off">--:--:-- UTC</span>
+      <span class="ascii">·</span>
+      <a href="/feed.xml">rss</a>
+    </div>
+  </div>
+</div>
+
+<!-- ─── @include: header.html ─────────────────────────────── -->
+<header class="masthead">
+  <div class="shell row">
+    <div>
+      <div class="wordmark">babb<span class="punct">.</span></div>
+      <div class="tagline">A media outfit · A product company</div>
+    </div>
+    <nav class="primary" aria-label="Primary">
+      <a href="/worlds/" class="here">Worlds</a>
+      <a href="/places/">Places</a>
+      <a href="/products/">Products</a>
+      <a href="/updates/">Updates</a>
+      <a href="/about/">About</a>
+    </nav>
+  </div>
+</header>
+
+<div class="shell">
+
+  <!-- ─── @include: hero.html  ───────────────────────────── -->
+  <div class="smark"><span class="num">§ 01</span><span>Front matter</span>
+    <span class="rule"></span><span class="meta">Babb / Worlds + Updates</span></div>
+
+  <section class="hero">
+    <div class="lede">
+      <h1>We report from the <span class="em">working world.</span> We build the tools it&nbsp;needs.</h1>
+      <p class="sub">
+        Babb is a media outfit first &mdash; on the floors of feed lots, mills, branch offices and job sites &mdash;
+        and a product company alongside. The same field that shapes our coverage shapes our software and hardware:
+        <a href="/products/workpads/">Workpads</a>, <a href="/products/bitpads/">Bitpads</a>,
+        <a href="/products/tel/">.tel</a>, and the <a href="/products/">stone goods</a>.
+      </p>
+
+      <div class="worlds-list" role="list" aria-label="Working Worlds">
+        <div class="w" role="listitem"><span class="n">01</span><a href="/worlds/selling/">Selling</a></div>
+        <div class="w" role="listitem"><span class="n">02</span><a href="/worlds/banking/">Banking</a></div>
+        <div class="w" role="listitem"><span class="n">03</span><a href="/worlds/farming/">Farming</a></div>
+        <div class="w" role="listitem"><span class="n">04</span><a href="/worlds/building/">Building</a></div>
+        <div class="w" role="listitem"><span class="n">05</span><a href="/worlds/manufacturing/">Manufacturing</a></div>
+        <div class="w" role="listitem"><span class="n">06</span><a href="/worlds/communications/">Communications</a></div>
+        <div class="w" role="listitem"><span class="n">07</span><a href="/worlds/management/">Management</a></div>
+      </div>
+      <div class="worlds-foot">
+        Seven Worlds, growing. Each is both an editorial beat and an audience.
+        <a href="/worlds/">Browse all →</a>
+      </div>
+    </div>
+
+    <!-- ─── @include: updates-rail.html ───────────────── -->
+    <aside class="rail" aria-label="Updates rail">
+      <div class="rail-head">
+        <span>Updates</span>
+        <span class="live">LIVE · /feed.xml</span>
+      </div>
+      <div class="rail-viewport" id="rail">
+        <div class="rail-track" id="railTrack">
+          <!-- Item template (Jekyll: {% for post in site.posts %}) -->
+          <article class="upd">
+            <div class="tt"><a href="#">Two days on a feed-lot in Sioux Falls</a><span class="when">2d</span></div>
+            <div class="desc">Workpads field crew rides the third shift with the operations lead.</div>
+            <div class="tags"><span class="p">Workpads</span><span class="sep">/</span>farming<span class="sep">/</span>livestock<span class="sep">/</span>dispatch</div>
+          </article>
+          <article class="upd">
+            <div class="tt"><a href="#">Bitpads firmware 0.4 — lower idle current</a><span class="when">4d</span></div>
+            <div class="desc">New radio stack, 38% drop in standby draw, full changelog inside.</div>
+            <div class="tags"><span class="p">Bitpads</span><span class="sep">/</span>hardware<span class="sep">/</span>release</div>
+          </article>
+          <article class="upd">
+            <div class="tt"><a href="#">Hamilton steel mill — first Place page</a><span class="when">5d</span></div>
+            <div class="desc">Standing story going live next week. Preview the six standard sections.</div>
+            <div class="tags"><span class="p">Places</span><span class="sep">/</span>manufacturing<span class="sep">/</span>preview</div>
+          </article>
+          <article class="upd">
+            <div class="tt"><a href="#">Editor&rsquo;s note — Worlds, one year in</a><span class="when">1w</span></div>
+            <div class="desc">Where the editorial slate is heading, and how sub-Worlds will work.</div>
+            <div class="tags"><span class="p">Editorial</span><span class="sep">/</span>worlds</div>
+          </article>
+          <article class="upd">
+            <div class="tt"><a href="#">.tel — the connective layer, explained plainly</a><span class="when">1w</span></div>
+            <div class="desc">A short on what .tel is, why it matters, and what plants on it next.</div>
+            <div class="tags"><span class="p">.tel</span><span class="sep">/</span>infra<span class="sep">/</span>explainer</div>
+          </article>
+          <article class="upd">
+            <div class="tt"><a href="#">Co-op governance, plainly</a><span class="when">2w</span></div>
+            <div class="desc">How a midwestern dairy co-op actually votes &mdash; with the bylaws on the table.</div>
+            <div class="tags"><span class="p">Worlds</span><span class="sep">/</span>farming<span class="sep">/</span>dairy</div>
+          </article>
+          <article class="upd">
+            <div class="tt"><a href="#">Stone goods — second drop dated</a><span class="when">3w</span></div>
+            <div class="desc">The infinity-spiral relief returns; cream label, hairline rule, small icosahedron.</div>
+            <div class="tags"><span class="p">Babb Products</span><span class="sep">/</span>stone<span class="sep">/</span>release</div>
+          </article>
+          <article class="upd">
+            <div class="tt"><a href="#">The last teller — long read, banking</a><span class="when">3w</span></div>
+            <div class="desc">A branch closes in Hudson, NY. The line keeps going around the block.</div>
+            <div class="tags"><span class="p">Worlds</span><span class="sep">/</span>banking<span class="sep">/</span>longform</div>
+          </article>
+        </div>
+      </div>
+    </aside>
+  </section>
+
+</div><!-- /shell -->
+
+<!-- ─── @include: slideshow.html  (full-bleed) ─────────────── -->
+<div class="smark shell"><span class="num">§ 02</span><span>From the field</span>
+  <span class="rule"></span><span class="meta">Dispatches · rotating</span></div>
+
+<section class="slideshow bleed" aria-label="Field slideshow" id="slideshow">
+  <div class="slide t1 on" data-slide="0">
+    <span class="frame-id">FRAME 01 / 04</span>
+    <span class="scene">SIOUX FALLS · FEED LOT · 05:42 LOCAL</span>
+  </div>
+  <div class="slide t2" data-slide="1">
+    <span class="frame-id">FRAME 02 / 04</span>
+    <span class="scene">HAMILTON, ON · BLAST FURNACE · GRAVEYARD SHIFT</span>
+  </div>
+  <div class="slide t3" data-slide="2">
+    <span class="frame-id">FRAME 03 / 04</span>
+    <span class="scene">HUDSON, NY · BRANCH OFFICE · LAST DAY</span>
+  </div>
+  <div class="slide t4" data-slide="3">
+    <span class="frame-id">FRAME 04 / 04</span>
+    <span class="scene">MARS · .TEL MONUMENT · RENDER PASS 12</span>
+  </div>
+
+  <div class="slide-dots" id="dots">
+    <div class="d on" data-go="0"></div>
+    <div class="d" data-go="1"></div>
+    <div class="d" data-go="2"></div>
+    <div class="d" data-go="3"></div>
+  </div>
+
+  <!-- Terminal overlay — text swaps by slide -->
+  <div class="term" id="term" aria-live="polite">
+    <div class="pad">
+      <span class="subj" id="termSubj">babb@tel workpads</span><span class="pct">%</span>
+      <span id="termBody">two days on a feed-lot &mdash; <a href="#">read</a> · <a href="#">photos</a></span>
+      <span class="blink"></span>
+    </div>
+  </div>
+</section>
+
+<div class="shell">
+
+  <!-- ─── @include: products-grid.html ──────────────────────── -->
+  <div class="smark"><span class="num">§ 03</span><span>Products</span>
+    <span class="rule"></span><span class="meta">Tools for the frontier</span></div>
+
+  <section class="prod-grid">
+    <a class="prod" href="/products/workpads/">
+      <svg class="glyph" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="4" y="3" width="16" height="18" rx="1.5"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>
+      <div><div class="num">01 / 04</div><div class="name">Workpads</div>
+        <div class="line">A field notebook for the working world. Forms, photos, audio, signoffs &mdash; offline-first.</div></div>
+      <div class="meta"><span>software · mobile + web</span><span class="ver">v2.3 →</span></div>
+    </a>
+    <a class="prod" href="/products/bitpads/">
+      <svg class="glyph" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="3" y="6" width="18" height="12" rx="1.5"/><circle cx="8" cy="12" r="1.4"/><circle cx="14" cy="12" r="1.4"/><path d="M3 10h18"/></svg>
+      <div><div class="num">02 / 04</div><div class="name">Bitpads</div>
+        <div class="line">The hardware companion. Low-power radio, e-ink display, weeks per charge.</div></div>
+      <div class="meta"><span>hardware · rev C</span><span class="ver">fw 0.4 →</span></div>
+    </a>
+    <a class="prod" href="/products/tel/">
+      <svg class="glyph" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2.6"/><path d="M12 4v3M12 17v3M4 12h3M17 12h3"/></svg>
+      <div><div class="num">03 / 04</div><div class="name">.tel</div>
+        <div class="line">The connective layer. Identity, routing, and channels for people who do work in the world.</div></div>
+      <div class="meta"><span>protocol · alpha</span><span class="ver">spec →</span></div>
+    </a>
+    <a class="prod" href="/products/">
+      <svg class="glyph" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><polygon points="12,3 21,8 21,17 12,22 3,17 3,8"/><polygon points="12,3 12,12 21,8" opacity=".5"/><polygon points="12,12 12,22 3,17" opacity=".5"/></svg>
+      <div><div class="num">04 / 04</div><div class="name">Babb Products</div>
+        <div class="line">Stone goods, paper goods, small objects. Made in small runs. Catalog updates monthly.</div></div>
+      <div class="meta"><span>goods · drop 02</span><span class="ver">shop →</span></div>
+    </a>
+  </section>
+
+  <!-- ─── @include: products-intro.html ─────────────────────── -->
+  <div class="smark"><span class="num">§ 04</span><span>One product at a time</span>
+    <span class="rule"></span><span class="meta">Read after scan</span></div>
+
+  <section>
+
+    <div class="intro">
+      <div class="copy">
+        <div class="kicker">01 — Workpads</div>
+        <h3>A field notebook that survives the field.</h3>
+        <p>Built with the people we cover. Workpads pairs structured forms with audio, photo and signoff
+          so a single pass through a site &mdash; a pen, a furnace, a branch lobby &mdash; produces a complete
+          record. Syncs when it can; works when it can&rsquo;t.</p>
+        <div class="specs">
+          <div><b>iOS · Android · Web</b></div><div><b>Offline-first</b> sync</div>
+          <div><b>Audio + photo</b> attached to fields</div><div><b>Open export</b> (CSV, JSON, PDF)</div>
+        </div>
+        <div class="cta"><a href="/products/workpads/">Workpads →</a><a href="/updates/?tag=workpads">Field reports →</a></div>
+      </div>
+      <div class="shot" data-label="screenshot · workpads · daily log"></div>
+    </div>
+
+    <div class="intro">
+      <div class="shot left" data-label="render · bitpads rev C · in case"></div>
+      <div class="copy">
+        <div class="kicker">02 — Bitpads</div>
+        <h3>One small piece of hardware. Weeks of battery.</h3>
+        <p>An e-ink companion for Workpads. Sits in a pocket or on a clipboard. Reads tags, captures
+          counts, prints to a small label run. Designed for places where a phone is the wrong tool &mdash;
+          gloves on, cold weather, wet hands.</p>
+        <div class="specs">
+          <div><b>Rev C</b> · firmware 0.4</div><div><b>Sub-GHz radio</b> + BLE</div>
+          <div><b>~30 day</b> idle</div><div><b>USB-C</b> · field replaceable cell</div>
+        </div>
+        <div class="cta"><a href="/products/bitpads/">Bitpads →</a><a href="/products/bitpads/firmware/">Changelog →</a></div>
+      </div>
+    </div>
+
+    <div class="intro">
+      <div class="copy">
+        <div class="kicker">03 — .tel</div>
+        <h3>An identity layer for people who do work in the world.</h3>
+        <p>.tel routes the noise away from the people who need to reach you, and toward the ones who
+          actually do. A small protocol with a long view. Plants like infrastructure. Built to outlast
+          a platform cycle.</p>
+        <div class="specs">
+          <div><b>Alpha</b> · invite only</div><div><b>Open spec</b></div>
+          <div><b>Email · SMS · channels</b></div><div><b>Self-hostable</b> nodes</div>
+        </div>
+        <div class="cta"><a href="/products/tel/">.tel →</a><a href="/products/tel/spec/">Read the spec →</a></div>
+      </div>
+      <div class="shot" data-label="screenshot · .tel · routing rules"></div>
+    </div>
+
+  </section>
+
+</div><!-- /shell -->
+
+<!-- ─── @include: telemetry.html  (live wire) ─────────────── -->
+<div class="shell">
+  <div class="smark"><span class="num">§ 05</span><span>Telemetry</span>
+    <span class="rule"></span><span class="meta">The live wire · manually keyed</span></div>
+</div>
+<div class="shell">
+  <section class="telem" aria-label="Telemetry feed">
+    <div class="head"><span>babb-telemetry &mdash; channel 01</span><span class="live">LIVE</span></div>
+    <div class="tlines" id="tlines">
+      <!-- seeded; new lines are prepended -->
+      <div class="tline" style="opacity:1"><span class="ts">17:42:08</span><span class="subj">workpads</span><span class="msg">field unit 03 returned from Sioux Falls &mdash; <span class="lk">recap</span></span></div>
+      <div class="tline" style="opacity:1"><span class="ts">17:38:55</span><span class="subj">.tel</span><span class="msg">monument render pass 12 queued for review</span></div>
+      <div class="tline" style="opacity:1"><span class="ts">17:31:02</span><span class="subj">places</span><span class="msg">hamilton mill page &mdash; draft committed</span></div>
+      <div class="tline" style="opacity:1"><span class="ts">17:24:17</span><span class="subj">bitpads</span><span class="msg">firmware 0.4 tag cut &mdash; release notes published</span></div>
+      <div class="tline" style="opacity:1"><span class="ts">17:18:44</span><span class="subj">editorial</span><span class="msg">worlds slate refresh published</span></div>
+    </div>
+    <div class="foot">
+      <span>printed continuously · pauses on hover · runs the session</span>
+      <span>uptime 99.99% &nbsp; <span class="cur"></span></span>
+    </div>
+  </section>
+</div>
+
+<!-- ─── @include: footer.html ─────────────────────────────── -->
+<div class="shell">
+<footer class="colophon">
+  <div class="col-grid">
+    <div class="col col-id">
+      <div class="mark">babb<span class="punct">.</span></div>
+      <p>Tools for the frontier. A media outfit reporting from the working world and a product company building for it.</p>
+      <div class="addr">babb works · est. 2024<br/>hello@babb.tel<br/>rss · twitter · github · instagram</div>
+    </div>
+    <div class="col">
+      <h4>Worlds</h4>
+      <ul>
+        <li><a href="/worlds/selling/">Selling</a></li>
+        <li><a href="/worlds/banking/">Banking</a></li>
+        <li><a href="/worlds/farming/">Farming</a></li>
+        <li><a href="/worlds/building/">Building</a></li>
+        <li><a href="/worlds/manufacturing/">Manufacturing</a></li>
+        <li><a href="/worlds/communications/">Communications</a></li>
+        <li><a href="/worlds/management/">Management</a></li>
+      </ul>
+    </div>
+    <div class="col">
+      <h4>Products</h4>
+      <ul>
+        <li><a href="/products/workpads/">Workpads</a><span class="tag">software</span></li>
+        <li><a href="/products/bitpads/">Bitpads</a><span class="tag">hardware</span></li>
+        <li><a href="/products/tel/">.tel</a><span class="tag">protocol</span></li>
+        <li><a href="/products/">Babb Products</a><span class="tag">goods</span></li>
+      </ul>
+      <h4 style="margin-top:18px;">Places</h4>
+      <ul>
+        <li><a href="/places/hamilton-steel-mill/">Hamilton steel mill</a></li>
+        <li><a href="/places/sioux-falls-feed-lot/">Sioux Falls feed-lot</a></li>
+        <li><a href="/places/">All Places →</a></li>
+      </ul>
+    </div>
+    <div class="col">
+      <h4>Updates · RSS</h4>
+      <ul id="footUpdates">
+        <li><a href="#">Two days on a feed-lot</a><span class="tag">workpads</span></li>
+        <li><a href="#">Bitpads firmware 0.4</a><span class="tag">bitpads</span></li>
+        <li><a href="#">Editor&rsquo;s note · Worlds</a><span class="tag">editorial</span></li>
+        <li><a href="#">Hamilton mill preview</a><span class="tag">places</span></li>
+        <li><a href="#">.tel explainer</a><span class="tag">.tel</span></li>
+      </ul>
+      <h4 style="margin-top:18px;">Subscribe</h4>
+      <ul>
+        <li><a href="/feed.xml">RSS feed</a></li>
+        <li><a href="/updates/email/">Email digest</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="col-foot">
+    <div>© 2024–2026 Babb Works · CC BY-NC where noted</div>
+    <div class="right">
+      <a href="/colophon/">Colophon</a>
+      <a href="/about/">About</a>
+      <a href="/contact/">Contact</a>
+      <span class="ascii">build 2026.05.18</span>
+    </div>
+  </div>
+</footer>
+</div>
+
+<script>
+  /* clock ----------------------------------------------------- */
+  (function(){
+    const el = document.getElementById("clock");
+    function tick(){
+      const d = new Date();
+      const f = n => String(n).padStart(2,"0");
+      el.textContent = f(d.getUTCHours())+":"+f(d.getUTCMinutes())+":"+f(d.getUTCSeconds())+" UTC";
+    }
+    tick(); setInterval(tick, 1000);
+  })();
+
+  /* updates rail — clone children for seamless loop ----------- */
+  (function(){
+    const track = document.getElementById("railTrack");
+    if(!track) return;
+    track.innerHTML += track.innerHTML; // duplicate once for -50% wrap
+  })();
+
+  /* slideshow + terminal overlay ------------------------------ */
+  (function(){
+    const slides = document.querySelectorAll(".slide");
+    const dots = document.querySelectorAll(".slide-dots .d");
+    const term = document.getElementById("term");
+    const termSubj = document.getElementById("termSubj");
+    const termBody = document.getElementById("termBody");
+
+    const captions = [
+      { subj:"babb@tel farming/livestock",
+        body: 'two days on a feed-lot &mdash; <a href="#">read</a> &middot; <a href="#">photos</a>' },
+      { subj:"babb@tel manufacturing/steel",
+        body: 'inside a hamilton mill &mdash; <a href="#">long read</a> &middot; <a href="#">mini-doc</a>' },
+      { subj:"babb@tel banking/branches",
+        body: 'the last teller, hudson NY &mdash; <a href="#">read</a> &middot; <a href="#">audio</a>' },
+      { subj:"babb@tel .tel/monuments",
+        body: 'mars antenna, render pass 12 &mdash; <a href="#">notes</a> &middot; <a href="#">gallery</a>' },
+    ];
+
+    let i = 0;
+    function show(n){
+      i = (n + slides.length) % slides.length;
+      slides.forEach((s,k)=>s.classList.toggle("on", k===i));
+      dots.forEach((d,k)=>d.classList.toggle("on", k===i));
+      // reset terminal: collapse, swap text, expand
+      term.classList.remove("on");
+      setTimeout(()=>{
+        termSubj.textContent = captions[i].subj;
+        termBody.innerHTML = captions[i].body;
+        // force a reflow then re-add 'on'
+        void term.offsetWidth;
+        term.classList.add("on");
+      }, 280);
+    }
+    // first print-in
+    setTimeout(()=>term.classList.add("on"), 350);
+
+    dots.forEach(d => d.addEventListener("click", e => show(+d.dataset.go)));
+    let timer = setInterval(()=>show(i+1), 6500);
+    const ss = document.getElementById("slideshow");
+    ss.addEventListener("mouseenter", ()=>{clearInterval(timer); timer=null;});
+    ss.addEventListener("mouseleave", ()=>{ if(!timer) timer = setInterval(()=>show(i+1), 6500); });
+  })();
+
+  /* telemetry — prepend lines on a slow cadence --------------- */
+  (function(){
+    const host = document.getElementById("tlines");
+    const queue = [
+      {subj:"workpads",  msg:'export pipeline pass &mdash; <span class="lk">job 8821</span>'},
+      {subj:".tel",      msg:"route 7c handed off to channel ops"},
+      {subj:"places",    msg:'sioux falls dailies &mdash; <span class="lk">day 4 posted</span>'},
+      {subj:"bitpads",   msg:'rev C unit 047 returned from cold-soak'},
+      {subj:"editorial", msg:'farming/dairy sub-world &mdash; spun up'},
+      {subj:"worlds",    msg:'banking landing &mdash; <span class="lk">copy in review</span>'},
+      {subj:"products",  msg:"stone drop 02 photographed; labels at the printer"},
+      {subj:"workpads",  msg:'firmware sync check &mdash; 312 devices, 100% caught up'},
+      {subj:".tel",      msg:'identity verify &mdash; 0 anomalies in last 24h'},
+      {subj:"places",    msg:'hamilton mill audio &mdash; <span class="lk">interview clip 02</span>'},
+    ];
+    let qi = 0;
+    function pad(n){return String(n).padStart(2,"0")}
+    function now(){
+      const d = new Date();
+      return pad(d.getHours())+":"+pad(d.getMinutes())+":"+pad(d.getSeconds());
+    }
+    function emit(){
+      const item = queue[qi++ % queue.length];
+      const line = document.createElement("div");
+      line.className = "tline appear";
+      line.innerHTML =
+        '<span class="ts">'+now()+'</span>'+
+        '<span class="subj">'+item.subj+'</span>'+
+        '<span class="msg">'+item.msg+'</span>';
+      host.prepend(line);
+      // trim very long lists so DOM stays small (keep ~24 newest)
+      while(host.children.length > 24) host.removeChild(host.lastElementChild);
+    }
+    // first new line in ~4s, then every 6–11s, pause on hover
+    let nextTimer;
+    function schedule(){
+      const wait = 6000 + Math.random()*5000;
+      nextTimer = setTimeout(()=>{emit(); schedule();}, wait);
+    }
+    setTimeout(()=>{emit(); schedule();}, 4000);
+
+    const telem = host.closest(".telem");
+    telem.addEventListener("mouseenter", ()=>{clearTimeout(nextTimer); nextTimer=null;});
+    telem.addEventListener("mouseleave", ()=>{ if(!nextTimer) schedule(); });
+  })();
+</script>
+</body>
+</html>

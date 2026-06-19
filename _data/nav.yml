@@ -1,0 +1,15 @@
+- id: dispatch
+  label: Dispatch
+  url: /dispatch/
+
+- id: products
+  label: Products
+  url: /products/
+
+- id: updates
+  label: Updates
+  url: /updates/
+
+- id: about
+  label: About
+  url: /about/

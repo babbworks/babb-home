@@ -1,0 +1,286 @@
+<div class="sysbar" id="sysbar">
+  <div class="shell row">
+    <div><span class="dot"></span>babb<span class="ascii"> / </span>tools for the frontier</div>
+    <div class="site-select">
+      <select id="site-switcher" aria-label="Open a mini-site" onchange="if(this.value)window.location=this.value;this.selectedIndex=0;">
+        <option value="" selected disabled>select</option>
+        <option value="/basics/">BASICS</option>
+        <option value="/bitpads/">BitPads</option>
+        <option value="/bitledger-app/">BitLedger</option>
+        <option value="/clark/">Clark Report</option>
+        <option value="/workpads-app/">Workpads</option>
+        <option value="/workwarrior-app/">Workwarrior</option>
+        <option value="/works-app/">Works</option>
+        <option value="/flow/">Works Flow</option>
+      </select>
+    </div>
+    <div class="right">
+      <span class="ascii">build {{ site.time | date: "%Y.%m.%d" }}</span>
+      <span class="ascii">·</span>
+      <span id="clock" aria-live="off">--:--:-- UTC</span>
+      <span class="ascii">·</span>
+      <a href="/feed.xml">rss</a>
+    </div>
+  </div>
+</div>
+
+<img id="mascot"       src="/assets/img/mascot.png"       alt="mascot" style="cursor:pointer;">
+<img id="mascot-front" src="/assets/img/mascot-front.svg" alt="mascot" style="cursor:pointer;">
+<div id="mascot-bubble" aria-live="polite"></div>
+
+<script>
+(function(){
+  const side  = document.getElementById("mascot");
+  const front = document.getElementById("mascot-front");
+  const bar   = document.getElementById("sysbar");
+  if(!side || !front || !bar) return;
+
+  const MH = 28;
+  let x = 0, target = 0, facingRight = true, timer = null, onNav = false;
+
+  // ── track y positions ─────────────────────────────────────────
+  // mhead is looked up lazily — sysbar.html is parsed before masthead.html
+  // exists in the DOM, so caching it at script-parse time always returns null
+  function sysY(){ return bar.getBoundingClientRect().bottom - MH; }
+  function navY(){
+    const el = document.querySelector("header.masthead")
+            || document.querySelector(".np-masthead")
+            || bar;
+    return el.getBoundingClientRect().bottom - MH;
+  }
+
+  // ── show side or front face ───────────────────────────────────
+  function showFace(el){
+    side.style.visibility  = el === side  ? "visible" : "hidden";
+    front.style.visibility = el === front ? "visible" : "hidden";
+  }
+
+  // ── flip: original image faces left; invert for rightward travel
+  function applyFlip(movingRight){
+    side.style.transform = movingRight ? "scaleX(-1)" : "scaleX(1)";
+  }
+
+  // ── instant reposition (no animation) ────────────────────────
+  function teleport(lx, ty){
+    [side, front].forEach(el => {
+      el.style.transition = "none";
+      el.style.left = lx + "px";
+      el.style.top  = ty + "px";
+    });
+    void side.offsetWidth;
+    x = target = lx;
+  }
+
+  // ── glide left-position at given px/s, fire cb when done ──────
+  function glideTo(lx, speed, cb){
+    const dist = Math.abs(lx - x);
+    if(dist < 2){ x = target = lx; cb(); return; }
+    const dur = (dist / speed) * 1000;
+    target = lx;
+    [side, front].forEach(el => {
+      el.style.transition = `left ${dur.toFixed(0)}ms linear`;
+      el.style.left = lx + "px";
+    });
+    timer = setTimeout(()=>{ x = target; cb(); }, dur + 40);
+  }
+
+  // ── enter sysbar from an off-screen edge ──────────────────────
+  function enterFromEdge(fromRight, destX, cb){
+    const offX = fromRight ? window.innerWidth + 10 : -MH - 10;
+    teleport(offX, sysY());
+    facingRight = !fromRight;          // facing inward
+    applyFlip(facingRight);
+    void side.offsetWidth;
+    glideTo(destX, 65 + Math.random() * 45, cb);
+  }
+
+  // ── pick a nearby target on the current track ─────────────────
+  function pickNearby(){
+    const w = window.innerWidth - MH;
+    const step = w * (0.07 + Math.random() * 0.28);
+    const dir  = Math.random() < 0.5 ? 1 : -1;
+    return Math.max(0, Math.min(w, x + dir * step));
+  }
+
+  // ── keep mascot pinned to its track when page scrolls ─────────
+  function syncTop(){
+    const ty = onNav ? navY() : sysY();
+    [side, front].forEach(el => {
+      el.style.transition = el.style.transition || "none";
+      el.style.top = ty + "px";
+    });
+  }
+  window.addEventListener("scroll", syncTop, { passive: true });
+
+  // ── pause, maybe face front, then decide next move ────────────
+  function afterGlide(){
+    const useFront = Math.random() < 0.28;
+    if(useFront) showFace(front);
+    timer = setTimeout(()=>{
+      if(useFront) showFace(side);
+      if(!onNav && Math.random() < 0.40){
+        timer = setTimeout(startAdventure, 100);
+      } else {
+        timer = setTimeout(startGlide, 100);
+      }
+    }, 800 + Math.random() * 2400);
+  }
+
+  // ── one normal glide ──────────────────────────────────────────
+  function startGlide(){
+    hideBubble();
+    const t = pickNearby();
+    const movingRight = t > x;
+    if(movingRight !== facingRight){
+      facingRight = movingRight;
+      applyFlip(movingRight);
+    }
+    glideTo(t, 55 + Math.random() * 60, afterGlide);
+  }
+
+  // ── edge adventure: exit sysbar, ride nav, return ─────────────
+  function startAdventure(){
+    hideBubble();
+    const exitRight = Math.random() < 0.5;
+    const exitX     = exitRight ? window.innerWidth + 10 : -MH - 10;
+    const entryX    = exitRight ? -MH - 10 : window.innerWidth + 10;
+
+    facingRight = exitRight;
+    applyFlip(exitRight);
+
+    // 1. slide off sysbar edge
+    glideTo(exitX, 80 + Math.random() * 40, ()=>{
+      onNav = true;
+      // 2. teleport to nav level, appear from opposite side
+      teleport(entryX, navY());
+      facingRight = !exitRight;
+      applyFlip(facingRight);
+      void side.offsetWidth;
+
+      // 3. glide across some of the nav
+      const vw = window.innerWidth;
+      const navT = exitRight
+        ? vw * (0.05 + Math.random() * 0.5)
+        : vw * (0.45 + Math.random() * 0.5);
+
+      glideTo(navT, 58 + Math.random() * 48, ()=>{
+        // 4. linger then return
+        timer = setTimeout(returnToSysbar, 900 + Math.random() * 2200);
+      });
+    });
+  }
+
+  // ── return: exit nav edge → teleport to sysbar → enter ────────
+  function returnToSysbar(){
+    onNav = false;
+    // exit off nearest edge of nav
+    const exitRight = x > window.innerWidth / 2;
+    facingRight = exitRight;
+    applyFlip(exitRight);
+
+    glideTo(exitRight ? window.innerWidth + 10 : -MH - 10, 75 + Math.random() * 35, ()=>{
+      // enter sysbar from that same side, glide to a random landing spot
+      const destX = Math.floor(window.innerWidth * 0.15 + Math.random() * window.innerWidth * 0.7);
+      enterFromEdge(exitRight, destX, afterGlide);
+    });
+  }
+
+  // ── init: always slide in from an edge ───────────────────────
+  function init(){
+    const fromRight = Math.random() < 0.5;
+    const destX = Math.floor(window.innerWidth * 0.2 + Math.random() * window.innerWidth * 0.6);
+    showFace(side);
+    enterFromEdge(fromRight, destX, afterGlide);
+  }
+
+  if(document.readyState === "complete") init();
+  else window.addEventListener("load", init);
+
+  // ── hover: pause + face front ─────────────────────────────────
+  let hovered = false;
+
+  function freezePosition(){
+    const lx = parseFloat(getComputedStyle(side).left) || x;
+    clearTimeout(timer);
+    [side, front].forEach(el => {
+      el.style.transition = "none";
+      el.style.left = lx + "px";
+    });
+    x = target = lx;
+  }
+
+  [side, front].forEach(el => {
+    el.addEventListener("mouseenter", ()=>{
+      hovered = true;
+      freezePosition();
+      showFace(front);
+    });
+    el.addEventListener("mouseleave", ()=>{
+      hovered = false;
+      showFace(side);
+      timer = setTimeout(startGlide, 300);
+    });
+  });
+
+  // ── speech bubble on click ────────────────────────────────────
+  const bubble = document.getElementById("mascot-bubble");
+  let bubbleTimer = null;
+  let clickCount = 0;
+  const phrases = [
+    "Hi, buddy!",
+    "It's me, Babb!",
+    "I'm your business buddy.",
+    "Loyal to the end!",
+    "Once I'm re-programmed I'll be ready to assist.",
+    "Named after Charles Babbage, the avid English<br>inventor. But I got my own thing going!"
+  ];
+
+  function showBubble(){
+    const rect = (front.style.visibility === "visible" ? front : side).getBoundingClientRect();
+    bubble.innerHTML = phrases[clickCount % phrases.length];
+    clickCount++;
+    bubble.classList.add("visible");
+    bubble.style.left = (rect.left + rect.width / 2) + "px";
+    bubble.style.top  = (rect.bottom + 8) + "px";
+    clearTimeout(bubbleTimer);
+    bubbleTimer = setTimeout(hideBubble, 2800);
+  }
+
+  function hideBubble(){
+    bubble.classList.remove("visible");
+  }
+
+  [side, front].forEach(el => el.addEventListener("click", showBubble));
+})();
+</script>
+
+<style>
+#mascot-bubble {
+  position: fixed;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  padding: 5px 10px;
+  font-size: 12px;
+  font-family: monospace;
+  white-space: nowrap;
+  pointer-events: none;
+  transform: translateX(-50%);
+  opacity: 0;
+  transition: opacity 0.15s ease;
+  z-index: 9999;
+}
+#mascot-bubble::after {
+  content: "";
+  position: absolute;
+  top: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 5px solid transparent;
+  border-bottom-color: #ccc;
+  border-top: none;
+}
+#mascot-bubble.visible {
+  opacity: 1;
+}
+</style>

@@ -1,0 +1,498 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Tony R., foreman — Babb / People</title>
+<meta name="description" content="Tony R. — 30 years on the floor at the Hamilton steel mill, third-shift foreman. Subject of Babb coverage." />
+<style>
+  :root{
+    --paper:#faf8f3; --paper-2:#f3efe5; --card:#ffffff;
+    --ink:#1a1a1a; --ink-2:#444141; --muted:#807d75;
+    --hair:#d8d3c4; --hair-2:#e8e3d4;
+    --alt:#a14a00; --alt-soft:#f5e9d8;
+    --live:#2f7a3a;
+    --term-bg:#141312; --term-fg:#e8e3d4; --term-link:#ffd58a; --term-subj:#b7d99a;
+    --mono: ui-monospace,"SF Mono",SFMono-Regular,"JetBrains Mono",Menlo,Consolas,monospace;
+    --gutter:24px; --maxw:1240px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--paper);color:var(--ink);
+    font:14px/1.55 var(--mono);
+    -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
+    font-feature-settings:"ss01","cv11"}
+  a{color:inherit;text-decoration:none}
+  a:hover{text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px}
+  h1,h2,h3,h4{font-family:var(--mono);font-weight:600;margin:0;letter-spacing:-.01em}
+  .shell{max-width:var(--maxw);margin:0 auto;padding:0 var(--gutter)}
+
+  /* shared chrome */
+  .sysbar{border-bottom:1px solid var(--hair);background:var(--paper);font-size:11px;color:var(--muted);letter-spacing:.04em}
+  .sysbar .row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;gap:16px}
+  .dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--live);
+    box-shadow:0 0 0 0 rgba(47,122,58,.55);animation:pulse 2.6s infinite;vertical-align:middle;margin-right:6px}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(47,122,58,.55)}70%{box-shadow:0 0 0 7px rgba(47,122,58,0)}100%{box-shadow:0 0 0 0 rgba(47,122,58,0)}}
+  .sysbar .right{display:flex;gap:14px;align-items:center}
+  .sysbar a:hover{color:var(--ink)}
+
+  header.masthead{border-bottom:1px solid var(--hair);padding:22px 0 20px}
+  .masthead .row{display:flex;justify-content:space-between;align-items:flex-end;gap:24px}
+  .wordmark{font-size:34px;font-weight:700;letter-spacing:-.04em;line-height:.9}
+  .wordmark .punct{color:var(--alt)}
+  .tagline{font-size:11px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-top:8px}
+  nav.primary{display:flex;gap:22px;font-size:13px;padding-bottom:4px}
+  nav.primary a{color:var(--ink-2);position:relative;padding:2px 0}
+  nav.primary a:hover{color:var(--ink);text-decoration:none}
+  nav.primary a.here{color:var(--ink)}
+  nav.primary a.here::after{content:"";position:absolute;left:0;right:0;bottom:-4px;height:2px;background:var(--ink)}
+
+  /* crumbs */
+  .crumbs{font-size:11px;color:var(--muted);letter-spacing:.06em;margin:24px 0 6px}
+  .crumbs a{color:var(--ink-2);border-bottom:1px solid var(--hair-2)}
+  .crumbs .here{color:var(--ink)}
+
+  /* section marker */
+  .smark{display:flex;align-items:baseline;gap:12px;margin:46px 0 18px;
+    font-size:11px;color:var(--muted);letter-spacing:.16em;text-transform:uppercase}
+  .smark .num{color:var(--ink);font-weight:600}
+  .smark .rule{flex:1;height:1px;background:var(--hair);transform:translateY(-3px)}
+  .smark .meta{color:var(--muted)}
+  .smark .meta a{color:var(--ink-2);border-bottom:1px solid var(--hair)}
+
+  /* ─── HERO ─── */
+  .hero{display:grid;grid-template-columns:1fr 1.55fr;gap:0;
+    margin:14px 0 8px;border:1px solid var(--hair);background:var(--card);min-height:380px}
+  .hero .portrait{background:
+    repeating-linear-gradient(45deg,#e6d6b0 0 12px,#efe2c2 12px 24px),
+    linear-gradient(135deg,#efe2c2,#cabd95);
+    position:relative;border-right:1px solid var(--hair);overflow:hidden;min-height:380px}
+  .hero .portrait::after{content:"";position:absolute;left:50%;top:50%;width:46%;aspect-ratio:1/1;
+    border-radius:50%;border:1px solid rgba(20,20,20,.25);transform:translate(-50%,-50%);
+    background:radial-gradient(circle at 40% 35%,#efe2c2,#a89a72 80%)}
+  .hero .portrait .tag-tl{position:absolute;left:18px;top:14px;font-size:10px;color:rgba(20,20,20,.55);letter-spacing:.18em;text-transform:uppercase}
+  .hero .portrait .tag-tl b{color:var(--ink);font-weight:700}
+  .hero .portrait .tag-bl{position:absolute;left:18px;bottom:14px;font-size:9.5px;color:rgba(20,20,20,.5);letter-spacing:.12em;text-transform:uppercase}
+  .hero .portrait .credit{position:absolute;right:18px;bottom:14px;font-size:9px;color:rgba(20,20,20,.5);letter-spacing:.06em}
+  .hero .body{padding:28px 32px;display:flex;flex-direction:column;gap:14px}
+  .hero .body .role-tag{display:inline-flex;align-items:center;gap:8px;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+  .hero .body .role-tag .pill{display:inline-flex;align-items:center;gap:5px;font-size:10px;color:var(--ink);border:1px solid var(--ink);padding:1px 8px;letter-spacing:.14em;font-weight:600;text-transform:uppercase}
+  .hero .body .role-tag .pill::before{content:"●";color:var(--alt);font-size:8px}
+  .hero .body h1{font-size:56px;line-height:1;letter-spacing:-.035em;font-weight:700;text-wrap:balance}
+  .hero .body h1 .punct{color:var(--alt)}
+  .hero .body .role{font-size:18px;color:var(--ink-2);letter-spacing:-.005em;font-weight:500}
+  .hero .body .role .at{color:var(--ink)}
+  .hero .body .lede{font-size:14.5px;line-height:1.65;color:var(--ink-2);max-width:54ch;text-wrap:pretty;margin-top:4px}
+  .hero .body .lede a{color:var(--ink);border-bottom:1px solid var(--ink)}
+  .hero .body .lede a:hover{color:var(--alt);border-color:var(--alt);text-decoration:none}
+  .hero .body .pills{display:flex;flex-wrap:wrap;gap:6px;margin-top:auto}
+  .hero .body .pills .pill{font-size:10.5px;letter-spacing:.06em;color:var(--ink-2);border:1px solid var(--hair);padding:2px 9px;background:var(--paper)}
+  .hero .body .pills .pill.world{border-color:var(--alt);color:var(--alt)}
+  .hero .body .cta{display:flex;gap:18px;font-size:12.5px;align-items:baseline;border-top:1px dotted var(--hair-2);padding-top:14px}
+  .hero .body .cta a{color:var(--ink);border-bottom:1px solid var(--ink)}
+  .hero .body .cta a:hover{color:var(--alt);border-color:var(--alt);text-decoration:none}
+  .hero .body .cta .alt{color:var(--ink-2);border-bottom:1px dotted var(--hair)}
+
+  /* ─── BODY ROW ─── */
+  .body-row{display:grid;grid-template-columns:1.55fr 1fr;gap:42px;margin-top:30px}
+
+  /* prose bio */
+  .bio{font-size:15px;line-height:1.7;color:var(--ink);max-width:62ch}
+  .bio h3{font-size:11px;color:var(--muted);letter-spacing:.16em;text-transform:uppercase;margin:24px 0 12px;font-weight:600}
+  .bio h3 .num{color:var(--alt);font-weight:700;margin-right:8px}
+  .bio p{margin:0 0 14px;text-wrap:pretty}
+  .bio p a{color:var(--ink);border-bottom:1px solid var(--ink)}
+  .bio p a:hover{color:var(--alt);border-color:var(--alt);text-decoration:none}
+  .bio blockquote{margin:22px 0;padding:6px 22px;border-left:3px solid var(--alt);
+    font-size:19px;line-height:1.5;color:var(--ink);font-weight:500;letter-spacing:-.01em;text-wrap:pretty}
+  .bio blockquote .by{display:block;font-size:11px;color:var(--muted);letter-spacing:.04em;margin-top:8px;font-weight:400}
+  .bio blockquote .by .nm{color:var(--ink-2)}
+
+  /* timeline of life on the floor */
+  .timeline{border:1px solid var(--hair);background:var(--card);margin-top:14px}
+  .tl-head{padding:12px 18px;border-bottom:1px solid var(--hair-2);font-size:10.5px;color:var(--muted);letter-spacing:.16em;text-transform:uppercase}
+  .tl-head .nm{color:var(--ink);font-weight:600}
+  .tl-row{display:grid;grid-template-columns:90px 1fr;gap:18px;padding:11px 18px;border-bottom:1px dotted var(--hair-2);align-items:baseline}
+  .tl-row:last-child{border-bottom:none}
+  .tl-row .yr{font-size:13px;color:var(--ink);font-weight:600;letter-spacing:-.01em}
+  .tl-row .what{font-size:12.5px;color:var(--ink-2);line-height:1.55}
+
+  /* ─── APPEARANCES (where they show up across the site) ─── */
+  .app-row{display:grid;grid-template-columns:120px 60px 1fr 120px;gap:18px;
+    padding:14px 0;border-bottom:1px dotted var(--hair-2);align-items:baseline;
+    transition:background .12s ease}
+  .app-row:last-child{border-bottom:none}
+  .app-row:hover{background:#fbf7e9}
+  .app-row .when{font-size:11px;color:var(--muted);letter-spacing:.04em}
+  .app-row .when b{display:block;color:var(--ink);font-weight:500}
+  .app-row .kind{font-size:10px;color:var(--alt);font-weight:600;letter-spacing:.14em;text-transform:uppercase}
+  .app-row .body h4{font-size:15.5px;font-weight:600;letter-spacing:-.015em;line-height:1.3}
+  .app-row .body h4 a:hover{color:var(--alt);text-decoration:none}
+  .app-row .body .desc{font-size:12.5px;color:var(--ink-2);margin-top:3px;line-height:1.55}
+  .app-row .right{text-align:right;font-size:11px;color:var(--muted);letter-spacing:.04em}
+  .app-row .right .dur{color:var(--ink);font-size:13px;letter-spacing:-.01em;font-weight:500;display:block;margin-bottom:3px}
+
+  /* ─── SIDEBAR ─── */
+  .sidebar{display:flex;flex-direction:column;gap:16px;align-self:start;position:sticky;top:20px}
+  .sb-box{border:1px solid var(--hair);background:var(--card);padding:14px 16px}
+  .sb-box h4{font-size:10px;color:var(--muted);letter-spacing:.16em;text-transform:uppercase;font-weight:600;margin-bottom:10px}
+  .sb-box .r{display:grid;grid-template-columns:90px 1fr;gap:10px;font-size:12.5px;color:var(--ink-2);padding:5px 0;border-bottom:1px dotted var(--hair-2);align-items:baseline}
+  .sb-box .r:last-child{border-bottom:none}
+  .sb-box .r .k{font-size:10px;color:var(--muted);letter-spacing:.12em;text-transform:uppercase}
+  .sb-box .r .v{color:var(--ink-2)}
+  .sb-box .r .v a{color:var(--ink);border-bottom:1px solid var(--hair-2)}
+  .sb-box ul{margin:0;padding:0;list-style:none}
+  .sb-box li{font-size:12.5px;line-height:1.5;padding:5px 0;border-bottom:1px dotted var(--hair-2);display:flex;justify-content:space-between;gap:10px}
+  .sb-box li:last-child{border-bottom:none}
+  .sb-box li a{color:var(--ink-2);flex:1}
+  .sb-box li a:hover{color:var(--alt);text-decoration:none}
+  .sb-box li .meta{font-size:10px;color:var(--muted);letter-spacing:.04em;flex-shrink:0}
+
+  /* sampler embedded in sidebar */
+  .sampler{background:var(--term-bg);color:var(--term-fg);padding:11px 14px;border:1px solid #2a2723;display:flex;align-items:center;gap:11px;font-size:12px}
+  .sampler .ply{width:28px;height:28px;border-radius:50%;background:var(--alt);color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;cursor:pointer;flex-shrink:0}
+  .sampler .info{flex:1;min-width:0}
+  .sampler .info .t{font-size:12px;color:var(--term-fg)}
+  .sampler .info .by{font-size:10px;color:#9a948a;letter-spacing:.04em;margin-top:3px}
+  .sampler .info .by a{color:var(--term-link);border-bottom:1px dotted #b88c4d}
+  .sampler .bar{flex:0 0 80px;height:3px;background:#2a2723;position:relative}
+  .sampler .bar::after{content:"";position:absolute;left:0;top:0;height:100%;width:22%;background:var(--term-fg)}
+  .sampler .dur{font-size:10px;color:#9a948a;letter-spacing:.04em;flex-shrink:0}
+
+  /* pull quote sidebar */
+  .pq{padding:13px 16px;background:var(--paper-2);border-left:3px solid var(--alt);
+    font-size:14px;line-height:1.55;color:var(--ink);font-weight:500;letter-spacing:-.01em;text-wrap:pretty}
+  .pq .ts{display:block;font-size:10.5px;color:var(--muted);letter-spacing:.04em;margin-top:8px;font-weight:400}
+
+  /* footer (shared) */
+  footer.colophon{margin-top:56px;border-top:1px solid var(--hair);padding:32px 0 48px;color:var(--ink-2);font-size:12.5px}
+  .col-grid{display:grid;grid-template-columns:1.6fr 1fr 1fr 1fr;gap:30px;margin-bottom:28px}
+  .col h4{font-size:10.5px;color:var(--muted);letter-spacing:.16em;text-transform:uppercase;margin-bottom:12px;font-weight:600}
+  .col ul{list-style:none;padding:0;margin:0} .col li{padding:3px 0}
+  .col li a:hover{color:var(--alt);text-decoration:none}
+  .col .tag{font-size:10.5px;color:var(--muted);margin-left:6px;letter-spacing:.06em}
+  .col-id .mark{font-size:28px;font-weight:700;letter-spacing:-.04em;line-height:.9}
+  .col-id .mark .punct{color:var(--alt)}
+  .col-id p{margin:10px 0 14px;line-height:1.55;max-width:36ch}
+  .col-id .addr{font-size:11px;color:var(--muted);line-height:1.6}
+  .col-foot{display:flex;justify-content:space-between;align-items:center;gap:20px;padding-top:18px;border-top:1px solid var(--hair-2);font-size:11px;color:var(--muted);letter-spacing:.04em}
+  .col-foot .right{display:flex;gap:14px}
+
+  @media (max-width:1100px){
+    .hero{grid-template-columns:1fr}
+    .hero .portrait{min-height:260px;border-right:none;border-bottom:1px solid var(--hair)}
+    .body-row{grid-template-columns:1fr}
+    .sidebar{position:static}
+    .col-grid{grid-template-columns:1fr 1fr}
+  }
+  @media (max-width:640px){
+    .wordmark{font-size:28px}
+    .hero .body h1{font-size:36px}
+    .app-row{grid-template-columns:1fr;gap:6px}
+    .app-row .right{text-align:left}
+    nav.primary{flex-wrap:wrap;gap:14px}
+    .col-grid{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+
+<!-- sysbar -->
+<div class="sysbar">
+  <div class="shell row">
+    <div><span class="dot"></span>babb<span style="color:var(--muted)"> / people / tony-r</span></div>
+    <div class="right">
+      <span>build 2026.05.18</span><span>·</span>
+      <span id="clock">--:--:-- UTC</span><span>·</span>
+      <a href="/feed.xml?cat=people/tony-r">rss</a>
+    </div>
+  </div>
+</div>
+
+<!-- masthead -->
+<header class="masthead">
+  <div class="shell row">
+    <div>
+      <a href="Babb Homepage v1.html" style="text-decoration:none"><div class="wordmark">babb<span class="punct">.</span></div></a>
+      <div class="tagline">A media outfit · A product company</div>
+    </div>
+    <nav class="primary" aria-label="Primary">
+      <a href="Babb Worlds v1.html">Worlds</a>
+      <a href="Babb Place v1.html">Places</a>
+      <a href="Babb Products v1.html">Products</a>
+      <a href="Babb Updates v1.html">Updates</a>
+      <a href="Babb About v1.html">About</a>
+    </nav>
+  </div>
+</header>
+
+<div class="shell">
+
+  <div class="crumbs"><a href="Babb Homepage v1.html">babb</a> <span style="color:var(--hair)">/</span> <a href="/people/">people</a> <span style="color:var(--hair)">/</span> <span class="here">tony-r</span></div>
+
+  <!-- ─── HERO ─── -->
+  <section class="hero" aria-label="Subject header">
+    <div class="portrait" aria-label="Portrait placeholder">
+      <span class="tag-tl"><b>PORTRAIT</b> · 2026-05-11 · pulpit</span>
+      <span class="tag-bl">FRAME 142 · 35mm · NATURAL LIGHT</span>
+      <span class="credit">Photo · B.K.</span>
+    </div>
+    <div class="body">
+      <div class="role-tag">
+        <span class="pill">Subject</span>
+        <span>· covered by Babb · since 2026-04</span>
+      </div>
+      <h1>Tony R<span class="punct">.</span></h1>
+      <div class="role">Foreman <span class="at">at</span> Hamilton steel mill &middot; third shift &middot; 30 years</div>
+      <p class="lede">Came up through the second shift in 1996, did a year on the first, then settled on the third when his nephew came on as an apprentice. Speaks plainly, walks slowly, knows which gates to close before lightning storms. The subject of <a href="Babb Audio v1.html">the 38-minute interview</a> and the voice that anchors <a href="Babb Video v1.html">The Pour</a>.</p>
+      <div class="pills">
+        <span class="pill world">Manufacturing</span>
+        <span class="pill world">Steel</span>
+        <span class="pill">Hamilton steel mill</span>
+        <span class="pill">third shift</span>
+        <span class="pill">foreman</span>
+      </div>
+      <div class="cta">
+        <a href="Babb Audio v1.html">Listen · full interview</a>
+        <a class="alt" href="Babb Place v1.html">See his Place</a>
+        <a class="alt" href="Babb Video v1.html">Watch The Pour</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── BODY ROW ─── -->
+  <section class="body-row">
+
+    <article class="bio">
+
+      <h3><span class="num">A.</span> Where he came from</h3>
+      <p>Tony R. was born and raised on the east end of Hamilton, four blocks from the gate his father walked through every morning for thirty-two years. He started at the mill at twenty &mdash; finishing-line scrap on the second shift, $9.20 an hour, the year the Russians invaded Chechnya. He came up through every position on the line that anyone would let him try. He was never a foreman&rsquo;s son; he became a foreman because the foreman he worked under retired in &rsquo;14 and the people who reported to him asked the GM to keep things going the way they were.</p>
+
+      <p>He has worked all three shifts. He left the floor exactly twice &mdash; for the birth of each of his children, six and four days respectively. He took the third shift on permanently in 2018, when his nephew came on as an apprentice and asked, point-blank, to learn from him. He is now responsible for the mill from 23:00 to 07:00 every weekday and every other Saturday.</p>
+
+      <blockquote>"You learn the floor when you stop expecting it to behave. The floor doesn&rsquo;t behave. The floor is fine. You have to be fine with the floor."
+        <span class="by">— from <a href="Babb Audio v1.html">the interview</a>, 01:08</span></blockquote>
+
+      <h3><span class="num">B.</span> What he does on a shift</h3>
+      <p>Tony R. runs the third shift. That means he&rsquo;s responsible for the four panels &mdash; charge, blow, tap, cast &mdash; the crew of eighteen who work them, the conversation with the second-shift foreman who hands off to him at 23:00, and the conversation with the first-shift foreman who he hands off to at 07:00. He carries the rolled-up paper schedule in his back pocket and a <a href="Babb Workpads v1.html">Workpads</a> tablet in his right hand. He prefers the paper.</p>
+
+      <p>Most of the shift is uneventful. Most shifts at most mills are uneventful, and people who report on mills tend to write the eventful ones because they make better copy. The Babb posture on this Place is that the uneventful shift is the point.</p>
+
+      <h3><span class="num">C.</span> What he is the subject of</h3>
+      <p>Tony R. has agreed to be the subject of recurring coverage at the <a href="Babb Place v1.html">Hamilton steel mill standing story</a>. That means: ongoing interviews, photography, occasional audio captures during shifts (with the floor&rsquo;s permission), and the right of refusal on any photograph or quote before publication. Consent envelopes signed under <a href="Babb Products v1.html#standards">BABB-FIELD 0.2</a>; on file with the editor.</p>
+
+      <p>He is also the voice on <a href="Babb Video v1.html">The Pour</a>, the foreman in <a href="Babb Article v1.html">the dispatch</a>, and the subject of <a href="Babb Audio v1.html">the long interview</a>. Six of fourteen <a href="Babb FieldNotes v1.html">field notes</a> anchor to something he said or did. <em style="font-style:normal;color:var(--alt);font-weight:600">If a journalist or photographer asks to spend time with him, contact the editor first.</em></p>
+
+      <!-- timeline -->
+      <div class="timeline" aria-label="Floor timeline">
+        <div class="tl-head"><span class="nm">On the floor</span> &middot; the short version</div>
+        <div class="tl-row"><span class="yr">1996</span><span class="what">Hired &middot; finishing-line scrap, second shift</span></div>
+        <div class="tl-row"><span class="yr">2003</span><span class="what">Moves to the first shift &middot; pulpit assistant</span></div>
+        <div class="tl-row"><span class="yr">2009</span><span class="what">Third-shift assistant &middot; covers nights for a year, then back to first</span></div>
+        <div class="tl-row"><span class="yr">2014</span><span class="what">Promoted to foreman &middot; first shift</span></div>
+        <div class="tl-row"><span class="yr">2018</span><span class="what">Moves to the third shift permanently &middot; nephew starts as apprentice</span></div>
+        <div class="tl-row"><span class="yr">2019</span><span class="what">Vessel rebuild &middot; sees the new caster commissioned</span></div>
+        <div class="tl-row"><span class="yr">2021</span><span class="what">Mill buy-back &middot; survives the change of ownership intact</span></div>
+        <div class="tl-row"><span class="yr">2026</span><span class="what">Babb coverage opens &middot; first interview April 28</span></div>
+      </div>
+
+    </article>
+
+    <aside class="sidebar" aria-label="Person sidebar">
+
+      <div class="sb-box" aria-label="At a glance">
+        <h4>At a glance</h4>
+        <div class="r"><span class="k">Role</span><span class="v">Foreman &middot; third shift</span></div>
+        <div class="r"><span class="k">Place</span><span class="v"><a href="Babb Place v1.html">Hamilton steel mill</a></span></div>
+        <div class="r"><span class="k">In Worlds</span><span class="v"><a href="Babb Worlds v1.html#manufacturing">Manufacturing</a> / <a href="/worlds/manufacturing/steel/">Steel</a></span></div>
+        <div class="r"><span class="k">Years on floor</span><span class="v">30 &middot; since 1996</span></div>
+        <div class="r"><span class="k">First covered</span><span class="v">2026-04-28</span></div>
+        <div class="r"><span class="k">Appearances</span><span class="v">7 &middot; across 5 pages</span></div>
+        <div class="r"><span class="k">Languages</span><span class="v">English &middot; some Italian</span></div>
+        <div class="r"><span class="k">Born</span><span class="v">Hamilton, ON</span></div>
+      </div>
+
+      <div class="sampler" aria-label="Audio sampler">
+        <div class="ply" aria-label="Play">▶</div>
+        <div class="info">
+          <div class="t">2-min sampler · &ldquo;The floor doesn&rsquo;t behave.&rdquo;</div>
+          <div class="by">From <a href="Babb Audio v1.html">the full interview</a> &middot; 01:08</div>
+        </div>
+        <div class="bar"></div>
+        <div class="dur">02:08</div>
+      </div>
+
+      <div class="pq">
+        "The console keeps the number. We keep everything else."
+        <span class="ts">— audio · <a href="Babb Audio v1.html" style="color:var(--ink-2);border-bottom:1px solid var(--hair-2)">14:42</a></span>
+      </div>
+
+      <div class="pq" style="border-left-color:var(--ink)">
+        "You don&rsquo;t leave the mill at the end of a shift. You bring it home and it cooks down all night."
+        <span class="ts">— audio · <a href="Babb Audio v1.html" style="color:var(--ink-2);border-bottom:1px solid var(--hair-2)">28:10</a></span>
+      </div>
+
+      <div class="sb-box">
+        <h4>Coverage &middot; consent</h4>
+        <ul>
+          <li><a href="Babb Products v1.html#standards">BABB-FIELD 0.2 consent</a><span class="meta">on file</span></li>
+          <li><a href="#">Right of refusal &middot; quotes</a><span class="meta">yes</span></li>
+          <li><a href="#">Right of refusal &middot; photos</a><span class="meta">yes</span></li>
+          <li><a href="#">Photograph approval</a><span class="meta">B.K.</span></li>
+          <li><a href="/cdn-cgi/l/email-protection#1772737e6378653a7657757675753963727b">Contact the editor</a><span class="meta">↪</span></li>
+        </ul>
+      </div>
+
+      <div class="sb-box">
+        <h4>Related people</h4>
+        <ul>
+          <li><a href="/people/marisol/">Marisol</a><span class="meta">owner&rsquo;s rep</span></li>
+          <li><a href="/people/marcus/">Marcus</a><span class="meta">second-in-command</span></li>
+          <li><a href="/people/janelle/">Janelle</a><span class="meta">plant safety</span></li>
+          <li><a href="/people/dee/">Dee</a><span class="meta">apprentice</span></li>
+          <li><a href="/people/">All people →</a><span class="meta">42</span></li>
+        </ul>
+      </div>
+
+    </aside>
+
+  </section>
+
+  <!-- ─── APPEARANCES ─── -->
+  <div class="smark"><span class="num">§ 01</span><span>Appearances</span><span class="rule"></span><span class="meta">7 across this site &middot; reverse chronological</span></div>
+
+  <section aria-label="Appearances">
+
+    <div class="app-row">
+      <span class="when"><b>2026-05-12</b>17:42 ET</span>
+      <span class="kind">Dispatch</span>
+      <div class="body">
+        <h4><a href="Babb Article v1.html">Inside a Hamilton steel mill — day 4, the final pour</a></h4>
+        <div class="desc">Feature subject. Walks the line from charge to cast. Pull-quote anchors the standfirst.</div>
+      </div>
+      <div class="right"><span class="dur">12 min read</span>Read →</div>
+    </div>
+
+    <div class="app-row">
+      <span class="when"><b>2026-05-12</b>06:14 ET</span>
+      <span class="kind">Video</span>
+      <div class="body">
+        <h4><a href="Babb Video v1.html">The Pour &middot; 12:08 mini-doc</a></h4>
+        <div class="desc">On-camera throughout. VO and direct address. Three quoted lines, all clean takes.</div>
+      </div>
+      <div class="right"><span class="dur">12:08</span>Watch →</div>
+    </div>
+
+    <div class="app-row">
+      <span class="when"><b>2026-05-11</b>06:14 ET</span>
+      <span class="kind">Audio</span>
+      <div class="body">
+        <h4><a href="Babb Audio v1.html">Tony R. interview &middot; 38:12</a></h4>
+        <div class="desc">Sole subject. Recorded standing in the pulpit; ambient mill on the B-side. Full synced transcript.</div>
+      </div>
+      <div class="right"><span class="dur">38:12</span>Listen →</div>
+    </div>
+
+    <div class="app-row">
+      <span class="when"><b>2026-05-09</b>—</span>
+      <span class="kind">Angle</span>
+      <div class="body">
+        <h4><a href="Babb Angle v1.html">The Floor &middot; long-form Angle</a></h4>
+        <div class="desc">Anchors the procedural reading. Quoted twice. The shift-change vocabulary section is built around his pulpit walk.</div>
+      </div>
+      <div class="right"><span class="dur">~8 min read</span>Read →</div>
+    </div>
+
+    <div class="app-row">
+      <span class="when"><b>2026-05-11</b>14:08 ET</span>
+      <span class="kind">Daily</span>
+      <div class="body">
+        <h4><a href="/places/hamilton-steel-mill/dailies/day-3-interview-foreman/">Day 3 — interview, the foreman</a></h4>
+        <div class="desc">Field daily &middot; audio + transcript drawer. The day the interview was filed.</div>
+      </div>
+      <div class="right"><span class="dur">audio</span>Open →</div>
+    </div>
+
+    <div class="app-row">
+      <span class="when"><b>2026-05-11</b>11:42 ET</span>
+      <span class="kind">Field note</span>
+      <div class="body">
+        <h4><a href="Babb FieldNotes v1.html#n10">N 10 &middot; &ldquo;The console keeps the number&rdquo;</a></h4>
+        <div class="desc">Editor&rsquo;s note: lead the dispatch pull-quote with this line, not with the floor-doesn&rsquo;t-behave one.</div>
+      </div>
+      <div class="right"><span class="dur">note</span>Read →</div>
+    </div>
+
+    <div class="app-row">
+      <span class="when"><b>2026-04-28</b>—</span>
+      <span class="kind">Place open</span>
+      <div class="body">
+        <h4><a href="Babb Place v1.html">Hamilton steel mill — Place page opens</a></h4>
+        <div class="desc">First coverage. Initial portrait + treatment + consent envelope signed.</div>
+      </div>
+      <div class="right"><span class="dur">place</span>Open →</div>
+    </div>
+
+  </section>
+
+</div>
+
+<!-- footer -->
+<div class="shell">
+<footer class="colophon">
+  <div class="col-grid">
+    <div class="col col-id">
+      <div class="mark">babb<span class="punct">.</span></div>
+      <p>Tools for the frontier. A media outfit reporting from the working world and a product company building for it.</p>
+      <div class="addr">babb works · est. 2024<br/><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="4028252c2c2f00222122226e34252c">[email&#160;protected]</a><br/>rss · twitter · github · instagram</div>
+    </div>
+    <div class="col">
+      <h4>People</h4>
+      <ul>
+        <li><a href="#">Tony R.</a><span class="tag">here</span></li>
+        <li><a href="/people/marisol/">Marisol</a></li>
+        <li><a href="/people/marcus/">Marcus</a></li>
+        <li><a href="Babb Person Contributor v1.html">Editor A. (contributor)</a></li>
+        <li><a href="/people/">All people →</a></li>
+      </ul>
+    </div>
+    <div class="col">
+      <h4>This Place</h4>
+      <ul>
+        <li><a href="Babb Place v1.html">Hamilton steel mill</a></li>
+        <li><a href="Babb Angle v1.html">↳ The Floor</a></li>
+        <li><a href="Babb Audio v1.html">↳ Audio · Tony R.</a></li>
+        <li><a href="Babb Video v1.html">↳ Video · The Pour</a></li>
+        <li><a href="Babb FieldNotes v1.html">↳ Field Notes</a></li>
+      </ul>
+    </div>
+    <div class="col">
+      <h4>Subscribe</h4>
+      <ul>
+        <li><a href="/feed.xml?cat=people/tony-r">This person RSS</a></li>
+        <li><a href="/feed.xml?cat=places/hamilton-steel-mill">This Place RSS</a></li>
+        <li><a href="/updates/email/">Email digest</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="col-foot">
+    <div>© 2024–2026 Babb Works · CC BY-NC where noted</div>
+    <div class="right">
+      <a href="/colophon/">Colophon</a>
+      <a href="Babb About v1.html">About</a>
+      <a href="/cdn-cgi/l/email-protection#4c24292020230c2e2d2e2e62382920">Contact</a>
+      <span class="ascii">build 2026.05.18</span>
+    </div>
+  </div>
+</footer>
+</div>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+  (function(){
+    const el=document.getElementById("clock");
+    const f=n=>String(n).padStart(2,"0");
+    function tick(){const d=new Date();el.textContent=f(d.getUTCHours())+":"+f(d.getUTCMinutes())+":"+f(d.getUTCSeconds())+" UTC";}
+    tick();setInterval(tick,1000);
+  })();
+</script>
+</body>
+</html>

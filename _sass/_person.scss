@@ -1,0 +1,328 @@
+// Person page (subject + contributor variants)
+// Note: .p-hero used here to avoid collision with .hero in _components.scss
+
+// ─── Hero ─────────────────────────────────────────────────────────────────
+.p-hero {
+  display: grid;
+  margin: 14px 0 8px;
+  border: 1px solid var(--hair);
+  background: var(--card);
+
+  // Subject variant: warm portrait on left
+  &.subject {
+    grid-template-columns: 1fr 1.55fr;
+    min-height: 380px;
+    .portrait {
+      background: repeating-linear-gradient(45deg,#e6d6b0 0 12px,#efe2c2 12px 24px);
+      position: relative;
+      border-right: 1px solid var(--hair);
+      &::after {
+        content: "";
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        width: 46%;
+        aspect-ratio: 1 / 1;
+        border-radius: 50%;
+        background: radial-gradient(circle at 40% 35%,#efe2c2,#a89a72 80%);
+        transform: translate(-50%, -50%);
+      }
+    }
+  }
+
+  // Contributor variant: dark id-card
+  &.contributor {
+    grid-template-columns: 280px 1fr;
+    border: 1px solid var(--ink);
+    box-shadow: 6px 6px 0 var(--hair);
+    .portrait {
+      background: var(--ink);
+      color: var(--paper);
+      border-right: 1px solid var(--ink);
+      position: relative;
+      min-height: 340px;
+      .silhouette {
+        position: absolute;
+        left: 50%;
+        top: 55%;
+        transform: translate(-50%, -50%);
+        width: 64%;
+        aspect-ratio: 1 / 1;
+        border-radius: 50%;
+        background: radial-gradient(circle at 50% 40%,#4a463d,#1a1815 80%);
+      }
+      .badge {
+        position: absolute;
+        left: 18px;
+        top: 18px;
+        font-size: 9.5px;
+        letter-spacing: .18em;
+        color: #cdc8b6;
+        text-transform: uppercase;
+      }
+      .punch {
+        position: absolute;
+        right: 18px;
+        top: 18px;
+        width: 32px;
+        height: 32px;
+        border: 1px solid #4a463d;
+        border-radius: 50%;
+      }
+      .id-num {
+        position: absolute;
+        left: 18px;
+        bottom: 18px;
+        font-size: 10px;
+        color: #7a766e;
+        letter-spacing: .12em;
+      }
+    }
+  }
+
+  .body {
+    padding: 28px 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    .kicker {
+      font-size: 10.5px;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      color: var(--muted);
+      font-weight: 600;
+    }
+    h1 {
+      font-size: 56px;
+      line-height: 1;
+      letter-spacing: -.035em;
+      font-weight: 700;
+    }
+    .role {
+      font-size: 18px;
+      color: var(--ink-2);
+    }
+    .pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0;
+      .pill {
+        font-size: 11px;
+        letter-spacing: .08em;
+        border: 1px solid var(--hair);
+        padding: 3px 10px;
+        margin: -1px 0 0 -1px;
+        color: var(--ink-2);
+        text-decoration: none;
+        &.world { border-color: var(--alt); color: var(--alt); }
+        &.place { color: var(--ink-2); }
+      }
+    }
+    .since {
+      font-size: 12.5px;
+      color: var(--muted);
+      margin-top: auto;
+      span { color: var(--ink); }
+    }
+  }
+}
+
+// ─── Stat strip ───────────────────────────────────────────────────────────
+.stat-strip {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0;
+  border-top: 1px solid var(--hair);
+  border-left: 1px solid var(--hair);
+  margin-top: 14px;
+}
+
+.stat {
+  padding: 16px 20px;
+  border-right: 1px solid var(--hair);
+  border-bottom: 1px solid var(--hair);
+  background: var(--card);
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-height: 90px;
+  .k {
+    font-size: 10px;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 600;
+  }
+  .v {
+    font-size: 26px;
+    font-weight: 700;
+    letter-spacing: -.03em;
+    line-height: 1.1;
+  }
+  .sub { font-size: 11.5px; color: var(--muted); }
+}
+
+// ─── Bio prose ────────────────────────────────────────────────────────────
+.bio {
+  font-size: 15px;
+  line-height: 1.7;
+  max-width: 62ch;
+  p { margin-bottom: 16px; }
+  blockquote {
+    margin: 22px 0;
+    padding: 6px 22px;
+    border-left: 3px solid var(--alt);
+    font-size: 19px;
+    line-height: 1.45;
+    font-weight: 500;
+    color: var(--ink);
+  }
+  a { color: var(--ink); border-bottom: 1px solid var(--hair); text-decoration: none; }
+  a:hover { border-bottom-color: var(--alt); }
+}
+
+// ─── Timeline ─────────────────────────────────────────────────────────────
+.timeline {
+  border: 1px solid var(--hair);
+  background: var(--card);
+  margin-top: 14px;
+  .tl-head {
+    padding: 10px 18px;
+    border-bottom: 1px solid var(--hair);
+    font-size: 10.5px;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 600;
+  }
+}
+
+.tl-row {
+  display: grid;
+  grid-template-columns: 90px 1fr;
+  gap: 18px;
+  padding: 11px 18px;
+  border-bottom: 1px dotted var(--hair-2);
+  &:last-child { border-bottom: none; }
+  .yr { font-size: 12.5px; color: var(--muted); font-weight: 600; padding-top: 2px; }
+  .ev { font-size: 13.5px; line-height: 1.5; }
+}
+
+// ─── Appearances/bylines row ──────────────────────────────────────────────
+.app-row, .byline-row {
+  display: grid;
+  grid-template-columns: 120px 60px 1fr 120px;
+  gap: 18px;
+  padding: 14px 0;
+  border-bottom: 1px dotted var(--hair-2);
+  &:last-child { border-bottom: none; }
+  font-size: 13px;
+  .ts { color: var(--muted); font-size: 12px; }
+  .kind { font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: var(--alt); font-weight: 600; }
+  h4 { font-weight: 600; letter-spacing: -.01em; }
+  .meta { text-align: right; font-size: 12px; color: var(--muted); }
+}
+
+// ─── Audio sampler ────────────────────────────────────────────────────────
+.sampler {
+  background: var(--term-bg);
+  color: var(--term-fg);
+  padding: 11px 14px;
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  margin: 14px 0;
+  .ply {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--alt);
+    border: none;
+    cursor: pointer;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    .tri {
+      border-style: solid;
+      border-width: 6px 0 6px 10px;
+      border-color: transparent transparent transparent #fff;
+      margin-left: 2px;
+    }
+  }
+  .info {
+    .t { font-size: 12.5px; color: var(--term-fg); }
+    .dur { font-size: 11px; color: #7a766e; margin-top: 2px; }
+  }
+}
+
+// ─── Bylines section ──────────────────────────────────────────────────────
+.bylines { margin-top: 6px; }
+
+// ─── Coverage grid ────────────────────────────────────────────────────────
+.cov-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  margin-top: 18px;
+}
+
+.cov {
+  background: var(--card);
+  border: 1px solid var(--hair);
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  text-decoration: none;
+  color: inherit;
+  transition: border-color .15s;
+  &:hover { border-color: var(--ink); }
+  .kind { font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: var(--alt); font-weight: 600; }
+  h4 { font-size: 15px; font-weight: 600; letter-spacing: -.01em; }
+  .meta { font-size: 11px; color: var(--muted); margin-top: auto; }
+}
+
+// ─── Contact card (contributor variant) ──────────────────────────────────
+.contact-card {
+  background: var(--ink);
+  color: var(--paper);
+  padding: 18px 20px;
+  margin-top: 14px;
+  h4 {
+    font-size: 10px;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,.5);
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+  .r {
+    font-size: 12.5px;
+    padding: 8px 0;
+    border-bottom: 1px dotted #3a3631;
+    display: grid;
+    grid-template-columns: 80px 1fr;
+    gap: 12px;
+    &:last-child { border-bottom: none; }
+    .k { color: rgba(255,255,255,.45); }
+    a { color: var(--paper); border-bottom: 1px solid rgba(255,255,255,.2); text-decoration: none; }
+  }
+}
+
+// ─── Responsive ───────────────────────────────────────────────────────────
+@media (max-width: 1100px) {
+  .p-hero.subject { grid-template-columns: 1fr; min-height: auto; }
+  .p-hero.subject .portrait { min-height: 220px; border-right: none; border-bottom: 1px solid var(--hair); }
+  .p-hero.contributor { grid-template-columns: 1fr; }
+  .p-hero.contributor .portrait { min-height: 180px; border-right: none; border-bottom: 1px solid var(--ink); }
+  .stat-strip { grid-template-columns: repeat(2, 1fr); }
+  .cov-grid { grid-template-columns: 1fr 1fr; }
+  .app-row, .byline-row { grid-template-columns: 90px 50px 1fr; .meta { display: none; } }
+}
+
+@media (max-width: 640px) {
+  .p-hero .body h1 { font-size: 36px; }
+  .stat-strip { grid-template-columns: 1fr 1fr; }
+  .cov-grid { grid-template-columns: 1fr; }
+}

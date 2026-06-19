@@ -1,0 +1,118 @@
+---
+layout: product
+title: Workwarrior
+nav_active: products
+product_id: workwarrior
+status: active
+status_label: v0.1.0 · Active
+---
+
+<div class="shell">
+  <div class="crumbs">
+    <a href="/">babb</a><span class="sep">/</span>
+    <a href="/products/">products</a><span class="sep">/</span>
+    <span class="here">workwarrior</span>
+  </div>
+
+  <section class="ptitle">
+    <div>
+      <div class="kicker"><span class="k1">Software &middot; 04 / 12</span><span>CLI + Browser</span></div>
+      <h1>Workwarrior<span class="punct">.</span></h1>
+      <p class="deck">
+        <b>Five tools, one profile, zero bleed.</b>
+        Workwarrior wraps TaskWarrior, TimeWarrior, JRNL, Hledger, and Bugwarrior into a
+        single profile-based productivity system. 627 heuristic rules translate plain English
+        into tool commands. Runs from the terminal, a browser, or both at once.
+      </p>
+    </div>
+    <div class="status" aria-label="Product status">
+      <div class="row head"><span>Workwarrior &middot; status</span><span class="live">ACTIVE</span></div>
+      <div class="row"><span class="k">Version</span><span class="v"><b>v0.1.0</b></span></div>
+      <div class="row"><span class="k">Interfaces</span><span class="v">Terminal CLI + browser UI</span></div>
+      <div class="row"><span class="k">NL engine</span><span class="v">627 heuristic rules + LLM fallback</span></div>
+      <div class="row"><span class="k">Standard</span><span class="v"><a href="https://github.com/babbworks/ww-standard">ww-standard &rarr;</a></span></div>
+      <div class="row"><span class="k">Alias</span><span class="v">WebWarrior (browser-first variant)</span></div>
+      <div class="cta">
+        <a href="https://workwarrior.org" class="dark">workwarrior.org &rarr;</a>
+        <a href="/updates/what-is-workwarrior/">Overview article</a>
+      </div>
+    </div>
+  </section>
+
+  <div class="smark"><span class="num">&sect; 01</span><span>What it wraps</span><span class="rule"></span><span>five tools, fully isolated per profile</span></div>
+
+  <section class="feat">
+    <div class="cell">
+      <div class="num">01</div>
+      <h3>Tasks &mdash; TaskWarrior.</h3>
+      <p>Projects, priorities, dependencies, tags, annotations. The best task manager ever built for the command line, now isolated per profile so work and personal never touch.</p>
+      <span class="tag">projects &middot; priorities &middot; dependencies</span>
+    </div>
+    <div class="cell">
+      <div class="num">02</div>
+      <h3>Time &mdash; TimeWarrior.</h3>
+      <p>Start, stop, report. Gap detection flags missed intervals. Time logs live in the profile, not globally. Switch profiles and the clock switches with you.</p>
+      <span class="tag">tracking &middot; reports &middot; gap detection</span>
+    </div>
+    <div class="cell">
+      <div class="num">03</div>
+      <h3>Journal &mdash; JRNL.</h3>
+      <p>Timestamped entries, searchable, encrypted at rest. The working diary for each context. What you wrote in the consulting journal stays in the consulting journal.</p>
+      <span class="tag">encrypted &middot; searchable &middot; per-profile</span>
+    </div>
+    <div class="cell">
+      <div class="num">04</div>
+      <h3>Ledger &mdash; Hledger.</h3>
+      <p>Double-entry accounting, budgets, balance reports. Each profile has its own books. Run <code>ww balance</code> and see the numbers for this context only.</p>
+      <span class="tag">double-entry &middot; budgets &middot; plain text</span>
+    </div>
+    <div class="cell">
+      <div class="num">05</div>
+      <h3>Bugs &mdash; Bugwarrior.</h3>
+      <p>Pull issues from GitHub, GitLab, and Jira into TaskWarrior. External issue trackers feed into the same task flow as everything else.</p>
+      <span class="tag">GitHub &middot; GitLab &middot; Jira</span>
+    </div>
+    <div class="cell">
+      <div class="num">06</div>
+      <h3>627 rules before the LLM.</h3>
+      <p>Type what you mean in plain English. The heuristic engine pattern-matches against 627 compiled rules before optionally falling back to a local LLM. Fast, deterministic, auditable.</p>
+      <span class="tag">natural language &middot; heuristic-first</span>
+    </div>
+  </section>
+
+  <div class="smark"><span class="num">&sect; 02</span><span>Architecture</span><span class="rule"></span><span>profile isolation + dispatch + browser UI</span></div>
+
+  <section class="spec">
+    <div class="col">
+      <h4>System</h4>
+      <div class="row"><span class="k">Profiles</span><span class="v">Isolated directory trees per context</span></div>
+      <div class="row"><span class="k">Dispatch</span><span class="v">Bash scripts routing to underlying tools</span></div>
+      <div class="row"><span class="k">NL engine</span><span class="v">627 compiled heuristics + optional LLM</span></div>
+      <div class="row"><span class="k">Browser</span><span class="v">Python HTTP server &middot; local &middot; real-time sync</span></div>
+      <div class="row"><span class="k">Dey signal</span><span class="v">Session gap detection &middot; continuity tracking</span></div>
+    </div>
+    <div class="col">
+      <h4>Switching</h4>
+      <div class="row"><span class="k">Command</span><span class="v"><code>ww @profile</code> &middot; instant context switch</span></div>
+      <div class="row"><span class="k">Isolation</span><span class="v">Tasks, time, journal, ledger, config &mdash; all per profile</span></div>
+      <div class="row"><span class="k">Bleed</span><span class="v"><b>Zero.</b> Nothing crosses profile boundaries.</span></div>
+      <div class="row"><span class="k">Browser</span><span class="v">Updates live when profile switches in terminal</span></div>
+      <div class="row"><span class="k">WebWarrior</span><span class="v">Browser-first variant &middot; same profile format</span></div>
+    </div>
+  </section>
+
+  <div class="smark"><span class="num">&sect; 03</span><span>Where to find it</span><span class="rule"></span></div>
+
+  <section class="getit" id="get">
+    <div>
+      <h3>Get Workwarrior.</h3>
+      <p>Requires TaskWarrior, TimeWarrior, JRNL, Hledger, and Bugwarrior installed. Workwarrior wraps them; it does not replace them.</p>
+      <p class="alt">
+        <a href="https://workwarrior.org">workwarrior.org &rarr;</a> &middot;
+        <a href="https://github.com/babbworks/ww">Core repo &rarr;</a> &middot;
+        <a href="https://github.com/babbworks/ww-standard">Standard &rarr;</a>
+      </p>
+    </div>
+  </section>
+
+</div>

@@ -1,0 +1,2154 @@
+---
+render_with_liquid: false
+---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BitLedger &amp; BitPads — Binary Transmission Protocol</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;700&family=IBM+Plex+Sans:wght@300;400;500;600;700&family=IBM+Plex+Serif:ital@1&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<style>
+:root {
+  --void: #060910;
+  --deep: #0b1220;
+  --panel: #101828;
+  --panel2: #141e30;
+  --border: rgba(255,255,255,0.07);
+  --border2: rgba(255,255,255,0.12);
+  --text: #ddd8cc;
+  --dim: #6a7a90;
+  --amber: #c87c40;
+  --amber-bright: #e09450;
+  --teal: #00c4ac;
+  --teal-dim: rgba(0,196,172,0.15);
+  --blue: #3b7bff;
+  --blue-dim: rgba(59,123,255,0.15);
+  --glow-t: 0 0 24px rgba(0,196,172,0.35);
+  --glow-a: 0 0 24px rgba(200,124,64,0.4);
+  --r: 4px;
+  --mono: 'IBM Plex Mono', 'Courier New', monospace;
+  --sans: 'IBM Plex Sans', sans-serif;
+  --serif: 'IBM Plex Serif', Georgia, serif;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--void);
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 17px;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+/* ── NAV ── */
+nav {
+  position: sticky; top: 0; z-index: 100;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 48px;
+  height: 64px;
+  background: transparent;
+  border-bottom: 1px solid transparent;
+  transition: background 0.4s, border-color 0.4s, backdrop-filter 0.4s;
+}
+nav.scrolled {
+  background: rgba(6,9,16,0.88);
+  border-color: var(--border);
+  backdrop-filter: blur(16px);
+}
+.nav-logo {
+  display: flex; align-items: center; gap: 12px;
+  text-decoration: none; color: var(--text);
+}
+.nav-glyph {
+  width: 34px; height: 34px;
+  border: 1px solid var(--teal);
+  display: grid; place-items: center;
+  font-family: var(--mono); font-size: 11px; font-weight: 700;
+  color: var(--teal);
+  letter-spacing: 0.05em;
+  box-shadow: var(--glow-t);
+}
+.nav-wordmark { font-size: 14px; font-weight: 600; letter-spacing: 0.06em; }
+.nav-links { display: flex; gap: 32px; list-style: none; }
+.nav-links a { color: var(--dim); text-decoration: none; font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; transition: color 0.2s; }
+.nav-links a:hover { color: var(--text); }
+.nav-cta {
+  padding: 8px 18px; border: 1px solid var(--teal);
+  color: var(--teal); font-size: 12px; letter-spacing: 0.08em;
+  text-transform: uppercase; text-decoration: none;
+  transition: background 0.2s, color 0.2s;
+}
+.nav-cta:hover { background: var(--teal); color: var(--void); }
+
+/* ── HERO ── */
+#hero {
+  position: relative; min-height: 100vh;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  overflow: hidden; text-align: center;
+  padding: 80px 24px;
+}
+#starfield {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  pointer-events: none;
+}
+.hero-inner { position: relative; z-index: 2; max-width: 900px; }
+.hero-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  border: 1px solid var(--border2);
+  padding: 6px 14px; margin-bottom: 40px;
+  font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--amber); font-family: var(--mono);
+}
+.hero-badge-dot { width: 6px; height: 6px; background: var(--amber); border-radius: 50%; animation: pulse 2s infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+.hero-counter {
+  font-family: var(--mono); font-size: clamp(120px,18vw,220px); font-weight: 700;
+  line-height: 0.85; letter-spacing: -0.04em;
+  color: var(--teal);
+  text-shadow: var(--glow-t), 0 0 80px rgba(0,196,172,0.2);
+}
+.hero-counter-unit {
+  font-size: clamp(22px,3vw,36px); font-family: var(--mono);
+  color: rgba(0,196,172,0.6); font-weight: 400;
+  letter-spacing: 0.02em; margin-top: 8px;
+}
+.hero-headline {
+  font-size: clamp(22px,3.5vw,42px); font-weight: 300;
+  line-height: 1.25; margin-top: 28px; margin-bottom: 20px;
+  letter-spacing: -0.01em;
+}
+.hero-headline strong { font-weight: 700; color: #fff; }
+.hero-sub {
+  font-size: 16px; color: var(--dim); max-width: 580px; margin: 0 auto 44px;
+  line-height: 1.7;
+}
+.hero-actions { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+.btn-primary {
+  padding: 14px 32px; background: var(--teal); color: var(--void);
+  font-family: var(--sans); font-weight: 600; font-size: 14px;
+  letter-spacing: 0.04em; text-decoration: none; border: none; cursor: pointer;
+  transition: opacity 0.2s, box-shadow 0.2s;
+}
+.btn-primary:hover { opacity: 0.88; box-shadow: var(--glow-t); }
+.btn-ghost {
+  padding: 14px 32px; border: 1px solid var(--border2); color: var(--text);
+  font-family: var(--sans); font-weight: 500; font-size: 14px;
+  letter-spacing: 0.04em; text-decoration: none; background: transparent;
+  transition: border-color 0.2s, color 0.2s;
+}
+.btn-ghost:hover { border-color: var(--text); }
+.scroll-hint {
+  position: absolute; bottom: 32px; left: 50%; transform: translateX(-50%);
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+  color: var(--dim); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase;
+}
+.scroll-arrow { animation: scrollBob 2s infinite; }
+@keyframes scrollBob { 0%,100%{transform:translateY(0)} 50%{transform:translateY(6px)} }
+
+/* ── HERITAGE STRIP ── */
+#heritage {
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  padding: 48px 48px;
+  background: var(--deep);
+  overflow: hidden;
+}
+.heritage-label {
+  font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--amber); font-family: var(--mono); margin-bottom: 36px;
+  text-align: center;
+}
+.heritage-timeline {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  position: relative; max-width: 960px; margin: 0 auto;
+}
+.heritage-timeline::before {
+  content: '';
+  position: absolute; top: 28px; left: 12.5%; right: 12.5%;
+  height: 1px; background: linear-gradient(90deg, var(--amber) 0%, var(--teal) 100%);
+  opacity: 0.4;
+}
+.heritage-node { display: flex; flex-direction: column; align-items: center; gap: 16px; }
+.heritage-icon {
+  width: 56px; height: 56px;
+  display: grid; place-items: center;
+  background: var(--panel); border: 1px solid var(--border2);
+  position: relative; z-index: 1;
+}
+.heritage-year { font-family: var(--mono); font-size: 12px; color: var(--amber); }
+.heritage-title { font-size: 13px; font-weight: 600; text-align: center; }
+.heritage-desc { font-size: 12px; color: var(--dim); text-align: center; line-height: 1.5; max-width: 160px; font-style: italic; font-family: var(--serif); font-size: 14px; }
+
+/* ── SECTION SHARED ── */
+section { padding: 100px 48px; }
+.section-label {
+  font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--teal); font-family: var(--mono); margin-bottom: 20px;
+}
+.section-headline {
+  font-size: clamp(30px,4vw,54px); font-weight: 700;
+  line-height: 1.1; letter-spacing: -0.02em; max-width: 800px;
+}
+.section-sub {
+  font-size: 17px; color: var(--dim); max-width: 620px;
+  margin-top: 20px; line-height: 1.75;
+}
+.section-inner { max-width: 1100px; margin: 0 auto; }
+
+/* ── BITLEDGER SECTION ── */
+#bitledger { background: var(--void); }
+.bl-header { margin-bottom: 64px; }
+.stat-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px;
+  margin-bottom: 64px;
+}
+.stat-card {
+  background: var(--panel); padding: 36px 32px;
+  border: 1px solid var(--border);
+  opacity: 0; transform: translateY(24px);
+  transition: opacity 0.6s, transform 0.6s;
+}
+.stat-card.visible { opacity: 1; transform: none; }
+.stat-card:nth-child(2) { transition-delay: 0.1s; }
+.stat-card:nth-child(3) { transition-delay: 0.2s; }
+.stat-num {
+  font-family: var(--mono); font-size: 52px; font-weight: 700;
+  color: var(--teal); line-height: 1;
+  text-shadow: var(--glow-t);
+}
+.stat-unit { font-family: var(--mono); font-size: 18px; color: rgba(0,196,172,0.5); }
+.stat-label { font-size: 14px; color: var(--dim); margin-top: 12px; line-height: 1.5; }
+
+/* ── BIT RECORD VISUALIZATION ── */
+.bit-viz-wrap {
+  background: var(--panel); border: 1px solid var(--border2);
+  padding: 40px 40px 32px; margin-bottom: 48px;
+}
+.bit-viz-title {
+  font-family: var(--mono); font-size: 11px; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--dim); margin-bottom: 28px;
+}
+.bit-row {
+  display: flex; gap: 2px; flex-wrap: nowrap;
+  margin-bottom: 8px;
+}
+.bit-block {
+  height: 28px; border-radius: 1px;
+  opacity: 0; transform: scaleY(0.4);
+  transition: opacity 0.3s, transform 0.3s;
+}
+.bit-block.visible { opacity: 1; transform: scaleY(1); }
+.bit-region-mult  { background: var(--teal); }
+.bit-region-multi { background: var(--blue); }
+.bit-region-flags { background: var(--amber); }
+.bit-region-pair  { background: #e06830; }
+.bit-region-bl    { background: #d04060; }
+.bit-legend {
+  display: flex; gap: 24px; flex-wrap: wrap; margin-top: 24px;
+}
+.bit-legend-item { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--dim); font-family: var(--mono); }
+.bit-legend-dot { width: 10px; height: 10px; border-radius: 1px; flex-shrink: 0; }
+.bit-annotations {
+  display: flex; font-size: 11px; font-family: var(--mono); color: var(--dim);
+  margin-top: 4px; gap: 2px;
+}
+.bit-ann { text-align: center; overflow: hidden; white-space: nowrap; }
+
+.error-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; }
+.error-card {
+  padding: 28px 24px; border: 1px solid var(--border);
+  background: var(--panel2);
+  opacity: 0; transform: translateY(16px);
+  transition: opacity 0.5s, transform 0.5s;
+}
+.error-card.visible { opacity: 1; transform: none; }
+.error-card:nth-child(2) { transition-delay: 0.12s; }
+.error-card:nth-child(3) { transition-delay: 0.24s; }
+.error-num { font-family: var(--mono); font-size: 32px; color: var(--amber); font-weight: 700; }
+.error-title { font-size: 14px; font-weight: 600; margin: 8px 0 6px; }
+.error-desc { font-size: 13px; color: var(--dim); line-height: 1.55; }
+
+/* ── BITPADS SECTION ── */
+#bitpads { background: var(--deep); }
+.frame-spectrum {
+  margin-top: 48px;
+  border: 1px solid var(--border2); overflow: hidden;
+}
+.frame-row {
+  display: grid; grid-template-columns: 110px 1fr 2fr;
+  border-bottom: 1px solid var(--border);
+  align-items: center;
+  opacity: 0; transform: translateX(-16px);
+  transition: opacity 0.5s, transform 0.5s;
+}
+.frame-row.visible { opacity: 1; transform: none; }
+.frame-row:nth-child(2){ transition-delay:0.08s }
+.frame-row:nth-child(3){ transition-delay:0.16s }
+.frame-row:nth-child(4){ transition-delay:0.24s }
+.frame-row:nth-child(5){ transition-delay:0.32s }
+.frame-row:last-child { border-bottom: none; }
+.frame-row.header { background: var(--panel); }
+.frame-row > div { padding: 16px 20px; font-size: 13px; border-right: 1px solid var(--border); }
+.frame-row > div:last-child { border-right: none; }
+.frame-row.header > div { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--dim); font-family: var(--mono); }
+.frame-bytes { font-family: var(--mono); font-weight: 700; color: var(--teal); font-size: 15px; }
+.frame-type { font-weight: 600; }
+.frame-bar-wrap { padding: 14px 20px; }
+.frame-bar {
+  height: 6px; border-radius: 2px;
+  background: linear-gradient(90deg, var(--teal), var(--blue));
+  transition: width 1s cubic-bezier(0.25,1,0.5,1);
+}
+
+/* ── CONSERVATION SECTION ── */
+#conservation { background: var(--void); }
+.equation-display {
+  margin: 48px 0;
+  padding: 48px 40px;
+  background: var(--panel);
+  border: 1px solid var(--border2);
+  text-align: center;
+  position: relative; overflow: hidden;
+}
+.equation-display::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse at 50% 50%, rgba(0,196,172,0.06) 0%, transparent 70%);
+}
+.eq-row {
+  display: flex; align-items: center; justify-content: center;
+  gap: 32px; flex-wrap: wrap; position: relative; z-index: 1;
+}
+.eq-item { text-align: center; }
+.eq-value {
+  font-family: var(--mono); font-size: 14px;
+  color: var(--dim); letter-spacing: 0.1em; text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.eq-symbol {
+  font-family: var(--mono); font-size: 48px; font-weight: 700;
+  line-height: 1;
+}
+.eq-symbol.teal { color: var(--teal); }
+.eq-symbol.amber { color: var(--amber); }
+.eq-symbol.blue { color: var(--blue); }
+.eq-op { font-family: var(--mono); font-size: 28px; color: var(--dim); align-self: flex-end; padding-bottom: 8px; }
+.domain-grid {
+  display: grid; grid-template-columns: repeat(4,1fr); gap: 2px;
+  margin-top: 48px;
+}
+.domain-card {
+  background: var(--panel); padding: 32px 24px;
+  border: 1px solid var(--border);
+  opacity: 0; transform: translateY(20px);
+  transition: opacity 0.5s, transform 0.5s;
+}
+.domain-card.visible { opacity: 1; transform: none; }
+.domain-card:nth-child(2){transition-delay:0.1s}
+.domain-card:nth-child(3){transition-delay:0.2s}
+.domain-card:nth-child(4){transition-delay:0.3s}
+.domain-icon { margin-bottom: 16px; }
+.domain-title { font-weight: 700; font-size: 16px; margin-bottom: 8px; }
+.domain-desc { font-size: 13px; color: var(--dim); line-height: 1.6; }
+.domain-example { font-family: var(--mono); font-size: 11px; color: var(--teal); margin-top: 12px; }
+
+/* ── COMPARISON ── */
+#comparison { background: var(--deep); }
+.compare-grid {
+  margin-top: 48px; display: flex; flex-direction: column; gap: 12px;
+}
+.compare-row { display: flex; align-items: center; gap: 16px; }
+.compare-label { font-size: 13px; font-family: var(--mono); min-width: 100px; text-align: right; color: var(--dim); }
+.compare-bar-track { flex: 1; height: 32px; background: var(--panel); border: 1px solid var(--border); position: relative; overflow: hidden; }
+.compare-bar-fill {
+  height: 100%; position: absolute; left: 0; top: 0; width: 0%;
+  transition: width 1.2s cubic-bezier(0.25,1,0.5,1);
+  display: flex; align-items: center; padding-left: 12px;
+}
+.compare-bar-fill span { font-size: 12px; font-family: var(--mono); font-weight: 700; white-space: nowrap; }
+.compare-note { font-size: 11px; font-family: var(--mono); min-width: 80px; color: var(--dim); }
+
+/* ── CTA ── */
+#docs {
+  background: var(--void);
+  border-top: 1px solid var(--border);
+  text-align: center; padding: 100px 48px;
+}
+.docs-headline {
+  font-size: clamp(28px,4vw,52px); font-weight: 700;
+  letter-spacing: -0.02em; margin-bottom: 16px;
+}
+.docs-sub { color: var(--dim); font-size: 17px; margin-bottom: 48px; max-width: 560px; margin-left: auto; margin-right: auto; }
+.docs-links {
+  display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;
+  margin-bottom: 64px;
+}
+.doc-link {
+  display: flex; align-items: center; gap: 10px;
+  padding: 16px 24px; border: 1px solid var(--border2);
+  text-decoration: none; color: var(--text);
+  font-size: 14px; font-weight: 500;
+  background: var(--panel);
+  transition: border-color 0.2s, background 0.2s;
+}
+.doc-link:hover { border-color: var(--teal); background: var(--teal-dim); }
+.doc-link-icon { color: var(--teal); font-family: var(--mono); font-size: 12px; }
+.doc-link-size { font-family: var(--mono); font-size: 11px; color: var(--dim); }
+
+/* ── FOOTER ── */
+footer {
+  border-top: 1px solid var(--border);
+  padding: 28px 48px;
+  display: flex; justify-content: space-between; align-items: center;
+  background: var(--deep);
+  font-size: 12px; color: var(--dim);
+}
+footer a { color: var(--dim); text-decoration: none; }
+footer a:hover { color: var(--text); }
+
+/* ── CUNEIFORM GLYPHS ── */
+.cuneiform { color: var(--amber); }
+.circuit-trace { stroke: var(--teal); stroke-width: 1; fill: none; stroke-dasharray: 200; stroke-dashoffset: 200; transition: stroke-dashoffset 1.5s ease; }
+.circuit-trace.drawn { stroke-dashoffset: 0; }
+
+/* ── ACCORDION ── */
+#protocol-deep { background: var(--deep); }
+.accordion { margin-top: 48px; border: 1px solid var(--border2); overflow: hidden; }
+.acc-item { border-bottom: 1px solid var(--border); }
+.acc-item:last-child { border-bottom: none; }
+.acc-trigger { width: 100%; padding: 22px 28px; background: none; border: none; cursor: pointer; display: flex; align-items: center; gap: 16px; color: var(--text); text-align: left; transition: background 0.2s; }
+.acc-trigger:hover { background: rgba(255,255,255,0.03); }
+.acc-trigger.open { background: rgba(0,196,172,0.05); }
+.acc-layer { font-family: var(--mono); font-size: 10px; padding: 3px 8px; border: 1px solid var(--teal); color: var(--teal); letter-spacing: 0.1em; flex-shrink: 0; min-width: 36px; text-align: center; }
+.acc-layer.amber { border-color: var(--amber); color: var(--amber); }
+.acc-trigger-title { font-weight: 600; font-size: 14px; flex: 1; }
+.acc-trigger-meta { font-family: var(--mono); font-size: 11px; color: var(--dim); flex-shrink: 0; }
+.acc-chevron { color: var(--teal); font-family: var(--mono); font-size: 18px; transition: transform 0.3s; flex-shrink: 0; line-height: 1; }
+.acc-trigger.open .acc-chevron { transform: rotate(45deg); }
+.acc-body { max-height: 0; overflow: hidden; transition: max-height 0.5s cubic-bezier(0.25,1,0.5,1); }
+.acc-body.open { max-height: 3000px; }
+.acc-inner { padding: 0 28px 32px; }
+.bit-table { width: 100%; border-collapse: collapse; font-size: 13px; margin: 12px 0 16px; }
+.bit-table th { font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--dim); padding: 8px 12px; border-bottom: 1px solid var(--border); text-align: left; font-weight: 400; background: var(--panel); }
+.bit-table td { padding: 9px 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
+.bit-table tr:last-child td { border-bottom: none; }
+.col-bits { font-family: var(--mono); font-size: 12px; color: var(--teal); white-space: nowrap; }
+.col-name { font-weight: 500; font-size: 13px; }
+.col-desc { color: var(--dim); font-size: 12px; line-height: 1.55; }
+.acc-note { font-family: var(--mono); font-size: 12px; color: var(--amber); padding: 10px 14px; border-left: 2px solid var(--amber); background: rgba(200,124,64,0.07); margin-top: 8px; line-height: 1.6; }
+.acc-pair-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 1px; background: var(--border); margin: 12px 0; }
+.acc-pair-cell { background: var(--panel); padding: 10px 12px; }
+.acc-pair-bits { font-family: var(--mono); font-size: 11px; color: var(--teal); }
+.acc-pair-name { font-size: 11px; font-weight: 500; margin-top: 3px; }
+.acc-pair-cell.special { background: rgba(208,64,96,0.1); }
+.acc-pair-cell.special .acc-pair-bits { color: #d04060; }
+.acc-formula { font-family: var(--mono); font-size: 18px; color: var(--teal); text-align: center; padding: 20px; background: var(--panel); margin: 12px 0; border: 1px solid var(--border); letter-spacing: 0.04em; }
+
+/* ── CODEBOOK / DOMAIN EXTENDED ── */
+.domain-extended { margin-top: 64px; padding-top: 48px; border-top: 1px solid var(--border); }
+.codebook-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 1px; background: var(--border); margin: 20px 0; }
+.codebook-cell { background: var(--panel2); padding: 12px 14px; }
+.codebook-bits { font-family: var(--mono); font-size: 11px; color: var(--teal); }
+.codebook-name { font-size: 12px; font-weight: 600; margin-top: 3px; }
+.codebook-ex { font-size: 11px; color: var(--dim); margin-top: 2px; line-height: 1.4; }
+.sumerian-note { margin-top: 40px; padding: 32px 36px; border: 1px solid var(--border2); background: rgba(200,124,64,0.05); display: grid; grid-template-columns: 72px 1fr; gap: 28px; align-items: start; }
+.sumerian-text h4 { font-size: 12px; font-family: var(--mono); letter-spacing: 0.1em; text-transform: uppercase; color: var(--amber); margin-bottom: 10px; }
+.sumerian-text p { font-size: 14px; color: var(--dim); line-height: 1.75; }
+.sumerian-text em { font-family: var(--serif); font-style: italic; color: var(--text); font-size: 15px; }
+
+/* ── SIDEBAR ── */
+.sidebar-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); opacity: 0; pointer-events: none; transition: opacity 0.35s; z-index: 200; }
+.sidebar-overlay.open { opacity: 1; pointer-events: all; }
+.sidebar-panel { position: fixed; top: 0; right: 0; bottom: 0; width: min(860px,96vw); background: var(--deep); border-left: 1px solid var(--border2); display: flex; transform: translateX(100%); transition: transform 0.4s cubic-bezier(0.25,1,0.5,1); z-index: 201; }
+.sidebar-panel.open { transform: translateX(0); }
+.sidebar-list { width: 230px; flex-shrink: 0; border-right: 1px solid var(--border); overflow-y: auto; background: var(--void); }
+.sidebar-list-head { padding: 16px 20px; border-bottom: 1px solid var(--border); font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--teal); }
+.sidebar-cat { padding: 14px 20px 4px; font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--amber); font-family: var(--mono); }
+.sidebar-doc-btn { display: block; width: 100%; text-align: left; padding: 9px 20px; background: none; border: none; border-right: 2px solid transparent; color: var(--dim); cursor: pointer; font-size: 12px; font-family: var(--sans); transition: background 0.15s, color 0.15s; line-height: 1.4; }
+.sidebar-doc-btn:hover { background: rgba(255,255,255,0.04); color: var(--text); }
+.sidebar-doc-btn.active { background: var(--teal-dim); color: var(--teal); border-right-color: var(--teal); }
+.sidebar-doc-size { display: block; font-family: var(--mono); font-size: 10px; color: var(--dim); margin-top: 1px; }
+.sidebar-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+.sidebar-top { display: flex; align-items: center; justify-content: space-between; padding: 14px 24px; border-bottom: 1px solid var(--border); flex-shrink: 0; gap: 16px; }
+.sidebar-doc-name { font-size: 13px; font-weight: 600; flex: 1; }
+.sidebar-src { font-family: var(--mono); font-size: 10px; color: var(--amber); }
+.sidebar-close-btn { width: 30px; height: 30px; background: none; border: 1px solid var(--border2); color: var(--text); font-size: 16px; cursor: pointer; display: grid; place-items: center; font-family: var(--mono); transition: border-color 0.2s, color 0.2s; flex-shrink: 0; }
+.sidebar-close-btn:hover { border-color: var(--teal); color: var(--teal); }
+.sidebar-body { flex: 1; overflow-y: auto; padding: 28px 32px; }
+.sidebar-loading { text-align: center; padding: 60px; color: var(--dim); font-family: var(--mono); font-size: 13px; }
+.sidebar-empty { text-align: center; padding: 80px 40px; color: var(--dim); }
+.sidebar-empty p { font-size: 14px; line-height: 1.6; margin-top: 12px; }
+.md-content h1 { font-size: 20px; font-weight: 700; margin: 0 0 18px; border-bottom: 1px solid var(--border); padding-bottom: 12px; }
+.md-content h2 { font-size: 16px; font-weight: 600; margin: 28px 0 10px; }
+.md-content h3 { font-size: 14px; font-weight: 600; margin: 20px 0 8px; color: var(--teal); }
+.md-content h4 { font-size: 12px; font-weight: 600; margin: 14px 0 6px; color: var(--amber); font-family: var(--mono); letter-spacing: 0.08em; text-transform: uppercase; }
+.md-content p { font-size: 13px; line-height: 1.75; margin: 0 0 12px; color: var(--dim); }
+.md-content strong { color: var(--text); font-weight: 600; }
+.md-content code { font-family: var(--mono); font-size: 11px; background: var(--panel2); padding: 1px 5px; color: var(--teal); }
+.md-content pre { background: var(--panel2); padding: 14px 16px; margin: 10px 0; overflow-x: auto; border-left: 2px solid var(--teal); }
+.md-content pre code { background: none; padding: 0; font-size: 11px; color: var(--text); }
+.md-content table { width: 100%; border-collapse: collapse; font-size: 12px; margin: 10px 0; }
+.md-content th { background: var(--panel); padding: 7px 10px; border: 1px solid var(--border); font-family: var(--mono); font-size: 10px; letter-spacing: 0.07em; text-transform: uppercase; color: var(--dim); }
+.md-content td { padding: 7px 10px; border: 1px solid var(--border); color: var(--dim); }
+.md-content ul, .md-content ol { padding-left: 20px; margin: 0 0 12px; }
+.md-content li { font-size: 13px; line-height: 1.7; color: var(--dim); margin-bottom: 3px; }
+.md-content blockquote { border-left: 2px solid var(--amber); padding: 4px 14px; margin: 10px 0; }
+.md-content blockquote p { color: var(--amber); }
+.md-content hr { border: none; border-top: 1px solid var(--border); margin: 18px 0; }
+.md-content a { color: var(--teal); }
+.docs-fab { position: fixed; bottom: 28px; right: 28px; z-index: 100; display: flex; align-items: center; gap: 10px; padding: 11px 18px; background: var(--panel2); border: 1px solid var(--border2); color: var(--text); cursor: pointer; font-family: var(--sans); font-size: 13px; font-weight: 500; box-shadow: 0 8px 32px rgba(0,0,0,0.5); transition: border-color 0.2s, color 0.2s; }
+.docs-fab:hover { border-color: var(--teal); color: var(--teal); }
+.docs-fab-icon { font-family: var(--mono); color: var(--teal); font-size: 16px; }
+
+/* ── SCROLL REVEAL ── */
+.reveal {
+  opacity: 0; transform: translateY(28px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+.reveal.visible { opacity: 1; transform: none; }
+.reveal-delay-1 { transition-delay: 0.1s; }
+.reveal-delay-2 { transition-delay: 0.2s; }
+.reveal-delay-3 { transition-delay: 0.3s; }
+
+/* ── ENCODER ── */
+#encoder { background: var(--deep); }
+.encoder-grid { display: grid; grid-template-columns: 310px 1fr; gap: 28px; margin-top: 48px; align-items: start; }
+.enc-form { background: var(--panel); border: 1px solid var(--border2); padding: 28px; }
+.enc-field { margin-bottom: 16px; }
+.enc-label { font-family: var(--mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--dim); margin-bottom: 5px; display: block; }
+.enc-input, .enc-select { width: 100%; background: var(--void); border: 1px solid var(--border2); color: var(--text); padding: 9px 12px; font-family: var(--mono); font-size: 14px; outline: none; transition: border-color 0.2s; }
+.enc-input:focus, .enc-select:focus { border-color: var(--teal); }
+.enc-toggle-row { display: flex; gap: 1px; }
+.enc-toggle { flex: 1; padding: 8px 4px; background: var(--void); border: 1px solid var(--border2); color: var(--dim); cursor: pointer; font-family: var(--mono); font-size: 11px; text-align: center; transition: all 0.15s; }
+.enc-toggle.on { background: var(--teal); color: var(--void); border-color: var(--teal); font-weight: 700; }
+.enc-create-btn { width: 100%; padding: 14px; background: var(--teal); color: var(--void); border: none; font-family: var(--sans); font-weight: 700; font-size: 15px; cursor: pointer; letter-spacing: 0.05em; margin-top: 8px; transition: opacity 0.2s, box-shadow 0.2s; }
+.enc-create-btn:hover { opacity: 0.85; box-shadow: var(--glow-t); }
+.enc-create-btn:disabled { opacity: 0.45; cursor: default; }
+.enc-bits-wrap { background: var(--panel); border: 1px solid var(--border2); padding: 24px 24px 18px; margin-bottom: 12px; }
+.enc-bit-row { display: flex; gap: 2px; margin-bottom: 6px; }
+.enc-bit { height: 26px; flex: 1; display: grid; place-items: center; font-family: var(--mono); font-size: 9px; font-weight: 700; transition: background 0.3s ease, transform 0.3s ease, opacity 0.3s ease; background: rgba(255,255,255,0.04); transform: scaleY(0.4); opacity: 0.25; border-radius: 1px; }
+.enc-bit.lit { transform: scaleY(1); opacity: 1; }
+.enc-bit.c0 { background: var(--teal); color: var(--void); }
+.enc-bit.c1 { background: var(--blue); color: #fff; }
+.enc-bit.c2 { background: var(--amber); color: var(--void); }
+.enc-bit.c3 { background: #e06830; color: #fff; }
+.enc-bit.c4 { background: #d04060; color: #fff; }
+.enc-journal { background: var(--panel); border: 1px solid var(--border2); padding: 18px 22px; font-family: var(--mono); font-size: 12px; line-height: 1.9; color: var(--dim); min-height: 140px; }
+.enc-journal strong { color: var(--text); }
+.enc-rule { border: none; border-top: 1px solid var(--border); margin: 5px 0; }
+.enc-hex-out { font-size: 16px; color: var(--teal); font-weight: 700; letter-spacing: 0.18em; }
+.enc-placeholder { color: var(--dim); font-size: 13px; padding: 20px 0; text-align: center; opacity: 0.6; }
+/* ── CLI TERMINAL ── */
+#cli-section { background: var(--void); }
+.asm-badge { display: inline-flex; align-items: center; gap: 10px; padding: 7px 16px; border: 1px solid var(--amber); font-family: var(--mono); font-size: 11px; color: var(--amber); margin-bottom: 32px; letter-spacing: 0.08em; }
+.asm-badge-dot { width: 6px; height: 6px; background: var(--amber); border-radius: 50%; }
+.cli-wrap { background: #07090f; border: 1px solid var(--border2); }
+.cli-bar { display: flex; align-items: center; gap: 8px; padding: 10px 16px; background: var(--panel); border-bottom: 1px solid var(--border); }
+.cli-dot { width: 10px; height: 10px; border-radius: 50%; }
+.cli-bar-title { font-family: var(--mono); font-size: 11px; color: var(--dim); margin-left: auto; letter-spacing: 0.06em; }
+.cli-tabs { display: flex; border-bottom: 1px solid var(--border); background: var(--panel2); overflow-x: auto; }
+.cli-tab { padding: 10px 18px; background: none; border: none; border-bottom: 2px solid transparent; color: var(--dim); cursor: pointer; font-family: var(--mono); font-size: 11px; letter-spacing: 0.06em; white-space: nowrap; transition: color 0.2s, border-color 0.2s; }
+.cli-tab.active { color: var(--teal); border-bottom-color: var(--teal); }
+.cli-tab:hover:not(.active) { color: var(--text); }
+.cli-pane { padding: 24px 28px; display: none; }
+.cli-pane.active { display: block; }
+.cli-entry { margin-bottom: 24px; padding-bottom: 24px; border-bottom: 1px solid var(--border); }
+.cli-entry:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+.cli-cmd { font-family: var(--mono); font-size: 13px; color: #7dd; line-height: 1.7; background: rgba(0,196,172,0.05); padding: 10px 14px; border-left: 2px solid var(--teal); margin-bottom: 6px; white-space: pre-wrap; word-break: break-all; }
+.cli-cmd::before { content: '$ '; color: var(--dim); }
+.cli-out { font-family: var(--mono); font-size: 12px; color: #c8a060; line-height: 1.8; white-space: pre; padding: 6px 14px; overflow-x: auto; }
+.cli-desc { font-size: 13px; color: var(--dim); line-height: 1.7; margin-top: 10px; }
+/* ── PILOT FORM ── */
+#pilot { background: var(--deep); }
+.pilot-grid { display: grid; grid-template-columns: 1fr 440px; gap: 64px; margin-top: 48px; align-items: start; }
+.pilot-meta p { font-size: 15px; color: var(--dim); line-height: 1.85; margin-bottom: 16px; }
+.pilot-contact-block { margin-top: 28px; padding: 20px 24px; border: 1px solid var(--border2); background: var(--panel); }
+.pilot-contact-block p { font-size: 13px; color: var(--dim); margin-bottom: 8px; }
+.pilot-contact-block a { font-family: var(--mono); font-size: 15px; color: var(--teal); text-decoration: none; }
+.pilot-form { background: var(--panel); border: 1px solid var(--border2); padding: 32px; }
+.pf-row { margin-bottom: 18px; }
+.pf-label { font-family: var(--mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--dim); margin-bottom: 6px; display: block; }
+.pf-input, .pf-select, .pf-textarea { width: 100%; background: var(--void); border: 1px solid var(--border2); color: var(--text); padding: 10px 14px; font-family: var(--sans); font-size: 14px; outline: none; resize: vertical; transition: border-color 0.2s; }
+.pf-input:focus, .pf-select:focus, .pf-textarea:focus { border-color: var(--teal); }
+.pf-submit { width: 100%; padding: 14px; background: var(--teal); color: var(--void); border: none; font-family: var(--sans); font-weight: 700; font-size: 14px; letter-spacing: 0.04em; cursor: pointer; margin-top: 8px; transition: opacity 0.2s, box-shadow 0.2s; }
+.pf-submit:hover { opacity: 0.88; box-shadow: var(--glow-t); }
+.pf-note { font-family: var(--mono); font-size: 11px; color: var(--dim); margin-top: 10px; text-align: center; }
+
+@media (max-width: 768px) {
+  .encoder-grid, .pilot-grid { grid-template-columns: 1fr; }
+  .pilot-grid { gap: 32px; }
+}
+
+@media (max-width: 768px) {
+  nav { padding: 0 24px; }
+  .nav-links { display: none; }
+  section { padding: 72px 24px; }
+  .stat-grid, .error-grid, .domain-grid { grid-template-columns: 1fr; }
+  .heritage-timeline { grid-template-columns: repeat(2,1fr); gap: 24px; }
+  .heritage-timeline::before { display: none; }
+  .frame-row { grid-template-columns: 80px 1fr; }
+  .frame-row > div:last-child { display: none; }
+  footer { flex-direction: column; gap: 12px; text-align: center; }
+  .compare-label { min-width: 70px; font-size: 11px; }
+  .hero-counter { font-size: clamp(80px,22vw,160px); }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="nav">
+  <a href="#" class="nav-logo">
+    <div class="nav-glyph">BL</div>
+    <span class="nav-wordmark">BitLedger</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#protocol-deep">Deep Dive</a></li>
+    <li><a href="#encoder">Encoder</a></li>
+    <li><a href="#bitledger">Protocol</a></li>
+    <li><a href="#bitpads">BitPads</a></li>
+    <li><a href="#conservation">Universal Domain</a></li>
+    <li><a href="#cli-section">CLI</a></li>
+    <li><a href="#pilot">Pilot</a></li>
+    <li><a href="#" class="open-sidebar" style="color:var(--teal)">Doc Library</a></li>
+  </ul>
+  <a href="https://github.com/babbworks/bitpads" target="_blank" rel="noopener" class="nav-cta">GitHub ↗</a>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <canvas id="starfield"></canvas>
+
+  <!-- Cuneiform texture marks -->
+  <svg style="position:absolute;top:10%;left:6%;opacity:0.18;width:80px" viewBox="0 0 80 120" class="cuneiform" aria-hidden="true">
+    <polygon points="0,8 18,4 2,0" fill="currentColor"/>
+    <polygon points="0,22 18,18 2,14" fill="currentColor"/>
+    <polygon points="0,36 18,32 2,28" fill="currentColor"/>
+    <polygon points="22,8 40,4 24,0" fill="currentColor"/>
+    <polygon points="22,22 40,18 24,14" fill="currentColor"/>
+    <polygon points="0,54 8,52 0,50" fill="currentColor" opacity="0.6"/>
+    <polygon points="12,54 20,52 12,50" fill="currentColor" opacity="0.6"/>
+    <polygon points="24,54 32,52 24,50" fill="currentColor" opacity="0.6"/>
+    <polygon points="0,70 18,65 2,62" fill="currentColor" opacity="0.4"/>
+    <polygon points="22,70 40,65 24,62" fill="currentColor" opacity="0.4"/>
+  </svg>
+  <svg style="position:absolute;bottom:15%;right:7%;opacity:0.14;width:60px" viewBox="0 0 60 90" class="cuneiform" aria-hidden="true">
+    <polygon points="0,6 14,3 1,0" fill="currentColor"/>
+    <polygon points="0,16 14,13 1,10" fill="currentColor"/>
+    <polygon points="16,6 30,3 17,0" fill="currentColor"/>
+    <polygon points="16,16 30,13 17,10" fill="currentColor"/>
+    <polygon points="32,6 46,3 33,0" fill="currentColor"/>
+    <polygon points="0,32 14,29 1,26" fill="currentColor" opacity="0.5"/>
+    <polygon points="16,32 30,29 17,26" fill="currentColor" opacity="0.5"/>
+    <polygon points="0,48 14,44 1,41" fill="currentColor" opacity="0.3"/>
+  </svg>
+
+  <div class="hero-inner">
+    <div class="hero-badge">
+      <span class="hero-badge-dot"></span>
+      BitLedger v3.0 · BitPads v2.0 · Active Protocol Development
+    </div>
+
+    <div class="hero-counter" id="hero-counter" aria-label="40 bits">0</div>
+    <div class="hero-counter-unit">bits — a complete double-entry transaction</div>
+
+    <h1 class="hero-headline">
+      <strong>Binary-native financial transmission</strong><br>
+      engineered for the most demanding conditions on Earth, and beyond.
+    </h1>
+
+    <p class="hero-sub">
+      BitLedger encodes a full double-entry accounting record — value, direction, account pair, settlement status, and three-layer error detection — in exactly 40 bits. BitPads wraps that core for any transmission context, from a one-byte heartbeat to a 44-byte fully annotated civilisational record.
+    </p>
+
+    <div class="hero-actions">
+      <a href="#bitledger" class="btn-primary">Explore the Protocol</a>
+      <a href="https://github.com/babbworks/bitpads" target="_blank" rel="noopener" class="btn-ghost">View on GitHub ↗</a>
+    </div>
+  </div>
+
+  <div class="scroll-hint">
+    <span>Scroll</span>
+    <svg class="scroll-arrow" width="16" height="20" viewBox="0 0 16 20" fill="none"><path d="M8 0v16M1 9l7 9 7-9" stroke="currentColor" stroke-width="1.5"/></svg>
+  </div>
+</section>
+
+<!-- HERITAGE STRIP -->
+<div id="heritage">
+  <p class="heritage-label">5,000 years of signal · The arc of human record-keeping</p>
+  <div class="heritage-timeline">
+    <div class="heritage-node reveal">
+      <div class="heritage-icon">
+        <!-- Sumerian token SVG -->
+        <svg width="34" height="34" viewBox="0 0 34 34" fill="none">
+          <circle cx="17" cy="17" r="11" stroke="#c87c40" stroke-width="1"/>
+          <polygon points="17,9 21,14 17,11 13,14" fill="#c87c40" opacity="0.8"/>
+          <polygon points="17,25 21,20 17,23 13,20" fill="#c87c40" opacity="0.8"/>
+          <line x1="9" y1="17" x2="13" y2="17" stroke="#c87c40" stroke-width="1" opacity="0.8"/>
+          <line x1="21" y1="17" x2="25" y2="17" stroke="#c87c40" stroke-width="1" opacity="0.8"/>
+        </svg>
+      </div>
+      <span class="heritage-year">c. 3000 BCE</span>
+      <span class="heritage-title">Sumerian Clay Tokens</span>
+      <p class="heritage-desc">Minimal marks. Rich shared context. The accounting principle that BitPads binary pictography implements in nibble streams.</p>
+    </div>
+
+    <div class="heritage-node reveal reveal-delay-1">
+      <div class="heritage-icon">
+        <!-- Telegraph key SVG -->
+        <svg width="34" height="34" viewBox="0 0 34 34" fill="none">
+          <rect x="4" y="15" width="26" height="4" rx="1" stroke="#00c4ac" stroke-width="1"/>
+          <rect x="6" y="11" width="4" height="12" rx="1" stroke="#00c4ac" stroke-width="1"/>
+          <rect x="24" y="11" width="4" height="12" rx="1" stroke="#00c4ac" stroke-width="1"/>
+          <circle cx="17" cy="17" r="3" stroke="#00c4ac" stroke-width="1"/>
+          <line x1="17" y1="7" x2="17" y2="11" stroke="#00c4ac" stroke-width="1" stroke-dasharray="2 1"/>
+        </svg>
+      </div>
+      <span class="heritage-year">1870</span>
+      <span class="heritage-title">Baudot Telegraph Code</span>
+      <p class="heritage-desc">Five bits. Thirty-two signals. BitPads Enhancement Grammar reclaims the 3 upper bits left structurally available for 155 years.</p>
+    </div>
+
+    <div class="heritage-node reveal reveal-delay-2">
+      <div class="heritage-icon">
+        <!-- Oscilloscope trace SVG -->
+        <svg width="34" height="34" viewBox="0 0 34 34" fill="none">
+          <rect x="3" y="5" width="28" height="24" rx="2" stroke="#3b7bff" stroke-width="1" opacity="0.5"/>
+          <polyline points="5,17 9,17 11,10 13,24 15,17 19,17 21,10 23,24 25,17 29,17" stroke="#3b7bff" stroke-width="1.5" fill="none"/>
+        </svg>
+      </div>
+      <span class="heritage-year">1960s</span>
+      <span class="heritage-title">Mission Control Telemetry</span>
+      <p class="heritage-desc">Deep space demanded structured binary. Every bit earned its place when bandwidth was measured in bits per second across millions of miles.</p>
+    </div>
+
+    <div class="heritage-node reveal reveal-delay-3">
+      <div class="heritage-icon">
+        <!-- Bit grid SVG -->
+        <svg width="34" height="34" viewBox="0 0 34 34" fill="none">
+          <rect x="4" y="6" width="6" height="6" fill="#00c4ac"/>
+          <rect x="12" y="6" width="6" height="6" fill="#00c4ac" opacity="0.3"/>
+          <rect x="20" y="6" width="6" height="6" fill="#00c4ac"/>
+          <rect x="28" y="6" width="6" height="6" fill="#00c4ac"/>
+          <rect x="4" y="14" width="6" height="6" fill="#00c4ac" opacity="0.3"/>
+          <rect x="12" y="14" width="6" height="6" fill="#00c4ac"/>
+          <rect x="20" y="14" width="6" height="6" fill="#00c4ac" opacity="0.3"/>
+          <rect x="28" y="14" width="6" height="6" fill="#00c4ac"/>
+          <rect x="4" y="22" width="6" height="6" fill="#00c4ac"/>
+          <rect x="12" y="22" width="6" height="6" fill="#00c4ac"/>
+          <rect x="20" y="22" width="6" height="6" fill="#00c4ac" opacity="0.3"/>
+          <rect x="28" y="22" width="6" height="6" fill="#3b7bff"/>
+        </svg>
+      </div>
+      <span class="heritage-year">2025</span>
+      <span class="heritage-title">BitLedger Protocol v3</span>
+      <p class="heritage-desc">40 bits. The mathematical minimum for a verifiable double-entry record. Deployable from a microcontroller to a Mars colony supply chain.</p>
+    </div>
+  </div>
+</div>
+
+<!-- BITLEDGER -->
+<section id="bitledger">
+  <div class="section-inner">
+    <div class="bl-header">
+      <p class="section-label reveal">The Core Protocol</p>
+      <h2 class="section-headline reveal">Every bit earns<br>its position.</h2>
+      <p class="section-sub reveal">BitLedger is a binary-native protocol designed from first principles at the mathematical definition of a double-entry transaction — not by compressing an existing format. The result: 5 bytes that enforce accounting integrity at the wire level.</p>
+    </div>
+
+    <div class="stat-grid">
+      <div class="stat-card">
+        <div class="stat-num">40<span class="stat-unit"> bits</span></div>
+        <p class="stat-label">A complete double-entry record — value, account pair, direction, status, rounding, and three-layer error detection.</p>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">512<span class="stat-unit"> bytes</span></div>
+        <p class="stat-label">100 transactions. No schema lookup. No decompression step. Fixed bit positions decode directly.</p>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">≈$33.5<span class="stat-unit">Q</span></div>
+        <p class="stat-label">Maximum expressible value in a single record — approximately 305× global GDP. Exact integers only. No floating point.</p>
+      </div>
+    </div>
+
+    <!-- BIT RECORD VISUALIZATION -->
+    <div class="bit-viz-wrap reveal">
+      <p class="bit-viz-title">Layer 3 — The 40-bit transaction record</p>
+      <div class="bit-row" id="bit-row"></div>
+      <div class="bit-annotations" id="bit-ann"></div>
+      <div class="bit-legend">
+        <div class="bit-legend-item"><div class="bit-legend-dot" style="background:var(--teal)"></div>Multiplicand (bits 1–17)</div>
+        <div class="bit-legend-item"><div class="bit-legend-dot" style="background:var(--blue)"></div>Multiplier / Quantity (18–25)</div>
+        <div class="bit-legend-item"><div class="bit-legend-dot" style="background:var(--amber)"></div>Value Flags (26–32)</div>
+        <div class="bit-legend-item"><div class="bit-legend-dot" style="background:#e06830"></div>Account Pair (33–36)</div>
+        <div class="bit-legend-item"><div class="bit-legend-dot" style="background:#d04060"></div>BL Control (37–40)</div>
+      </div>
+    </div>
+
+    <div class="error-grid">
+      <div class="error-card">
+        <div class="error-num">CRC‑15</div>
+        <div class="error-title">Session Header Integrity</div>
+        <p class="error-desc">Polynomial x¹⁵ + x + 1 over the full 49-bit Layer 1 payload. Covers sender identity, domain, permissions. 100% burst-error detection up to 15 bits.</p>
+      </div>
+      <div class="error-card">
+        <div class="error-num">×2</div>
+        <div class="error-title">Cross-Layer Flag Mirroring</div>
+        <p class="error-desc">Direction (bit 29) must equal bit 37. Status (bit 30) must equal bit 38. A single cosmic-ray bit-flip in either location is immediately detectable.</p>
+      </div>
+      <div class="error-card">
+        <div class="error-num">∑=0</div>
+        <div class="error-title">Conservation Invariant</div>
+        <p class="error-desc">For every batch, the sum of all signed flows equals zero. Catches phantom records, duplicates, and missing entries that byte-level CRCs cannot.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- LIVE BIT ENCODER -->
+<section id="encoder">
+  <div class="section-inner">
+    <p class="section-label reveal">Live Protocol Encoder</p>
+    <h2 class="section-headline reveal">Build a 40-bit record.</h2>
+    <p class="section-sub reveal">Enter transaction parameters and press <strong style="color:var(--teal)">Create</strong> to watch the 40-bit record assemble field by field — Multiplicand and Multiplier split, flags packed, account pair encoded, cross-layer mirror bits set. The actual BitLedger encoding algorithm, running in your browser.</p>
+
+    <div class="encoder-grid">
+      <div class="enc-form reveal">
+        <div class="enc-field">
+          <label class="enc-label">Value</label>
+          <input class="enc-input" id="enc-val" type="number" value="1247.50" step="0.01" min="0">
+        </div>
+        <div class="enc-field">
+          <label class="enc-label">Account Pair (bits 33–36)</label>
+          <select class="enc-select" id="enc-pair">
+            <option value="0">0000 · Op Expense / Asset</option>
+            <option value="1">0001 · Op Expense / Liability</option>
+            <option value="2">0010 · Non-Op Expense / Asset</option>
+            <option value="3">0011 · Non-Op Expense / Liability</option>
+            <option value="4">0100 · Op Income / Asset</option>
+            <option value="5">0101 · Op Income / Liability</option>
+            <option value="6">0110 · Non-Op Income / Asset</option>
+            <option value="7">0111 · Non-Op Income / Liability</option>
+            <option value="8">1000 · Asset / Liability</option>
+            <option value="9">1001 · Asset / Equity</option>
+            <option value="10">1010 · Liability / Equity</option>
+            <option value="11">1011 · Asset / Asset</option>
+            <option value="12">1100 · Liability / Liability</option>
+            <option value="13">1101 · Equity / Equity</option>
+            <option value="14">1110 · Correction / Netting</option>
+          </select>
+        </div>
+        <div class="enc-field">
+          <label class="enc-label">Scaling Factor (SF)</label>
+          <select class="enc-select" id="enc-sf">
+            <option value="0">×1 (default)</option>
+            <option value="1">×10</option>
+            <option value="2">×100</option>
+            <option value="3">×1,000</option>
+            <option value="4">×10,000</option>
+            <option value="5">×100,000</option>
+            <option value="6">×1,000,000</option>
+            <option value="7">×10,000,000</option>
+            <option value="8">×100,000,000</option>
+            <option value="9">×1,000,000,000</option>
+          </select>
+        </div>
+        <div class="enc-field">
+          <label class="enc-label">Decimal Position (DP)</label>
+          <select class="enc-select" id="enc-dp">
+            <option value="0">0 — integer</option>
+            <option value="2" selected>2 — standard (default)</option>
+            <option value="4">4 — four places</option>
+            <option value="6">6 — six places</option>
+          </select>
+        </div>
+        <div class="enc-field">
+          <label class="enc-label">Direction (bit 29 / 37)</label>
+          <div class="enc-toggle-row">
+            <button class="enc-toggle on" id="enc-dir-0" onclick="setToggle('dir',0)">0 · In</button>
+            <button class="enc-toggle" id="enc-dir-1" onclick="setToggle('dir',1)">1 · Out</button>
+          </div>
+        </div>
+        <div class="enc-field">
+          <label class="enc-label">Status (bit 30 / 38)</label>
+          <div class="enc-toggle-row">
+            <button class="enc-toggle on" id="enc-sts-0" onclick="setToggle('sts',0)">0 · Paid</button>
+            <button class="enc-toggle" id="enc-sts-1" onclick="setToggle('sts',1)">1 · Debt</button>
+          </div>
+        </div>
+        <div class="enc-field">
+          <label class="enc-label">Debit / Credit (bit 31)</label>
+          <div class="enc-toggle-row">
+            <button class="enc-toggle on" id="enc-dc-1" onclick="setToggle('dc',1)">1 · Debit</button>
+            <button class="enc-toggle" id="enc-dc-0" onclick="setToggle('dc',0)">0 · Credit</button>
+          </div>
+        </div>
+        <button class="enc-create-btn" id="enc-create">Create →</button>
+      </div>
+
+      <div class="enc-output">
+        <div class="enc-bits-wrap reveal">
+          <p class="bit-viz-title" style="margin-bottom:16px">Layer 3 — 40-bit Transaction Record</p>
+          <div class="enc-bit-row" id="enc-bit-row"></div>
+          <div class="bit-legend" style="margin-top:14px">
+            <div class="bit-legend-item"><div class="bit-legend-dot" style="background:var(--teal)"></div>Multiplicand 1–17</div>
+            <div class="bit-legend-item"><div class="bit-legend-dot" style="background:var(--blue)"></div>Multiplier 18–25</div>
+            <div class="bit-legend-item"><div class="bit-legend-dot" style="background:var(--amber)"></div>Flags 26–32</div>
+            <div class="bit-legend-item"><div class="bit-legend-dot" style="background:#e06830"></div>Pair 33–36</div>
+            <div class="bit-legend-item"><div class="bit-legend-dot" style="background:#d04060"></div>BL 37–40</div>
+          </div>
+        </div>
+        <div class="enc-journal" id="enc-journal">
+          <div class="enc-placeholder">Press <strong style="color:var(--teal)">Create</strong> to encode a record</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- BITPADS -->
+<section id="bitpads">
+  <div class="section-inner">
+    <p class="section-label reveal">The Infrastructure</p>
+    <h2 class="section-headline reveal">One byte to forty-four.<br>Same architecture throughout.</h2>
+    <p class="section-sub reveal">BitPads is the outermost layer of the protocol family. A single Meta byte declares frame mode, content type, and enhancement state before the receiver reads a single payload byte. Complexity attaches only when needed — the 1-byte heartbeat and the 44-byte annotated record share the same framing grammar.</p>
+
+    <div class="frame-spectrum reveal">
+      <div class="frame-row header">
+        <div>Size</div>
+        <div>Frame Type</div>
+        <div>Contents</div>
+      </div>
+      <div class="frame-row">
+        <div class="frame-bytes">1 byte</div>
+        <div class="frame-type">Pure Signal</div>
+        <div class="frame-bar-wrap"><div class="frame-bar" data-width="2.3%"></div><span style="font-size:12px;color:var(--dim);font-family:var(--mono)">Heartbeat · ACK · Status flag</span></div>
+      </div>
+      <div class="frame-row">
+        <div class="frame-bytes">4 bytes</div>
+        <div class="frame-type">Anonymous Wave</div>
+        <div class="frame-bar-wrap"><div class="frame-bar" data-width="9%"></div><span style="font-size:12px;color:var(--dim);font-family:var(--mono)">Session-context value, no identity overhead</span></div>
+      </div>
+      <div class="frame-row">
+        <div class="frame-bytes">13–29 bytes</div>
+        <div class="frame-type">Full Record</div>
+        <div class="frame-bar-wrap"><div class="frame-bar" data-width="66%"></div><span style="font-size:12px;color:var(--dim);font-family:var(--mono)">Identity + value + optional time, task, note</span></div>
+      </div>
+      <div class="frame-row">
+        <div class="frame-bytes">22–28+ bytes</div>
+        <div class="frame-type">BitLedger Frame</div>
+        <div class="frame-bar-wrap"><div class="frame-bar" data-width="100%" style="background:linear-gradient(90deg,var(--teal),var(--blue))"></div><span style="font-size:12px;color:var(--text);font-family:var(--mono);font-weight:700">Full double-entry record + CRC-15 + batch context</span></div>
+      </div>
+    </div>
+
+    <div style="margin-top:48px;padding:36px;background:var(--panel);border:1px solid var(--border2);" class="reveal">
+      <p class="section-label" style="margin-bottom:12px">Enhancement Grammar — C0 Signal Slots</p>
+      <p style="font-size:15px;color:var(--dim);line-height:1.75;max-width:700px">
+        The C0 Enhancement Grammar reclaims 3 upper bits of Unicode's 32 control characters — structurally available since Baudot's 1870 telegraph codes and never used. These become a universal flag matrix: <strong style="color:var(--text)">Priority · Acknowledge · Continuation</strong>. Thirteen signal slot positions span the full transmission structure. Binary pictography: four bits per symbol through a shared codebook — the Sumerian accounting principle implemented in binary at sub-byte precision.
+      </p>
+      <p style="font-family:var(--mono);font-size:12px;color:var(--amber);margin-top:20px">
+        Legacy-compatible — a 1960s teleprinter receiving the same byte stream sees standard C0 controls throughout.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- CONSERVATION -->
+<section id="conservation">
+  <div class="section-inner">
+    <p class="section-label reveal">Universal Domain</p>
+    <h2 class="section-headline reveal">The same algebra<br>governs everything.</h2>
+    <p class="section-sub reveal">Every system that moves resources between entities is governed by a conservation law whether it knows it or not. Money conserved. Mass conserved. Energy conserved. Data conserved. BitLedger encodes that invariant at the wire level — not as a rule the application must enforce, but as a structural property of the encoding itself.</p>
+
+    <div class="equation-display reveal">
+      <div class="eq-row">
+        <div class="eq-item">
+          <div class="eq-value">Double-Entry Accounting</div>
+          <div class="eq-symbol teal">∑Dr = ∑Cr</div>
+        </div>
+        <div class="eq-op">=</div>
+        <div class="eq-item">
+          <div class="eq-value">Kirchhoff's Current Law</div>
+          <div class="eq-symbol amber">∑I = 0</div>
+        </div>
+        <div class="eq-op">=</div>
+        <div class="eq-item">
+          <div class="eq-value">Mass Balance</div>
+          <div class="eq-symbol blue">∑m<sub>in</sub> = ∑m<sub>out</sub></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="domain-grid">
+      <div class="domain-card">
+        <div class="domain-icon">
+          <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+            <rect x="2" y="8" width="28" height="18" rx="2" stroke="var(--teal)" stroke-width="1.2"/>
+            <line x1="2" y1="16" x2="30" y2="16" stroke="var(--teal)" stroke-width="1" opacity="0.4"/>
+            <rect x="6" y="12" width="8" height="4" fill="var(--teal)" opacity="0.3"/>
+            <rect x="18" y="12" width="8" height="4" fill="var(--teal)" opacity="0.6"/>
+          </svg>
+        </div>
+        <div class="domain-title">Financial Records</div>
+        <p class="domain-desc">Double-entry ledger semantics enforced at the encoding level. Debit and credit accounts inferred from a 4-bit pair code.</p>
+        <p class="domain-example">USD 1,247.50 · Op Expense / Accounts Payable</p>
+      </div>
+      <div class="domain-card">
+        <div class="domain-icon">
+          <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+            <circle cx="16" cy="16" r="12" stroke="var(--amber)" stroke-width="1.2"/>
+            <circle cx="16" cy="16" r="5" stroke="var(--amber)" stroke-width="1" opacity="0.5"/>
+            <line x1="16" y1="4" x2="16" y2="8" stroke="var(--amber)" stroke-width="1.5"/>
+            <path d="M24 8 L20 11" stroke="var(--amber)" stroke-width="1"/>
+            <circle cx="26" cy="8" r="2" fill="var(--amber)" opacity="0.7"/>
+          </svg>
+        </div>
+        <div class="domain-title">Deep Space Ops</div>
+        <p class="domain-desc">Propellant mass, power obligations, and mission telemetry — same wire format as financial records. Survives cosmic-ray bit flips.</p>
+        <p class="domain-example">14.7 kg propellant · Thruster #3 / Tank Reserve</p>
+      </div>
+      <div class="domain-card">
+        <div class="domain-icon">
+          <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+            <rect x="4" y="10" width="8" height="14" rx="1" stroke="var(--blue)" stroke-width="1.2"/>
+            <rect x="14" y="6" width="8" height="18" rx="1" stroke="var(--blue)" stroke-width="1.2"/>
+            <rect x="24" y="14" width="4" height="10" rx="1" stroke="var(--blue)" stroke-width="1.2"/>
+            <line x1="12" y1="17" x2="14" y2="17" stroke="var(--blue)" stroke-width="1"/>
+            <line x1="22" y1="19" x2="24" y2="19" stroke="var(--blue)" stroke-width="1"/>
+          </svg>
+        </div>
+        <div class="domain-title">Manufacturing</div>
+        <p class="domain-desc">Material flows, work-in-process debts, just-in-time inventory. Conservation invariant enforced: every unit leaving a station must arrive.</p>
+        <p class="domain-example">240 units · Station A / Station B WIP</p>
+      </div>
+      <div class="domain-card">
+        <div class="domain-icon">
+          <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+            <rect x="10" y="14" width="12" height="10" rx="2" stroke="#d04060" stroke-width="1.2"/>
+            <line x1="16" y1="8" x2="16" y2="14" stroke="#d04060" stroke-width="1.2"/>
+            <circle cx="16" cy="6" r="2.5" stroke="#d04060" stroke-width="1.2"/>
+            <line x1="6" y1="22" x2="10" y2="20" stroke="#d04060" stroke-width="1" opacity="0.6"/>
+            <line x1="26" y1="22" x2="22" y2="20" stroke="#d04060" stroke-width="1" opacity="0.6"/>
+            <circle cx="5" cy="23" r="2" stroke="#d04060" stroke-width="1" opacity="0.6"/>
+            <circle cx="27" cy="23" r="2" stroke="#d04060" stroke-width="1" opacity="0.6"/>
+          </svg>
+        </div>
+        <div class="domain-title">IoT Networks</div>
+        <p class="domain-desc">Sensor data packets, battery drain, bandwidth usage as conserved quantities. 4-byte anonymous Wave for minimal-overhead reporting.</p>
+        <p class="domain-example">12.4 Wh · Node 007 / Grid Sink</p>
+      </div>
+    </div>
+
+    <!-- CODEBOOK + ARCHETYPE EXTENSION -->
+    <div class="domain-extended">
+      <p class="section-label reveal" style="margin-bottom:16px">How It Generalises — The Relationship Archetype Matrix</p>
+      <p style="font-size:16px;color:var(--dim);line-height:1.8;max-width:800px;margin-bottom:28px" class="reveal">
+        In Universal Domain mode, the 4-bit account pair field stops being a chart-of-accounts selector and becomes a <strong style="color:var(--text)">relationship archetype matrix</strong> — 16 canonical flow types between any two entities in any man-made system. The wire format is byte-for-byte identical. Only the semantic interpretation changes.
+      </p>
+      <div class="codebook-grid reveal">
+        <div class="codebook-cell"><div class="codebook-bits">0000</div><div class="codebook-name">Source → Sink</div><div class="codebook-ex">Fuel tank → thruster · Battery → payload</div></div>
+        <div class="codebook-cell"><div class="codebook-bits">0001</div><div class="codebook-name">Parent → Child</div><div class="codebook-ex">Mission control → rover subsystem</div></div>
+        <div class="codebook-cell"><div class="codebook-bits">0010</div><div class="codebook-name">Debtor → Creditor</div><div class="codebook-ex">Supplier A owes component to satellite B</div></div>
+        <div class="codebook-cell"><div class="codebook-bits">0011</div><div class="codebook-name">Mutual Exchange</div><div class="codebook-ex">Energy swap between two satellites</div></div>
+        <div class="codebook-cell"><div class="codebook-bits">0100</div><div class="codebook-name">Generation</div><div class="codebook-ex">Solar panel → power bus</div></div>
+        <div class="codebook-cell"><div class="codebook-bits">0101</div><div class="codebook-name">Consumption</div><div class="codebook-ex">Thruster burn · Processor load</div></div>
+        <div class="codebook-cell"><div class="codebook-bits">0110</div><div class="codebook-name">Loss / Dissipation</div><div class="codebook-ex">Heat loss · Signal attenuation</div></div>
+        <div class="codebook-cell"><div class="codebook-bits">0111</div><div class="codebook-name">Transformation</div><div class="codebook-ex">Chemical → kinetic energy</div></div>
+        <div class="codebook-cell"><div class="codebook-bits">1000</div><div class="codebook-name">Loan / Lend</div><div class="codebook-ex">Station lends bandwidth to relay</div></div>
+        <div class="codebook-cell"><div class="codebook-bits">1001</div><div class="codebook-name">Distribution</div><div class="codebook-ex">Hub → N nodes (one-to-many)</div></div>
+        <div class="codebook-cell"><div class="codebook-bits">1010</div><div class="codebook-name">Aggregation</div><div class="codebook-ex">N sensors → central collector</div></div>
+        <div class="codebook-cell"><div class="codebook-bits">1011</div><div class="codebook-name">Peer Transfer</div><div class="codebook-ex">Node-to-node, same level</div></div>
+        <div class="codebook-cell"><div class="codebook-bits">1100</div><div class="codebook-name">Obligation</div><div class="codebook-ex">Service hours owed between nodes</div></div>
+        <div class="codebook-cell"><div class="codebook-bits">1101</div><div class="codebook-name">Reserve / Buffer</div><div class="codebook-ex">Emergency propellant held aside</div></div>
+        <div class="codebook-cell"><div class="codebook-bits">1110</div><div class="codebook-name">Correction</div><div class="codebook-ex">Inference suspended — reconciliation entry</div></div>
+        <div class="codebook-cell" style="background:rgba(208,64,96,0.08)"><div class="codebook-bits" style="color:#d04060">1111</div><div class="codebook-name">Continuation</div><div class="codebook-ex">Multi-leg compound event — links to preceding record</div></div>
+      </div>
+
+      <div style="margin-top:40px;padding:28px 32px;background:var(--panel);border:1px solid var(--border2)" class="reveal">
+        <p class="section-label" style="margin-bottom:12px;color:var(--amber)">Binary Pictography — The Codebook Principle</p>
+        <p style="font-size:15px;color:var(--dim);line-height:1.8;max-width:780px;margin-bottom:20px">
+          The C0 Enhancement Grammar extends this further with <strong style="color:var(--text)">binary pictography</strong>: when a stream declares a domain identity, the receiver loads a shared codebook and interprets compact nibble sequences as full semantic events. <strong style="color:var(--text)">Four bits per symbol. Sixteen concepts per codebook.</strong> The domain field in Layer 1 selects which codebook is active. Extension bytes can chain codebook references for richer ontologies without changing the wire format.
+        </p>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border)">
+          <div style="background:var(--panel2);padding:16px 20px">
+            <div style="font-family:var(--mono);font-size:11px;color:var(--teal);margin-bottom:6px">Domain bits 00</div>
+            <div style="font-size:13px;font-weight:600;margin-bottom:4px">Financial</div>
+            <div style="font-size:12px;color:var(--dim)">Account pairs · Debit/Credit · Settlement status · Currency flows</div>
+          </div>
+          <div style="background:var(--panel2);padding:16px 20px">
+            <div style="font-family:var(--mono);font-size:11px;color:var(--teal);margin-bottom:6px">Domain bits 01</div>
+            <div style="font-size:13px;font-weight:600;margin-bottom:4px">Engineering</div>
+            <div style="font-size:12px;color:var(--dim)">Flow archetypes · Physical quantities · Conservation laws · System states</div>
+          </div>
+          <div style="background:var(--panel2);padding:16px 20px">
+            <div style="font-family:var(--mono);font-size:11px;color:var(--amber);margin-bottom:6px">Domain bits 10–11</div>
+            <div style="font-size:13px;font-weight:600;margin-bottom:4px">Hybrid / Custom</div>
+            <div style="font-size:12px;color:var(--dim)">Mission-specific codebook negotiated at session open. Pre-shared tables expand 16 codes to 256+ via extension bytes.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sumerian-note reveal">
+        <svg width="56" height="80" viewBox="0 0 56 80" fill="none" class="cuneiform">
+          <polygon points="0,10 20,5 2,0" fill="currentColor"/>
+          <polygon points="0,24 20,19 2,14" fill="currentColor"/>
+          <polygon points="0,38 20,33 2,28" fill="currentColor"/>
+          <polygon points="24,10 44,5 26,0" fill="currentColor"/>
+          <polygon points="24,24 44,19 26,14" fill="currentColor"/>
+          <polygon points="0,56 8,54 0,52" fill="currentColor" opacity="0.6"/>
+          <polygon points="12,56 20,54 12,52" fill="currentColor" opacity="0.6"/>
+          <polygon points="24,56 32,54 24,52" fill="currentColor" opacity="0.6"/>
+          <polygon points="0,72 20,67 2,64" fill="currentColor" opacity="0.35"/>
+          <polygon points="24,72 44,67 26,64" fill="currentColor" opacity="0.35"/>
+        </svg>
+        <div class="sumerian-text">
+          <h4>The Sumerian Codebook — c. 3000 BCE</h4>
+          <p>Sumerian clay token accounting worked on exactly this principle: a small impressed mark on a clay tablet carried minimal information — but its meaning expanded dramatically through the shared context both parties held. The token for grain looked like a cone; the token for sheep, a circle. The marks were minimal. The codebook was in the reader's knowledge.<br><br><em>"Four bits per symbol. Sixteen concepts per codebook. The Sumerian accounting principle, implemented in binary at sub-byte precision."</em><br><br>Five thousand years later, BitPads binary pictography is the same architecture at a different scale: a shared codebook declared at session open, compact nibble streams at transmission time, rich semantic events at the receiver. The mark is still minimal. The meaning still lives in the shared context.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROTOCOL DEEP DIVE -->
+<section id="protocol-deep">
+  <div class="section-inner">
+    <p class="section-label reveal">Protocol Deep Dive</p>
+    <h2 class="section-headline reveal">The architecture,<br>layer by layer.</h2>
+    <p class="section-sub reveal">Every field at every bit position, from the session header to the 40-bit record. Expand any layer to see the full bit specification drawn directly from the protocol documents.</p>
+
+    <div class="accordion">
+
+      <!-- LAYER 1 -->
+      <div class="acc-item">
+        <button class="acc-trigger" data-target="acc-l1">
+          <span class="acc-layer">L1</span>
+          <span class="acc-trigger-title">Session Initialisation — 64 bits · 8 bytes</span>
+          <span class="acc-trigger-meta">Transmitted once per session</span>
+          <span class="acc-chevron">+</span>
+        </button>
+        <div class="acc-body" id="acc-l1">
+          <div class="acc-inner">
+            <table class="bit-table">
+              <thead><tr><th>Bits</th><th>Field</th><th>Description</th></tr></thead>
+              <tbody>
+                <tr><td class="col-bits">1</td><td class="col-name">SOH Marker</td><td class="col-desc">Always 1. Self-framing — the receiver knows a record begins without a preamble or sync sequence.</td></tr>
+                <tr><td class="col-bits">2–4</td><td class="col-name">Protocol Version</td><td class="col-desc">000–111 (8 versions). Allows future protocol revisions without breaking existing decoders.</td></tr>
+                <tr><td class="col-bits">5–8</td><td class="col-name">Core Permissions</td><td class="col-desc">Read · Write · Correct · Represent. Four independent capability flags for the sender's authorisation level.</td></tr>
+                <tr><td class="col-bits">9–12</td><td class="col-name">Session Defaults</td><td class="col-desc">Bit 9: Split order default. Bit 10: Opposing account explicit. Bit 11: Compound mode active (allows 1111 continuation markers). Bit 12: BitLedger block optional.</td></tr>
+                <tr><td class="col-bits">13–44</td><td class="col-name">Sender ID</td><td class="col-desc">32-bit integer. Up to 4,294,967,295 unique senders. In a three-level identity session: 255 networks × 255 systems × 65,535 nodes.</td></tr>
+                <tr><td class="col-bits">45–49</td><td class="col-name">Sub-Entity ID</td><td class="col-desc">5-bit (31 sub-divisions). Identifies branches, departments, or satellite sub-nodes within the sender identity.</td></tr>
+                <tr><td class="col-bits">50–64</td><td class="col-name">CRC-15 Checksum</td><td class="col-desc">Computed over bits 1–49 using polynomial x¹⁵ + x + 1. 100% detection of all burst errors up to 15 bits. Embedded during assembly — the receiver validates on arrival.</td></tr>
+              </tbody>
+            </table>
+            <div class="acc-note">CRC-15 binding is absolute: any change to sender ID, domain, permissions, or sub-entity invalidates the checksum.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- LAYER 2 -->
+      <div class="acc-item">
+        <button class="acc-trigger" data-target="acc-l2">
+          <span class="acc-layer">L2</span>
+          <span class="acc-trigger-title">Batch Header — 48 bits · 6 bytes</span>
+          <span class="acc-trigger-meta">Transmitted once per batch</span>
+          <span class="acc-chevron">+</span>
+        </button>
+        <div class="acc-body" id="acc-l2">
+          <div class="acc-inner">
+            <table class="bit-table">
+              <thead><tr><th>Bits</th><th>Field</th><th>Description</th></tr></thead>
+              <tbody>
+                <tr><td class="col-bits">1–2</td><td class="col-name">Transmission Type</td><td class="col-desc">01=pre-converted · 10=copy · 11=represented. Code 00 is INVALID — ensures the first byte is never all zeros.</td></tr>
+                <tr><td class="col-bits">3–9</td><td class="col-name">Scaling Factor</td><td class="col-desc">7-bit index (×1 to ×1,000,000,000). Extends the 25-bit value range to cover any denomination. All records in the batch inherit this default.</td></tr>
+                <tr><td class="col-bits">10–13</td><td class="col-name">Optimal Split</td><td class="col-desc">4-bit. Default 8. Governs the A/r decomposition in N = A × 2^S + r. A control record can update S mid-batch.</td></tr>
+                <tr><td class="col-bits">14–16</td><td class="col-name">Decimal Position</td><td class="col-desc">000=integer · 010=2 decimal places · 100=4 places · 110=6 places. Applied as divisor after scaling.</td></tr>
+                <tr><td class="col-bits">17–18</td><td class="col-name">Enquiry / ACK Bells</td><td class="col-desc">Bit 17: request ACK before next batch. Bit 18: confirm previous batch received. Handshake signalling without a separate control record.</td></tr>
+                <tr><td class="col-bits">19–30</td><td class="col-name">Separators</td><td class="col-desc">Group (4-bit, 15 groups) · Record (5-bit, compound group identity) · File (3-bit, 7 files). Hierarchical context delimiters — mission phase, entity group, logical boundary.</td></tr>
+                <tr><td class="col-bits">31–35</td><td class="col-name">Entity ID</td><td class="col-desc">5-bit. Sub-entity within the session — branch, department, satellite node.</td></tr>
+                <tr><td class="col-bits">36–41</td><td class="col-name">Currency Code</td><td class="col-desc">6-bit (64 currencies, 0=session default). Seeded 32-currency table built-in; per-record currency override available via extension byte.</td></tr>
+                <tr><td class="col-bits">42–45</td><td class="col-name">Rounding Balance</td><td class="col-desc">4-bit sign-magnitude. Tracks cumulative rounding across the batch. 0000=exactly balanced. 1000=ESCAPE, see batch-close control record.</td></tr>
+                <tr><td class="col-bits">46–47</td><td class="col-name">Compound Prefix</td><td class="col-desc">00=no compounds · 01=≤3 groups · 10=≤7 groups · 11=unlimited. Must be non-zero for 1111 continuation markers to be valid.</td></tr>
+                <tr><td class="col-bits">48</td><td class="col-name">Reserved</td><td class="col-desc">Always 1. Ensures the last byte of the header is never all zeros.</td></tr>
+              </tbody>
+            </table>
+            <div class="acc-note">Short-form: when all Layer 2 values equal session defaults, replace the 48-bit header with one control byte: 0 110 1111</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- LAYER 3 -->
+      <div class="acc-item">
+        <button class="acc-trigger" data-target="acc-l3">
+          <span class="acc-layer">L3</span>
+          <span class="acc-trigger-title">Transaction Record — 40 bits · 5 bytes</span>
+          <span class="acc-trigger-meta">Transmitted once per transaction</span>
+          <span class="acc-chevron">+</span>
+        </button>
+        <div class="acc-body" id="acc-l3">
+          <div class="acc-inner">
+            <table class="bit-table">
+              <thead><tr><th>Bits</th><th>Field</th><th>Description</th></tr></thead>
+              <tbody>
+                <tr><td class="col-bits">1–17</td><td class="col-name">Multiplicand</td><td class="col-desc">Upper value bits. At default Optimal Split of 8: A = floor(N / 256). Carries the bulk of the value magnitude.</td></tr>
+                <tr><td class="col-bits">18–25</td><td class="col-name">Multiplier / Quantity</td><td class="col-desc">Lower value bits. r = N mod 256. When bit 32=1 (Quantity Present), this field carries the item count; Multiplicand carries unit price.</td></tr>
+                <tr><td class="col-bits">26–27</td><td class="col-name">Rounding Signal</td><td class="col-desc">00=exact · 10=rounded down · 11=rounded up · 01=protocol error (reject record). Rounding direction is chosen by account type at encode time — never silent.</td></tr>
+                <tr><td class="col-bits">28</td><td class="col-name">Split Order</td><td class="col-desc">0=follow session default · 1=reverse. Allows the Multiplier-first convention for quantity×price records without a new batch header.</td></tr>
+                <tr><td class="col-bits">29</td><td class="col-name">Direction (Set A)</td><td class="col-desc">0=In · 1=Out. MUST equal bit 37 — cross-layer validation catches single-bit corruption immediately.</td></tr>
+                <tr><td class="col-bits">30</td><td class="col-name">Status (Set A)</td><td class="col-desc">0=Paid / Settled · 1=Debt / Accrued. MUST equal bit 38.</td></tr>
+                <tr><td class="col-bits">31</td><td class="col-name">Debit/Credit</td><td class="col-desc">0=Credit · 1=Debit. Combined with Account Pair and Direction to fully specify the journal entry without ambiguity.</td></tr>
+                <tr><td class="col-bits">32</td><td class="col-name">Quantity Present</td><td class="col-desc">0=flat value · 1=split active (Price × Quantity). When set, Optimal Split is always taken from session state regardless of bit 27.</td></tr>
+                <tr><td class="col-bits">33–36</td><td class="col-name">Account Pair</td><td class="col-desc">4-bit code. 16 canonical account pair relationships. See Account Pairs panel below.</td></tr>
+                <tr><td class="col-bits">37</td><td class="col-name">Direction (BL)</td><td class="col-desc">Mirror of bit 29. Independent error detection — a cosmic-ray flip in either copy is immediately detected.</td></tr>
+                <tr><td class="col-bits">38</td><td class="col-name">Status (BL)</td><td class="col-desc">Mirror of bit 30. Same cross-layer validation principle.</td></tr>
+                <tr><td class="col-bits">39</td><td class="col-name">Completeness</td><td class="col-desc">0=Full record · 1=Partial, continuation follows. Must be 1 before a 1111 compound continuation marker.</td></tr>
+                <tr><td class="col-bits">40</td><td class="col-name">Extension Flag</td><td class="col-desc">0=record complete · 1=extension byte follows. Extension bytes are chainable — bit 8 of each triggers the next.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ACCOUNT PAIRS -->
+      <div class="acc-item">
+        <button class="acc-trigger" data-target="acc-pairs">
+          <span class="acc-layer amber">A/P</span>
+          <span class="acc-trigger-title">Account Pair Codes — bits 33–36</span>
+          <span class="acc-trigger-meta">16 canonical relationships</span>
+          <span class="acc-chevron">+</span>
+        </button>
+        <div class="acc-body" id="acc-pairs">
+          <div class="acc-inner">
+            <p style="font-size:14px;color:var(--dim);margin-bottom:16px;line-height:1.7">The 4-bit account pair field encodes the fundamental relationship between the two sides of a double-entry transaction. In financial mode, these are chart-of-accounts pairs. In Universal Domain mode, these become the 16 canonical relationship archetypes for any flow between entities.</p>
+            <div class="acc-pair-grid">
+              <div class="acc-pair-cell"><div class="acc-pair-bits">0000</div><div class="acc-pair-name">Op Expense / Asset</div></div>
+              <div class="acc-pair-cell"><div class="acc-pair-bits">0001</div><div class="acc-pair-name">Op Expense / Liability</div></div>
+              <div class="acc-pair-cell"><div class="acc-pair-bits">0010</div><div class="acc-pair-name">Non-Op Expense / Asset</div></div>
+              <div class="acc-pair-cell"><div class="acc-pair-bits">0011</div><div class="acc-pair-name">Non-Op Expense / Liability</div></div>
+              <div class="acc-pair-cell"><div class="acc-pair-bits">0100</div><div class="acc-pair-name">Op Income / Asset</div></div>
+              <div class="acc-pair-cell"><div class="acc-pair-bits">0101</div><div class="acc-pair-name">Op Income / Liability</div></div>
+              <div class="acc-pair-cell"><div class="acc-pair-bits">0110</div><div class="acc-pair-name">Non-Op Income / Asset</div></div>
+              <div class="acc-pair-cell"><div class="acc-pair-bits">0111</div><div class="acc-pair-name">Non-Op Income / Liability</div></div>
+              <div class="acc-pair-cell"><div class="acc-pair-bits">1000</div><div class="acc-pair-name">Asset / Liability</div></div>
+              <div class="acc-pair-cell"><div class="acc-pair-bits">1001</div><div class="acc-pair-name">Asset / Equity</div></div>
+              <div class="acc-pair-cell"><div class="acc-pair-bits">1010</div><div class="acc-pair-name">Liability / Equity</div></div>
+              <div class="acc-pair-cell"><div class="acc-pair-bits">1011</div><div class="acc-pair-name">Asset / Asset</div></div>
+              <div class="acc-pair-cell"><div class="acc-pair-bits">1100</div><div class="acc-pair-name">Liability / Liability</div></div>
+              <div class="acc-pair-cell"><div class="acc-pair-bits">1101</div><div class="acc-pair-name">Equity / Equity</div></div>
+              <div class="acc-pair-cell"><div class="acc-pair-bits">1110</div><div class="acc-pair-name">Correction / Netting</div></div>
+              <div class="acc-pair-cell special"><div class="acc-pair-bits">1111</div><div class="acc-pair-name">Compound Continuation</div></div>
+            </div>
+            <div class="acc-note">1111 is only valid when Layer 1 bit 11 (compound mode) = 1 AND Layer 2 compound prefix ≠ 00. Either alone is insufficient.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- VALUE ENCODING -->
+      <div class="acc-item">
+        <button class="acc-trigger" data-target="acc-val">
+          <span class="acc-layer amber">N=</span>
+          <span class="acc-trigger-title">Value Encoding — N = A × 2^S + r</span>
+          <span class="acc-trigger-meta">No floating point. No gaps. Every integer reachable.</span>
+          <span class="acc-chevron">+</span>
+        </button>
+        <div class="acc-body" id="acc-val">
+          <div class="acc-inner">
+            <div class="acc-formula">N = A × 2<sup style="font-size:12px">S</sup> + r &nbsp;·&nbsp; Real Value = (N × SF) / 10<sup style="font-size:12px">D</sup></div>
+            <table class="bit-table">
+              <thead><tr><th>Variable</th><th>Source</th><th>Meaning</th></tr></thead>
+              <tbody>
+                <tr><td class="col-bits">S</td><td class="col-name">Optimal Split (Layer 2)</td><td class="col-desc">Default 8. Governs the decomposition point. A control record can update S mid-batch without restarting the session.</td></tr>
+                <tr><td class="col-bits">A</td><td class="col-name">Multiplicand (bits 1–17)</td><td class="col-desc">floor(N / 2^S). The upper portion of the integer value.</td></tr>
+                <tr><td class="col-bits">r</td><td class="col-name">Multiplier (bits 18–25)</td><td class="col-desc">N mod 2^S. The lower remainder. Together A and r reconstruct N exactly — no gaps from 0 to 33,554,431.</td></tr>
+                <tr><td class="col-bits">SF</td><td class="col-name">Scaling Factor (Layer 2)</td><td class="col-desc">×1 to ×1,000,000,000. Extends the value range to cover any denomination from cents to quadrillions.</td></tr>
+                <tr><td class="col-bits">D</td><td class="col-name">Decimal Position (Layer 2)</td><td class="col-desc">0, 2, 4, or 6 decimal places. Applied as a divisor after scaling.</td></tr>
+              </tbody>
+            </table>
+            <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--border);margin-top:16px">
+              <div style="background:var(--panel);padding:14px 16px"><div style="font-family:var(--mono);font-size:11px;color:var(--teal)">$4.53 · SF=×1 · D=2</div><div style="font-size:12px;color:var(--dim);margin-top:4px">N=453 · A=1 · r=197</div></div>
+              <div style="background:var(--panel);padding:14px 16px"><div style="font-family:var(--mono);font-size:11px;color:var(--teal)">$2,450,000 · SF=×100 · D=2</div><div style="font-size:12px;color:var(--dim);margin-top:4px">N=24,500 · A=95 · r=180</div></div>
+              <div style="background:var(--panel);padding:14px 16px"><div style="font-family:var(--mono);font-size:11px;color:var(--teal)">24 units @ $2.49 · bit32=1</div><div style="font-size:12px;color:var(--dim);margin-top:4px">A=249 (price) · r=24 (qty) · Real=$59.76</div></div>
+              <div style="background:var(--panel);padding:14px 16px"><div style="font-family:var(--mono);font-size:11px;color:var(--teal)">14.7 kg propellant · SF=×1 · D=2</div><div style="font-size:12px;color:var(--dim);margin-top:4px">N=1470 · A=5 · r=190 (Universal Domain)</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CONTROL RECORDS -->
+      <div class="acc-item">
+        <button class="acc-trigger" data-target="acc-ctrl">
+          <span class="acc-layer">CR</span>
+          <span class="acc-trigger-title">Control Records — 8 bits · 1 byte</span>
+          <span class="acc-trigger-meta">Leading 0 distinguishes from transaction records</span>
+          <span class="acc-chevron">+</span>
+        </button>
+        <div class="acc-body" id="acc-ctrl">
+          <div class="acc-inner">
+            <div class="acc-formula" style="font-size:15px;letter-spacing:0.08em">0 [TTT] [PPPP] &nbsp;·&nbsp; type · payload</div>
+            <table class="bit-table">
+              <thead><tr><th>Type (TTT)</th><th>Function</th><th>Payload</th></tr></thead>
+              <tbody>
+                <tr><td class="col-bits">000</td><td class="col-name">Scaling Factor Change</td><td class="col-desc">0000–1001: SF index. 1111: escape — next byte carries full 7-bit SF.</td></tr>
+                <tr><td class="col-bits">001</td><td class="col-name">Currency Change</td><td class="col-desc">0000–1110: currency index. 1111: escape — next byte carries 6-bit code.</td></tr>
+                <tr><td class="col-bits">010</td><td class="col-name">Batch Close</td><td class="col-desc">Payload: record count 0–14. 1111: escape — next byte carries full count.</td></tr>
+                <tr><td class="col-bits">011</td><td class="col-name">ACK / NACK</td><td class="col-desc">Bit 5=0 ACK · Bit 5=1 NACK. Bits 6–8: batch sequence reference 0–7.</td></tr>
+                <tr><td class="col-bits">100</td><td class="col-name">Compound Group Open</td><td class="col-desc">Payload: record count 1–14 expected in the compound group.</td></tr>
+                <tr><td class="col-bits">101</td><td class="col-name">Optimal Split Update</td><td class="col-desc">Payload: new S value 0–15. Reverts to Layer 2 default at batch close.</td></tr>
+                <tr><td class="col-bits">110</td><td class="col-name">Layer 2 Short-Form</td><td class="col-desc">Payload 1111: all Layer 2 values equal session defaults. Replaces 48-bit header with 1 byte.</td></tr>
+                <tr><td class="col-bits">111</td><td class="col-name">Reserved</td><td class="col-desc">Transmit payload as 1111.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- C0 ENHANCEMENT -->
+      <div class="acc-item">
+        <button class="acc-trigger" data-target="acc-c0">
+          <span class="acc-layer amber">C0</span>
+          <span class="acc-trigger-title">Enhancement Grammar — Signal Slots &amp; Binary Pictography</span>
+          <span class="acc-trigger-meta">13 positions · 29 controls · 4 bits per symbol</span>
+          <span class="acc-chevron">+</span>
+        </button>
+        <div class="acc-body" id="acc-c0">
+          <div class="acc-inner">
+            <p style="font-size:14px;color:var(--dim);line-height:1.75;margin-bottom:20px">The C0 Enhancement Grammar reclaims the 3 upper bits of Unicode's 32 control characters — structurally available since Baudot's 1870 codes and never used in 155 years of protocol evolution. These 3 bits become a universal flag matrix carried on any agreed C0 control byte.</p>
+            <table class="bit-table">
+              <thead><tr><th>Bits (upper 3)</th><th>Flag</th><th>Meaning when set</th></tr></thead>
+              <tbody>
+                <tr><td class="col-bits">bit 7</td><td class="col-name">Priority</td><td class="col-desc">This transmission or signal requires expedited handling at the receiver.</td></tr>
+                <tr><td class="col-bits">bit 6</td><td class="col-name">Acknowledge Request</td><td class="col-desc">Receiver must confirm receipt of this slot before processing continues.</td></tr>
+                <tr><td class="col-bits">bit 5</td><td class="col-name">Continuation</td><td class="col-desc">The signal or event at this slot continues into the next declared slot position.</td></tr>
+              </tbody>
+            </table>
+            <p style="font-size:13px;color:var(--dim);margin:16px 0 8px">13 named signal slot positions span the full BitPads transmission structure:</p>
+            <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px">
+              <span style="font-family:var(--mono);font-size:11px;padding:3px 8px;border:1px solid var(--border);color:var(--teal)">P0 Session open</span>
+              <span style="font-family:var(--mono);font-size:11px;padding:3px 8px;border:1px solid var(--border);color:var(--teal)">P1 Batch open</span>
+              <span style="font-family:var(--mono);font-size:11px;padding:3px 8px;border:1px solid var(--border);color:var(--teal)">P2 Record open</span>
+              <span style="font-family:var(--mono);font-size:11px;padding:3px 8px;border:1px solid var(--border);color:var(--teal)">P3 Meta boundary</span>
+              <span style="font-family:var(--mono);font-size:11px;padding:3px 8px;border:1px solid var(--border);color:var(--amber)">P4 Before value</span>
+              <span style="font-family:var(--mono);font-size:11px;padding:3px 8px;border:1px solid var(--border);color:var(--amber)">P5 After value</span>
+              <span style="font-family:var(--mono);font-size:11px;padding:3px 8px;border:1px solid var(--border);color:var(--amber)">P6 After time</span>
+              <span style="font-family:var(--mono);font-size:11px;padding:3px 8px;border:1px solid var(--border);color:var(--amber)">P7 After task</span>
+              <span style="font-family:var(--mono);font-size:11px;padding:3px 8px;border:1px solid var(--border);color:var(--amber)">P8 After note</span>
+              <span style="font-family:var(--mono);font-size:11px;padding:3px 8px;border:1px solid var(--border);color:var(--dim)">P9–P12 Stream/Wave</span>
+            </div>
+            <div class="acc-note">Legacy compatibility: a teleprinter receiving the same byte stream sees standard C0 controls throughout. BEL rings, FS separates files, EOT closes. A BitPads receiver reads the 3 enhancement bits and decodes rich typed events from the same stream.</div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /accordion -->
+  </div>
+</section>
+
+<!-- CLI ASSEMBLY DEMO -->
+<section id="cli-section">
+  <div class="section-inner">
+    <p class="section-label reveal">Assembly CLI — v0 Reference Implementation</p>
+    <h2 class="section-headline reveal">Written in x86-64 NASM.<br>No C runtime. Direct syscalls.</h2>
+    <p class="section-sub reveal">The BitPads v0 CLI is implemented entirely in hand-assembled x86-64 NASM assembly for macOS — no C runtime linked, no dependencies, direct kernel syscalls via <code style="font-family:var(--mono);font-size:14px;color:var(--teal)">syscall</code>. A 256-byte context block is populated from command-line flags and routed to layer builders. Each builder writes to a stack-allocated output buffer. No heap. No post-processing.</p>
+
+    <div class="reveal" style="margin-bottom:32px">
+      <div class="asm-badge"><span class="asm-badge-dot"></span>x86-64 NASM · macOS Mach-O 64-bit · Direct BSD syscalls · Stack-only allocation</div>
+    </div>
+
+    <div class="cli-wrap reveal">
+      <div class="cli-bar">
+        <div class="cli-dot" style="background:#ff5f57"></div>
+        <div class="cli-dot" style="background:#ffbd2e"></div>
+        <div class="cli-dot" style="background:#28ca41"></div>
+        <span class="cli-bar-title">bitpads · babbworks/bitpads · macOS x86-64</span>
+      </div>
+      <div class="cli-tabs">
+        <button class="cli-tab active" data-pane="p-signal">Signal / Wave</button>
+        <button class="cli-tab" data-pane="p-record">Record</button>
+        <button class="cli-tab" data-pane="p-allblocks">Full Record</button>
+        <button class="cli-tab" data-pane="p-ledger">Ledger</button>
+        <button class="cli-tab" data-pane="p-telem">Telemetry</button>
+        <button class="cli-tab" data-pane="p-enhanced">C0 Enhanced</button>
+      </div>
+
+      <div class="cli-pane active" id="p-signal">
+        <div class="cli-entry">
+          <div style="font-family:var(--mono);font-size:10px;color:var(--dim);margin-bottom:6px;letter-spacing:0.1em;text-transform:uppercase">Pure Signal — 1 byte · The minimum possible BitPads frame</div>
+          <div class="cli-cmd">./bitpads --type signal --out /tmp/t.bp</div>
+          <div class="cli-out">00000000: 00                                       .</div>
+          <p class="cli-desc">A single Meta Byte 1 = 0x00. No Layer 1 header, no payload. The entire meaning lives in session context. One byte from heartbeat to status report.</p>
+        </div>
+        <div class="cli-entry">
+          <div style="font-family:var(--mono);font-size:10px;color:var(--dim);margin-bottom:6px;letter-spacing:0.1em;text-transform:uppercase">Anonymous Wave — 4 bytes · Session-context value, no identity overhead</div>
+          <div class="cli-cmd">./bitpads --type wave --value 255 --tier 1 --out /tmp/t.bp</div>
+          <div class="cli-out">00000000: 0002 06ff                                ....
+<span style="color:var(--dim)">Meta1=0x00 (Wave) · Meta2=0x02 (Setup present) · Setup=0x06 (Tier 1) · Value=0xFF</span></div>
+          <p class="cli-desc">Wave frames carry no Layer 1 session header. The Setup Byte is auto-inserted because Tier 1 overrides the session default of Tier 3. Value 255 encodes as a single byte at Tier 1.</p>
+        </div>
+      </div>
+
+      <div class="cli-pane" id="p-record">
+        <div class="cli-entry">
+          <div style="font-family:var(--mono);font-size:10px;color:var(--dim);margin-bottom:6px;letter-spacing:0.1em;text-transform:uppercase">Record with 32-bit Sender ID — 10 bytes</div>
+          <div class="cli-cmd">./bitpads --type record --sender 0xDEADBEEF --out /tmp/t.bp</div>
+          <div class="cli-out">00000000: 800d eadb eef0 620e 8000                 ......b...
+<span style="color:var(--dim)">Layer 1 (8B) + Meta1 + Meta2 · Sender 0xDEADBEEF packed bits 13–44 · CRC-15 = 0x620E</span></div>
+          <p class="cli-desc">The 32-bit sender ID is never stored contiguously — it spans bytes 1–5, interleaved with domain and permission fields. The CRC-15 covers the full 49-bit Layer 1 payload, binding sender identity to the checksum.</p>
+        </div>
+        <div class="cli-entry">
+          <div style="font-family:var(--mono);font-size:10px;color:var(--dim);margin-bottom:6px;letter-spacing:0.1em;text-transform:uppercase">Record with Note Block — 16 bytes</div>
+          <div class="cli-cmd">./bitpads --type record --sender 0x1 --note "hello" --out /tmp/t.bp</div>
+          <div class="cli-out">00000000: 8000 0000 0010 00e8 8100 0568 656c 6c6f  ...........hello
+<span style="color:var(--dim)">Meta1=0x81 (Record+Note) · Length byte 0x05 · 5-byte inline UTF-8 payload</span></div>
+          <p class="cli-desc">The Note block is always the last component. A length byte precedes the raw UTF-8 payload, capping at 63 bytes. The receiver reads Role C flags from Meta Byte 1 left-to-right (Value, Time, Task, Note) to determine what follows.</p>
+        </div>
+        <div class="cli-entry">
+          <div style="font-family:var(--mono);font-size:10px;color:var(--dim);margin-bottom:6px;letter-spacing:0.1em;text-transform:uppercase">Engineering Domain · Full permissions — 10 bytes</div>
+          <div class="cli-cmd">./bitpads --type record --sender 0x42 --domain eng --perms 15 --out /tmp/t.bp</div>
+          <div class="cli-out">00000000: 9f00 0000 0420 3056 8000                 ..... 0V..
+<span style="color:var(--dim)">L1 byte[0]=0x9F · SOH + domain 01 (Engineering) + perms 1111 (R/W/Correct/Proxy)</span></div>
+          <p class="cli-desc">Layer 1 byte[0] packs SOH (bit 7), 2-bit domain (bits 5–4), and 4-bit permissions (bits 3–0) in a single byte. Engineering domain = 01 binary. Permissions are a bitfield — each bit an independent capability grant.</p>
+        </div>
+      </div>
+
+      <div class="cli-pane" id="p-allblocks">
+        <div class="cli-entry">
+          <div style="font-family:var(--mono);font-size:10px;color:var(--dim);margin-bottom:6px;letter-spacing:0.1em;text-transform:uppercase">All Four Optional Blocks — 20 bytes</div>
+          <div class="cli-cmd">./bitpads --type record --sender 0x1 --value 999 --tier 2 --time 50 --task-code 3 --note "test" --out /tmp/t.bp</div>
+          <div class="cli-out">00000000: 8000 0000 0010 00e8 8f06 4603 e732 0604  ..........F..2..
+00000010: 7465 7374                                test
+<span style="color:var(--dim)">Meta1=0x8F (all Role C flags) · Setup+T1S · Value 999 (Tier 2) · Time 50 · Task code 3 · Note "test"</span></div>
+          <p class="cli-desc">Assembly sequence is fixed: Setup Byte → value → time → task → note. The receiver uses Meta Byte 1 as a map and Meta Byte 2 for encoding overrides, advancing through fixed-width blocks in declaration order. No inline type or length markers between components.</p>
+        </div>
+        <div class="cli-entry">
+          <div style="font-family:var(--mono);font-size:10px;color:var(--dim);margin-bottom:6px;letter-spacing:0.1em;text-transform:uppercase">Record + Layer 2 Batch Header — 16 bytes</div>
+          <div class="cli-cmd">./bitpads --type record --sender 0x1 --layer2 --out /tmp/t.bp</div>
+          <div class="cli-out">00000000: 8000 0000 0010 00e8 4042 0000 0001 8000  ........@B......
+<span style="color:var(--dim)">Layer 2 (6B): tx type 0x40 (pre-converted) · default SF/DP · reserved bit 0x01</span></div>
+          <p class="cli-desc">Layer 2 is inserted between Layer 1 and the meta bytes. Even a bare <code style="color:var(--teal);font-family:var(--mono)">--layer2</code> produces a fully populated 6-byte structure because all fields have defined defaults. Transmission type 0x00 is a protocol error — the default is 0x40.</p>
+        </div>
+      </div>
+
+      <div class="cli-pane" id="p-ledger">
+        <div class="cli-entry">
+          <div style="font-family:var(--mono);font-size:10px;color:var(--dim);margin-bottom:6px;letter-spacing:0.1em;text-transform:uppercase">Basic Double-Entry — 15 bytes</div>
+          <div class="cli-cmd">./bitpads --type ledger --sender 0x1 --acct 1 --dir 0 --out /tmp/t.bp</div>
+          <div class="cli-out">00000000: 8000 0000 0010 00e8 0000 0000 1080 00    ...............
+<span style="color:var(--dim)">Layer 1 (8B) + Meta1 + Meta2 + Layer 3 (5B) · Account pair 1 · Direction 0 (In)</span></div>
+          <p class="cli-desc">Layer 3 adds the 5-byte double-entry record after the meta bytes. Account pair 1 = Debtor/Creditor. The frame type in Layer 1 tells the receiver to expect Layer 3. Meta bytes still govern optional blocks (value, time, task, note) that can follow.</p>
+        </div>
+        <div class="cli-entry">
+          <div style="font-family:var(--mono);font-size:10px;color:var(--dim);margin-bottom:6px;letter-spacing:0.1em;text-transform:uppercase">Compound Continuation Frame — 21 bytes · Account pair 1111</div>
+          <div class="cli-cmd">./bitpads --type ledger --sender 0x1 --layer2 --compound --compound-max unlim --acct 15 --dir 0 --out /tmp/t.bp</div>
+          <div class="cli-out">00000000: 8000 0000 0010 00e8 4042 0000 0031 0000  ........@B...1..
+00000010: 0000 f080 00                             .....
+<span style="color:var(--dim)">Layer 2 byte[5]=0x31 · compound prefix=11 (unlimited) · Account pair 0xF (1111) = continuation marker</span></div>
+          <p class="cli-desc">Account pair 1111 is the protocol join marker — exclusively for compound continuation. Valid only when Layer 1 bit 11 (compound mode) = 1 AND Layer 2 compound prefix ≠ 00. Either condition alone is insufficient. The receiver links this record to its predecessor with the Completeness bit as the initiating signal.</p>
+        </div>
+      </div>
+
+      <div class="cli-pane" id="p-telem">
+        <div class="cli-entry">
+          <div style="font-family:var(--mono);font-size:10px;color:var(--dim);margin-bottom:6px;letter-spacing:0.1em;text-transform:uppercase">Telemetry Heartbeat — 3 bytes</div>
+          <div class="cli-cmd">./bitpads --type telem --tel-type heartbeat --tel-data 1 --out /tmp/t.bp</div>
+          <div class="cli-out">00000000: 1e00 a1                                  ...
+<span style="color:var(--dim)">Meta1=0x1E · category 14 (Telegraph) · telegraph byte 0xA1 = heartbeat (0xA0) + seq 1</span></div>
+          <p class="cli-desc">The <code style="color:var(--teal);font-family:var(--mono)">telem</code> shorthand auto-sets domain=Engineering and category=14 (Telegraph Emulation). Telegraph byte packs message type in upper 3 bits and inline payload in lower 5. Heartbeat type = bits[7:5]=101. No Layer 1 header — 3-byte total.</p>
+        </div>
+        <div class="cli-entry">
+          <div style="font-family:var(--mono);font-size:10px;color:var(--dim);margin-bottom:6px;letter-spacing:0.1em;text-transform:uppercase">Telemetry Status ERR — 3 bytes</div>
+          <div class="cli-cmd">./bitpads --type telem --tel-type status --tel-data 2 --out /tmp/t.bp</div>
+          <div class="cli-out">00000000: 1e00 02                                  ...
+<span style="color:var(--dim)">Telegraph byte 0x02 · status type bits[7:5]=000 · code 2 = ERR</span></div>
+          <p class="cli-desc">All telegraph messages share the same 3-byte frame layout. The only difference is the telegraph byte. Status type contributes 0x00 to bits[7:5]; code 2 fills the lower 5 bits. Legacy hardware receiving this stream sees standard C0 controls throughout — BEL rings, EOT closes.</p>
+        </div>
+        <div class="cli-entry">
+          <div style="font-family:var(--mono);font-size:10px;color:var(--dim);margin-bottom:6px;letter-spacing:0.1em;text-transform:uppercase">Priority Alert — 3 bytes</div>
+          <div class="cli-cmd">./bitpads --type wave --category 14 --tel-type priority --tel-data 15 --out /tmp/t.bp</div>
+          <div class="cli-out">00000000: 1e00 cf                                  ...
+<span style="color:var(--dim)">Priority type bits[7:5]=110 = 0xC0 · escalation code 15 = 0x0F → 0xCF</span></div>
+          <p class="cli-desc">Same result as using <code style="color:var(--teal);font-family:var(--mono)">--type telem</code>. The distinction is at the CLI level only. Category 14 in Meta Byte 1 activates Role B mode — the receiver treats the next byte as a telegraph header regardless of which path generated it.</p>
+        </div>
+      </div>
+
+      <div class="cli-pane" id="p-enhanced">
+        <div class="cli-entry">
+          <div style="font-family:var(--mono);font-size:10px;color:var(--dim);margin-bottom:6px;letter-spacing:0.1em;text-transform:uppercase">C0 Enhancement · Signal Slot P4 — 14 bytes</div>
+          <div class="cli-cmd">./bitpads --type record --sender 0x1 --enhance --slot-p4 0xAB --value 10 --tier 1 --out /tmp/t.bp</div>
+          <div class="cli-out">00000000: 8010 0000 0010 0768 8803 878b 060a       .......h......
+<span style="color:var(--dim)">L1 byte[1]=0x10 (Enhancement Flag) · Meta2=0x03 (Setup+Slots) · SSP=0x87 · Signal 0xAB at P4 · Setup 0x06 · Value 10</span></div>
+          <p class="cli-desc">Enhancement Flag in Layer 1 activates C0 grammar for the session. Meta Byte 2 bit[0] signals that a Signal Slot Presence byte (SSP) follows. SSP 0x87 declares P4 active — it fires immediately before the value block. Assembly order: meta pair → SSP → P4 signal → Setup Byte → value. Position is absolute; skipping a declared slot is a protocol violation.</p>
+        </div>
+        <div class="cli-entry">
+          <div style="font-family:var(--mono);font-size:10px;color:var(--dim);margin-bottom:6px;letter-spacing:0.1em;text-transform:uppercase">Compact Command · Class Configure — 4 bytes</div>
+          <div class="cli-cmd">./bitpads --type wave --category 12 --cmd-class 2 --cmd-params 1 --cmd-p1 0xFF --out /tmp/t.bp</div>
+          <div class="cli-out">00000000: 1c00 24ff                                ..$.
+<span style="color:var(--dim)">Meta1=0x1C (category 0xC=1100) · command byte 0x24 = class Configure(0x20) + 1 param(0x04) · param 0xFF</span></div>
+          <p class="cli-desc">Category 12 activates the Compact Command sub-protocol. The command byte packs class (upper nibble) and parameter count code (lower nibble). Class 2 = Configure → 0x20. Count 1 → 0x04. Parameter bytes follow in declaration order. No Setup Byte or value encoding applies — the compact command payload is entirely self-described.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- COMPARISON (existing) -->
+  <div class="section-inner">
+    <p class="section-label reveal">Industry Context</p>
+    <h2 class="section-headline reveal">The reduction is structural,<br>not compressive.</h2>
+    <p class="section-sub reveal">No decompression step. No schema lookup. No length-prefixed string parsing. The decoder reads fixed bit positions and the record is complete. On a link measured in bits per second, this matters enormously.</p>
+
+    <div class="compare-grid" id="compare-grid">
+      <div class="compare-row">
+        <span class="compare-label">BitLedger</span>
+        <div class="compare-bar-track">
+          <div class="compare-bar-fill" data-width="0.65%" style="background:var(--teal)">
+            <span style="color:var(--void)">~512 B</span>
+          </div>
+        </div>
+        <span class="compare-note">100 txns</span>
+      </div>
+      <div class="compare-row">
+        <span class="compare-label">ISO 8583</span>
+        <div class="compare-bar-track">
+          <div class="compare-bar-fill" data-width="4%" style="background:var(--blue)">
+            <span style="color:#fff">~3 KB</span>
+          </div>
+        </div>
+        <span class="compare-note">~6×</span>
+      </div>
+      <div class="compare-row">
+        <span class="compare-label">CSV</span>
+        <div class="compare-bar-track">
+          <div class="compare-bar-fill" data-width="20%" style="background:rgba(200,124,64,0.7)">
+            <span style="color:#fff">~15 KB</span>
+          </div>
+        </div>
+        <span class="compare-note">~30×</span>
+      </div>
+      <div class="compare-row">
+        <span class="compare-label">JSON</span>
+        <div class="compare-bar-track">
+          <div class="compare-bar-fill" data-width="65%" style="background:rgba(180,60,60,0.6)">
+            <span style="color:#fff">~80 KB</span>
+          </div>
+        </div>
+        <span class="compare-note">~156×</span>
+      </div>
+      <div class="compare-row">
+        <span class="compare-label">XML/SOAP</span>
+        <div class="compare-bar-track">
+          <div class="compare-bar-fill" data-width="100%" style="background:rgba(140,40,40,0.5)">
+            <span style="color:#fff">200 KB+</span>
+          </div>
+        </div>
+        <span class="compare-note">~400×</span>
+      </div>
+    </div>
+
+    <div style="margin-top:48px;display:grid;grid-template-columns:repeat(3,1fr);gap:16px">
+      <div style="padding:24px;border:1px solid var(--border);background:var(--panel)" class="reveal">
+        <p style="font-size:12px;font-family:var(--mono);color:var(--amber);margin-bottom:8px">vs. ISO 8583</p>
+        <p style="font-size:14px;line-height:1.6;color:var(--dim)">Nearest binary peer. BitLedger adds native double-entry account-pair semantics, compound continuation markers, session-layer CRC, and cross-domain capability.</p>
+      </div>
+      <div style="padding:24px;border:1px solid var(--border);background:var(--panel)" class="reveal reveal-delay-1">
+        <p style="font-size:12px;font-family:var(--mono);color:var(--amber);margin-bottom:8px">vs. NACHA / ISO 20022</p>
+        <p style="font-size:14px;line-height:1.6;color:var(--dim)">Strong double-entry semantics but text-based or XML by default. No per-record CRC-15. Designed for nightly batch settlement, not real-time low-bandwidth links.</p>
+      </div>
+      <div style="padding:24px;border:1px solid var(--border);background:var(--panel)" class="reveal reveal-delay-2">
+        <p style="font-size:12px;font-family:var(--mono);color:var(--amber);margin-bottom:8px">vs. TigerBeetle / Protobuf</p>
+        <p style="font-size:14px;line-height:1.6;color:var(--dim)">Storage engines and general serialisation, not transmission protocols. TigerBeetle's Transfer record is 128 bytes. BitLedger's is 5 — orders of magnitude leaner for constrained links.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DOCS CTA -->
+<section id="docs">
+  <h2 class="docs-headline reveal">Read the specification.</h2>
+  <p class="docs-sub reveal">Five protocol documents. Every wire format decision logged. Open specification under active development by Babb Works Inc.</p>
+
+  <div class="docs-links">
+    <a class="doc-link reveal" href="https://github.com/babbworks/bitpads/blob/master/protocol%20docs/markdown/BitLedger_Protocol_v3.md" target="_blank" rel="noopener">
+      <span class="doc-link-icon">▸</span>
+      <div>
+        <div>BitLedger Protocol v3.0</div>
+        <div class="doc-link-size">75 KB · Full bit-level specification</div>
+      </div>
+    </a>
+    <a class="doc-link reveal reveal-delay-1" href="https://github.com/babbworks/bitpads/blob/master/protocol%20docs/markdown/BitLedger_Universal_Domain.md" target="_blank" rel="noopener">
+      <span class="doc-link-icon">▸</span>
+      <div>
+        <div>BitLedger Universal Domain v1.0</div>
+        <div class="doc-link-size">57 KB · Any conserved scalar</div>
+      </div>
+    </a>
+    <a class="doc-link reveal reveal-delay-2" href="https://github.com/babbworks/bitpads/blob/master/protocol%20docs/markdown/BitPads_Protocol_v2.md" target="_blank" rel="noopener">
+      <span class="doc-link-icon">▸</span>
+      <div>
+        <div>BitPads Protocol v2.0</div>
+        <div class="doc-link-size">56 KB · Meta-layer specification</div>
+      </div>
+    </a>
+    <a class="doc-link reveal reveal-delay-3" href="https://github.com/babbworks/bitpads/blob/master/protocol%20docs/markdown/BitPads_Enhancement_Subprotocol_v2.md" target="_blank" rel="noopener">
+      <span class="doc-link-icon">▸</span>
+      <div>
+        <div>Enhancement Sub-Protocol v2.0</div>
+        <div class="doc-link-size">147 KB · C0 grammar · Signal slots</div>
+      </div>
+    </a>
+  </div>
+
+  <div style="border-top:1px solid var(--border);padding-top:48px;max-width:600px;margin:0 auto;" class="reveal">
+    <p style="font-family:var(--serif);font-style:italic;font-size:19px;line-height:1.7;color:var(--dim)">
+      "The protocol did not set out to be universal. It became universal because the conservation invariant is universal."
+    </p>
+    <p style="font-family:var(--mono);font-size:11px;color:var(--amber);margin-top:16px;letter-spacing:0.08em">— BitPads README</p>
+  </div>
+</section>
+
+<!-- PILOT INQUIRY -->
+<section id="pilot">
+  <div class="section-inner">
+    <p class="section-label reveal">Pilot Programme</p>
+    <h2 class="section-headline reveal">Work with the protocol.</h2>
+    <div class="pilot-grid">
+      <div class="pilot-meta reveal">
+        <p>BitLedger and BitPads are under active development and seeking pilot partners across finance, industrial operations, and deep-space / remote communications infrastructure. If your organisation transmits high-volume records over constrained, intermittent, or high-latency links — or requires ledger-native binary encoding without the overhead of XML or JSON — we want to hear from you.</p>
+        <p>Pilot engagements cover protocol integration guidance, custom domain profile design (financial, engineering, hybrid), CLI tooling for your platform, and direct access to the specification authors.</p>
+        <p>The protocol is open specification. The CLI implementation is under active development for macOS and Linux. Python reference decoder available.</p>
+        <div class="pilot-contact-block">
+          <p>Direct enquiries:</p>
+          <a href="mailto:bitpads@babb.tel">bitpads@babb.tel</a>
+        </div>
+      </div>
+
+      <form class="pilot-form reveal" id="pilot-form">
+        <div class="pf-row">
+          <label class="pf-label">Name</label>
+          <input class="pf-input" type="text" name="name" placeholder="Your name" required>
+        </div>
+        <div class="pf-row">
+          <label class="pf-label">Organisation</label>
+          <input class="pf-input" type="text" name="org" placeholder="Company or institution">
+        </div>
+        <div class="pf-row">
+          <label class="pf-label">Email</label>
+          <input class="pf-input" type="email" name="email" placeholder="you@organisation.com" required>
+        </div>
+        <div class="pf-row">
+          <label class="pf-label">Domain / Use Case</label>
+          <select class="pf-select" name="domain">
+            <option value="">Select your primary domain</option>
+            <option value="finance">Financial Records &amp; Ledger Transmission</option>
+            <option value="space">Deep Space / Satellite Operations</option>
+            <option value="iot">IoT / Edge Networks</option>
+            <option value="manufacturing">Manufacturing / Supply Chain</option>
+            <option value="defence">Defence / Remote Communications</option>
+            <option value="research">Academic / Research</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+        <div class="pf-row">
+          <label class="pf-label">Message</label>
+          <textarea class="pf-textarea" name="message" rows="4" placeholder="Describe your use case, transmission environment, and any specific constraints (bandwidth, latency, hardware)…"></textarea>
+        </div>
+        <button type="submit" class="pf-submit">Send Enquiry →</button>
+        <p class="pf-note">Enquiries are sent to bitpads@babb.tel · Babb Works Inc.</p>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div>
+    <span style="color:var(--teal);font-family:var(--mono);font-weight:700">BitLedger</span> &amp;
+    <span style="color:var(--amber);font-family:var(--mono)">BitPads</span>
+    · Open specification · Active development
+  </div>
+  <div style="display:flex;gap:24px">
+    <a href="https://github.com/babbworks/bitpads" target="_blank" rel="noopener">GitHub ↗</a>
+    <a href="https://github.com/babbworks" target="_blank" rel="noopener">Babb Works Inc. ↗</a>
+  </div>
+</footer>
+
+<script>
+/* Suppress benign ResizeObserver iframe warning */
+window.addEventListener('error', e => {
+  if (e.message && e.message.includes('ResizeObserver')) { e.stopImmediatePropagation(); e.preventDefault(); }
+});
+
+/* ── STAR FIELD ── */
+(function() {
+  const canvas = document.getElementById('starfield');
+  const ctx = canvas.getContext('2d');
+  let stars = [];
+  let W, H;
+
+  function resize() {
+    const rect = canvas.parentElement.getBoundingClientRect();
+    W = canvas.width = rect.width || window.innerWidth;
+    H = canvas.height = rect.height || window.innerHeight;
+    stars = [];
+    for (let i = 0; i < 260; i++) {
+      stars.push({
+        x: Math.random() * W,
+        y: Math.random() * H,
+        r: Math.random() * 1.4 + 0.2,
+        o: Math.random() * 0.7 + 0.1,
+        s: Math.random() * 0.3 + 0.05,
+        p: Math.random() * Math.PI * 2
+      });
+    }
+  }
+
+  function draw(t) {
+    ctx.clearRect(0, 0, W, H);
+    for (const s of stars) {
+      const flicker = s.o + Math.sin(t * s.s + s.p) * 0.15;
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(228,222,208,${Math.max(0, Math.min(1, flicker))})`;
+      ctx.fill();
+    }
+    requestAnimationFrame(draw);
+  }
+
+  let resizeTimer;
+  window.addEventListener('resize', () => { clearTimeout(resizeTimer); resizeTimer = setTimeout(resize, 120); });
+  resize();
+  requestAnimationFrame(draw);
+})();
+
+/* ── HERO BIT COUNTER ── */
+(function() {
+  const el = document.getElementById('hero-counter');
+  const target = 40;
+  let start = null;
+  const dur = 1800;
+  function step(ts) {
+    if (!start) start = ts;
+    const progress = Math.min((ts - start) / dur, 1);
+    const ease = 1 - Math.pow(1 - progress, 3);
+    el.textContent = Math.round(ease * target);
+    if (progress < 1) requestAnimationFrame(step);
+  }
+  setTimeout(() => requestAnimationFrame(step), 600);
+})();
+
+/* ── BIT RECORD VIZ ── */
+(function() {
+  const row = document.getElementById('bit-row');
+  const ann = document.getElementById('bit-ann');
+  const regions = [
+    { count: 17, cls: 'bit-region-mult',  label: '1–17' },
+    { count: 8,  cls: 'bit-region-multi', label: '18–25' },
+    { count: 7,  cls: 'bit-region-flags', label: '26–32' },
+    { count: 4,  cls: 'bit-region-pair',  label: '33–36' },
+    { count: 4,  cls: 'bit-region-bl',    label: '37–40' }
+  ];
+  const totalW = regions.reduce((a, r) => a + r.count, 0);
+  regions.forEach(region => {
+    const pct = (region.count / totalW * 100).toFixed(2);
+    for (let i = 0; i < region.count; i++) {
+      const b = document.createElement('div');
+      b.className = `bit-block ${region.cls}`;
+      b.style.flex = `${1}`;
+      row.appendChild(b);
+    }
+    const a = document.createElement('div');
+    a.className = 'bit-ann';
+    a.style.flex = `${region.count}`;
+    a.textContent = region.label;
+    ann.appendChild(a);
+  });
+
+  // animate bits when visible
+  const obs = new IntersectionObserver(entries => {
+    if (entries[0].isIntersecting) {
+      const bits = row.querySelectorAll('.bit-block');
+      bits.forEach((b, i) => {
+        setTimeout(() => b.classList.add('visible'), i * 18);
+      });
+      obs.disconnect();
+    }
+  }, { threshold: 0.3 });
+  obs.observe(row);
+})();
+
+/* ── NAV SCROLL ── */
+window.addEventListener('scroll', () => {
+  document.getElementById('nav').classList.toggle('scrolled', window.scrollY > 40);
+}, { passive: true });
+
+/* ── SCROLL REVEAL ── */
+(function() {
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        obs.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.12 });
+  document.querySelectorAll('.reveal, .stat-card, .error-card, .domain-card, .frame-row:not(.header)').forEach(el => obs.observe(el));
+})();
+
+/* ── COMPARISON BARS ── */
+(function() {
+  const obs = new IntersectionObserver(entries => {
+    if (entries[0].isIntersecting) {
+      document.querySelectorAll('.compare-bar-fill').forEach(bar => {
+        const w = bar.dataset.width;
+        setTimeout(() => bar.style.width = w, 100);
+      });
+      obs.disconnect();
+    }
+  }, { threshold: 0.3 });
+  const grid = document.getElementById('compare-grid');
+  if (grid) obs.observe(grid);
+})();
+
+/* ── FRAME BAR WIDTHS ── */
+(function() {
+  const obs = new IntersectionObserver(entries => {
+    if (entries[0].isIntersecting) {
+      document.querySelectorAll('.frame-bar').forEach(bar => {
+        const w = bar.dataset.width;
+        setTimeout(() => bar.style.width = w || '100%', 200);
+      });
+      obs.disconnect();
+    }
+  }, { threshold: 0.2 });
+  const el = document.querySelector('.frame-spectrum');
+  if (el) obs.observe(el);
+})();
+</script>
+
+<template id="__bundler_thumbnail">
+<svg viewBox="0 0 200 140" xmlns="http://www.w3.org/2000/svg">
+  <rect width="200" height="140" fill="#060910"/>
+  <text x="100" y="60" font-family="monospace" font-size="36" fill="#00c4ac" text-anchor="middle" font-weight="bold">40</text>
+  <text x="100" y="82" font-family="monospace" font-size="10" fill="rgba(0,196,172,0.6)" text-anchor="middle">bits</text>
+  <text x="100" y="110" font-family="sans-serif" font-size="9" fill="#6a7a90" text-anchor="middle">BitLedger · BitPads</text>
+</svg>
+</template>
+<!-- SIDEBAR OVERLAY -->
+<div class="sidebar-overlay" id="sidebar-overlay"></div>
+<div class="sidebar-panel" id="sidebar-panel">
+  <div class="sidebar-list" id="sidebar-list">
+    <div class="sidebar-list-head">Doc Library · Live from GitHub</div>
+  </div>
+  <div class="sidebar-content">
+    <div class="sidebar-top">
+      <span class="sidebar-doc-name" id="sidebar-doc-name">Select a document</span>
+      <span class="sidebar-src" id="sidebar-src"></span>
+      <button class="sidebar-close-btn" id="sidebar-close-btn">×</button>
+    </div>
+    <div class="sidebar-body" id="sidebar-body">
+      <div class="sidebar-empty">
+        <svg width="40" height="40" viewBox="0 0 40 40" fill="none" style="margin:0 auto 16px;display:block"><rect x="6" y="4" width="28" height="34" rx="2" stroke="var(--dim)" stroke-width="1.2"/><line x1="12" y1="13" x2="28" y2="13" stroke="var(--dim)" stroke-width="1"/><line x1="12" y1="19" x2="24" y2="19" stroke="var(--dim)" stroke-width="1"/><line x1="12" y1="25" x2="20" y2="25" stroke="var(--dim)" stroke-width="1"/></svg>
+        <p>Select a document from the list to read it here, fetched live from the GitHub repository.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FLOATING DOC LIBRARY BUTTON -->
+<button class="docs-fab" id="docs-fab">
+  <span class="docs-fab-icon">⊞</span>
+  Doc Library
+</button>
+
+<script>
+/* ── ENCODER ── */
+(function() {
+  const PAIR_NAMES = [
+    ['Op Expense','Asset'],['Op Expense','Liability'],
+    ['Non-Op Expense','Asset'],['Non-Op Expense','Liability'],
+    ['Op Income','Asset'],['Op Income','Liability'],
+    ['Non-Op Income','Asset'],['Non-Op Income','Liability'],
+    ['Asset','Liability'],['Asset','Equity'],
+    ['Liability','Equity'],['Asset','Asset'],
+    ['Liability','Liability'],['Equity','Equity'],
+    ['Correction','Netting']
+  ];
+  const SFs = [1,10,100,1000,10000,100000,1000000,10000000,100000000,1000000000];
+  const toggleState = { dir: 0, sts: 0, dc: 1 };
+
+  window.setToggle = function(group, val) {
+    toggleState[group] = val;
+    const keys = group === 'dir' ? ['dir-0','dir-1'] : group === 'sts' ? ['sts-0','sts-1'] : ['dc-1','dc-0'];
+    keys.forEach((k,i) => {
+      const el = document.getElementById('enc-' + k);
+      if (el) el.classList.toggle('on', (group === 'dc' ? (i===0 ? val===1 : val===0) : i===val));
+    });
+    // fix dc toggle logic
+    if (group === 'dc') {
+      document.getElementById('enc-dc-1').classList.toggle('on', val===1);
+      document.getElementById('enc-dc-0').classList.toggle('on', val===0);
+    }
+  };
+
+  // Build bit row — 40 blocks pre-rendered
+  const REGIONS = [{n:17,cls:'c0'},{n:8,cls:'c1'},{n:7,cls:'c2'},{n:4,cls:'c3'},{n:4,cls:'c4'}];
+  const bitRow = document.getElementById('enc-bit-row');
+  if (bitRow) {
+    REGIONS.forEach(r => {
+      for (let i=0; i<r.n; i++) {
+        const b = document.createElement('div');
+        b.className = 'enc-bit ' + r.cls;
+        b.textContent = '0';
+        bitRow.appendChild(b);
+      }
+    });
+  }
+
+  function encode40(value, sfIdx, dp, pair, dir, sts, dc) {
+    const SF = SFs[sfIdx] || 1;
+    const rawN = value * Math.pow(10, dp) / SF;
+    let N = Math.round(rawN);
+    N = Math.max(0, Math.min(N, 33554431));
+    const rounded = Math.abs(rawN - N) > 0.0005;
+    const roundDir = rounded ? (N >= rawN ? 1 : 0) : 0;
+    const A = Math.floor(N / 256);
+    const r = N % 256;
+    // 40 bits
+    const bits = [];
+    for (let i=16;i>=0;i--) bits.push((A>>i)&1);   // 1-17 Multiplicand
+    for (let i=7; i>=0;i--) bits.push((r>>i)&1);    // 18-25 Multiplier
+    bits.push(rounded?1:0);  // 26 rounding
+    bits.push(roundDir);     // 27 round dir
+    bits.push(0);            // 28 split order
+    bits.push(dir&1);        // 29 direction
+    bits.push(sts&1);        // 30 status
+    bits.push(dc&1);         // 31 debit/credit
+    bits.push(0);            // 32 qty present
+    for (let i=3;i>=0;i--) bits.push((pair>>i)&1);  // 33-36 account pair
+    bits.push(dir&1);        // 37 direction mirror
+    bits.push(sts&1);        // 38 status mirror
+    bits.push(0);            // 39 completeness (full)
+    bits.push(0);            // 40 extension
+    return { bits, A, r, N, rounded, roundDir };
+  }
+
+  function toHex5(bits) {
+    const bytes = [];
+    for (let b=0; b<5; b++) {
+      let v=0;
+      for (let i=0;i<8;i++) v=(v<<1)|bits[b*8+i];
+      bytes.push(v.toString(16).padStart(2,'0').toUpperCase());
+    }
+    return bytes;
+  }
+
+  function fmtVal(value, dp) {
+    return value.toLocaleString('en-US', {minimumFractionDigits: dp, maximumFractionDigits: dp});
+  }
+
+  document.getElementById('enc-create').addEventListener('click', function() {
+    const btn = this;
+    btn.disabled = true;
+    btn.textContent = 'Encoding…';
+
+    const value = parseFloat(document.getElementById('enc-val').value) || 0;
+    const sfIdx = parseInt(document.getElementById('enc-sf').value) || 0;
+    const dp    = parseInt(document.getElementById('enc-dp').value)  || 0;
+    const pair  = parseInt(document.getElementById('enc-pair').value) || 0;
+    const dir   = toggleState.dir;
+    const sts   = toggleState.sts;
+    const dc    = toggleState.dc;
+
+    const enc = encode40(value, sfIdx, dp, pair, dir, sts, dc);
+    const hexBytes = toHex5(enc.bits);
+    const pairName = PAIR_NAMES[pair] || ['—','—'];
+    const bits = enc.bits;
+
+    // Reset all blocks
+    const blocks = bitRow.querySelectorAll('.enc-bit');
+    blocks.forEach(b => { b.classList.remove('lit'); b.textContent = '0'; });
+
+    // Per-bit delays — slower for flags/pair/BL
+    const delays = [];
+    let t = 0;
+    for (let i=0;  i<17; i++) { delays.push(t); t += 42; }  // Multiplicand
+    t += 220;
+    for (let i=0;  i<8;  i++) { delays.push(t); t += 42; }  // Multiplier
+    t += 220;
+    for (let i=0;  i<7;  i++) { delays.push(t); t += 90; }  // Flags
+    t += 260;
+    for (let i=0;  i<4;  i++) { delays.push(t); t += 130; } // Account Pair
+    t += 260;
+    for (let i=0;  i<4;  i++) { delays.push(t); t += 130; } // BL flags
+
+    blocks.forEach((block, i) => {
+      setTimeout(() => {
+        block.textContent = bits[i];
+        block.classList.add('lit');
+        if (i === 39) {
+          // Final — show journal entry
+          setTimeout(() => renderJournal(enc, hexBytes, value, dp, pair, dir, sts, dc, pairName), 200);
+          btn.disabled = false;
+          btn.textContent = 'Create →';
+        }
+      }, delays[i]);
+    });
+  });
+
+  function renderJournal(enc, hexBytes, value, dp, pair, dir, sts, dc, pairName) {
+    const debitAcct  = dc===1 ? pairName[0] : pairName[1];
+    const creditAcct = dc===1 ? pairName[1] : pairName[0];
+    const statusStr  = sts===1 ? 'Debt / Accrued' : 'Paid / Settled';
+    const dirStr     = dir===1 ? 'Out' : 'In';
+    const precStr    = enc.rounded ? (enc.roundDir===1 ? 'Rounded UP' : 'Rounded DOWN') : 'Exact';
+    const valStr     = value.toLocaleString('en-US', {minimumFractionDigits: dp>0?dp:0, maximumFractionDigits: dp>0?dp:0});
+    const bitStr     = enc.bits.slice(0,17).join('') + ' ' + enc.bits.slice(17,25).join('') + ' ' +
+                       enc.bits.slice(25,32).join('') + ' ' + enc.bits.slice(32,36).join('') + ' ' +
+                       enc.bits.slice(36).join('');
+    const hexStr     = hexBytes.join(' ');
+
+    document.getElementById('enc-journal').innerHTML = `
+<div>──────────────────────────────────────────</div>
+<div><strong>BITLEDGER JOURNAL ENTRY</strong></div>
+<div>──────────────────────────────────────────</div>
+<div><strong style="color:var(--text)">DEBIT &nbsp;</strong> ${debitAcct.padEnd(24,' ')} USD &nbsp;<strong style="color:var(--teal)">${valStr}</strong></div>
+<div><strong style="color:var(--text)">CREDIT</strong> ${creditAcct.padEnd(24,' ')} USD &nbsp;<strong style="color:var(--teal)">${valStr}</strong></div>
+<div>──────────────────────────────────────────</div>
+<div>Status: ${statusStr} &nbsp;·&nbsp; Direction: ${dirStr} &nbsp;·&nbsp; ${precStr}</div>
+<div>N = ${enc.N.toLocaleString()} &nbsp;·&nbsp; A = ${enc.A} &nbsp;·&nbsp; r = ${enc.r} &nbsp;·&nbsp; S = 8</div>
+<hr class="enc-rule">
+<div style="font-size:11px;color:var(--dim)">Binary: ${bitStr}</div>
+<div class="enc-hex-out">${hexStr}</div>`;
+  }
+})();
+
+/* ── CLI TABS ── */
+document.querySelectorAll('.cli-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.cli-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.cli-pane').forEach(p => p.classList.remove('active'));
+    tab.classList.add('active');
+    const pane = document.getElementById(tab.dataset.pane);
+    if (pane) pane.classList.add('active');
+  });
+});
+
+/* ── PILOT FORM ── */
+document.getElementById('pilot-form').addEventListener('submit', function(e) {
+  e.preventDefault();
+  const data = new FormData(this);
+  const name    = data.get('name') || '';
+  const org     = data.get('org') || '';
+  const email   = data.get('email') || '';
+  const domain  = data.get('domain') || '';
+  const message = data.get('message') || '';
+  const body = encodeURIComponent(
+    `Name: ${name}\nOrganisation: ${org}\nDomain: ${domain}\n\n${message}`
+  );
+  const subject = encodeURIComponent('BitLedger / BitPads Pilot Enquiry');
+  window.location.href = `mailto:bitpads@babb.tel?subject=${subject}&body=${body}`;
+});
+</script>
+
+<script>
+document.querySelectorAll('.acc-trigger').forEach(trigger => {
+  trigger.addEventListener('click', () => {
+    const targetId = trigger.dataset.target;
+    const body = document.getElementById(targetId);
+    const isOpen = body.classList.contains('open');
+    // close all
+    document.querySelectorAll('.acc-body').forEach(b => b.classList.remove('open'));
+    document.querySelectorAll('.acc-trigger').forEach(t => t.classList.remove('open'));
+    // open clicked (if wasn't open)
+    if (!isOpen) {
+      body.classList.add('open');
+      trigger.classList.add('open');
+    }
+  });
+});
+
+/* ── DOCS SIDEBAR ── */
+const SIDEBAR_DOCS = [
+  { cat: 'BitLedger', docs: [
+    { title: 'Protocol v3.0 — Full Spec', url: 'https://raw.githubusercontent.com/babbworks/bitpads/master/protocol%20docs/markdown/BitLedger_Protocol_v3.md', size: '75 KB' },
+    { title: 'Universal Domain v1.0', url: 'https://raw.githubusercontent.com/babbworks/bitpads/master/protocol%20docs/markdown/BitLedger_Universal_Domain.md', size: '57 KB' },
+    { title: 'Compound Mode Design Note', url: 'https://raw.githubusercontent.com/babbworks/bitpads/master/protocol%20docs/markdown/BitLedger_CompoundMode_DesignNote.md', size: '19 KB' },
+    { title: 'Technical Overview', url: 'https://raw.githubusercontent.com/peers8862/BitLedger/master/project/overviews/TECHNICAL_OVERVIEW.md', size: '22 KB' },
+  ]},
+  { cat: 'BitPads', docs: [
+    { title: 'Protocol v2.0', url: 'https://raw.githubusercontent.com/babbworks/bitpads/master/protocol%20docs/markdown/BitPads_Protocol_v2.md', size: '56 KB' },
+    { title: 'Enhancement Sub-Protocol v2.0', url: 'https://raw.githubusercontent.com/babbworks/bitpads/master/protocol%20docs/markdown/BitPads_Enhancement_Subprotocol_v2.md', size: '147 KB' },
+    { title: 'Technical Overview (CLI)', url: 'https://raw.githubusercontent.com/babbworks/bitpads/master/project/overviews/TECHNICAL_OVERVIEW.md', size: '14 KB' },
+    { title: 'CLI Guide', url: 'https://raw.githubusercontent.com/babbworks/bitpads/master/project/guides/general/CLI_GUIDE.md', size: '23 KB' },
+    { title: 'Protocol &amp; Registers', url: 'https://raw.githubusercontent.com/babbworks/bitpads/master/project/guides/general/PROTOCOL_AND_REGISTERS.md', size: '31 KB' },
+    { title: 'Example Runs', url: 'https://raw.githubusercontent.com/babbworks/bitpads/master/project/examples/example_of_runs.md', size: '28 KB' },
+  ]},
+  { cat: 'Analysis', docs: [
+    { title: 'Novelty — No Prior Art', url: 'https://raw.githubusercontent.com/peers8862/BitLedger/master/project/analysis/novelty_by_grok.md', size: '9 KB' },
+    { title: 'General System Re-imagining', url: 'https://raw.githubusercontent.com/peers8862/BitLedger/master/project/analysis/bitledger_generalsystem_by_grok.md', size: '8 KB' },
+    { title: 'Value Encoding Reference', url: 'https://raw.githubusercontent.com/peers8862/BitLedger/master/project/analysis/value_encoding_scaling_factor_reference.md', size: '16 KB' },
+    { title: 'Math Model (ChatGPT)', url: 'https://raw.githubusercontent.com/peers8862/BitLedger/master/project/analysis/mathmodel_by_chatgpt.md', size: '3 KB' },
+    { title: 'vs. Financial Standards', url: 'https://raw.githubusercontent.com/babbworks/bitpads/master/project/protocol_analysis/How%20Bitpads%20Compare%20-%20Fin%20Standards.md', size: '5 KB' },
+  ]},
+];
+
+const listEl = document.getElementById('sidebar-list');
+SIDEBAR_DOCS.forEach(cat => {
+  const catEl = document.createElement('div');
+  catEl.className = 'sidebar-cat';
+  catEl.textContent = cat.cat;
+  listEl.appendChild(catEl);
+  cat.docs.forEach(doc => {
+    const btn = document.createElement('button');
+    btn.className = 'sidebar-doc-btn';
+    btn.innerHTML = doc.title + '<span class="sidebar-doc-size">' + doc.size + ' · github.com</span>';
+    btn.addEventListener('click', () => loadDoc(doc, btn));
+    listEl.appendChild(btn);
+  });
+});
+
+let activeBtn = null;
+async function loadDoc(doc, btn) {
+  if (activeBtn) activeBtn.classList.remove('active');
+  activeBtn = btn;
+  btn.classList.add('active');
+  document.getElementById('sidebar-doc-name').textContent = doc.title;
+  document.getElementById('sidebar-src').textContent = 'Live · GitHub';
+  const body = document.getElementById('sidebar-body');
+  body.innerHTML = '<div class="sidebar-loading">Fetching from GitHub…<br><small style="opacity:0.5;margin-top:8px;display:block">raw.githubusercontent.com</small></div>';
+  try {
+    const r = await fetch(doc.url);
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    const md = await r.text();
+    body.innerHTML = '<div class="md-content">' + marked.parse(md) + '</div>';
+    body.scrollTop = 0;
+  } catch (e) {
+    body.innerHTML = '<div class="sidebar-loading">Could not fetch document.<br><small style="opacity:0.5">' + e.message + '</small></div>';
+  }
+}
+
+function openSidebar() {
+  document.getElementById('sidebar-overlay').classList.add('open');
+  document.getElementById('sidebar-panel').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeSidebar() {
+  document.getElementById('sidebar-overlay').classList.remove('open');
+  document.getElementById('sidebar-panel').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+document.getElementById('sidebar-overlay').addEventListener('click', closeSidebar);
+document.getElementById('sidebar-close-btn').addEventListener('click', closeSidebar);
+document.getElementById('docs-fab').addEventListener('click', openSidebar);
+document.querySelectorAll('.open-sidebar').forEach(el => el.addEventListener('click', e => { e.preventDefault(); openSidebar(); }));
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeSidebar(); });
+</script>
+
+</body>
+</html>

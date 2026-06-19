@@ -1,0 +1,429 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Place page wireframe — Babb</title>
+<style>
+  :root { --line:#bbb; --ink:#333; --muted:#888; --alt:#a14a00; --bg:#fafaf8; }
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--bg);color:var(--ink);
+    font:14px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace}
+  .page{max-width:1180px;margin:0 auto;padding:0 24px 24px}
+  .box{border:1px dashed var(--line);padding:12px;background:#fff}
+  .lbl{color:var(--muted);font-size:11px;letter-spacing:.08em;
+    text-transform:uppercase;margin-bottom:6px;display:block}
+  .placeholder{background:repeating-linear-gradient(45deg,#f1f1ee 0 8px,#fff 8px 16px);
+    border:1px dashed var(--line);display:flex;align-items:center;
+    justify-content:center;color:var(--muted);font-size:12px}
+  h1,h2{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;margin:0}
+  h1{font-size:22px}
+  h2{font-size:14px}
+  .tag{color:var(--alt);font-size:11px}
+  .note{font-size:11px;color:var(--muted);font-style:italic}
+  .anno{background:#fff8e0;border:1px solid #e7d488;padding:6px 10px;
+    font-size:11px;color:#665;margin:14px 0}
+  .pill{display:inline-block;border:1px solid #ccc;padding:2px 8px;
+    font-size:11px;margin:2px 4px 2px 0;border-radius:99px}
+  hr.sb{border:none;border-top:1px solid #e5e5e0;margin:28px 0}
+
+  /* STICKY HEADER */
+  .sticky{position:sticky;top:0;background:#fff;border-bottom:1px solid #ddd;
+    padding:10px 24px;z-index:5;display:flex;justify-content:space-between;
+    align-items:center;gap:16px;flex-wrap:wrap;font-size:12px}
+  .sticky .left{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  .sticky .anchors{display:flex;gap:10px;flex-wrap:wrap}
+  .sticky .anchors a{color:var(--ink);text-decoration:none;border-bottom:1px dotted #aaa}
+  .sticky .right{color:var(--muted);position:relative}
+
+  /* PLACE PICKER */
+  .pp-trigger{font:inherit;background:#fff;border:1px solid #ccc;
+    padding:4px 10px;cursor:pointer;color:var(--ink)}
+  .pp-trigger[aria-expanded="true"]{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .pp-panel{position:absolute;right:0;top:calc(100% + 6px);width:340px;
+    background:#fff;border:1px solid #bbb;box-shadow:0 6px 18px rgba(0,0,0,.08);
+    padding:10px;display:none;z-index:10}
+  .pp-panel[data-open="true"]{display:block}
+  .pp-search{display:flex;gap:6px;margin-bottom:8px}
+  .pp-search input{flex:1;font:inherit;border:1px solid #ccc;padding:5px 8px;background:#fff}
+  .pp-section{font-size:10px;color:var(--muted);letter-spacing:.08em;
+    text-transform:uppercase;margin:6px 0 2px}
+  .pp-list{list-style:none;margin:0;padding:0}
+  .pp-list li{padding:6px 8px;cursor:pointer;border-top:1px dotted #eee;
+    font-size:13px;display:flex;justify-content:space-between;align-items:center;gap:8px}
+  .pp-list li:first-child{border-top:none}
+  .pp-list li:hover,.pp-list li[aria-selected="true"]{background:#f4f1ea}
+  .pp-list .meta{font-size:10px;color:var(--muted);white-space:nowrap}
+  .pp-list .hit{color:var(--alt);font-weight:600}
+  .pp-empty{padding:8px;font-size:12px;color:var(--muted);font-style:italic}
+  .pp-foot{margin-top:8px;padding-top:6px;border-top:1px dotted #ddd;
+    font-size:11px;color:var(--muted);display:flex;justify-content:space-between}
+
+  /* sections */
+  section.s{margin-bottom:28px;scroll-margin-top:60px}
+  .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+  .grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+  .placeholder.hero{height:360px}
+  .placeholder.tile{height:160px}
+  .placeholder.thumb{height:90px}
+
+  /* drawer indication */
+  .drawer-stub{border:1px solid #ccc;background:#f6f6f1;padding:8px 10px;
+    font-size:12px;margin-top:8px}
+  .drawer-stub b{color:var(--alt)}
+
+  /* field-notes */
+  .fieldnote{border-left:3px solid var(--alt);background:#fff8ef;
+    padding:8px 12px;font-size:13px;margin:10px 0}
+  .fieldnote .by{font-size:11px;color:var(--muted)}
+
+  /* dailies feed */
+  .feed-item{padding:10px 0;border-top:1px dotted #ddd}
+  .feed-item:first-child{border-top:none}
+
+  /* audio player stub */
+  .audio{display:flex;gap:10px;align-items:center;border:1px solid #ccc;
+    padding:6px 10px;background:#fff;font-size:12px}
+  .audio .bar{flex:1;height:4px;background:#eee;position:relative}
+  .audio .bar::after{content:"";position:absolute;left:0;top:0;height:100%;
+    width:30%;background:#888}
+</style>
+</head>
+<body>
+
+  <!-- STICKY HEADER (rich) -->
+  <div class="sticky">
+    <div class="left">
+      <a href="#" style="text-decoration:none;color:inherit;">← <b>babb</b></a>
+      <span class="note">/ places /</span>
+      <b id="hdrName">Hamilton steel mill</b>
+      <span class="note">· in</span>
+      <span id="hdrWorlds"></span>
+    </div>
+    <nav class="anchors">
+      <a href="#shot">Shot</a>
+      <a href="#angles">Angles</a>
+      <a href="#people">People</a>
+      <a href="#broll">B-Roll</a>
+      <a href="#notes">Field Notes</a>
+      <a href="#dailies">Dailies</a>
+    </nav>
+    <div class="right">
+      <button id="ppTrigger" class="pp-trigger" aria-expanded="false">Places ▾</button>
+      <div id="ppPanel" class="pp-panel" data-open="false">
+        <div class="pp-search">
+          <input id="ppSearch" type="text" placeholder="Search places — name, world, tag…" autocomplete="off" />
+        </div>
+        <div class="pp-section" id="ppSuggestLabel">Recent</div>
+        <ul class="pp-list" id="ppList"></ul>
+        <div id="ppEmpty" class="pp-empty" style="display:none;">No matches — try a different term, or
+          <a href="#" id="ppRequest">request a new Place</a>.</div>
+        <div class="pp-foot">
+          <span>↑↓ navigate · ↵ select · esc close</span>
+          <span><a href="#">browse all →</a></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<div class="page">
+
+  <div class="anno">Wireframe v1 · Place page template with <b>place picker</b>
+    (Recent + search + suggestions). Picker lives in the sticky header.
+    Page contents react to selection. Six standard sections.</div>
+
+  <!-- SHOT -->
+  <section id="shot" class="s">
+    <span class="lbl">1 · Shot — opening, locate the Place</span>
+    <div class="placeholder hero">[ establishing image — wide, atmospheric ]</div>
+    <div class="box" style="margin-top:-1px;">
+      <h1 id="pTitle">Hamilton steel mill</h1>
+      <p id="pTreatment">One-paragraph treatment: where this Place is, why we're covering it, the editorial intent.</p>
+      <div class="audio"><span>▶</span><span id="pAudio">Ambient · mill floor, 06:14</span>
+        <div class="bar"></div><span class="note">0:42 / 2:30</span></div>
+      <div class="placeholder" id="pMap" style="height:120px;margin-top:10px;">
+        [ themed map embed — single marker · Hamilton, ON ]</div>
+    </div>
+  </section>
+
+  <!-- ANGLES -->
+  <section id="angles" class="s">
+    <span class="lbl">2 · Angles — canonical multi-angle body</span>
+    <div class="grid-2" id="pAngles"></div>
+    <p class="note">Each Angle is a standard lens. Drawers/overlays/popups carry depth without leaving the scroll.</p>
+  </section>
+
+  <!-- PEOPLE -->
+  <section id="people" class="s">
+    <span class="lbl">3 · People — the cast of the Place</span>
+    <div class="grid-3" id="pPeople"></div>
+  </section>
+
+  <!-- B-ROLL -->
+  <section id="broll" class="s">
+    <span class="lbl">4 · B-Roll — ambient texture, mostly behind drawers/overlays</span>
+    <div class="grid-4">
+      <div class="placeholder thumb">[ photo ]</div>
+      <div class="placeholder thumb">[ photo ]</div>
+      <div class="placeholder thumb">[ photo ]</div>
+      <div class="placeholder thumb">[ photo ]</div>
+      <div class="placeholder thumb">[ photo ]</div>
+      <div class="placeholder thumb">[ photo ]</div>
+      <div class="placeholder thumb">[ photo ]</div>
+      <div class="placeholder thumb" id="pBrollMore">[ +24 more ]</div>
+    </div>
+    <p class="note">Click any thumb → full-bleed overlay viewer (←/→/Esc).
+       Sound clips and short video loops live here too.</p>
+  </section>
+
+  <!-- FIELD NOTES -->
+  <section id="notes" class="s">
+    <span class="lbl">5 · Field Notes — director/editor voice, inline pull-outs</span>
+    <div id="pNotes"></div>
+    <p class="note">Can also appear in margin of other sections, anchored to phrases.</p>
+  </section>
+
+  <!-- DAILIES -->
+  <section id="dailies" class="s">
+    <span class="lbl">6 · Dailies — on-the-ground updates (ties to Updates rail / Jekyll posts)</span>
+    <div class="box">
+      <div id="pDailies"></div>
+      <div class="feed-item note" id="pDailiesFoot">[ pulls posts categorized "places/hamilton-steel-mill" ]</div>
+    </div>
+  </section>
+
+  <hr class="sb" />
+
+  <!-- RELATED -->
+  <section class="s">
+    <span class="lbl">Related — other Places &amp; Worlds</span>
+    <div class="grid-3" id="pRelated"></div>
+  </section>
+
+  <footer class="note" style="border-top:1px solid #ddd;padding-top:14px;">
+    © Babb · subscribe to this Place · contact
+  </footer>
+
+</div>
+
+<script>
+const PLACES = {
+  "hamilton-steel-mill":{ title:"Hamilton steel mill", worlds:["Manufacturing","Building"],
+    treatment:"A working integrated steel mill on Hamilton harbour, ON. We're following it through one full production week as it navigates decarbonization, automation, and a town that grew up around it.",
+    audio:"Ambient · mill floor, 06:14", map:"[ themed map · single marker · Hamilton, ON ]", brollMore:"[ +24 more ]",
+    angles:[
+      ["The Floor","What happens on the production line.","Open drawer: shift-change photos (12)"],
+      ["The Owners","Ownership history, governance, who decides.","Open drawer: timeline 1910–today"],
+      ["The Town","The mill in the city it grew up with.","Overlay: annotated aerial photo"],
+      ["The Future","Decarbonization, automation, what's next.","Popup: tech glossary on hover of terms"]
+    ],
+    people:[["Foreman · Tony R.","30 years on the floor. Full interview + transcript.",true],
+            ["Owner's rep · Marisol","Third generation. Audio clip available.",true],
+            ["Apprentice · Dee","Six months in.",false]],
+    notes:[["The third shift was unexpectedly the most photogenic — reconsider the cover image.","editor, on site, day 2"],
+           ["\"Ladle metallurgy\" deserves a hover popup wherever it appears.","editor, day 3"]],
+    dailies:[["Day 4 — final pour","Short field update with 3 photos. Tagged: hamilton, manufacturing."],
+             ["Day 3 — interview, foreman","Audio + transcript drawer."],
+             ["Day 2 — third shift","Photo essay, 18 images."]],
+    related:["Sioux Falls feed-lot · Place","Route: Midwest Dairy Run · Place","Manufacturing · World"] },
+
+  "sioux-falls-feedlot":{ title:"Sioux Falls feed-lot", worlds:["Farming","Management"],
+    treatment:"Two days inside a beef feed-lot in eastern South Dakota — the schedule, the people, and the math that makes it run.",
+    audio:"Ambient · pens at 5am, 04:02", map:"[ themed map · single marker · Sioux Falls, SD ]", brollMore:"[ +31 more ]",
+    angles:[
+      ["The Pens","Animal flow, weighings, the daily rhythm.","Open drawer: morning weigh-in stills"],
+      ["The Crew","Feed, vet, transport — who does what.","Open drawer: shift roster"],
+      ["The Numbers","Cost per head, weight gain, margin.","Popup: jargon decoder"],
+      ["The Land","Where the feed comes from, where the cattle go.","Overlay: supply map"]
+    ],
+    people:[["Operations lead · Cal","Runs the day-of plan.",true],
+            ["Vet · Priya","Visits twice a week.",false],
+            ["Trucker · Jess","Long-haul out of Omaha.",true]],
+    notes:[["Dawn light at the pens is unreal — schedule the next visit at 5am.","editor, day 1"],
+           ["Find a chart for cost-per-head that doesn't read like a spreadsheet.","editor, day 2"]],
+    dailies:[["Day 2 — weigh-in","Photo essay, 22 images."],
+             ["Day 1 — arrival","Field note + 6 photos."],
+             ["Pre-trip — call with Cal","Audio · 14:08."]],
+    related:["Hamilton steel mill · Place","Route: Midwest Dairy Run · Place","Farming · World"] },
+
+  "hudson-bank":{ title:"Community Bank · Hudson", worlds:["Banking","Communications"],
+    treatment:"A 90-year-old community bank in Hudson, NY. One week behind the teller line — from morning cash count to small-business loan signings.",
+    audio:"Ambient · lobby at 9am, 02:38", map:"[ themed map · single marker · Hudson, NY ]", brollMore:"[ +18 more ]",
+    angles:[
+      ["The Lobby","First contact — tellers, walk-ins, drive-through.","Open drawer: customer portraits"],
+      ["The Back Office","Compliance, ACH, the quiet work.","Open drawer: ledger samples"],
+      ["The Loan Desk","Small-business signings, plainly.","Overlay: a loan walkthrough"],
+      ["The Board","Governance, ownership, civic role.","Popup: who's on the board"]
+    ],
+    people:[["Branch manager · Lou","Career banker.",true],
+            ["Compliance lead · Anh","Ten years in audit.",false],
+            ["Customer · Theresa","Bakery owner, longtime client.",true]],
+    notes:[["The drive-through teller has the best stories — get her on tape.","editor, day 2"],
+           ["Avoid the corporate-bank visual clichés. Use the actual lobby.","editor, day 3"]],
+    dailies:[["Day 3 — loan signing","Field note + 2 photos."],
+             ["Day 2 — morning cash count","Short video clip."],
+             ["Day 1 — orientation","Audio · 08:22."]],
+    related:["Tailgate market · Asheville · Place","Banking · World","Communications · World"] },
+
+  "tailgate-asheville":{ title:"Tailgate market · Asheville", worlds:["Selling","Farming"],
+    treatment:"A Saturday tailgate market in Asheville, NC — small farms, makers, and a regular crowd. Selling at the smallest viable scale.",
+    audio:"Ambient · 7am setup, 03:10", map:"[ themed map · single marker · Asheville, NC ]", brollMore:"[ +12 more ]",
+    angles:[
+      ["The Setup","From parking lot to market in two hours.","Open drawer: time-lapse stills"],
+      ["The Sellers","Who comes, what they bring.","Open drawer: vendor portraits"],
+      ["The Money","Cash, card, and the in-between.","Popup: fees & tradeoffs"],
+      ["The Crowd","Regulars, tourists, weather.","Overlay: foot-traffic sketch"]
+    ],
+    people:[["Market manager · Glenn","Runs the lot.",false],
+            ["Vendor · Marisol's bread","Third year selling here.",true],
+            ["Regular · Sam","Comes every week.",false]],
+    notes:[["The light at 7am setup is the visual identity of this Place.","editor, day 1"],
+           ["Consider a sister page: weekday farmers' wholesale.","editor"]],
+    dailies:[["This week — 18 vendors","Field note + 9 photos."],
+             ["Last week — first rain","Short video clip."],
+             ["Intro call — Glenn","Audio · 11:40."]],
+    related:["Hudson Bank · Place","Sioux Falls feed-lot · Place","Selling · World"] },
+
+  "midwest-dairy-run":{ title:"Route: Midwest Dairy Run", worlds:["Farming","Communications"], route:true,
+    treatment:"A multi-stop route covering five dairies across the upper Midwest — a Route Place, not a single location. Each stop is its own short act inside this page.",
+    audio:"Ambient · highway, 03:55", map:"[ themed map · multi-stop polyline · MN → WI → IL ]", brollMore:"[ +40 more ]",
+    angles:[
+      ["The Drive","What the road between stops looks like.","Open drawer: dashcam stills"],
+      ["The Stops","Five dairies, in order, with capsule profiles.","Open drawer: stop cards"],
+      ["The Logistics","Schedules, refrigerated transport, dispatch.","Popup: load math"],
+      ["The Network","How these dairies talk to each other.","Overlay: communications diagram"]
+    ],
+    people:[["Driver · Marcus","Knows every co-op manager by name.",true],
+            ["Dispatcher · Renee","Routes the whole run.",false],
+            ["Co-op chair · Greta","Stop #3.",true]],
+    notes:[["This page wants a clear sequencer — the five stops are an act structure.","editor"],
+           ["Highway-noise mix at high volume actually works as a navigation cue.","editor"]],
+    dailies:[["Stop 5 — wrapping","Photo essay, 14 images."],
+             ["Stop 3 — Greta interview","Audio + transcript drawer."],
+             ["Stop 1 — leaving Minneapolis","Field note + 5 photos."]],
+    related:["Hamilton steel mill · Place","Sioux Falls feed-lot · Place","Farming · World"] }
+};
+
+const SLUGS = Object.keys(PLACES);
+let RECENT = ["hamilton-steel-mill","sioux-falls-feedlot","midwest-dairy-run"];
+let activeSlug = "hamilton-steel-mill";
+
+const $ = id => document.getElementById(id);
+const esc = s => s.replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+
+function renderPlace(slug){
+  const p = PLACES[slug]; if(!p) return;
+  activeSlug = slug;
+  $("hdrName").textContent = p.title;
+  $("hdrWorlds").innerHTML = p.worlds.map(w => `<span class="pill">${esc(w)}</span>`).join("");
+  $("pTitle").textContent = p.title;
+  $("pTreatment").textContent = p.treatment;
+  $("pAudio").textContent = p.audio;
+  $("pMap").textContent = p.map;
+  $("pBrollMore").textContent = p.brollMore;
+  $("pAngles").innerHTML = p.angles.map(([t,d,dr]) =>
+    `<div class="box"><h2>${esc(t)}</h2><div class="placeholder tile">[ image ]</div>
+     <p>${esc(d)}</p><div class="drawer-stub">▸ <b>${esc(dr.split(":")[0])}:</b>${esc(dr.split(":").slice(1).join(":"))}</div></div>`).join("");
+  $("pPeople").innerHTML = p.people.map(([n,bio,hasAudio]) =>
+    `<div class="box"><div class="placeholder" style="height:120px;">[ portrait ]</div>
+     <b>${esc(n)}</b><div class="note">${esc(bio)}</div>
+     ${hasAudio ? `<div class="audio" style="margin-top:6px;"><span>▶</span><span>Interview clip</span><div class="bar"></div></div>` : ``}</div>`).join("");
+  $("pNotes").innerHTML = p.notes.map(([t,by]) =>
+    `<div class="fieldnote">${esc(t)}<div class="by">— ${esc(by)}</div></div>`).join("");
+  $("pDailies").innerHTML = p.dailies.map(([t,n]) =>
+    `<div class="feed-item"><a href="#"><b>${esc(t)}</b></a><div class="note">${esc(n)}</div></div>`).join("");
+  $("pDailiesFoot").textContent = `[ pulls posts categorized "places/${slug}" ]`;
+  $("pRelated").innerHTML = p.related.map(r => `<div class="placeholder tile">[ ${esc(r)} ]</div>`).join("");
+  RECENT = [slug, ...RECENT.filter(s => s !== slug)].slice(0,5);
+}
+
+// PLACE PICKER
+const trigger = $("ppTrigger"), panel = $("ppPanel"),
+      search = $("ppSearch"), list = $("ppList"),
+      empty = $("ppEmpty"), label = $("ppSuggestLabel");
+let focusIdx = 0;
+
+function openPanel(){
+  panel.dataset.open = "true";
+  trigger.setAttribute("aria-expanded","true");
+  search.value = "";
+  renderList(""); search.focus();
+}
+function closePanel(){
+  panel.dataset.open = "false";
+  trigger.setAttribute("aria-expanded","false");
+}
+function renderList(q){
+  q = q.trim().toLowerCase();
+  let items;
+  if(!q){
+    label.textContent = "Recent";
+    items = RECENT.map(s => ({slug:s, hit:null}));
+  } else {
+    label.textContent = "Suggestions";
+    items = SLUGS.map(s => {
+      const p = PLACES[s];
+      const hay = (p.title + " " + p.worlds.join(" ") + " " + s).toLowerCase();
+      const i = hay.indexOf(q);
+      return i >= 0 ? {slug:s, hit:i, score:i} : null;
+    }).filter(Boolean).sort((a,b)=>a.score-b.score).slice(0,8);
+  }
+  focusIdx = 0;
+  if(!items.length){ list.innerHTML = ""; empty.style.display = "block"; return; }
+  empty.style.display = "none";
+  list.innerHTML = items.map((it,idx) => {
+    const p = PLACES[it.slug];
+    const title = highlight(p.title, q);
+    const worlds = p.worlds.join(" · ");
+    const route = p.route ? " · route" : "";
+    return `<li data-slug="${it.slug}" aria-selected="${idx===0}">
+      <span>${title}<div class="meta" style="display:inline;margin-left:6px;">${esc(worlds)}${route}</div></span>
+      <span class="meta">/places/${it.slug}</span></li>`;
+  }).join("");
+}
+function highlight(t, q){
+  if(!q) return esc(t);
+  const i = t.toLowerCase().indexOf(q);
+  if(i<0) return esc(t);
+  return esc(t.slice(0,i)) + `<span class="hit">${esc(t.slice(i,i+q.length))}</span>` + esc(t.slice(i+q.length));
+}
+function moveFocus(d){
+  const items = list.querySelectorAll("li");
+  if(!items.length) return;
+  focusIdx = (focusIdx + d + items.length) % items.length;
+  items.forEach((li,i) => li.setAttribute("aria-selected", i===focusIdx));
+  items[focusIdx].scrollIntoView({block:"nearest"});
+}
+function selectFocused(){
+  const items = list.querySelectorAll("li");
+  if(!items[focusIdx]) return;
+  pick(items[focusIdx].dataset.slug);
+}
+function pick(slug){
+  renderPlace(slug);
+  closePanel();
+}
+
+trigger.addEventListener("click", e => {
+  e.stopPropagation();
+  panel.dataset.open === "true" ? closePanel() : openPanel();
+});
+search.addEventListener("input", e => renderList(e.target.value));
+search.addEventListener("keydown", e => {
+  if(e.key === "ArrowDown"){ e.preventDefault(); moveFocus(1); }
+  else if(e.key === "ArrowUp"){ e.preventDefault(); moveFocus(-1); }
+  else if(e.key === "Enter"){ e.preventDefault(); selectFocused(); }
+  else if(e.key === "Escape"){ closePanel(); }
+});
+list.addEventListener("click", e => {
+  const li = e.target.closest("li[data-slug]"); if(!li) return;
+  pick(li.dataset.slug);
+});
+document.addEventListener("click", e => {
+  if(!panel.contains(e.target) && e.target !== trigger) closePanel();
+});
+
+renderPlace("hamilton-steel-mill");
+</script>
+</body>
+</html>

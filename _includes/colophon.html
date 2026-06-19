@@ -1,0 +1,44 @@
+<div class="shell">
+<footer class="colophon">
+  <div class="col-grid">
+    <div class="col col-id">
+      <div class="mark">babb<span class="punct">.</span></div>
+      <p>Tools for the frontier. A media outfit reporting from the working world and a product company building for it.</p>
+      <div class="addr">babb works &middot; est. 2024<br>hello@babb.tel<br>rss &middot; twitter &middot; github &middot; instagram</div>
+    </div>
+    <div class="col">
+      <h4>Products</h4>
+      <ul>
+        <li><a href="/products/workpads/">Workpads</a><span class="tag">software</span></li>
+        <li><a href="/products/bitpads/">Bitpads</a><span class="tag">hardware</span></li>
+        <li><a href="/products/tel/">.tel</a><span class="tag">protocol</span></li>
+        <li><a href="/products/clarkware/">Clarkware</a><span class="tag">software</span></li>
+        <li><a href="/products/workwarrior/">Workwarrior</a><span class="tag">software</span></li>
+        <li><a href="/products/">All Products &rarr;</a></li>
+      </ul>
+    </div>
+    <div class="col">
+      <h4>Updates &middot; RSS</h4>
+      <ul id="footUpdates">
+        {% for post in site.posts limit:5 %}
+        <li><a href="{{ post.url }}">{{ post.title }}</a>{% if post.product %}<span class="tag">{{ post.product }}</span>{% endif %}</li>
+        {% endfor %}
+      </ul>
+      <h4 style="margin-top:18px;">Subscribe</h4>
+      <ul>
+        <li><a href="/feed.xml">RSS feed</a></li>
+        <li><a href="/updates/email/">Email digest</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="col-foot">
+    <div>&copy; 2024&ndash;{{ site.time | date: "%Y" }} Babb Works &middot; CC BY-NC where noted</div>
+    <div class="right">
+      <a href="/colophon/">Colophon</a>
+      <a href="/about/">About</a>
+      <a href="/contact/">Contact</a>
+      <span class="ascii">build {{ site.time | date: "%Y.%m.%d" }}</span>
+    </div>
+  </div>
+</footer>
+</div>

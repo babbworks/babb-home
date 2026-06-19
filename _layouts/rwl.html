@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+{%- include head.html -%}
+<body class="page-rwl">
+
+<div class="sysbar">
+  <div class="shell row">
+    <div><span class="dot"></span>babb<span class="ascii"> / rwl</span></div>
+    <div class="right">
+      <span class="ascii">build {{ site.time | date: "%Y.%m.%d" }}</span>
+      <span class="ascii">·</span>
+      <span id="clock" aria-live="off">--:--:-- UTC</span>
+      <span class="ascii">·</span>
+      <a href="/feed.xml">rss</a>
+    </div>
+  </div>
+</div>
+
+{%- include masthead.html -%}
+
+{{ content }}
+
+{%- include colophon.html -%}
+
+<script>
+(function(){
+  const el=document.getElementById("clock"),f=n=>String(n).padStart(2,"0");
+  function t(){const d=new Date();el.textContent=f(d.getUTCHours())+":"+f(d.getUTCMinutes())+":"+f(d.getUTCSeconds())+" UTC";}
+  t();setInterval(t,1000);
+})();
+
+// mode tabs
+(function(){
+  const modes=document.querySelectorAll(".mode");
+  const panels=document.querySelectorAll(".panel");
+  modes.forEach(m=>m.addEventListener("click",()=>{
+    modes.forEach(x=>{x.setAttribute("aria-pressed","false");});
+    m.setAttribute("aria-pressed","true");
+    const id=m.dataset.panel;
+    panels.forEach(p=>p.classList.toggle("on",p.id===id));
+  }));
+  // activate first by default
+  if(modes[0]){modes[0].setAttribute("aria-pressed","true");if(panels[0])panels[0].classList.add("on");}
+})();
+</script>
+</body>
+</html>

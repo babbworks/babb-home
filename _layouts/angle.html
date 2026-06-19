@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+{%- include head.html -%}
+<body>
+
+<div class="sysbar">
+  <div class="shell row">
+    <div><span class="dot"></span>babb<span class="ascii"> / places / {{ page.place_slug }} / angles / {{ page.slug }}</span></div>
+    <div class="right">
+      <span class="ascii">build {{ site.time | date: "%Y.%m.%d" }}</span>
+      <span class="ascii">·</span>
+      <span id="clock" aria-live="off">--:--:-- UTC</span>
+      <span class="ascii">·</span>
+      <a href="/feed.xml?cat=places/{{ page.place_slug }}">rss</a>
+    </div>
+  </div>
+</div>
+
+{%- include masthead.html -%}
+
+<div class="ctx">
+  <div class="shell row">
+    <a class="back" href="/places/{{ page.place_slug }}/"><span class="arr">←</span> <span>From</span> <b>{{ page.place_title }}</b></a>
+    <span class="here">Angle &middot; <span class="now">{{ page.title }}</span></span>
+    <div class="anchors" id="ctxAnchors">
+      {% for anc in page.anchors %}
+      <a href="#{{ anc.id }}" data-anc="{{ anc.id }}"><span class="n">{{ forloop.index | prepend: "0" | slice: -2, 2 }}</span><span>{{ anc.label }}</span></a>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+{{ content }}
+
+{%- include colophon.html -%}
+
+<script>
+(function(){
+  const el=document.getElementById("clock"),f=n=>String(n).padStart(2,"0");
+  function t(){const d=new Date();el.textContent=f(d.getUTCHours())+":"+f(d.getUTCMinutes())+":"+f(d.getUTCSeconds())+" UTC";}
+  t();setInterval(t,1000);
+})();
+
+// active anchor tracking
+(function(){
+  const links=document.querySelectorAll(".ctx .anchors a[data-anc]");
+  const ids=[...links].map(a=>a.dataset.anc);
+  function setActive(id){links.forEach(a=>a.classList.toggle("here",a.dataset.anc===id));}
+  function onScroll(){
+    let cur=ids[0];
+    for(const id of ids){const el=document.getElementById(id);if(el&&el.getBoundingClientRect().top<100)cur=id;}
+    setActive(cur);
+  }
+  document.addEventListener("scroll",onScroll,{passive:true});onScroll();
+})();
+</script>
+</body>
+</html>

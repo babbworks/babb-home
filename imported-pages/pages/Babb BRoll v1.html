@@ -1,0 +1,588 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>B-Roll archive — Hamilton steel mill — Babb</title>
+<meta name="description" content="The full B-Roll archive for the Hamilton steel mill standing story — photos, short loops, ambient audio." />
+<style>
+  :root{
+    --paper:#faf8f3; --paper-2:#f3efe5; --card:#ffffff;
+    --ink:#1a1a1a; --ink-2:#444141; --muted:#807d75;
+    --hair:#d8d3c4; --hair-2:#e8e3d4;
+    --alt:#a14a00; --alt-soft:#f5e9d8;
+    --live:#2f7a3a;
+    --term-bg:#141312; --term-fg:#e8e3d4; --term-link:#ffd58a; --term-subj:#b7d99a;
+    --mono: ui-monospace,"SF Mono",SFMono-Regular,"JetBrains Mono",Menlo,Consolas,monospace;
+    --gutter:24px; --maxw:1240px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--paper);color:var(--ink);
+    font:14px/1.55 var(--mono);
+    -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
+    font-feature-settings:"ss01","cv11"}
+  a{color:inherit;text-decoration:none}
+  a:hover{text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px}
+  h1,h2,h3,h4{font-family:var(--mono);font-weight:600;margin:0;letter-spacing:-.01em}
+  .shell{max-width:var(--maxw);margin:0 auto;padding:0 var(--gutter)}
+
+  /* sysbar / masthead */
+  .sysbar{border-bottom:1px solid var(--hair);background:var(--paper);
+    font-size:11px;color:var(--muted);letter-spacing:.04em}
+  .sysbar .row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;gap:16px}
+  .dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--live);
+    box-shadow:0 0 0 0 rgba(47,122,58,.55);animation:pulse 2.6s infinite;vertical-align:middle;margin-right:6px}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(47,122,58,.55)}70%{box-shadow:0 0 0 7px rgba(47,122,58,0)}100%{box-shadow:0 0 0 0 rgba(47,122,58,0)}}
+  .sysbar .right{display:flex;gap:14px;align-items:center}
+  .sysbar a:hover{color:var(--ink)}
+
+  header.masthead{border-bottom:1px solid var(--hair);padding:22px 0 20px}
+  .masthead .row{display:flex;justify-content:space-between;align-items:flex-end;gap:24px}
+  .wordmark{font-size:34px;font-weight:700;letter-spacing:-.04em;line-height:.9}
+  .wordmark .punct{color:var(--alt)}
+  .tagline{font-size:11px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-top:8px}
+  nav.primary{display:flex;gap:22px;font-size:13px;padding-bottom:4px}
+  nav.primary a{color:var(--ink-2);position:relative;padding:2px 0}
+  nav.primary a:hover{color:var(--ink);text-decoration:none}
+  nav.primary a.here{color:var(--ink)}
+  nav.primary a.here::after{content:"";position:absolute;left:0;right:0;bottom:-4px;height:2px;background:var(--ink)}
+
+  /* context bar */
+  .ctx{border-bottom:1px solid var(--hair);background:rgba(250,248,243,.96);font-size:12px}
+  .ctx .row{display:flex;justify-content:space-between;align-items:center;gap:18px;padding:9px 0;flex-wrap:wrap}
+  .ctx .back{display:inline-flex;align-items:center;gap:8px;color:var(--ink-2)}
+  .ctx .back .arr{color:var(--alt)}
+  .ctx .back b{color:var(--ink);font-weight:600;letter-spacing:-.02em}
+  .ctx .here{color:var(--muted);letter-spacing:.06em;font-size:11px}
+  .ctx .here .now{color:var(--ink);font-weight:500}
+  .ctx .more{display:flex;gap:14px;font-size:11.5px;color:var(--ink-2)}
+  .ctx .more a{color:var(--ink-2);border-bottom:1px solid var(--hair-2)}
+  .ctx .more a.here{color:var(--ink);font-weight:600;border-bottom-color:var(--alt)}
+
+  /* section marker */
+  .smark{display:flex;align-items:baseline;gap:12px;margin:36px 0 18px;
+    font-size:11px;color:var(--muted);letter-spacing:.16em;text-transform:uppercase}
+  .smark .num{color:var(--ink);font-weight:600}
+  .smark .rule{flex:1;height:1px;background:var(--hair);transform:translateY(-3px)}
+  .smark .meta{color:var(--muted)}
+
+  /* ─── title block ─── */
+  .ttl{display:grid;grid-template-columns:1.55fr 1fr;gap:36px;
+    margin:18px 0 18px;padding-bottom:18px;border-bottom:1px solid var(--hair)}
+  .ttl h1{font-size:44px;line-height:1.05;letter-spacing:-.03em;font-weight:700}
+  .ttl h1 .punct{color:var(--alt)}
+  .ttl .intro{font-size:14.5px;line-height:1.6;color:var(--ink-2);margin-top:14px;max-width:54ch;text-wrap:pretty}
+  .ttl .right{display:flex;flex-direction:column;gap:14px;align-self:end}
+  .ttl .stat-bx{border:1px solid var(--hair);background:var(--card);padding:14px 16px;
+    display:grid;grid-template-columns:1fr 1fr;gap:10px 24px}
+  .ttl .stat-bx .k{font-size:10px;color:var(--muted);letter-spacing:.16em;text-transform:uppercase}
+  .ttl .stat-bx .v{font-size:22px;font-weight:600;letter-spacing:-.02em;margin-top:2px}
+  .ttl .stat-bx .v small{font-size:11px;color:var(--muted);font-weight:400;letter-spacing:0;text-transform:none;margin-left:6px}
+
+  /* ─── tool strip ─── */
+  .tools{display:flex;flex-wrap:wrap;gap:18px 28px;align-items:center;
+    margin:0 0 12px;padding:12px 0;border-bottom:1px solid var(--hair-2)}
+  .tools .group{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+  .tools .lbl{font-size:10px;color:var(--muted);letter-spacing:.16em;text-transform:uppercase}
+  .tools input[type=search]{font:inherit;font-size:12.5px;border:1px solid var(--hair);background:var(--card);padding:5px 10px;outline:none;color:var(--ink);min-width:220px}
+  .tools input[type=search]:focus{border-color:var(--ink)}
+  .pill-row{display:flex;gap:0;flex-wrap:wrap;font-size:12px}
+  .pill-row button{font:inherit;background:var(--card);border:1px solid var(--hair);color:var(--ink-2);
+    padding:4px 11px;cursor:pointer;margin:-1px 0 0 -1px;letter-spacing:.02em;
+    transition:background .12s ease,color .12s ease,border-color .12s ease;display:inline-flex;align-items:baseline;gap:6px}
+  .pill-row button:hover{border-color:var(--ink);color:var(--ink)}
+  .pill-row button[aria-pressed="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+  .pill-row button .n{font-size:9.5px;color:var(--muted);letter-spacing:.12em}
+  .pill-row button[aria-pressed="true"] .n{color:var(--alt-soft)}
+  .tools .util{margin-left:auto;display:flex;gap:14px;font-size:11.5px;color:var(--ink-2)}
+  .tools .util a{color:var(--ink-2);border-bottom:1px solid var(--hair-2)}
+
+  /* ─── view-mode toggle (grid vs contact sheet) ─── */
+  .view{display:flex;gap:0;font-size:11px;letter-spacing:.06em}
+  .view button{font:inherit;background:var(--card);border:1px solid var(--hair);color:var(--ink-2);
+    padding:4px 10px;margin:-1px 0 0 -1px;cursor:pointer;text-transform:uppercase;letter-spacing:.12em;font-size:10px}
+  .view button[aria-pressed="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+
+  /* ─── grid ─── */
+  .grid{display:grid;grid-template-columns:repeat(6,1fr);gap:6px}
+  .grid.dense{grid-template-columns:repeat(8,1fr)}
+  .grid.dense .tile{aspect-ratio:1/1}
+  .tile{position:relative;aspect-ratio:1/1;border:1px solid var(--hair-2);cursor:pointer;
+    background:var(--paper-2);overflow:hidden;
+    transition:transform .15s ease, border-color .15s ease}
+  .tile:hover{transform:translateY(-2px);border-color:var(--ink);z-index:1}
+  .tile .id{position:absolute;left:7px;bottom:6px;font-size:9px;color:rgba(20,20,20,.6);letter-spacing:.12em;
+    background:rgba(250,248,243,.78);padding:1px 5px;font-weight:500}
+  .tile .when{position:absolute;right:7px;top:6px;font-size:8.5px;color:rgba(20,20,20,.5);letter-spacing:.06em;
+    background:rgba(250,248,243,.78);padding:1px 5px}
+  .tile .meta-tag{position:absolute;left:7px;top:6px;font-size:8.5px;color:#fff;background:rgba(20,20,20,.6);padding:1px 5px;letter-spacing:.1em;text-transform:uppercase}
+
+  /* per-tile texture variants (CSS placeholders) */
+  .tile.t1{background:repeating-linear-gradient(45deg,#d8c8a0 0 10px,#e5d7b0 10px 20px)}
+  .tile.t2{background:repeating-linear-gradient(0deg,#dccfb0 0 2px,#e7dab8 2px 11px)}
+  .tile.t3{background:radial-gradient(circle at 30% 40%,#efe2c2,#d0c2a0 80%)}
+  .tile.t4{background:linear-gradient(135deg,#efe2c2,#cabd95)}
+  .tile.t5{background:repeating-linear-gradient(90deg,#ebe2cb 0 9px,#f3ecd8 9px 18px)}
+  .tile.t6{background:radial-gradient(circle at 1px 1px,#d8cfb6 1px,transparent 1.5px) 0 0/16px 16px,#f1ead7}
+  .tile.t7{background:linear-gradient(180deg,#f4ecd5 0%,#e7dac3 100%)}
+  .tile.dawn{background:linear-gradient(180deg,#f7e8b6,#ec9d6a 60%,#7d3a26)}
+  .tile.night{background:linear-gradient(180deg,#1f1c18,#3a322a 60%,#0d0c0b)}
+  .tile.night .id{color:#cdc8b6;background:rgba(20,18,16,.6)}
+
+  /* media tag overlay */
+  .tile.audio{background:var(--term-bg)}
+  .tile.audio::after{content:"♪";position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--term-fg);font-size:22px;opacity:.85}
+  .tile.audio .id{color:#cdc8b6;background:rgba(20,18,16,.7)}
+  .tile.video::after{content:"▶";position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:rgba(20,20,20,.55);font-size:18px;text-shadow:0 0 6px rgba(255,255,255,.5)}
+
+  /* contact-sheet variant: smaller, denser, with caption underneath */
+  body.cs .grid{grid-template-columns:repeat(8,1fr);gap:4px}
+  body.cs .tile{aspect-ratio:1/1}
+  body.cs .tile .id{font-size:8px;padding:0 3px}
+
+  /* end-of-grid foot */
+  .grid-foot{margin-top:18px;padding:12px 0;border-top:1px solid var(--hair-2);
+    font-size:11.5px;color:var(--muted);display:flex;justify-content:space-between;letter-spacing:.04em}
+  .grid-foot a{color:var(--ink);border-bottom:1px solid var(--hair)}
+
+  /* ─── LIGHTBOX ─── */
+  .lb{position:fixed;inset:0;background:rgba(20,18,16,.94);display:none;flex-direction:column;align-items:center;justify-content:center;gap:14px;z-index:100;padding:36px 64px}
+  .lb.on{display:flex}
+  .lb-img{position:relative;width:min(80vw,1100px);height:min(72vh,720px);background:var(--paper-2);border:1px solid #4a463d;display:flex;align-items:center;justify-content:center}
+  /* extend texture variants to lightbox image */
+  .lb-img.t1{background:repeating-linear-gradient(45deg,#d8c8a0 0 14px,#e5d7b0 14px 28px)}
+  .lb-img.t2{background:repeating-linear-gradient(0deg,#dccfb0 0 3px,#e7dab8 3px 14px)}
+  .lb-img.t3{background:radial-gradient(circle at 30% 40%,#efe2c2,#d0c2a0 80%)}
+  .lb-img.t4{background:linear-gradient(135deg,#efe2c2,#cabd95)}
+  .lb-img.t5{background:repeating-linear-gradient(90deg,#ebe2cb 0 12px,#f3ecd8 12px 24px)}
+  .lb-img.t6{background:radial-gradient(circle at 1px 1px,#d8cfb6 1px,transparent 1.5px) 0 0/18px 18px,#f1ead7}
+  .lb-img.t7{background:linear-gradient(180deg,#f4ecd5 0%,#e7dac3 100%)}
+  .lb-img.dawn{background:linear-gradient(180deg,#f7e8b6,#ec9d6a 60%,#7d3a26)}
+  .lb-img.night{background:linear-gradient(180deg,#1f1c18,#3a322a 60%,#0d0c0b)}
+  .lb-img.audio{background:var(--term-bg)}
+  .lb-img.audio::after{content:"♪";color:var(--term-fg);font-size:88px;opacity:.85}
+  .lb-img.video::after{content:"▶";color:rgba(255,255,255,.8);font-size:54px}
+  .lb-img .corner{position:absolute;font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.78);padding:14px 18px;background:rgba(0,0,0,.18)}
+  .lb-img .corner.tl{left:0;top:0}
+  .lb-img .corner.tr{right:0;top:0}
+  .lb-img .corner.bl{left:0;bottom:0}
+  .lb-img .corner.br{right:0;bottom:0}
+  .lb-img.t6 .corner,.lb-img.t3 .corner,.lb-img.t4 .corner,.lb-img.t7 .corner{color:rgba(20,20,20,.6);background:transparent}
+
+  .lb-cap{width:min(80vw,1100px);color:var(--paper);display:flex;justify-content:space-between;align-items:baseline;gap:24px;font-size:12.5px;letter-spacing:.04em}
+  .lb-cap .left h3{font-size:18px;letter-spacing:-.015em;font-weight:600;color:#fff}
+  .lb-cap .left .meta{font-size:11px;color:#cdc8b6;margin-top:4px;letter-spacing:.04em}
+  .lb-cap .left .meta a{color:#cdc8b6;border-bottom:1px solid #4a463d}
+  .lb-cap .left .meta a:hover{color:#fff}
+  .lb-cap .right{color:#9a948a;text-align:right;font-size:11px;letter-spacing:.04em;display:flex;flex-direction:column;gap:5px}
+  .lb-cap .right .act a{color:#fff;border-bottom:1px solid #4a463d;margin-left:14px}
+  .lb-cap .right .act a:hover{color:var(--term-link)}
+
+  .lb-close{position:fixed;top:16px;right:18px;font-size:24px;color:var(--paper);cursor:pointer;background:transparent;border:none;font-family:var(--mono);font-weight:300;line-height:1;padding:6px 10px}
+  .lb-close:hover{color:var(--term-link)}
+
+  .lb-nav{position:fixed;top:50%;transform:translateY(-50%);color:var(--paper);font-size:32px;cursor:pointer;
+    background:transparent;border:none;padding:0 24px;font-family:var(--mono);font-weight:300;opacity:.65}
+  .lb-nav:hover{opacity:1}
+  .lb-nav.prev{left:0}
+  .lb-nav.next{right:0}
+
+  .lb-keys{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);font-size:10.5px;color:#7a766e;letter-spacing:.16em;text-transform:uppercase;display:flex;gap:14px}
+  .lb-keys kbd{font:inherit;font-size:10px;background:#26241f;color:var(--paper);padding:2px 6px;border:1px solid #3a3631;letter-spacing:.04em}
+
+  /* footer (shared) */
+  footer.colophon{margin-top:56px;border-top:1px solid var(--hair);padding:32px 0 48px;color:var(--ink-2);font-size:12.5px}
+  .col-grid{display:grid;grid-template-columns:1.6fr 1fr 1fr 1fr;gap:30px;margin-bottom:28px}
+  .col h4{font-size:10.5px;color:var(--muted);letter-spacing:.16em;text-transform:uppercase;margin-bottom:12px;font-weight:600}
+  .col ul{list-style:none;padding:0;margin:0} .col li{padding:3px 0}
+  .col li a:hover{color:var(--alt);text-decoration:none}
+  .col .tag{font-size:10.5px;color:var(--muted);margin-left:6px;letter-spacing:.06em}
+  .col-id .mark{font-size:28px;font-weight:700;letter-spacing:-.04em;line-height:.9}
+  .col-id .mark .punct{color:var(--alt)}
+  .col-id p{margin:10px 0 14px;line-height:1.55;max-width:36ch}
+  .col-id .addr{font-size:11px;color:var(--muted);line-height:1.6}
+  .col-foot{display:flex;justify-content:space-between;align-items:center;gap:20px;padding-top:18px;border-top:1px solid var(--hair-2);font-size:11px;color:var(--muted);letter-spacing:.04em}
+  .col-foot .right{display:flex;gap:14px}
+
+  @media (max-width:1100px){
+    .ttl{grid-template-columns:1fr}
+    .grid{grid-template-columns:repeat(4,1fr)}
+    .grid.dense{grid-template-columns:repeat(6,1fr)}
+    .col-grid{grid-template-columns:1fr 1fr}
+  }
+  @media (max-width:640px){
+    .wordmark{font-size:28px}
+    .ttl h1{font-size:32px}
+    .grid{grid-template-columns:repeat(3,1fr)}
+    .grid.dense{grid-template-columns:repeat(4,1fr)}
+    .lb{padding:24px 32px}
+    .lb-nav{padding:0 10px}
+    nav.primary{flex-wrap:wrap;gap:14px}
+    .col-grid{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+
+<!-- sysbar -->
+<div class="sysbar">
+  <div class="shell row">
+    <div><span class="dot"></span>babb<span style="color:var(--muted)"> / places / hamilton-steel-mill / b-roll</span></div>
+    <div class="right">
+      <span>build 2026.05.18</span><span>·</span>
+      <span id="clock">--:--:-- UTC</span><span>·</span>
+      <a href="/feed.xml?cat=places/hamilton-steel-mill">rss</a>
+    </div>
+  </div>
+</div>
+
+<!-- masthead -->
+<header class="masthead">
+  <div class="shell row">
+    <div>
+      <a href="Babb Homepage v1.html" style="text-decoration:none"><div class="wordmark">babb<span class="punct">.</span></div></a>
+      <div class="tagline">A media outfit · A product company</div>
+    </div>
+    <nav class="primary" aria-label="Primary">
+      <a href="Babb Worlds v1.html">Worlds</a>
+      <a class="here" href="Babb Place v1.html">Places</a>
+      <a href="Babb Products v1.html">Products</a>
+      <a href="Babb Updates v1.html">Updates</a>
+      <a href="Babb About v1.html">About</a>
+    </nav>
+  </div>
+</header>
+
+<!-- context bar -->
+<div class="ctx">
+  <div class="shell row">
+    <a class="back" href="Babb Place v1.html"><span class="arr">←</span> <span>From</span> <b>Hamilton steel mill</b></a>
+    <span class="here">B-Roll archive &middot; <span class="now">32 items</span></span>
+    <div class="more">
+      <a href="Babb Article v1.html">Dispatch</a>
+      <a href="Babb Audio v1.html">Audio</a>
+      <a href="Babb Video v1.html">Video</a>
+      <a class="here" href="Babb BRoll v1.html">B-Roll (here)</a>
+      <a href="Babb FieldNotes v1.html">Field Notes</a>
+    </div>
+  </div>
+</div>
+
+<div class="shell">
+
+  <section class="ttl">
+    <div>
+      <h1>B-Roll archive<span class="punct">.</span></h1>
+      <p class="intro">Everything the crew shot, recorded, or rolled on at the Hamilton steel mill &mdash; photographs, short loops, ambient audio. The <a href="Babb Place v1.html" style="color:var(--ink);border-bottom:1px solid var(--hair)">Place page</a> shows the curated grid; this is the unfiltered library. Click any tile for full-bleed view (←/→/Esc to navigate).</p>
+    </div>
+    <div class="right">
+      <div class="stat-bx">
+        <div><div class="k">Photos</div><div class="v">24 <small>stills</small></div></div>
+        <div><div class="k">Loops</div><div class="v">5 <small>video</small></div></div>
+        <div><div class="k">Audio</div><div class="v">3 <small>ambient</small></div></div>
+        <div><div class="k">Days</div><div class="v">4 <small>2026-05</small></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── tools ─── -->
+  <div class="tools" role="navigation" aria-label="Filters">
+
+    <div class="group">
+      <input id="search" type="search" placeholder="Search captions / tags…" aria-label="Search" />
+    </div>
+
+    <div class="group">
+      <span class="lbl">Media</span>
+      <div class="pill-row" id="mediaFilter">
+        <button data-m="all" aria-pressed="true"><span>All</span><span class="n">32</span></button>
+        <button data-m="photo"><span>Photos</span><span class="n">24</span></button>
+        <button data-m="video"><span>Loops</span><span class="n">5</span></button>
+        <button data-m="audio"><span>Audio</span><span class="n">3</span></button>
+      </div>
+    </div>
+
+    <div class="group">
+      <span class="lbl">Angle</span>
+      <div class="pill-row" id="angleFilter">
+        <button data-a="all" aria-pressed="true">All</button>
+        <button data-a="floor">The Floor</button>
+        <button data-a="owners">The Owners</button>
+        <button data-a="town">The Town</button>
+        <button data-a="future">The Future</button>
+      </div>
+    </div>
+
+    <div class="group">
+      <span class="lbl">Shift</span>
+      <div class="pill-row" id="shiftFilter">
+        <button data-s="all" aria-pressed="true">All</button>
+        <button data-s="first">First</button>
+        <button data-s="second">Second</button>
+        <button data-s="third">Third</button>
+        <button data-s="dawn">Dawn</button>
+      </div>
+    </div>
+
+    <div class="util">
+      <span class="lbl" style="margin-right:8px">View</span>
+      <div class="view" id="viewMode">
+        <button data-v="grid" aria-pressed="true">Grid</button>
+        <button data-v="cs">Contact sheet</button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ─── grid ─── -->
+  <section class="grid" id="grid" aria-label="B-Roll grid">
+
+    <!-- 32 specimens, 24 photo, 5 video, 3 audio -->
+    <!-- Floor / charging -->
+    <div class="tile t1" data-i="0" data-m="photo" data-a="floor" data-s="third" data-cap="Charging the vessel — scrap drop"><span class="meta-tag">PHOTO</span><span class="id">PH 01</span><span class="when">05-12 · 05:42</span></div>
+    <div class="tile t1" data-i="1" data-m="photo" data-a="floor" data-s="third" data-cap="Charging the vessel — crane operator"><span class="meta-tag">PHOTO</span><span class="id">PH 02</span><span class="when">05-12 · 05:48</span></div>
+    <div class="tile t1" data-i="2" data-m="photo" data-a="floor" data-s="third" data-cap="Charging the vessel — chart-on-the-window"><span class="meta-tag">PHOTO</span><span class="id">PH 03</span><span class="when">05-12 · 05:56</span></div>
+    <div class="tile t2" data-i="3" data-m="photo" data-a="floor" data-s="third" data-cap="Pulpit console — pre-blow"><span class="meta-tag">PHOTO</span><span class="id">PH 04</span><span class="when">05-12 · 06:04</span></div>
+
+    <!-- Floor / blow -->
+    <div class="tile dawn" data-i="4" data-m="photo" data-a="floor" data-s="third" data-cap="The blow — oxygen on the bath, 06:14 local"><span class="meta-tag">PHOTO</span><span class="id">PH 05</span><span class="when">05-12 · 06:14</span></div>
+    <div class="tile dawn" data-i="5" data-m="photo" data-a="floor" data-s="dawn" data-cap="The blow — dawn through the high windows"><span class="meta-tag">PHOTO</span><span class="id">PH 06</span><span class="when">05-12 · 06:18</span></div>
+    <div class="tile dawn" data-i="6" data-m="photo" data-a="floor" data-s="dawn" data-cap="Tony R. at the pulpit — the foreman&rsquo;s reflection"><span class="meta-tag">PHOTO</span><span class="id">PH 07</span><span class="when">05-12 · 06:22</span></div>
+
+    <div class="tile audio" data-i="7" data-m="audio" data-a="floor" data-s="third" data-cap="Pour line A — 02:30 ambient (the loop)"><span class="id">AMB 01</span><span class="when">05-12 · 06:14</span></div>
+    <div class="tile video t4" data-i="8" data-m="video" data-a="floor" data-s="third" data-cap="Loop · the blow, 12s"><span class="meta-tag">LOOP</span><span class="id">LOOP 01</span><span class="when">05-12 · 06:14</span></div>
+
+    <!-- Floor / tap, cast -->
+    <div class="tile t3" data-i="9" data-m="photo" data-a="floor" data-s="third" data-cap="The tap — ladle position, vessel tilted"><span class="meta-tag">PHOTO</span><span class="id">PH 08</span><span class="when">05-12 · 06:48</span></div>
+    <div class="tile t3" data-i="10" data-m="photo" data-a="floor" data-s="third" data-cap="Ladle metallurgy room — two flights up"><span class="meta-tag">PHOTO</span><span class="id">PH 09</span><span class="when">05-12 · 07:08</span></div>
+    <div class="tile t4" data-i="11" data-m="photo" data-a="floor" data-s="first" data-cap="The cast — slab forming, the hum"><span class="meta-tag">PHOTO</span><span class="id">PH 10</span><span class="when">05-12 · 09:30</span></div>
+
+    <div class="tile audio" data-i="12" data-m="audio" data-a="floor" data-s="third" data-cap="Pulpit conversation &mdash; shift handoff, 07:11 ET"><span class="id">AMB 02</span><span class="when">05-12 · 07:11</span></div>
+
+    <!-- Owners -->
+    <div class="tile t6" data-i="13" data-m="photo" data-a="owners" data-s="first" data-cap="Owner&rsquo;s rep Marisol &mdash; in the office, 1996 photo on the wall"><span class="meta-tag">PHOTO</span><span class="id">PH 11</span><span class="when">05-11 · 14:08</span></div>
+    <div class="tile t6" data-i="14" data-m="photo" data-a="owners" data-s="first" data-cap="The boardroom, after-hours"><span class="meta-tag">PHOTO</span><span class="id">PH 12</span><span class="when">05-11 · 17:42</span></div>
+    <div class="tile t6" data-i="15" data-m="photo" data-a="owners" data-s="first" data-cap="Documents &mdash; the 2021 buy-back paperwork"><span class="meta-tag">PHOTO</span><span class="id">PH 13</span><span class="when">05-11 · 16:22</span></div>
+    <div class="tile t6" data-i="16" data-m="photo" data-a="owners" data-s="first" data-cap="Ledger &mdash; 1994 entry, the year of the first sale"><span class="meta-tag">PHOTO</span><span class="id">PH 14</span><span class="when">05-11 · 15:48</span></div>
+
+    <div class="tile video t6" data-i="17" data-m="video" data-a="owners" data-s="first" data-cap="Loop · Marisol walking the floor, 08s"><span class="meta-tag">LOOP</span><span class="id">LOOP 02</span><span class="when">05-11 · 15:14</span></div>
+
+    <!-- Town -->
+    <div class="tile t7" data-i="18" data-m="photo" data-a="town" data-s="first" data-cap="The east end &mdash; Tony R&rsquo;s street, looking toward the mill"><span class="meta-tag">PHOTO</span><span class="id">PH 15</span><span class="when">05-10 · 19:08</span></div>
+    <div class="tile t7" data-i="19" data-m="photo" data-a="town" data-s="first" data-cap="The harbour bridge &mdash; mill chimneys behind"><span class="meta-tag">PHOTO</span><span class="id">PH 16</span><span class="when">05-10 · 19:34</span></div>
+    <div class="tile t7" data-i="20" data-m="photo" data-a="town" data-s="first" data-cap="Bar across from gate 4 &mdash; 9:00 ET, shift just out"><span class="meta-tag">PHOTO</span><span class="id">PH 17</span><span class="when">05-10 · 09:08</span></div>
+    <div class="tile t7" data-i="21" data-m="photo" data-a="town" data-s="first" data-cap="Walkway over the train yard &mdash; route home"><span class="meta-tag">PHOTO</span><span class="id">PH 18</span><span class="when">05-10 · 19:42</span></div>
+    <div class="tile t5" data-i="22" data-m="photo" data-a="town" data-s="first" data-cap="School across the road &mdash; 8:00 ET drop-off"><span class="meta-tag">PHOTO</span><span class="id">PH 19</span><span class="when">05-10 · 08:08</span></div>
+
+    <div class="tile video t7" data-i="23" data-m="video" data-a="town" data-s="first" data-cap="Loop · the harbour at dusk, 06s"><span class="meta-tag">LOOP</span><span class="id">LOOP 03</span><span class="when">05-10 · 20:14</span></div>
+
+    <!-- Future -->
+    <div class="tile t5" data-i="24" data-m="photo" data-a="future" data-s="second" data-cap="The new console &mdash; Workpads station, second shift"><span class="meta-tag">PHOTO</span><span class="id">PH 20</span><span class="when">05-09 · 16:22</span></div>
+    <div class="tile t5" data-i="25" data-m="photo" data-a="future" data-s="second" data-cap="The 2028 rebuild plan &mdash; wall print, annotated"><span class="meta-tag">PHOTO</span><span class="id">PH 21</span><span class="when">05-09 · 17:04</span></div>
+    <div class="tile night" data-i="26" data-m="photo" data-a="future" data-s="third" data-cap="The blast furnace from outside, night"><span class="meta-tag">PHOTO</span><span class="id">PH 22</span><span class="when">05-09 · 22:18</span></div>
+    <div class="tile night" data-i="27" data-m="photo" data-a="future" data-s="third" data-cap="The yard, 02:30 ET, third shift quiet"><span class="meta-tag">PHOTO</span><span class="id">PH 23</span><span class="when">05-12 · 02:30</span></div>
+
+    <div class="tile video night" data-i="28" data-m="video" data-a="future" data-s="third" data-cap="Loop · the yard at 02:30, 10s, no audio"><span class="meta-tag">LOOP</span><span class="id">LOOP 04</span><span class="when">05-12 · 02:30</span></div>
+
+    <div class="tile audio" data-i="29" data-m="audio" data-a="floor" data-s="dawn" data-cap="Ambient · cast-end at 09:30, 04:12"><span class="id">AMB 03</span><span class="when">05-12 · 09:30</span></div>
+
+    <!-- Coverage / general -->
+    <div class="tile t4" data-i="30" data-m="photo" data-a="floor" data-s="second" data-cap="Shift change &mdash; the seven-minute conversation"><span class="meta-tag">PHOTO</span><span class="id">PH 24</span><span class="when">05-09 · 22:55</span></div>
+    <div class="tile video t2" data-i="31" data-m="video" data-a="floor" data-s="second" data-cap="Loop · the cast hum, 14s with audio"><span class="meta-tag">LOOP</span><span class="id">LOOP 05</span><span class="when">05-09 · 23:14</span></div>
+
+  </section>
+
+  <div class="grid-foot">
+    <span id="gridCount">Showing 32 of 32 items</span>
+    <span>Use ←/→ to navigate, Esc to close in viewer &middot; <a href="Babb Place v1.html">Back to Place page</a></span>
+  </div>
+
+</div>
+
+<!-- ─── LIGHTBOX ─── -->
+<div class="lb" id="lb" role="dialog" aria-modal="true" aria-label="B-Roll viewer">
+  <button class="lb-close" id="lbClose" aria-label="Close">×</button>
+  <button class="lb-nav prev" id="lbPrev" aria-label="Previous">‹</button>
+  <button class="lb-nav next" id="lbNext" aria-label="Next">›</button>
+  <div class="lb-img" id="lbImg">
+    <span class="corner tl" id="lbTl">SCENE · TBD</span>
+    <span class="corner tr" id="lbTr">FRAME 01 / 32</span>
+    <span class="corner bl" id="lbBl">HAMILTON STEEL MILL</span>
+    <span class="corner br" id="lbBr">2026.05</span>
+  </div>
+  <div class="lb-cap">
+    <div class="left">
+      <h3 id="lbCap">[caption]</h3>
+      <div class="meta" id="lbMeta">[place &middot; angle &middot; shift &middot; ts]</div>
+    </div>
+    <div class="right">
+      <span id="lbExif">EXIF · f/4 · 1/125 · ISO 800 &middot; 35mm</span>
+      <span class="act"><a href="Babb Angle v1.html">Use in Angle</a> &middot; <a href="#">download</a> &middot; <a href="#">share</a></span>
+    </div>
+  </div>
+  <div class="lb-keys">
+    <span><kbd>←</kbd> prev</span>
+    <span><kbd>→</kbd> next</span>
+    <span><kbd>esc</kbd> close</span>
+  </div>
+</div>
+
+<!-- footer -->
+<div class="shell">
+<footer class="colophon">
+  <div class="col-grid">
+    <div class="col col-id">
+      <div class="mark">babb<span class="punct">.</span></div>
+      <p>Tools for the frontier. A media outfit reporting from the working world and a product company building for it.</p>
+      <div class="addr">babb works · est. 2024<br/><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="660e030a0a0926040704044812030a">[email&#160;protected]</a><br/>rss · twitter · github · instagram</div>
+    </div>
+    <div class="col">
+      <h4>Worlds</h4>
+      <ul>
+        <li><a href="Babb Worlds v1.html#manufacturing">Manufacturing</a><span class="tag">here</span></li>
+        <li><a href="Babb Worlds v1.html#farming">Farming</a></li>
+        <li><a href="Babb Worlds v1.html#building">Building</a></li>
+        <li><a href="Babb Worlds v1.html">All Worlds →</a></li>
+      </ul>
+    </div>
+    <div class="col">
+      <h4>This Place</h4>
+      <ul>
+        <li><a href="Babb Place v1.html">Hamilton steel mill</a></li>
+        <li><a href="Babb Angle v1.html">↳ The Floor</a></li>
+        <li><a href="#">↳ B-Roll</a><span class="tag">here</span></li>
+        <li><a href="Babb FieldNotes v1.html">↳ Field Notes</a></li>
+        <li><a href="Babb Audio v1.html">↳ Audio · Tony R.</a></li>
+        <li><a href="Babb Video v1.html">↳ Video · The Pour</a></li>
+      </ul>
+    </div>
+    <div class="col">
+      <h4>Subscribe</h4>
+      <ul>
+        <li><a href="/feed.xml?cat=places/hamilton-steel-mill">This Place RSS</a></li>
+        <li><a href="/feed.xml?cat=broll">B-Roll RSS</a></li>
+        <li><a href="/updates/email/">Email digest</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="col-foot">
+    <div>© 2024–2026 Babb Works · CC BY-NC where noted</div>
+    <div class="right">
+      <a href="/colophon/">Colophon</a>
+      <a href="Babb About v1.html">About</a>
+      <a href="/cdn-cgi/l/email-protection#452d2029292a05272427276b312029">Contact</a>
+      <span class="ascii">build 2026.05.18</span>
+    </div>
+  </div>
+</footer>
+</div>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+  (function(){
+    const el=document.getElementById("clock");
+    const f=n=>String(n).padStart(2,"0");
+    function tick(){const d=new Date();el.textContent=f(d.getUTCHours())+":"+f(d.getUTCMinutes())+":"+f(d.getUTCSeconds())+" UTC";}
+    tick();setInterval(tick,1000);
+  })();
+
+  /* ─── filters ─── */
+  (function(){
+    const search = document.getElementById("search");
+    const mediaBtns = document.querySelectorAll("#mediaFilter button");
+    const angleBtns = document.querySelectorAll("#angleFilter button");
+    const shiftBtns = document.querySelectorAll("#shiftFilter button");
+    const tiles = document.querySelectorAll("#grid .tile");
+    const count = document.getElementById("gridCount");
+    let q = "", media = "all", angle = "all", shift = "all";
+
+    function setPressed(group, b){ group.forEach(x => x.setAttribute("aria-pressed", x===b)); }
+    function apply(){
+      let shown = 0;
+      tiles.forEach(t => {
+        const okM = media==="all" || t.dataset.m===media;
+        const okA = angle==="all" || t.dataset.a===angle;
+        const okS = shift==="all" || t.dataset.s===shift;
+        const okQ = !q || (t.dataset.cap+" "+t.dataset.a+" "+t.dataset.m+" "+t.dataset.s).toLowerCase().includes(q);
+        const show = okM && okA && okS && okQ;
+        t.style.display = show ? "" : "none";
+        if(show) shown++;
+      });
+      count.textContent = "Showing "+shown+" of "+tiles.length+" items";
+    }
+    search.addEventListener("input", () => { q = search.value.trim().toLowerCase(); apply(); });
+    mediaBtns.forEach(b => b.addEventListener("click", () => { media=b.dataset.m; setPressed(mediaBtns,b); apply(); }));
+    angleBtns.forEach(b => b.addEventListener("click", () => { angle=b.dataset.a; setPressed(angleBtns,b); apply(); }));
+    shiftBtns.forEach(b => b.addEventListener("click", () => { shift=b.dataset.s; setPressed(shiftBtns,b); apply(); }));
+  })();
+
+  /* ─── view mode (grid / contact sheet) ─── */
+  (function(){
+    const btns = document.querySelectorAll("#viewMode button");
+    btns.forEach(b => b.addEventListener("click", () => {
+      btns.forEach(x => x.setAttribute("aria-pressed", x===b));
+      document.body.classList.toggle("cs", b.dataset.v === "cs");
+    }));
+  })();
+
+  /* ─── LIGHTBOX ─── */
+  (function(){
+    const lb = document.getElementById("lb");
+    const img = document.getElementById("lbImg");
+    const cap = document.getElementById("lbCap");
+    const meta = document.getElementById("lbMeta");
+    const tl = document.getElementById("lbTl");
+    const tr = document.getElementById("lbTr");
+    const bl = document.getElementById("lbBl");
+    const br = document.getElementById("lbBr");
+    const exif = document.getElementById("lbExif");
+    const tiles = [...document.querySelectorAll("#grid .tile")];
+    let idx = 0;
+
+    function visibleTiles(){
+      return tiles.filter(t => t.style.display !== "none");
+    }
+    function show(i){
+      const v = visibleTiles();
+      if(!v.length){ close(); return; }
+      idx = (i + v.length) % v.length;
+      const t = v[idx];
+      // clone the texture class onto the lightbox image
+      img.className = "lb-img";
+      [...t.classList].forEach(c => { if(c !== "tile") img.classList.add(c); });
+      cap.innerHTML = t.dataset.cap;
+      const angleLabel = {floor:"The Floor",owners:"The Owners",town:"The Town",future:"The Future"}[t.dataset.a] || t.dataset.a;
+      const shiftLabel = {first:"first shift",second:"second shift",third:"third shift",dawn:"dawn"}[t.dataset.s] || t.dataset.s;
+      const mediaLabel = {photo:"Photo",video:"Loop",audio:"Audio"}[t.dataset.m] || t.dataset.m;
+      meta.innerHTML = "<a href=\"Babb Place v1.html\">Hamilton steel mill</a> · <a href=\"Babb Angle v1.html\">"+angleLabel+"</a> · "+shiftLabel+" · "+t.querySelector(".when").textContent;
+      tl.textContent = "ANGLE · " + angleLabel.toUpperCase();
+      tr.textContent = "FRAME " + String(idx+1).padStart(2,"0") + " / " + String(v.length).padStart(2,"0");
+      bl.textContent = mediaLabel.toUpperCase() + " · " + t.querySelector(".id").textContent;
+      br.textContent = t.querySelector(".when").textContent;
+      // exif placeholder by media
+      if(t.dataset.m === "photo") exif.textContent = "EXIF · f/4 · 1/125 · ISO 800 · 35mm";
+      else if(t.dataset.m === "video") exif.textContent = "Loop · 4K · 24 fps · 8–14s";
+      else exif.textContent = "Audio · 96 kHz / 24-bit · stereo";
+    }
+    function open(i){ lb.classList.add("on"); document.body.style.overflow = "hidden"; show(i); }
+    function close(){ lb.classList.remove("on"); document.body.style.overflow = ""; }
+    function next(d){ show(idx + d); }
+
+    tiles.forEach(t => t.addEventListener("click", () => {
+      const v = visibleTiles();
+      const i = v.indexOf(t);
+      if(i >= 0) open(i);
+    }));
+    document.getElementById("lbClose").addEventListener("click", close);
+    document.getElementById("lbPrev").addEventListener("click", () => next(-1));
+    document.getElementById("lbNext").addEventListener("click", () => next(1));
+    lb.addEventListener("click", e => { if(e.target === lb) close(); });
+    document.addEventListener("keydown", e => {
+      if(!lb.classList.contains("on")) return;
+      if(e.key === "Escape") close();
+      else if(e.key === "ArrowLeft") next(-1);
+      else if(e.key === "ArrowRight") next(1);
+    });
+  })();
+</script>
+</body>
+</html>

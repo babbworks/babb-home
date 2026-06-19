@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Babb — site pages index</title>
+<style>
+  :root{
+    --paper:#faf8f3; --paper-2:#f3efe5; --card:#ffffff;
+    --ink:#1a1a1a; --ink-2:#444141; --muted:#807d75;
+    --hair:#d8d3c4; --hair-2:#e8e3d4;
+    --alt:#a14a00; --alt-soft:#f5e9d8;
+    --live:#2f7a3a;
+    --mono: ui-monospace,"SF Mono",SFMono-Regular,"JetBrains Mono",Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--paper);color:var(--ink);
+    font:14px/1.55 var(--mono);
+    -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+  a{color:inherit;text-decoration:none}
+  .shell{max-width:1180px;margin:0 auto;padding:32px 24px 56px}
+  .bar{display:flex;justify-content:space-between;align-items:center;
+    border-bottom:1px solid var(--hair);padding-bottom:14px;font-size:11px;color:var(--muted);letter-spacing:.04em}
+  .dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--live);
+    box-shadow:0 0 0 0 rgba(47,122,58,.55);animation:pulse 2.6s infinite;vertical-align:middle;margin-right:6px}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(47,122,58,.55)}70%{box-shadow:0 0 0 7px rgba(47,122,58,0)}100%{box-shadow:0 0 0 0 rgba(47,122,58,0)}}
+  h1{font-family:var(--mono);font-size:56px;letter-spacing:-.04em;font-weight:700;margin:32px 0 6px;line-height:1}
+  h1 .punct{color:var(--alt)}
+  .lede{font-size:15.5px;color:var(--ink-2);line-height:1.55;max-width:60ch;text-wrap:pretty;margin-bottom:36px}
+  .lede a{border-bottom:1px solid var(--ink)}
+  .sec{font-size:11px;color:var(--muted);letter-spacing:.16em;text-transform:uppercase;margin:36px 0 14px;display:flex;align-items:baseline;gap:12px}
+  .sec .num{color:var(--ink);font-weight:600}
+  .sec .rule{flex:1;height:1px;background:var(--hair)}
+  .sec .meta{color:var(--muted)}
+
+  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+  .card{background:var(--card);border:1px solid var(--hair);padding:22px 24px;
+    display:flex;flex-direction:column;gap:10px;min-height:200px;
+    transition:border-color .15s ease, transform .15s ease}
+  .card:hover{border-color:var(--ink);transform:translateY(-1px)}
+  .card .top{display:flex;justify-content:space-between;align-items:baseline;gap:14px}
+  .card .num{font-size:11px;color:var(--muted);letter-spacing:.16em;text-transform:uppercase;font-weight:600}
+  .card .status{font-size:9.5px;color:var(--live);letter-spacing:.14em;text-transform:uppercase;font-weight:700;border:1px solid var(--live);padding:1px 7px}
+  .card .status.new{color:var(--alt);border-color:var(--alt)}
+  .card h2{font-family:var(--mono);font-size:24px;letter-spacing:-.02em;font-weight:700;line-height:1.1}
+  .card h2 .punct{color:var(--alt)}
+  .card .blurb{font-size:13px;color:var(--ink-2);line-height:1.55;text-wrap:pretty;flex:1}
+  .card .foot{font-size:10.5px;color:var(--muted);letter-spacing:.06em;display:flex;justify-content:space-between;gap:14px;padding-top:10px;border-top:1px dotted var(--hair-2)}
+  .card .foot .path{font-family:var(--mono);color:var(--ink-2)}
+  .card .foot .open{color:var(--ink);font-weight:600}
+  .card:hover .open{color:var(--alt)}
+
+  .legend{margin-top:36px;padding:18px 22px;border:1px solid var(--hair);background:var(--card);font-size:12.5px;color:var(--ink-2);line-height:1.65}
+  .legend b{color:var(--ink)}
+  .legend .row{display:flex;flex-wrap:wrap;gap:18px 26px;align-items:baseline;margin-top:6px}
+  .legend .row span{display:inline-flex;align-items:center;gap:6px;font-size:11.5px}
+  .legend .sw{display:inline-block;width:10px;height:10px;border:1px solid var(--hair);background:var(--paper)}
+  .legend .sw.ink{background:var(--ink)}
+  .legend .sw.alt{background:var(--alt)}
+  .legend .sw.live{background:var(--live)}
+  .legend .sw.term{background:#141312}
+
+  @media (max-width:760px){
+    h1{font-size:38px}
+    .grid{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <div class="bar">
+    <div><span class="dot"></span>babb · site pages index</div>
+    <div>build 2026.05.18 · CLAUDE / specimens · <a href="#" style="color:var(--ink-2);border-bottom:1px solid var(--hair-2)">rss</a></div>
+  </div>
+
+  <h1>babb<span class="punct">.</span> &mdash; site pages</h1>
+  <p class="lede">Sixteen HTML files in the system. Five primary-nav pages (six counting Homepage), plus ten supporting templates: Article, Workpads, the five Place subpages (Angle, Video, Audio, B-Roll, Field Notes), Person Subject + Person Contributor, and the World Read·Watch·Listen index. All single-file, no build step, design system shared. Each file links to all the others; open any to start.</p>
+
+  <div class="sec"><span class="num">§ 01</span><span>Primary nav</span><span class="rule"></span><span class="meta">The five top-level pages</span></div>
+
+  <section class="grid">
+
+    <a class="card" href="Babb Homepage v1.html">
+      <div class="top"><span class="num">00 · /</span><span class="status">built</span></div>
+      <h2>Homepage<span class="punct">.</span></h2>
+      <p class="blurb">Front door. Worlds + Updates rail, full-bleed terminal slideshow, product cards, intro rows, telemetry feed, footer.</p>
+      <div class="foot"><span class="path">Babb Homepage v1.html</span><span class="open">Open →</span></div>
+    </a>
+
+    <a class="card" href="Babb Worlds v1.html">
+      <div class="top"><span class="num">01 · /worlds/</span><span class="status">built</span></div>
+      <h2>Worlds<span class="punct">.</span></h2>
+      <p class="blurb">The seven Worlds. Selectable index + single-World mode with hero, places, dispatches, read/watch/listen, products, people.</p>
+      <div class="foot"><span class="path">Babb Worlds v1.html</span><span class="open">Open →</span></div>
+    </a>
+
+    <a class="card" href="Babb Place v1.html">
+      <div class="top"><span class="num">02 · /places/hamilton-steel-mill/</span><span class="status">built</span></div>
+      <h2>Places<span class="punct">.</span></h2>
+      <p class="blurb">Hamilton steel mill standing story. Six standard sections: Shot · Angles · People · B-Roll · Field Notes · Dailies. Place-specific sticky chrome with picker.</p>
+      <div class="foot"><span class="path">Babb Place v1.html</span><span class="open">Open →</span></div>
+    </a>
+
+    <a class="card" href="Babb Products v1.html">
+      <div class="top"><span class="num">03 · /products/</span><span class="status new">new · this batch</span></div>
+      <h2>Products<span class="punct">.</span></h2>
+      <p class="blurb">Four equal categories &mdash; Software, Hardware research, Standards, Protocols. Workpads spotlight, releases tail, World filter, cross-links to Places.</p>
+      <div class="foot"><span class="path">Babb Products v1.html</span><span class="open">Open →</span></div>
+    </a>
+
+    <a class="card" href="Babb Updates v1.html">
+      <div class="top"><span class="num">04 · /updates/</span><span class="status new">new · this batch</span></div>
+      <h2>Updates<span class="punct">.</span></h2>
+      <p class="blurb">The record. Hero featured + secondary row, dispatches rail, editor&rsquo;s notes, two-column releases + dailies, month-by-month archive. Kind &times; World filters.</p>
+      <div class="foot"><span class="path">Babb Updates v1.html</span><span class="open">Open →</span></div>
+    </a>
+
+    <a class="card" href="Babb About v1.html">
+      <div class="top"><span class="num">05 · /about/</span><span class="status new">new · this batch</span></div>
+      <h2>About<span class="punct">.</span></h2>
+      <p class="blurb">Manifesto then masthead. Four posture propositions, what we make (two lines), how we work (five steps), people, by-the-numbers facts, contact.</p>
+      <div class="foot"><span class="path">Babb About v1.html</span><span class="open">Open →</span></div>
+    </a>
+
+  </section>
+
+  <div class="sec"><span class="num">§ 02</span><span>Supporting templates</span><span class="rule"></span><span class="meta">Long-form, product detail</span></div>
+
+  <section class="grid">
+
+    <a class="card" href="Babb Article v1.html">
+      <div class="top"><span class="num">A · /dispatches/&lt;slug&gt;/</span><span class="status">built</span></div>
+      <h2>Article / Dispatch<span class="punct">.</span></h2>
+      <p class="blurb">Long-form post layout. Used by every dispatch in Updates and every Read entry on a World page.</p>
+      <div class="foot"><span class="path">Babb Article v1.html</span><span class="open">Open →</span></div>
+    </a>
+
+    <a class="card" href="Babb Workpads v1.html">
+      <div class="top"><span class="num">B · /products/workpads/</span><span class="status">built</span></div>
+      <h2>Workpads detail<span class="punct">.</span></h2>
+      <p class="blurb">Product detail page template &mdash; instanced for Workpads. Other products will reuse this shape.</p>
+      <div class="foot"><span class="path">Babb Workpads v1.html</span><span class="open">Open →</span></div>
+    </a>
+
+  </section>
+
+  <div class="sec"><span class="num">§ 03</span><span>Place subpages</span><span class="rule"></span><span class="meta">All anchored to Hamilton steel mill &middot; new this batch</span></div>
+
+  <section class="grid">
+
+    <a class="card" href="Babb Angle v1.html">
+      <div class="top"><span class="num">C · /places/hamilton-steel-mill/angles/the-floor/</span><span class="status new">new</span></div>
+      <h2>Angle detail<span class="punct">.</span></h2>
+      <p class="blurb">"The Floor" expanded &mdash; cinematic plate, long-form prose with glossary popups, sidebar TOC with scroll-spy, prev/next Angle nav, related Angles.</p>
+      <div class="foot"><span class="path">Babb Angle v1.html</span><span class="open">Open →</span></div>
+    </a>
+
+    <a class="card" href="Babb Video v1.html">
+      <div class="top"><span class="num">D · /places/hamilton-steel-mill/video/the-pour/</span><span class="status new">new</span></div>
+      <h2>Video page<span class="punct">.</span></h2>
+      <p class="blurb">"The Pour" 12-min mini-doc. Player frame with timeline, chapters (jumpable), director&rsquo;s notes, full transcript drawer with clickable timestamps.</p>
+      <div class="foot"><span class="path">Babb Video v1.html</span><span class="open">Open →</span></div>
+    </a>
+
+    <a class="card" href="Babb Audio v1.html">
+      <div class="top"><span class="num">E · /places/hamilton-steel-mill/audio/tony-r/</span><span class="status new">new</span></div>
+      <h2>Audio episode<span class="punct">.</span></h2>
+      <p class="blurb">Tony R. 38-min interview. Terminal-styled persistent player with SVG waveform, chapter index, full synced transcript (search + click-to-seek), pull-quote sidebar.</p>
+      <div class="foot"><span class="path">Babb Audio v1.html</span><span class="open">Open →</span></div>
+    </a>
+
+    <a class="card" href="Babb BRoll v1.html">
+      <div class="top"><span class="num">F · /places/hamilton-steel-mill/b-roll/</span><span class="status new">new</span></div>
+      <h2>B-Roll gallery<span class="punct">.</span></h2>
+      <p class="blurb">32 specimens (24 photo, 5 loop, 3 audio). Search + Media/Angle/Shift filters, grid/contact-sheet view toggle, real lightbox modal with ←/→/Esc keyboard nav.</p>
+      <div class="foot"><span class="path">Babb BRoll v1.html</span><span class="open">Open →</span></div>
+    </a>
+
+    <a class="card" href="Babb FieldNotes v1.html">
+      <div class="top"><span class="num">G · /places/hamilton-steel-mill/field-notes/</span><span class="status new">new</span></div>
+      <h2>Field Notes archive<span class="punct">.</span></h2>
+      <p class="blurb">14 chronological notes grouped by day, anchored back to Angles / B-Roll / Audio. Author-coded left-edge color, filter by author/anchor, sidebar tagcloud jumps.</p>
+      <div class="foot"><span class="path">Babb FieldNotes v1.html</span><span class="open">Open →</span></div>
+    </a>
+
+  </section>
+
+  <div class="sec"><span class="num">§ 04</span><span>People &amp; media indexes</span><span class="rule"></span><span class="meta">new this batch</span></div>
+
+  <section class="grid">
+
+    <a class="card" href="Babb Person Subject v1.html">
+      <div class="top"><span class="num">H · /people/tony-r/</span><span class="status new">new</span></div>
+      <h2>Person · Subject<span class="punct">.</span></h2>
+      <p class="blurb">Tony R., foreman &mdash; the subject variant. Portrait + role + bio + floor timeline, 7 appearances list, consent-on-file sidebar, audio sampler + pull-quotes.</p>
+      <div class="foot"><span class="path">Babb Person Subject v1.html</span><span class="open">Open →</span></div>
+    </a>
+
+    <a class="card" href="Babb Person Contributor v1.html">
+      <div class="top"><span class="num">I · /people/editor-a/</span><span class="status new">new</span></div>
+      <h2>Person · Contributor<span class="punct">.</span></h2>
+      <p class="blurb">Editor A., editor in chief &mdash; the contributor variant. ID-card hero (ink), 4-stat strip, bio, 8-byline list, coverage-by-World grid, dark contact card.</p>
+      <div class="foot"><span class="path">Babb Person Contributor v1.html</span><span class="open">Open →</span></div>
+    </a>
+
+    <a class="card" href="Babb RWL v1.html">
+      <div class="top"><span class="num">J · /worlds/manufacturing/read-watch-listen/</span><span class="status new">new</span></div>
+      <h2>Read · Watch · Listen<span class="punct">.</span></h2>
+      <p class="blurb">Manufacturing World media library. Three big mode tabs (Read 9 / Watch 5 / Listen 7), sub-World pill filter, sort by newest/length, per-mode featured + grid, working tab switch.</p>
+      <div class="foot"><span class="path">Babb RWL v1.html</span><span class="open">Open →</span></div>
+    </a>
+
+  </section>
+
+  <div class="legend">
+    <b>Design system anchors</b> &mdash; all eight files share the same tokens:
+    <div class="row">
+      <span><span class="sw"></span> paper · #faf8f3</span>
+      <span><span class="sw ink"></span> ink · #1a1a1a</span>
+      <span><span class="sw alt"></span> alt · #a14a00</span>
+      <span><span class="sw live"></span> live · #2f7a3a</span>
+      <span><span class="sw term"></span> term-bg · #141312</span>
+      <span>type · monospace (ui-monospace stack)</span>
+    </div>
+    <p style="margin:14px 0 0">When this ports to Jekyll (per <a href="uploads/babb-site-deliverable/design-notes/note-05-jekyll-migration-guidance.md" style="color:var(--ink);border-bottom:1px solid var(--hair)">note&nbsp;05</a>), the tokens become <code>_sass/_tokens.scss</code>; the sysbar / masthead / footer become <code>_includes/</code>; and each page becomes its <code>_layouts/</code> file. The specimen content here matches the Jekyll data model (Worlds slate, BABB-PLACE schema, Hamilton mill standing story).</p>
+  </div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,176 @@
+---
+layout: product
+title: ZAKO
+nav_active: products
+product_id: zako
+status: active
+status_label: Standard v1.0 · Active
+---
+
+<div class="shell">
+  <div class="crumbs">
+    <a href="/">babb</a><span class="sep">/</span>
+    <a href="/products/">products</a><span class="sep">/</span>
+    <span class="here">zako</span>
+  </div>
+
+  <section class="ptitle">
+    <div>
+      <div class="kicker"><span class="k1">System &middot; MobileOS</span><span>Sovereign Operating System</span></div>
+      <h1>ZAKO<span class="punct">.</span></h1>
+      <p class="deck">
+        <b>A sovereign mobile operating system.</b>
+        Every interaction is a record. Every record has two sides. Every record must balance.
+        Built on AOSP, governed by Outstack, secured by Telux, encoded by BitPads &mdash;
+        ZAKO is sovereignty as an engineering discipline, not a marketing claim.
+      </p>
+    </div>
+    <div class="status" aria-label="Product status">
+      <div class="row head"><span>ZAKO &middot; status</span><span class="live">ACTIVE</span></div>
+      <div class="row"><span class="k">Standard</span><span class="v"><b>ZAKO Standard v1.0</b></span></div>
+      <div class="row"><span class="k">Base</span><span class="v">AOSP &middot; no GMS &middot; upstream-aligned</span></div>
+      <div class="row"><span class="k">Hardware</span><span class="v">Babb Cat (Cat S22 Flip &middot; QM215)</span></div>
+      <div class="row"><span class="k">Protocols</span><span class="v">BitPads &middot; BitLedger &middot; Telux &middot; Outstack</span></div>
+      <div class="row"><span class="k">Services</span><span class="v">PADS &middot; Health &middot; Academy &middot; Agreements</span></div>
+      <div class="cta">
+        <a href="/updates/what-is-zako/" class="dark">Overview article &rarr;</a>
+        <a href="/products/telux/">Telux</a>
+        <a href="/products/outstack/">Outstack</a>
+      </div>
+    </div>
+  </section>
+
+  <div class="smark"><span class="num">&sect; 01</span><span>Foundational principles</span><span class="rule"></span><span>five commitments, non-negotiable</span></div>
+
+  <section class="feat">
+    <div class="cell">
+      <div class="num">01</div>
+      <h3>Every interaction is a record.</h3>
+      <p>A payment, a task, a blood pressure reading, a capability grant, a power mode transition, a journal entry &mdash; each is a BitPads frame, signed by the Island Sovereign, chain-hashed against the record before it. Records are never deleted. They are amended.</p>
+      <span class="tag">ledger &middot; append-only &middot; chain-hashed</span>
+    </div>
+    <div class="cell">
+      <div class="num">02</div>
+      <h3>Conservation at the wire level.</h3>
+      <p>Every record involving a quantity &mdash; money, energy, data, time &mdash; is a BitLedger record. The conservation invariant is enforced at encoding. A batch that does not balance cannot be correctly formed. Not a rule. A structural property.</p>
+      <span class="tag">BitLedger &middot; invariant &middot; structural</span>
+    </div>
+    <div class="cell">
+      <div class="num">03</div>
+      <h3>Sovereignty is the design constraint.</h3>
+      <p>Your records are not stored on external servers. Your identity is not issued by a third party. Your data does not leave your device without an explicit sovereign action. ed25519 keys in TrustZone. W3C DIDs. Island containers. Capability grants.</p>
+      <span class="tag">Telux &middot; DIDs &middot; Islands &middot; sovereign</span>
+    </div>
+    <div class="cell">
+      <div class="num">04</div>
+      <h3>Offline-first is non-negotiable.</h3>
+      <p>ZAKO functions fully without network connectivity. Records are created locally, stored locally, transmitted when the Sovereign chooses. SMS, QR code, Bluetooth LE, IP. No service requires a network connection to create or read records.</p>
+      <span class="tag">SMS &middot; QR &middot; BLE &middot; no network required</span>
+    </div>
+    <div class="cell">
+      <div class="num">05</div>
+      <h3>Power is a sovereignty property.</h3>
+      <p>A device that cannot control its own power consumption cannot guarantee its own availability. Power events are records. Power mode transitions are records. The power budget is a ledger. Outstack governs everything through power.</p>
+      <span class="tag">Outstack &middot; 5 modes &middot; RTG discipline</span>
+    </div>
+    <div class="cell">
+      <div class="num">06</div>
+      <h3>No Google Mobile Services.</h3>
+      <p>GMS removal is not a compromise. It is the founding design decision. Push via UnifiedPush. Apps via F-Droid. Maps via OpenStreetMap. Auth via Telux DID. Every replacement must be more sovereign, not merely different.</p>
+      <span class="tag">no GMS &middot; F-Droid &middot; UnifiedPush</span>
+    </div>
+  </section>
+
+  <div class="smark"><span class="num">&sect; 02</span><span>Architecture</span><span class="rule"></span><span>three layers &middot; four lineages</span></div>
+
+  <section class="spec">
+    <div class="col">
+      <h4>Three layers</h4>
+      <div class="row"><span class="k">Visible</span><span class="v">Group interfaces, exchange queries, apps, telephony, NL query</span></div>
+      <div class="row"><span class="k">Submerged</span><span class="v">Outstack power governor, Telux sovereignty enforcer, DID identity</span></div>
+      <div class="row"><span class="k">Bedrock</span><span class="v">TrustZone root of trust, Telux-SEC LSM, dm-verity, power domains</span></div>
+      <div class="row"><span class="k">Principle</span><span class="v">Hardware guarantees &rarr; system policy &rarr; user experience</span></div>
+    </div>
+    <div class="col">
+      <h4>Lineage</h4>
+      <div class="row"><span class="k">Unix</span><span class="v">Composable small tools &middot; graceful degradation</span></div>
+      <div class="row"><span class="k">Plan 9</span><span class="v">Namespace as fundamental primitive &middot; Islands</span></div>
+      <div class="row"><span class="k">seL4</span><span class="v">Capability as unforgeable token &middot; no ambient authority</span></div>
+      <div class="row"><span class="k">CICS</span><span class="v">Transaction as substrate &middot; 60 years continuous operation</span></div>
+    </div>
+  </section>
+
+  <div class="smark"><span class="num">&sect; 03</span><span>The protocol stack</span><span class="rule"></span><span>BitPads &middot; BitLedger &middot; Telux &middot; Outstack</span></div>
+
+  <section class="spec">
+    <div class="col">
+      <h4>Wire format</h4>
+      <div class="row"><span class="k">BitPads v2</span><span class="v">Meta layer &middot; 4 frame types &middot; 1&ndash;44 bytes</span></div>
+      <div class="row"><span class="k">BitLedger v3</span><span class="v">40-bit double-entry &middot; conservation enforced</span></div>
+      <div class="row"><span class="k">Enhancement</span><span class="v">C0 grammar &middot; 13 positions &middot; 4-bit pictography</span></div>
+      <div class="row"><span class="k">Integrity</span><span class="v">CRC-15 + direction mirroring + conservation check</span></div>
+    </div>
+    <div class="col">
+      <h4>Services</h4>
+      <div class="row"><span class="k">PADS</span><span class="v">Field records &middot; structured forms &middot; Workpads-native</span></div>
+      <div class="row"><span class="k">Health</span><span class="v">Vital signs &middot; conserved quantities &middot; clinical grade</span></div>
+      <div class="row"><span class="k">Academy</span><span class="v">Learning records &middot; credentials &middot; competency tracking</span></div>
+      <div class="row"><span class="k">Agreements</span><span class="v">Contracts &middot; obligations &middot; multi-party sovereign</span></div>
+    </div>
+  </section>
+
+  <div class="smark"><span class="num">&sect; 04</span><span>Babb Cat</span><span class="rule"></span><span>the reference hardware</span></div>
+
+  <section class="spec">
+    <div class="col">
+      <h4>Hardware</h4>
+      <div class="row"><span class="k">Device</span><span class="v">Cat S22 Flip &middot; ruggedized flip phone</span></div>
+      <div class="row"><span class="k">SoC</span><span class="v">Qualcomm QM215 (MSM8937) &middot; Cortex-A53</span></div>
+      <div class="row"><span class="k">RAM</span><span class="v">2 GB</span></div>
+      <div class="row"><span class="k">Kernel</span><span class="v">Linux 4.9 LTS</span></div>
+      <div class="row"><span class="k">Bootloader</span><span class="v">LK (Little Kernel) &middot; orange state</span></div>
+    </div>
+    <div class="col">
+      <h4>Build system</h4>
+      <div class="row"><span class="k">Base</span><span class="v">AOSP &middot; Apache 2.0 + GPL v2</span></div>
+      <div class="row"><span class="k">GMS</span><span class="v">Removed &middot; all functions replaced</span></div>
+      <div class="row"><span class="k">Partitions</span><span class="v">A-only &middot; dynamic super &middot; dm-verity</span></div>
+      <div class="row"><span class="k">Vendor</span><span class="v">~2,900 blobs &middot; catalogued &middot; tracked</span></div>
+      <div class="row"><span class="k">Upstream</span><span class="v">Maximum alignment &middot; additions over modifications</span></div>
+    </div>
+  </section>
+
+  <div class="smark"><span class="num">&sect; 05</span><span>Core standards</span><span class="rule"></span><span>7 normative documents</span></div>
+
+  <section class="spec">
+    <div class="col">
+      <h4>ZAKO Standard v1</h4>
+      <div class="row"><span class="k">Standard</span><span class="v">Canonical record format + service contracts</span></div>
+      <div class="row"><span class="k">Architecture</span><span class="v">Vision + three-layer model + lineage</span></div>
+      <div class="row"><span class="k">Codebook</span><span class="v">Domain extensions + pictography conventions</span></div>
+      <div class="row"><span class="k">Wire</span><span class="v">Wire conventions for all ZAKO record types</span></div>
+    </div>
+    <div class="col">
+      <h4>Extensions</h4>
+      <div class="row"><span class="k">Pictography</span><span class="v">4-bit visual symbols for constrained displays</span></div>
+      <div class="row"><span class="k">Performance</span><span class="v">Constants index for all timed operations</span></div>
+      <div class="row"><span class="k">Infrastructure</span><span class="v">Extension profile for deployment contexts</span></div>
+    </div>
+  </section>
+
+  <div class="smark"><span class="num">&sect; 06</span><span>Where to find it</span><span class="rule"></span></div>
+
+  <section class="getit" id="get">
+    <div>
+      <h3>ZAKO is a sovereign operating system.</h3>
+      <p>The standard is normative. The protocols are open. The reference hardware is a $99 flip phone. The architecture runs from Lusaka to Mars.</p>
+      <p class="alt">
+        <a href="/products/bitpads/">BitPads &rarr;</a> &middot;
+        <a href="/products/bitledger/">BitLedger &rarr;</a> &middot;
+        <a href="/products/telux/">Telux &rarr;</a> &middot;
+        <a href="/products/outstack/">Outstack &rarr;</a>
+      </p>
+    </div>
+  </section>
+
+</div>

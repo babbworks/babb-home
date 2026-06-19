@@ -1,0 +1,70 @@
+---
+layout: default
+---
+
+<div class="progress" id="prog" aria-hidden="true"><div class="fill" id="progFill"></div></div>
+
+<div class="shell">
+  <div class="crumbs">
+    <a href="/">babb</a><span class="sep">/</span>
+    <a href="/updates/">updates</a><span class="sep">/</span>
+    <span class="here">{{ page.title | truncate: 40 }}</span>
+  </div>
+</div>
+
+<article class="shell">
+
+  <header class="art-head">
+    {% if page.world %}<div class="kicker">{{ page.world }}</div>{% endif %}
+    <h1>{{ page.title }}</h1>
+    <div class="byline">
+      {% if page.author %}<span>{{ page.author }}</span> &middot; {% endif %}
+      <time datetime="{{ page.date | date_to_xmlschema }}">{{ page.date | date: "%B %-d, %Y" }}</time>
+      {% if page.product %} &middot; <span class="tag" data-product="{{ page.product }}" style="display:inline-block;border:1px solid var(--hair);padding:1px 6px;font-size:10px;letter-spacing:.1em;text-transform:uppercase;vertical-align:2px">{{ page.product }}</span>{% endif %}
+    </div>
+  </header>
+
+  {% if page.lead_image %}
+  <div class="lead">
+    <div class="img" style="background-image:url('{{ page.lead_image }}');"></div>
+    {% if page.lead_caption %}<div class="caption">{{ page.lead_caption }}</div>{% endif %}
+  </div>
+  {% endif %}
+
+  <div class="art">
+    <div class="body">
+      {{ content }}
+    </div>
+
+    <aside class="side">
+      {% if page.toc %}
+      <div class="box toc">
+        <div class="box-head">Contents</div>
+        {{ page.toc }}
+      </div>
+      {% endif %}
+
+      {% if page.related %}
+      <div class="box related">
+        <div class="box-head">Related</div>
+        {% for r in page.related %}
+        <a href="{{ r.url }}">{{ r.title }}</a>
+        {% endfor %}
+      </div>
+      {% endif %}
+    </aside>
+  </div>
+
+</article>
+
+<script>
+(function(){
+  const fill = document.getElementById("progFill");
+  if(!fill) return;
+  window.addEventListener("scroll", function(){
+    const h = document.documentElement;
+    const pct = h.scrollTop / (h.scrollHeight - h.clientHeight) * 100;
+    fill.style.width = Math.min(pct, 100) + "%";
+  }, { passive: true });
+})();
+</script>

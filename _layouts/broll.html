@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+{%- include head.html -%}
+<body>
+
+<div class="sysbar">
+  <div class="shell row">
+    <div><span class="dot"></span>babb<span class="ascii"> / places / {{ page.place_slug }} / b-roll</span></div>
+    <div class="right">
+      <span class="ascii">build {{ site.time | date: "%Y.%m.%d" }}</span>
+      <span class="ascii">·</span>
+      <span id="clock" aria-live="off">--:--:-- UTC</span>
+      <span class="ascii">·</span>
+      <a href="/feed.xml?cat=places/{{ page.place_slug }}">rss</a>
+    </div>
+  </div>
+</div>
+
+{%- include masthead.html -%}
+
+<div class="ctx">
+  <div class="shell row">
+    <a class="back" href="/places/{{ page.place_slug }}/"><span class="arr">←</span> <span>From</span> <b>{{ page.place_title }}</b></a>
+    <span class="here">B-Roll archive{% if page.item_count %} &middot; <span class="now">{{ page.item_count }} items</span>{% endif %}</span>
+    <div class="more">
+      {% for link in page.ctx_links %}
+      <a href="{{ link.url }}"{% if link.current %} class="here"{% endif %}>{{ link.label }}</a>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+{{ content }}
+
+{%- include colophon.html -%}
+
+<script>
+(function(){
+  const el=document.getElementById("clock"),f=n=>String(n).padStart(2,"0");
+  function t(){const d=new Date();el.textContent=f(d.getUTCHours())+":"+f(d.getUTCMinutes())+":"+f(d.getUTCSeconds())+" UTC";}
+  t();setInterval(t,1000);
+})();
+
+// tile filters + lightbox
+(function(){
+  const search=document.getElementById("search");
+  const tiles=document.querySelectorAll("#grid .tile");
+  const count=document.getElementById("gridCount");
+  let q="",media="all",angle="all",shift="all";
+
+  function setPressed(group,b){group.forEach(x=>x.setAttribute("aria-pressed",x===b?"true":"false"));}
+
+  function apply(){
+    let n=0;
+    tiles.forEach(t=>{
+      const mm=media==="all"||t.dataset.m===media;
+      const ma=angle==="all"||t.dataset.a===angle;
+      const ms=shift==="all"||t.dataset.s===shift;
+      const mq=!q||(t.dataset.cap||"").toLowerCase().includes(q);
+      const show=mm&&ma&&ms&&mq;
+      t.hidden=!show;
+      if(show)n++;
+    });
+    if(count)count.textContent="Showing "+n+" of "+tiles.length+" items";
+  }
+
+  document.querySelectorAll("#mediaFilter button").forEach(b=>b.addEventListener("click",()=>{media=b.dataset.m;setPressed(document.querySelectorAll("#mediaFilter button"),b);apply();}));
+  document.querySelectorAll("#angleFilter button").forEach(b=>b.addEventListener("click",()=>{angle=b.dataset.a;setPressed(document.querySelectorAll("#angleFilter button"),b);apply();}));
+  document.querySelectorAll("#shiftFilter button").forEach(b=>b.addEventListener("click",()=>{shift=b.dataset.s;setPressed(document.querySelectorAll("#shiftFilter button"),b);apply();}));
+  document.querySelectorAll("#viewMode button").forEach(b=>b.addEventListener("click",()=>{
+    setPressed(document.querySelectorAll("#viewMode button"),b);
+    document.getElementById("grid").classList.toggle("dense",b.dataset.v==="cs");
+  }));
+  if(search)search.addEventListener("input",e=>{q=e.target.value.trim().toLowerCase();apply();});
+})();
+
+// lightbox
+(function(){
+  const lb=document.getElementById("lb"),lbImg=document.getElementById("lbImg"),lbCap=document.getElementById("lbCap");
+  const lbMeta=document.getElementById("lbMeta"),lbTl=document.getElementById("lbTl"),lbTr=document.getElementById("lbTr");
+  if(!lb)return;
+  const allTiles=()=>[...document.querySelectorAll("#grid .tile:not([hidden])")];
+  let idx=0;
+
+  function show(i){
+    const tiles=allTiles();if(!tiles.length)return;
+    idx=(i+tiles.length)%tiles.length;
+    const t=tiles[idx];
+    const classes=["t1","t2","t3","t4","t5","t6","t7","dawn","night","audio"];
+    lbImg.className="lb-img";
+    classes.forEach(c=>{if(t.classList.contains(c))lbImg.classList.add(c);});
+    if(lbTl)lbTl.textContent=t.querySelector(".id")?.textContent||"PH "+(idx+1);
+    if(lbTr)lbTr.textContent="FRAME "+(idx+1)+" / "+tiles.length;
+    if(lbCap)lbCap.textContent=t.dataset.cap||"Frame "+(idx+1);
+    if(lbMeta)lbMeta.textContent=[t.dataset.a,t.dataset.s,t.dataset.when].filter(Boolean).join(" · ");
+    lb.classList.add("on");document.body.style.overflow="hidden";
+  }
+  function closeLb(){lb.classList.remove("on");document.body.style.overflow="";}
+
+  document.getElementById("grid")?.addEventListener("click",e=>{
+    const t=e.target.closest(".tile");if(!t)return;
+    const tiles=allTiles();show(tiles.indexOf(t));
+  });
+  document.getElementById("lbPrev")?.addEventListener("click",()=>show(idx-1));
+  document.getElementById("lbNext")?.addEventListener("click",()=>show(idx+1));
+  document.getElementById("lbClose")?.addEventListener("click",closeLb);
+  lb.addEventListener("click",e=>{if(e.target===lb)closeLb();});
+  document.addEventListener("keydown",e=>{
+    if(!lb.classList.contains("on"))return;
+    if(e.key==="Escape")closeLb();
+    else if(e.key==="ArrowRight")show(idx+1);
+    else if(e.key==="ArrowLeft")show(idx-1);
+  });
+})();
+</script>
+</body>
+</html>

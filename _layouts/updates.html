@@ -1,7 +1,48 @@
----
-layout: default
----
-<div class="updates-page">
-  <h1>{{ page.title }}</h1>
-  {{ content }}
+<!DOCTYPE html>
+<html lang="en">
+{%- include head.html -%}
+<body class="page-updates">
+
+<div class="sysbar">
+  <div class="shell row">
+    <div><span class="dot"></span>babb<span class="ascii"> / updates</span></div>
+    <div class="right">
+      <span class="ascii">build {{ site.time | date: "%Y.%m.%d" }}</span>
+      <span class="ascii">·</span>
+      <span id="clock" aria-live="off">--:--:-- UTC</span>
+      <span class="ascii">·</span>
+      <a href="/feed.xml">rss</a>
+    </div>
+  </div>
 </div>
+
+{%- include masthead.html -%}
+
+{{ content }}
+
+{%- include colophon.html -%}
+
+<script>
+(function(){
+  const el=document.getElementById("clock"),f=n=>String(n).padStart(2,"0");
+  function t(){const d=new Date();el.textContent=f(d.getUTCHours())+":"+f(d.getUTCMinutes())+":"+f(d.getUTCSeconds())+" UTC";}
+  t();setInterval(t,1000);
+})();
+
+// tag filter
+(function(){
+  const btns=document.querySelectorAll(".toolstrip [data-tag]");
+  const rows=document.querySelectorAll(".urow[data-tags], .fcard[data-tags]");
+  btns.forEach(b=>b.addEventListener("click",()=>{
+    btns.forEach(x=>x.setAttribute("aria-pressed","false"));
+    b.setAttribute("aria-pressed","true");
+    const tag=b.dataset.tag;
+    rows.forEach(r=>{
+      const tags=(r.dataset.tags||"").split(",").map(t=>t.trim());
+      r.hidden=tag!=="all"&&!tags.includes(tag);
+    });
+  }));
+})();
+</script>
+</body>
+</html>

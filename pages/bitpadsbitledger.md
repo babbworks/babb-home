@@ -1,7 +1,7 @@
 ---
 layout: fullframe
 title: BitLedger
-permalink: /bitledger/
+permalink: /bitledger-app/
 ---
 
-<iframe src="/bitpads-app/" style="width:100%;height:100%;border:none;display:block;"></iframe>
+<iframe src="/app/bitpads/index.html"></iframe>

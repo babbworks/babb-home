@@ -1,0 +1,876 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Read · Watch · Listen — Manufacturing — Babb / Worlds</title>
+<meta name="description" content="Read, Watch, and Listen index for the Manufacturing World — long-form, mini-docs, interviews, ambient." />
+<style>
+  :root{
+    --paper:#faf8f3; --paper-2:#f3efe5; --card:#ffffff;
+    --ink:#1a1a1a; --ink-2:#444141; --muted:#807d75;
+    --hair:#d8d3c4; --hair-2:#e8e3d4;
+    --alt:#a14a00; --alt-soft:#f5e9d8;
+    --live:#2f7a3a;
+    --term-bg:#141312; --term-fg:#e8e3d4; --term-link:#ffd58a; --term-subj:#b7d99a;
+    --mono: ui-monospace,"SF Mono",SFMono-Regular,"JetBrains Mono",Menlo,Consolas,monospace;
+    --gutter:24px; --maxw:1240px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--paper);color:var(--ink);
+    font:14px/1.55 var(--mono);
+    -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
+    font-feature-settings:"ss01","cv11"}
+  a{color:inherit;text-decoration:none}
+  a:hover{text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px}
+  h1,h2,h3,h4{font-family:var(--mono);font-weight:600;margin:0;letter-spacing:-.01em}
+  .shell{max-width:var(--maxw);margin:0 auto;padding:0 var(--gutter)}
+
+  /* shared chrome */
+  .sysbar{border-bottom:1px solid var(--hair);background:var(--paper);font-size:11px;color:var(--muted);letter-spacing:.04em}
+  .sysbar .row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;gap:16px}
+  .dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--live);
+    box-shadow:0 0 0 0 rgba(47,122,58,.55);animation:pulse 2.6s infinite;vertical-align:middle;margin-right:6px}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(47,122,58,.55)}70%{box-shadow:0 0 0 7px rgba(47,122,58,0)}100%{box-shadow:0 0 0 0 rgba(47,122,58,0)}}
+  .sysbar .right{display:flex;gap:14px;align-items:center}
+  .sysbar a:hover{color:var(--ink)}
+
+  header.masthead{border-bottom:1px solid var(--hair);padding:22px 0 20px}
+  .masthead .row{display:flex;justify-content:space-between;align-items:flex-end;gap:24px}
+  .wordmark{font-size:34px;font-weight:700;letter-spacing:-.04em;line-height:.9}
+  .wordmark .punct{color:var(--alt)}
+  .tagline{font-size:11px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-top:8px}
+  nav.primary{display:flex;gap:22px;font-size:13px;padding-bottom:4px}
+  nav.primary a{color:var(--ink-2);position:relative;padding:2px 0}
+  nav.primary a:hover{color:var(--ink);text-decoration:none}
+  nav.primary a.here{color:var(--ink)}
+  nav.primary a.here::after{content:"";position:absolute;left:0;right:0;bottom:-4px;height:2px;background:var(--ink)}
+
+  /* crumbs */
+  .crumbs{font-size:11px;color:var(--muted);letter-spacing:.06em;margin:24px 0 6px}
+  .crumbs a{color:var(--ink-2);border-bottom:1px solid var(--hair-2)}
+  .crumbs .here{color:var(--ink)}
+
+  /* section marker */
+  .smark{display:flex;align-items:baseline;gap:12px;margin:32px 0 18px;
+    font-size:11px;color:var(--muted);letter-spacing:.16em;text-transform:uppercase}
+  .smark .num{color:var(--ink);font-weight:600}
+  .smark .rule{flex:1;height:1px;background:var(--hair);transform:translateY(-3px)}
+  .smark .meta{color:var(--muted)}
+  .smark .meta a{color:var(--ink-2);border-bottom:1px solid var(--hair)}
+
+  /* ─── title block ─── */
+  .ttl{display:grid;grid-template-columns:1.55fr 1fr;gap:36px;
+    margin:18px 0 0;padding-bottom:18px;border-bottom:1px solid var(--hair)}
+  .ttl h1{font-size:54px;line-height:1;letter-spacing:-.035em;font-weight:700}
+  .ttl h1 .em{color:var(--alt)}
+  .ttl .intro{font-size:15.5px;line-height:1.55;color:var(--ink-2);margin-top:18px;max-width:54ch;text-wrap:pretty}
+  .ttl .intro a{color:var(--ink);border-bottom:1px solid var(--ink)}
+  .ttl .right{display:flex;flex-direction:column;gap:14px;align-self:end}
+  .ttl .stat-bx{border:1px solid var(--hair);background:var(--card);padding:14px 16px;
+    display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px 22px}
+  .ttl .stat-bx .k{font-size:10px;color:var(--muted);letter-spacing:.16em;text-transform:uppercase}
+  .ttl .stat-bx .v{font-size:22px;font-weight:600;letter-spacing:-.02em;margin-top:2px}
+  .ttl .stat-bx .v small{font-size:11px;color:var(--muted);font-weight:400;letter-spacing:0;text-transform:none;margin-left:5px}
+
+  /* ─── BIG MODE TABS ─── */
+  .modes{display:grid;grid-template-columns:repeat(3,1fr);gap:0;margin:0 0 0;
+    border-left:1px solid var(--hair);border-bottom:1px solid var(--ink)}
+  .mode{font:inherit;background:var(--paper);border:1px solid var(--hair);border-bottom:none;border-left:none;
+    color:var(--ink-2);padding:22px 24px 18px;cursor:pointer;
+    display:flex;flex-direction:column;gap:6px;text-align:left;
+    transition:background .15s ease,color .15s ease}
+  .mode:hover{background:#f3eede;color:var(--ink)}
+  .mode[aria-pressed="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink);position:relative}
+  .mode[aria-pressed="true"]::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:2px;background:var(--alt)}
+  .mode .n{font-size:10px;color:var(--muted);letter-spacing:.16em;text-transform:uppercase}
+  .mode[aria-pressed="true"] .n{color:var(--alt-soft)}
+  .mode .nm{font-size:28px;font-weight:700;letter-spacing:-.02em;line-height:1.05}
+  .mode .nm .punct{color:var(--alt)}
+  .mode[aria-pressed="true"] .nm .punct{color:var(--alt-soft)}
+  .mode .meta{font-size:11px;color:var(--muted);letter-spacing:.04em;margin-top:auto;padding-top:8px}
+  .mode[aria-pressed="true"] .meta{color:#cdc8b6}
+  .mode .meta .cnt{color:var(--ink);font-weight:600}
+  .mode[aria-pressed="true"] .meta .cnt{color:var(--paper)}
+
+  /* ─── filter strip ─── */
+  .tools{display:flex;flex-wrap:wrap;gap:18px 28px;align-items:center;
+    margin:14px 0 14px;padding:14px 0;border-bottom:1px solid var(--hair-2)}
+  .tools .group{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+  .tools .lbl{font-size:10px;color:var(--muted);letter-spacing:.16em;text-transform:uppercase}
+  .tools input[type=search]{font:inherit;font-size:12.5px;border:1px solid var(--hair);background:var(--card);padding:5px 10px;outline:none;color:var(--ink);min-width:220px}
+  .tools input[type=search]:focus{border-color:var(--ink)}
+  .pill-row{display:flex;gap:0;flex-wrap:wrap;font-size:12px}
+  .pill-row button{font:inherit;background:var(--card);border:1px solid var(--hair);color:var(--ink-2);
+    padding:4px 11px;cursor:pointer;margin:-1px 0 0 -1px;letter-spacing:.02em;
+    transition:background .12s ease,color .12s ease,border-color .12s ease}
+  .pill-row button:hover{border-color:var(--ink);color:var(--ink)}
+  .pill-row button[aria-pressed="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+  .tools select{font:inherit;font-size:12.5px;border:1px solid var(--hair);background:var(--card);padding:5px 10px;outline:none;color:var(--ink-2);cursor:pointer}
+  .tools select:focus{border-color:var(--ink)}
+  .tools .util{margin-left:auto;font-size:11.5px;color:var(--ink-2);display:flex;gap:14px}
+  .tools .util a{color:var(--ink-2);border-bottom:1px solid var(--hair-2)}
+
+  /* ─── FEATURED (per mode) ─── */
+  .feat{display:grid;grid-template-columns:1.4fr 1fr;gap:0;
+    border:1px solid var(--hair);background:var(--card);margin-bottom:18px;position:relative;overflow:hidden;min-height:340px}
+  .feat .cover{position:relative;border-right:1px solid var(--hair);min-height:340px;
+    background:repeating-linear-gradient(45deg,#e0d6bc 0 12px,#efe7d2 12px 24px)}
+  /* watch cover variant */
+  .mode-watch .feat .cover{background:
+    linear-gradient(180deg, rgba(0,0,0,0) 50%, rgba(0,0,0,.35) 100%),
+    radial-gradient(ellipse at 30% 30%, #2a2723 0, #0d0c0b 70%),
+    repeating-linear-gradient(0deg,#181613 0 8px,#1f1c18 8px 22px)}
+  .mode-watch .feat .cover::after{content:"";position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+    width:72px;height:72px;border-radius:50%;border:1.5px solid rgba(255,255,255,.85);background:rgba(20,20,20,.35)}
+  .mode-watch .feat .cover::before{content:"";position:absolute;left:50%;top:50%;transform:translate(-30%,-50%);
+    width:0;height:0;border-style:solid;border-width:14px 0 14px 22px;border-color:transparent transparent transparent #fff;z-index:2}
+  /* listen cover variant */
+  .mode-listen .feat .cover{background:var(--term-bg)}
+  .mode-listen .feat .cover .wave{position:absolute;left:18px;right:18px;top:50%;transform:translateY(-50%);
+    height:80px;display:flex;align-items:center;gap:2px}
+  .mode-listen .feat .cover .wave i{display:block;flex:1;background:var(--term-fg);opacity:.85}
+
+  .feat .cover .meta-tl{position:absolute;left:18px;top:14px;font-size:10px;color:rgba(20,20,20,.55);letter-spacing:.18em;text-transform:uppercase}
+  .feat .cover .meta-tl b{color:var(--ink);font-weight:700}
+  .mode-watch .feat .cover .meta-tl,.mode-listen .feat .cover .meta-tl{color:rgba(255,255,255,.78)}
+  .mode-watch .feat .cover .meta-tl b,.mode-listen .feat .cover .meta-tl b{color:#fff}
+  .feat .cover .meta-tr{position:absolute;right:18px;top:14px;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:rgba(20,20,20,.55)}
+  .mode-watch .feat .cover .meta-tr,.mode-listen .feat .cover .meta-tr{color:rgba(255,255,255,.65)}
+  .feat .cover .frame-id{position:absolute;left:18px;bottom:14px;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:rgba(20,20,20,.55)}
+  .mode-watch .feat .cover .frame-id,.mode-listen .feat .cover .frame-id{color:rgba(255,255,255,.6)}
+
+  .feat .body{padding:26px 28px 22px;display:flex;flex-direction:column;gap:14px}
+  .feat .body .topline{display:flex;align-items:center;gap:10px;font-size:10.5px;color:var(--muted);letter-spacing:.14em;text-transform:uppercase;flex-wrap:wrap}
+  .feat .body .topline .kind{color:var(--alt);font-weight:600}
+  .feat .body h2{font-size:28px;letter-spacing:-.025em;line-height:1.1;max-width:22ch;text-wrap:balance}
+  .feat .body h2 a:hover{color:var(--alt);text-decoration:none}
+  .feat .body .dek{font-size:14.5px;line-height:1.6;color:var(--ink-2);max-width:50ch;text-wrap:pretty}
+  .feat .body .by{font-size:11.5px;color:var(--muted);letter-spacing:.04em}
+  .feat .body .by .nm,.feat .body .by a{color:var(--ink-2);border-bottom:1px solid var(--hair-2)}
+  .feat .body .tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:auto}
+  .feat .body .tags a{font-size:10.5px;letter-spacing:.06em;color:var(--ink-2);border:1px solid var(--hair);padding:2px 8px;background:var(--paper)}
+  .feat .body .cta{display:flex;gap:18px;font-size:12.5px;align-items:baseline;border-top:1px dotted var(--hair-2);padding-top:12px}
+  .feat .body .cta a{color:var(--ink);border-bottom:1px solid var(--ink)}
+  .feat .body .cta .alt{color:var(--ink-2);border-bottom:1px dotted var(--hair)}
+
+  /* ─── CARD GRID ─── */
+  .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  .card{background:var(--card);border:1px solid var(--hair);
+    display:flex;flex-direction:column;transition:border-color .15s ease,transform .15s ease}
+  .card:hover{border-color:var(--ink);transform:translateY(-1px)}
+  .card .cover{height:160px;position:relative;border-bottom:1px solid var(--hair);background:var(--paper-2);overflow:hidden}
+  .card .cover .meta-tl{position:absolute;left:12px;top:9px;font-size:9.5px;color:var(--muted);letter-spacing:.16em;text-transform:uppercase}
+  .card .cover .dur{position:absolute;right:10px;bottom:8px;font-size:10px;background:rgba(20,20,20,.78);color:#fff;padding:2px 7px;letter-spacing:.06em;font-variant-numeric:tabular-nums}
+
+  /* texture cover variants */
+  .card .cover.t-steel{background:repeating-linear-gradient(45deg,#e0d6bc 0 12px,#efe7d2 12px 24px)}
+  .card .cover.t-pour{background:linear-gradient(180deg,#f7e8b6,#ec9d6a 60%,#7d3a26)}
+  .card .cover.t-furnace{background:repeating-linear-gradient(0deg,#1f1c18 0 8px,#3a322a 8px 16px),#0d0c0b}
+  .card .cover.t-floor{background:repeating-linear-gradient(0deg,#dccfb0 0 2px,#e7dab8 2px 11px)}
+  .card .cover.t-cast{background:linear-gradient(135deg,#efe2c2,#cabd95)}
+  .card .cover.t-pulpit{background:radial-gradient(ellipse at 50% 50%,#efe2c2,#a89a72 80%)}
+  .card .cover.t-doc{background:radial-gradient(circle at 1px 1px,#d8cfb6 1px,transparent 1.5px) 0 0/16px 16px,#f1ead7}
+  .card .cover.t-night{background:linear-gradient(180deg,#1f1c18,#3a322a 60%,#0d0c0b)}
+  .card .cover.t-dawn{background:linear-gradient(180deg,#f7e8b6,#ec9d6a 60%,#7d3a26)}
+
+  /* video overlay */
+  .card .cover.video::after{content:"";position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+    width:46px;height:46px;border-radius:50%;border:1.5px solid rgba(255,255,255,.85);background:rgba(20,20,20,.35)}
+  .card .cover.video::before{content:"";position:absolute;left:50%;top:50%;transform:translate(-30%,-50%);
+    width:0;height:0;border-style:solid;border-width:9px 0 9px 14px;border-color:transparent transparent transparent #fff;z-index:2}
+  /* audio cover (waveform) */
+  .card .cover.audio{background:var(--term-bg)}
+  .card .cover.audio::after{content:"";position:absolute;left:14px;right:14px;top:50%;height:50px;transform:translateY(-50%);
+    background:
+      linear-gradient(90deg,transparent 0%,transparent 100%),
+      repeating-linear-gradient(90deg,var(--term-fg) 0 2px,transparent 2px 5px);
+    -webkit-mask-image:radial-gradient(ellipse at 50% 50%,#000 60%,transparent 100%);
+    mask-image:radial-gradient(ellipse at 50% 50%,#000 60%,transparent 100%);opacity:.85}
+  .card .cover.audio .meta-tl{color:#9a948a}
+
+  .card .body{padding:14px 18px 16px;display:flex;flex-direction:column;gap:8px;flex:1}
+  .card .body .topline{font-size:10px;color:var(--alt);font-weight:600;letter-spacing:.14em;text-transform:uppercase;display:flex;gap:10px;align-items:baseline}
+  .card .body .topline .sub{color:var(--muted);font-weight:400;letter-spacing:.04em;text-transform:none;font-size:11px}
+  .card .body h3{font-size:17px;letter-spacing:-.015em;font-weight:600;line-height:1.3}
+  .card .body h3 a:hover{color:var(--alt);text-decoration:none}
+  .card .body .dek{font-size:12.5px;color:var(--ink-2);line-height:1.55;flex:1;text-wrap:pretty}
+  .card .body .by{font-size:10.5px;color:var(--muted);letter-spacing:.04em;border-top:1px dotted var(--hair-2);padding-top:8px;display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+  .card .body .by .nm,.card .body .by a{color:var(--ink-2);border-bottom:1px solid var(--hair-2)}
+  .card .body .by .when{color:var(--muted)}
+
+  /* end-of-grid foot */
+  .grid-foot{margin-top:18px;padding:14px 0;border-top:1px solid var(--hair-2);
+    font-size:11.5px;color:var(--muted);display:flex;justify-content:space-between;letter-spacing:.04em;flex-wrap:wrap;gap:10px}
+  .grid-foot a{color:var(--ink);border-bottom:1px solid var(--hair)}
+
+  /* mode panel show/hide */
+  .panel{display:none}
+  .panel.on{display:block}
+
+  /* ─── cross-pollination row (other Worlds) ─── */
+  .xlinks{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:18px}
+  .xcard{border:1px solid var(--hair);background:var(--card);padding:14px 16px;display:flex;flex-direction:column;gap:6px;min-height:130px;transition:border-color .15s ease}
+  .xcard:hover{border-color:var(--ink)}
+  .xcard .kind{font-size:10px;color:var(--alt);font-weight:600;letter-spacing:.14em;text-transform:uppercase}
+  .xcard h4{font-size:16px;font-weight:600;letter-spacing:-.015em}
+  .xcard .blurb{font-size:12px;color:var(--ink-2);line-height:1.5;margin-top:auto}
+
+  /* footer (shared) */
+  footer.colophon{margin-top:56px;border-top:1px solid var(--hair);padding:32px 0 48px;color:var(--ink-2);font-size:12.5px}
+  .col-grid{display:grid;grid-template-columns:1.6fr 1fr 1fr 1fr;gap:30px;margin-bottom:28px}
+  .col h4{font-size:10.5px;color:var(--muted);letter-spacing:.16em;text-transform:uppercase;margin-bottom:12px;font-weight:600}
+  .col ul{list-style:none;padding:0;margin:0} .col li{padding:3px 0}
+  .col li a:hover{color:var(--alt);text-decoration:none}
+  .col .tag{font-size:10.5px;color:var(--muted);margin-left:6px;letter-spacing:.06em}
+  .col-id .mark{font-size:28px;font-weight:700;letter-spacing:-.04em;line-height:.9}
+  .col-id .mark .punct{color:var(--alt)}
+  .col-id p{margin:10px 0 14px;line-height:1.55;max-width:36ch}
+  .col-id .addr{font-size:11px;color:var(--muted);line-height:1.6}
+  .col-foot{display:flex;justify-content:space-between;align-items:center;gap:20px;padding-top:18px;border-top:1px solid var(--hair-2);font-size:11px;color:var(--muted);letter-spacing:.04em}
+  .col-foot .right{display:flex;gap:14px}
+
+  @media (max-width:1100px){
+    .ttl{grid-template-columns:1fr}
+    .feat{grid-template-columns:1fr}
+    .feat .cover{min-height:240px;border-right:none;border-bottom:1px solid var(--hair)}
+    .cards{grid-template-columns:repeat(2,1fr)}
+    .xlinks{grid-template-columns:repeat(2,1fr)}
+    .col-grid{grid-template-columns:1fr 1fr}
+  }
+  @media (max-width:640px){
+    .wordmark{font-size:28px}
+    .ttl h1{font-size:36px}
+    .modes{grid-template-columns:1fr}
+    .mode{padding:14px 16px}
+    .mode .nm{font-size:22px}
+    .cards{grid-template-columns:1fr}
+    .xlinks{grid-template-columns:1fr}
+    nav.primary{flex-wrap:wrap;gap:14px}
+    .col-grid{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+
+<!-- sysbar -->
+<div class="sysbar">
+  <div class="shell row">
+    <div><span class="dot"></span>babb<span style="color:var(--muted)"> / worlds / manufacturing / <span id="modeSlug">read</span></span></div>
+    <div class="right">
+      <span>build 2026.05.18</span><span>·</span>
+      <span id="clock">--:--:-- UTC</span><span>·</span>
+      <a href="/feed.xml?cat=manufacturing">manufacturing.rss</a>
+    </div>
+  </div>
+</div>
+
+<!-- masthead -->
+<header class="masthead">
+  <div class="shell row">
+    <div>
+      <a href="Babb Homepage v1.html" style="text-decoration:none"><div class="wordmark">babb<span class="punct">.</span></div></a>
+      <div class="tagline">A media outfit · A product company</div>
+    </div>
+    <nav class="primary" aria-label="Primary">
+      <a class="here" href="Babb Worlds v1.html">Worlds</a>
+      <a href="Babb Place v1.html">Places</a>
+      <a href="Babb Products v1.html">Products</a>
+      <a href="Babb Updates v1.html">Updates</a>
+      <a href="Babb About v1.html">About</a>
+    </nav>
+  </div>
+</header>
+
+<div class="shell">
+
+  <div class="crumbs"><a href="Babb Homepage v1.html">babb</a> <span style="color:var(--hair)">/</span> <a href="Babb Worlds v1.html">worlds</a> <span style="color:var(--hair)">/</span> <a href="Babb Worlds v1.html#manufacturing">manufacturing</a> <span style="color:var(--hair)">/</span> <span class="here" id="crumbMode">read</span></div>
+
+  <!-- title -->
+  <section class="ttl">
+    <div>
+      <h1>Read &middot; Watch &middot; <span class="em">Listen.</span></h1>
+      <p class="intro">The media library for the <a href="Babb Worlds v1.html#manufacturing">Manufacturing</a> World &mdash; long-form pieces to read, short-form video to watch, and ambient + interview audio to listen to. Anchored heavily to the <a href="Babb Place v1.html">Hamilton steel mill</a> standing story; expanding as more standing stories open.</p>
+    </div>
+    <div class="right">
+      <div class="stat-bx">
+        <div><div class="k">Read</div><div class="v">9 <small>pieces</small></div></div>
+        <div><div class="k">Watch</div><div class="v">5 <small>cuts</small></div></div>
+        <div><div class="k">Listen</div><div class="v">7 <small>episodes</small></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── MODE TABS ─── -->
+  <section class="modes" id="modeTabs" role="tablist" aria-label="Read · Watch · Listen mode">
+    <button class="mode" data-m="read" aria-pressed="true" role="tab" aria-controls="panel-read">
+      <span class="n">§ 01 · Read</span>
+      <span class="nm">Read<span class="punct">.</span></span>
+      <span class="meta">Long-form &middot; <span class="cnt">9 pieces</span> &middot; avg 11 min</span>
+    </button>
+    <button class="mode" data-m="watch" role="tab" aria-controls="panel-watch">
+      <span class="n">§ 02 · Watch</span>
+      <span class="nm">Watch<span class="punct">.</span></span>
+      <span class="meta">Mini-docs &middot; <span class="cnt">5 cuts</span> &middot; 04:42 → 12:08</span>
+    </button>
+    <button class="mode" data-m="listen" role="tab" aria-controls="panel-listen">
+      <span class="n">§ 03 · Listen</span>
+      <span class="nm">Listen<span class="punct">.</span></span>
+      <span class="meta">Interviews + ambient &middot; <span class="cnt">7 episodes</span> &middot; avg 24 min</span>
+    </button>
+  </section>
+
+  <!-- ─── filter strip (one strip; relabels per mode) ─── -->
+  <div class="tools" role="navigation" aria-label="Filters">
+    <div class="group">
+      <input id="search" type="search" placeholder="Search this World…" aria-label="Search" />
+    </div>
+    <div class="group">
+      <span class="lbl">Sub-World</span>
+      <div class="pill-row" id="subFilter">
+        <button data-s="all" aria-pressed="true">All</button>
+        <button data-s="steel">Steel</button>
+        <button data-s="food">Food</button>
+        <button data-s="electronics">Electronics</button>
+        <button data-s="textiles">Textiles</button>
+      </div>
+    </div>
+    <div class="group">
+      <span class="lbl">Sort</span>
+      <select id="sortBy">
+        <option value="newest">Newest</option>
+        <option value="length">By length</option>
+        <option value="most-read">Most read / watched / listened</option>
+      </select>
+    </div>
+    <div class="util">
+      <a href="/feed.xml?cat=manufacturing" id="modeFeed">RSS · this mode</a>
+    </div>
+  </div>
+
+  <!-- ─── READ PANEL ─── -->
+  <section id="panel-read" class="panel on mode-read" role="tabpanel" aria-labelledby="mode-read">
+
+    <!-- featured Read -->
+    <article class="feat" data-s="steel">
+      <div class="cover">
+        <span class="meta-tl"><b>FRAME 01</b> · HAMILTON · BLAST FURNACE · DAY 4</span>
+        <span class="meta-tr">DISPATCH · 12 min</span>
+        <span class="frame-id">2026-05-12 17:42 ET</span>
+      </div>
+      <div class="body">
+        <div class="topline">
+          <span class="kind">Featured · Long-form</span>
+          <span>·</span>
+          <span>Manufacturing / Steel</span>
+        </div>
+        <h2><a href="Babb Article v1.html">Inside a Hamilton steel mill — day 4, the final pour</a></h2>
+        <p class="dek">A working integrated steel mill on Hamilton harbour. Four days, three shifts, one furnace that doesn&rsquo;t stop. What gets made when the lights stay on through Sunday and the next ship has to leave Tuesday morning.</p>
+        <div class="by">By <a href="Babb Person Contributor v1.html">Editor A.</a> &middot; photos <a href="/people/bk/">B.K.</a> &middot; with <a href="Babb Person Subject v1.html">Tony R.</a></div>
+        <div class="tags">
+          <a href="Babb Worlds v1.html#manufacturing">manufacturing</a>
+          <a href="#" data-sub="steel">steel</a>
+          <a href="Babb Place v1.html">hamilton-steel-mill</a>
+        </div>
+        <div class="cta">
+          <a href="Babb Article v1.html">Read the dispatch →</a>
+          <a class="alt" href="Babb Place v1.html">Visit the Place</a>
+          <a class="alt" href="#panel-listen" data-mode="listen">Audio companion</a>
+        </div>
+      </div>
+    </article>
+
+    <div class="cards" id="readCards">
+
+      <a class="card" href="Babb Article v1.html" data-s="steel" data-len="12" data-when="2026-05-12">
+        <div class="cover t-steel"><span class="meta-tl">DISPATCH</span><span class="dur">12 min</span></div>
+        <div class="body">
+          <div class="topline">Dispatch <span class="sub">12 min &middot; 2026-05-12</span></div>
+          <h3>Inside a Hamilton steel mill — day 4</h3>
+          <p class="dek">Four days, three shifts, one furnace. Manufacturing/Steel.</p>
+          <div class="by"><span class="nm">Editor A.</span><span class="when">Manufacturing / Steel</span></div>
+        </div>
+      </a>
+
+      <a class="card" href="#" data-s="steel" data-len="8" data-when="2026-05-09">
+        <div class="cover t-floor"><span class="meta-tl">ANGLE · LONG-FORM</span><span class="dur">8 min</span></div>
+        <div class="body">
+          <div class="topline">Long-form <span class="sub">8 min &middot; 2026-05-09</span></div>
+          <h3>The Floor — what happens on the line</h3>
+          <p class="dek">Charging, blow, tap, changeover. Procedural, glossary-heavy. Anchor Angle of the standing story.</p>
+          <div class="by"><span class="nm">Editor A.</span><span class="when">Manufacturing / Steel</span></div>
+        </div>
+      </a>
+
+      <a class="card" href="#" data-s="steel" data-len="6" data-when="2026-04-30">
+        <div class="cover t-doc"><span class="meta-tl">PLAIN-ENGLISH</span><span class="dur">6 min</span></div>
+        <div class="body">
+          <div class="topline">Plain-English <span class="sub">6 min &middot; 2026-04-30</span></div>
+          <h3>Ladle metallurgy, plainly</h3>
+          <p class="dek">What the room two flights up actually does, what they send down, why it matters.</p>
+          <div class="by"><span class="nm">Editor A.</span><span class="when">Manufacturing / Steel</span></div>
+        </div>
+      </a>
+
+      <a class="card" href="#" data-s="steel" data-len="14" data-when="2026-04-22">
+        <div class="cover t-night"><span class="meta-tl">LONG-FORM</span><span class="dur">14 min</span></div>
+        <div class="body">
+          <div class="topline">Long-form <span class="sub">14 min &middot; 2026-04-22</span></div>
+          <h3>The third shift — the longest, the quietest</h3>
+          <p class="dek">Why the graveyard hours are the floor&rsquo;s real shape. Foreman Tony R., his crew, and dawn.</p>
+          <div class="by"><span class="nm">Editor B.</span><span class="when">Manufacturing / Steel</span></div>
+        </div>
+      </a>
+
+      <a class="card" href="#" data-s="steel" data-len="9" data-when="2026-04-08">
+        <div class="cover t-cast"><span class="meta-tl">OP-ED</span><span class="dur">5 min</span></div>
+        <div class="body">
+          <div class="topline">Op-ed <span class="sub">5 min &middot; 2026-04-08</span></div>
+          <h3>Bring it back — the case for owning the line</h3>
+          <p class="dek">Op-ed on the 2021 buy-back at Hamilton and what it lets the owners do that public ownership didn&rsquo;t.</p>
+          <div class="by"><span class="nm">Editor B.</span><span class="when">Manufacturing / Steel</span></div>
+        </div>
+      </a>
+
+      <a class="card" href="#" data-s="food" data-len="11" data-when="2026-03-18">
+        <div class="cover t-pulpit"><span class="meta-tl">DISPATCH</span><span class="dur">11 min</span></div>
+        <div class="body">
+          <div class="topline">Dispatch <span class="sub">11 min &middot; 2026-03-18</span></div>
+          <h3>The Modesto cannery — peach season</h3>
+          <p class="dek">A working cannery in California, two weeks at peak, the math of the season.</p>
+          <div class="by"><span class="nm">Editor C.</span><span class="when">Manufacturing / Food</span></div>
+        </div>
+      </a>
+
+      <a class="card" href="#" data-s="electronics" data-len="13" data-when="2026-02-04">
+        <div class="cover t-furnace"><span class="meta-tl">DISPATCH</span><span class="dur">13 min</span></div>
+        <div class="body">
+          <div class="topline">Dispatch <span class="sub">13 min &middot; 2026-02-04</span></div>
+          <h3>The board shop — surface mount, after hours</h3>
+          <p class="dek">A small electronics assembly line that takes the jobs the big plants don&rsquo;t want.</p>
+          <div class="by"><span class="nm">Editor B.</span><span class="when">Manufacturing / Electronics</span></div>
+        </div>
+      </a>
+
+      <a class="card" href="#" data-s="textiles" data-len="9" data-when="2026-01-22">
+        <div class="cover t-pour"><span class="meta-tl">DISPATCH</span><span class="dur">9 min</span></div>
+        <div class="body">
+          <div class="topline">Dispatch <span class="sub">9 min &middot; 2026-01-22</span></div>
+          <h3>The Carolina textile loop</h3>
+          <p class="dek">Three mills, two states, one trucker who knows every loading-dock manager by first name.</p>
+          <div class="by"><span class="nm">Editor C.</span><span class="when">Manufacturing / Textiles</span></div>
+        </div>
+      </a>
+
+      <a class="card" href="#" data-s="steel" data-len="17" data-when="2025-11-12">
+        <div class="cover t-floor"><span class="meta-tl">LONG-FORM</span><span class="dur">17 min</span></div>
+        <div class="body">
+          <div class="topline">Long-form <span class="sub">17 min &middot; 2025-11-12</span></div>
+          <h3>Decarbonization, plainly</h3>
+          <p class="dek">EAF vs BOF, the scope-3 question, what "green steel" actually costs in 2025.</p>
+          <div class="by"><span class="nm">Editor A.</span><span class="when">Manufacturing / Steel</span></div>
+        </div>
+      </a>
+
+    </div>
+
+    <div class="grid-foot">
+      <span id="readCount">Showing 9 of 9 pieces</span>
+      <a href="/worlds/manufacturing/read/">Read archive (older) →</a>
+    </div>
+
+  </section>
+
+  <!-- ─── WATCH PANEL ─── -->
+  <section id="panel-watch" class="panel mode-watch" role="tabpanel" aria-labelledby="mode-watch">
+
+    <article class="feat" data-s="steel">
+      <div class="cover">
+        <span class="meta-tl"><b>FRAME 142</b> · POUR LINE A · 06:14 LOCAL</span>
+        <span class="meta-tr">MINI-DOC · 12:08</span>
+        <span class="frame-id">2026-05-11 · 4K · 24 FPS</span>
+      </div>
+      <div class="body">
+        <div class="topline">
+          <span class="kind">Featured · Mini-doc</span>
+          <span>·</span>
+          <span>Manufacturing / Steel</span>
+        </div>
+        <h2><a href="Babb Video v1.html">The Pour — twelve minutes on the third shift</a></h2>
+        <p class="dek">A heat from charge to cast, lit by the overhead bays and the dawn coming up through the high windows. The hour the floor is most photogenic and quietest at once.</p>
+        <div class="by">Directed by <a href="Babb Person Contributor v1.html">Editor A.</a> &middot; cinematography <a href="/people/bk/">B.K.</a> &middot; sound <a href="/people/dl/">D.L.</a></div>
+        <div class="tags">
+          <a href="Babb Worlds v1.html#manufacturing">manufacturing</a>
+          <a href="#" data-sub="steel">steel</a>
+          <a href="Babb Place v1.html">hamilton-steel-mill</a>
+        </div>
+        <div class="cta">
+          <a href="Babb Video v1.html">Watch ▸</a>
+          <a class="alt" href="Babb Article v1.html">Read companion dispatch</a>
+        </div>
+      </div>
+    </article>
+
+    <div class="cards" id="watchCards">
+
+      <a class="card" href="Babb Video v1.html" data-s="steel" data-len="12" data-when="2026-05-11">
+        <div class="cover t-pour video"><span class="meta-tl">MINI-DOC</span><span class="dur">12:08</span></div>
+        <div class="body">
+          <div class="topline">Mini-doc <span class="sub">12:08 &middot; 2026-05-11</span></div>
+          <h3>The Pour</h3>
+          <p class="dek">Charge, blow, tap, cast. The third shift at Hamilton, cut to the cadence of a heat.</p>
+          <div class="by"><span class="nm">Editor A.</span><span class="when">Manufacturing / Steel</span></div>
+        </div>
+      </a>
+
+      <a class="card" href="#" data-s="steel" data-len="4.7" data-when="2026-04-30">
+        <div class="cover t-furnace video"><span class="meta-tl">SHORT</span><span class="dur">04:42</span></div>
+        <div class="body">
+          <div class="topline">Short <span class="sub">04:42 &middot; 2026-04-30</span></div>
+          <h3>A line restart</h3>
+          <p class="dek">What it looks like when the cast goes cold and the crew has to bring it back online without dropping the heat.</p>
+          <div class="by"><span class="nm">Editor A.</span><span class="when">Manufacturing / Steel</span></div>
+        </div>
+      </a>
+
+      <a class="card" href="#" data-s="steel" data-len="8.6" data-when="2026-04-12">
+        <div class="cover t-cast video"><span class="meta-tl">MINI-DOC</span><span class="dur">08:36</span></div>
+        <div class="body">
+          <div class="topline">Mini-doc <span class="sub">08:36 &middot; 2026-04-12</span></div>
+          <h3>Ladle metallurgy</h3>
+          <p class="dek">Two flights up from the floor, the room that decides what the steel becomes.</p>
+          <div class="by"><span class="nm">Editor A.</span><span class="when">Manufacturing / Steel</span></div>
+        </div>
+      </a>
+
+      <a class="card" href="#" data-s="food" data-len="6.3" data-when="2026-03-22">
+        <div class="cover t-pulpit video"><span class="meta-tl">SHORT</span><span class="dur">06:18</span></div>
+        <div class="body">
+          <div class="topline">Short <span class="sub">06:18 &middot; 2026-03-22</span></div>
+          <h3>The cannery at first light</h3>
+          <p class="dek">Modesto, opening shift, the conveyor coming up to speed.</p>
+          <div class="by"><span class="nm">Editor C.</span><span class="when">Manufacturing / Food</span></div>
+        </div>
+      </a>
+
+      <a class="card" href="#" data-s="textiles" data-len="10.1" data-when="2026-01-30">
+        <div class="cover t-doc video"><span class="meta-tl">MINI-DOC</span><span class="dur">10:08</span></div>
+        <div class="body">
+          <div class="topline">Mini-doc <span class="sub">10:08 &middot; 2026-01-30</span></div>
+          <h3>The loom that wouldn&rsquo;t quit</h3>
+          <p class="dek">A 1974 Picanol still on the floor in North Carolina &mdash; and the operator who keeps it running.</p>
+          <div class="by"><span class="nm">Editor C.</span><span class="when">Manufacturing / Textiles</span></div>
+        </div>
+      </a>
+
+    </div>
+
+    <div class="grid-foot">
+      <span id="watchCount">Showing 5 of 5 cuts</span>
+      <a href="/worlds/manufacturing/watch/">Watch archive →</a>
+    </div>
+
+  </section>
+
+  <!-- ─── LISTEN PANEL ─── -->
+  <section id="panel-listen" class="panel mode-listen" role="tabpanel" aria-labelledby="mode-listen">
+
+    <article class="feat" data-s="steel">
+      <div class="cover">
+        <span class="meta-tl"><b>EPISODE 04</b> · TONY R. · 30 YEARS ON THE FLOOR</span>
+        <span class="meta-tr">INTERVIEW · 38:12</span>
+        <span class="frame-id">2026-05-11 · 96 kHz / 24-bit</span>
+        <div class="wave" aria-hidden="true">
+          <i style="height:46%"></i><i style="height:60%"></i><i style="height:38%"></i><i style="height:72%"></i>
+          <i style="height:54%"></i><i style="height:82%"></i><i style="height:46%"></i><i style="height:64%"></i>
+          <i style="height:38%"></i><i style="height:74%"></i><i style="height:58%"></i><i style="height:48%"></i>
+          <i style="height:68%"></i><i style="height:54%"></i><i style="height:80%"></i><i style="height:42%"></i>
+          <i style="height:62%"></i><i style="height:48%"></i><i style="height:74%"></i><i style="height:38%"></i>
+          <i style="height:58%"></i><i style="height:68%"></i><i style="height:46%"></i><i style="height:80%"></i>
+          <i style="height:54%"></i><i style="height:64%"></i><i style="height:42%"></i><i style="height:76%"></i>
+          <i style="height:50%"></i><i style="height:60%"></i><i style="height:38%"></i><i style="height:72%"></i>
+          <i style="height:48%"></i><i style="height:80%"></i><i style="height:54%"></i><i style="height:66%"></i>
+          <i style="height:40%"></i><i style="height:74%"></i><i style="height:58%"></i><i style="height:48%"></i>
+        </div>
+      </div>
+      <div class="body">
+        <div class="topline">
+          <span class="kind">Featured · Interview</span>
+          <span>·</span>
+          <span>Manufacturing / Steel</span>
+        </div>
+        <h2><a href="Babb Audio v1.html">Tony R., foreman — 38:12</a></h2>
+        <p class="dek">Thirty years on the floor. The third shift, the apprenticeship, automation, and the town that grew up around the mill. Recorded standing in the pulpit; ambient mill on the B-side.</p>
+        <div class="by">Interviewer <a href="Babb Person Contributor v1.html">Editor A.</a> &middot; sound <a href="/people/dl/">D.L.</a> &middot; subject <a href="Babb Person Subject v1.html">Tony R.</a></div>
+        <div class="tags">
+          <a href="Babb Worlds v1.html#manufacturing">manufacturing</a>
+          <a href="#" data-sub="steel">steel</a>
+          <a href="Babb Place v1.html">hamilton-steel-mill</a>
+        </div>
+        <div class="cta">
+          <a href="Babb Audio v1.html">Listen ▸</a>
+          <a class="alt" href="/feed.xml?cat=audio">Subscribe</a>
+        </div>
+      </div>
+    </article>
+
+    <div class="cards" id="listenCards">
+
+      <a class="card" href="Babb Audio v1.html" data-s="steel" data-len="38.2" data-when="2026-05-11">
+        <div class="cover audio"><span class="meta-tl">INTERVIEW</span><span class="dur">38:12</span></div>
+        <div class="body">
+          <div class="topline">Interview <span class="sub">38:12 &middot; 2026-05-11</span></div>
+          <h3>Tony R., foreman</h3>
+          <p class="dek">30 years on the third shift. Synced transcript. Pulpit recording.</p>
+          <div class="by"><span class="nm">Editor A.</span><span class="when">Manufacturing / Steel</span></div>
+        </div>
+      </a>
+
+      <a class="card" href="#" data-s="steel" data-len="42.1" data-when="2026-05-09">
+        <div class="cover audio"><span class="meta-tl">INTERVIEW</span><span class="dur">42:08</span></div>
+        <div class="body">
+          <div class="topline">Interview <span class="sub">42:08 &middot; 2026-05-09</span></div>
+          <h3>Marisol — owner&rsquo;s rep, third generation</h3>
+          <p class="dek">The 2021 buy-back, the family deal, the year in Pennsylvania.</p>
+          <div class="by"><span class="nm">Editor B.</span><span class="when">Manufacturing / Steel</span></div>
+        </div>
+      </a>
+
+      <a class="card" href="#" data-s="steel" data-len="26.2" data-when="2026-05-08">
+        <div class="cover audio"><span class="meta-tl">INTERVIEW</span><span class="dur">26:14</span></div>
+        <div class="body">
+          <div class="topline">Interview <span class="sub">26:14 &middot; 2026-05-08</span></div>
+          <h3>Janelle — plant safety</h3>
+          <p class="dek">Runs the daily brief. Knows which gates to close before lightning storms.</p>
+          <div class="by"><span class="nm">Editor B.</span><span class="when">Manufacturing / Steel</span></div>
+        </div>
+      </a>
+
+      <a class="card" href="#" data-s="steel" data-len="18.7" data-when="2026-05-07">
+        <div class="cover audio"><span class="meta-tl">INTERVIEW</span><span class="dur">18:42</span></div>
+        <div class="body">
+          <div class="topline">Interview <span class="sub">18:42 &middot; 2026-05-07</span></div>
+          <h3>Dee — apprentice, six months in</h3>
+          <p class="dek">Came over from the auto plant when it closed in February. First steel job.</p>
+          <div class="by"><span class="nm">Editor A.</span><span class="when">Manufacturing / Steel</span></div>
+        </div>
+      </a>
+
+      <a class="card" href="#" data-s="steel" data-len="2.5" data-when="2026-05-12">
+        <div class="cover audio"><span class="meta-tl">AMBIENT</span><span class="dur">02:30</span></div>
+        <div class="body">
+          <div class="topline">Ambient <span class="sub">02:30 &middot; 2026-05-12</span></div>
+          <h3>Pour line A — 06:14 local</h3>
+          <p class="dek">The loop that anchors the Place page. Floor mics + door bleed from the pulpit.</p>
+          <div class="by"><span class="nm">D.L.</span><span class="when">Manufacturing / Steel</span></div>
+        </div>
+      </a>
+
+      <a class="card" href="#" data-s="food" data-len="34.5" data-when="2026-03-18">
+        <div class="cover audio"><span class="meta-tl">INTERVIEW</span><span class="dur">34:32</span></div>
+        <div class="body">
+          <div class="topline">Interview <span class="sub">34:32 &middot; 2026-03-18</span></div>
+          <h3>The cannery line lead — peach season</h3>
+          <p class="dek">Modesto, two weeks at peak, what the line knows that the schedule doesn&rsquo;t.</p>
+          <div class="by"><span class="nm">Editor C.</span><span class="when">Manufacturing / Food</span></div>
+        </div>
+      </a>
+
+      <a class="card" href="#" data-s="textiles" data-len="22.8" data-when="2026-01-22">
+        <div class="cover audio"><span class="meta-tl">INTERVIEW</span><span class="dur">22:48</span></div>
+        <div class="body">
+          <div class="topline">Interview <span class="sub">22:48 &middot; 2026-01-22</span></div>
+          <h3>The Carolina trucker</h3>
+          <p class="dek">Three mills, two states, every loading-dock manager by name.</p>
+          <div class="by"><span class="nm">Editor C.</span><span class="when">Manufacturing / Textiles</span></div>
+        </div>
+      </a>
+
+    </div>
+
+    <div class="grid-foot">
+      <span id="listenCount">Showing 7 of 7 episodes</span>
+      <a href="/worlds/manufacturing/listen/">Listen archive →</a>
+    </div>
+
+  </section>
+
+  <!-- ─── cross-pollination ─── -->
+  <div class="smark"><span class="num">§ ··</span><span>Other Worlds &middot; RWL elsewhere</span><span class="rule"></span></div>
+
+  <section class="xlinks">
+    <a class="xcard" href="/worlds/farming/read-watch-listen/">
+      <div class="kind">RWL · Farming</div>
+      <h4>Farming</h4>
+      <p class="blurb">Sioux Falls feed-lot, Midwest Dairy Run, soil sensors. 6 read · 3 watch · 4 listen.</p>
+    </a>
+    <a class="xcard" href="/worlds/building/read-watch-listen/">
+      <div class="kind">RWL · Building</div>
+      <h4>Building</h4>
+      <p class="blurb">Bronx tower, brownstone reno, civil pours. 5 read · 2 watch · 3 listen.</p>
+    </a>
+    <a class="xcard" href="/worlds/banking/read-watch-listen/">
+      <div class="kind">RWL · Banking</div>
+      <h4>Banking</h4>
+      <p class="blurb">Hudson community bank, Akron credit union, payments plumbing. 4 read · 1 watch · 3 listen.</p>
+    </a>
+    <a class="xcard" href="Babb Worlds v1.html">
+      <div class="kind">All Worlds</div>
+      <h4>Worlds index</h4>
+      <p class="blurb">Browse the seven Worlds and pick a beat. Each World has its own RWL page.</p>
+    </a>
+  </section>
+
+</div>
+
+<!-- footer -->
+<div class="shell">
+<footer class="colophon">
+  <div class="col-grid">
+    <div class="col col-id">
+      <div class="mark">babb<span class="punct">.</span></div>
+      <p>Tools for the frontier. A media outfit reporting from the working world and a product company building for it.</p>
+      <div class="addr">babb works · est. 2024<br/><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="18707d747477587a797a7a366c7d74">[email&#160;protected]</a><br/>rss · twitter · github · instagram</div>
+    </div>
+    <div class="col">
+      <h4>Manufacturing</h4>
+      <ul>
+        <li><a href="Babb Worlds v1.html#manufacturing">World page</a></li>
+        <li><a href="#" data-sub="steel">Steel</a></li>
+        <li><a href="#" data-sub="food">Food</a></li>
+        <li><a href="#" data-sub="electronics">Electronics</a></li>
+        <li><a href="#" data-sub="textiles">Textiles</a></li>
+      </ul>
+    </div>
+    <div class="col">
+      <h4>This World &middot; Places</h4>
+      <ul>
+        <li><a href="Babb Place v1.html">Hamilton steel mill</a></li>
+        <li><a href="/places/modesto-cannery/">Modesto cannery</a></li>
+        <li><a href="/places/carolina-textile-loop/">Carolina textile loop</a></li>
+        <li><a href="Babb Place v1.html">All Places →</a></li>
+      </ul>
+    </div>
+    <div class="col">
+      <h4>Subscribe</h4>
+      <ul>
+        <li><a href="/feed.xml?cat=manufacturing">Manufacturing RSS</a></li>
+        <li><a href="/feed.xml?cat=audio">Audio RSS</a></li>
+        <li><a href="/feed.xml?cat=video">Video RSS</a></li>
+        <li><a href="/updates/email/">Email digest</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="col-foot">
+    <div>© 2024–2026 Babb Works · CC BY-NC where noted</div>
+    <div class="right">
+      <a href="/colophon/">Colophon</a>
+      <a href="Babb About v1.html">About</a>
+      <a href="/cdn-cgi/l/email-protection#224a474e4e4d62404340400c56474e">Contact</a>
+      <span class="ascii">build 2026.05.18</span>
+    </div>
+  </div>
+</footer>
+</div>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+  (function(){
+    const el=document.getElementById("clock");
+    const f=n=>String(n).padStart(2,"0");
+    function tick(){const d=new Date();el.textContent=f(d.getUTCHours())+":"+f(d.getUTCMinutes())+":"+f(d.getUTCSeconds())+" UTC";}
+    tick();setInterval(tick,1000);
+  })();
+
+  /* ─── mode tabs (Read / Watch / Listen) ─── */
+  (function(){
+    const tabs = document.querySelectorAll("#modeTabs .mode");
+    const panels = { read: document.getElementById("panel-read"),
+                     watch: document.getElementById("panel-watch"),
+                     listen: document.getElementById("panel-listen") };
+    const counts = { read: document.getElementById("readCount"),
+                     watch: document.getElementById("watchCount"),
+                     listen: document.getElementById("listenCount") };
+    const totals = { read: 9, watch: 5, listen: 7 };
+    const noun = { read: "pieces", watch: "cuts", listen: "episodes" };
+    const slug = document.getElementById("modeSlug");
+    const crumb = document.getElementById("crumbMode");
+    const feed = document.getElementById("modeFeed");
+
+    function setMode(m){
+      tabs.forEach(t => t.setAttribute("aria-pressed", t.dataset.m === m));
+      Object.entries(panels).forEach(([k,p]) => p.classList.toggle("on", k === m));
+      slug.textContent = m;
+      crumb.textContent = m;
+      const feedMap = { read: "/feed.xml?cat=manufacturing&kind=read",
+                        watch: "/feed.xml?cat=video",
+                        listen: "/feed.xml?cat=audio" };
+      feed.href = feedMap[m];
+      applyFilters();
+    }
+    tabs.forEach(t => t.addEventListener("click", () => setMode(t.dataset.m)));
+
+    /* deep-link via CTA "Audio companion" → switches to listen panel */
+    document.querySelectorAll("[data-mode]").forEach(a => a.addEventListener("click", e => {
+      e.preventDefault(); setMode(a.dataset.mode);
+      window.scrollTo({top: 0, behavior:"smooth"});
+    }));
+
+    /* ─── filter & sort ─── */
+    const search = document.getElementById("search");
+    const subBtns = document.querySelectorAll("#subFilter button");
+    const sortSel = document.getElementById("sortBy");
+    let q = "", sub = "all", sortBy = "newest";
+
+    function getActiveMode(){
+      return [...tabs].find(t => t.getAttribute("aria-pressed") === "true").dataset.m;
+    }
+
+    function applyFilters(){
+      const m = getActiveMode();
+      const panel = panels[m];
+      const cards = [...panel.querySelectorAll(".cards .card")];
+      const feat = panel.querySelector(".feat");
+      let shown = 0;
+
+      cards.forEach(c => {
+        const okS = sub === "all" || c.dataset.s === sub;
+        const okQ = !q || c.textContent.toLowerCase().includes(q);
+        const show = okS && okQ;
+        c.style.display = show ? "" : "none";
+        if(show) shown++;
+      });
+      /* hide featured if its sub doesn't match */
+      if(feat){
+        const okS = sub === "all" || feat.dataset.s === sub;
+        feat.style.display = okS ? "" : "none";
+      }
+      counts[m].textContent = "Showing " + shown + " of " + totals[m] + " " + noun[m];
+
+      /* sort */
+      const grid = panel.querySelector(".cards");
+      const sorted = [...grid.children].sort((a,b) => {
+        if(sortBy === "length") return (parseFloat(a.dataset.len)||0) - (parseFloat(b.dataset.len)||0);
+        /* default: newest by data-when */
+        return (b.dataset.when || "").localeCompare(a.dataset.when || "");
+      });
+      sorted.forEach(c => grid.appendChild(c));
+    }
+
+    search.addEventListener("input", () => { q = search.value.trim().toLowerCase(); applyFilters(); });
+    subBtns.forEach(b => b.addEventListener("click", () => {
+      sub = b.dataset.s;
+      subBtns.forEach(x => x.setAttribute("aria-pressed", x === b));
+      applyFilters();
+    }));
+    sortSel.addEventListener("change", () => { sortBy = sortSel.value; applyFilters(); });
+
+    /* a[data-sub] taps preset the sub filter */
+    document.querySelectorAll("a[data-sub]").forEach(a => a.addEventListener("click", e => {
+      const target = a.dataset.sub;
+      const match = [...subBtns].find(b => b.dataset.s === target);
+      if(match){ sub = target; subBtns.forEach(x => x.setAttribute("aria-pressed", x === match)); applyFilters(); }
+    }));
+  })();
+</script>
+</body>
+</html>

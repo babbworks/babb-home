@@ -1,0 +1,115 @@
+---
+layout: product
+title: Telux
+nav_active: products
+product_id: telux
+status: research
+status_label: Research · Architecture
+---
+
+<div class="shell">
+  <div class="crumbs">
+    <a href="/">babb</a><span class="sep">/</span>
+    <a href="/products/">products</a><span class="sep">/</span>
+    <span class="here">telux</span>
+  </div>
+
+  <section class="ptitle">
+    <div>
+      <div class="kicker"><span class="k1">System &middot; 08 / 12</span><span>Operating System</span></div>
+      <h1>Telux<span class="punct">.</span></h1>
+      <p class="deck">
+        <b>System for Group Exchange.</b>
+        A proposed operating system layer that unifies group identity, power management,
+        and transactional security into a single coherent primitive. No existing OS combines
+        all three. Telux does.
+      </p>
+    </div>
+    <div class="status" aria-label="Product status">
+      <div class="row head"><span>Telux &middot; status</span><span class="warn">RESEARCH</span></div>
+      <div class="row"><span class="k">Phase</span><span class="v">Architecture &middot; design documents</span></div>
+      <div class="row"><span class="k">Heritage</span><span class="v">Plan 9 &middot; seL4 &middot; CICS</span></div>
+      <div class="row"><span class="k">Identity</span><span class="v">W3C DIDs &middot; non-human first-class</span></div>
+      <div class="row"><span class="k">Companion</span><span class="v"><a href="/products/outstack/">Outstack &rarr;</a></span></div>
+      <div class="cta">
+        <a href="/updates/what-is-telux/" class="dark">Overview article &rarr;</a>
+        <a href="/products/outstack/">Outstack</a>
+      </div>
+    </div>
+  </section>
+
+  <div class="smark"><span class="num">&sect; 01</span><span>Core concepts</span><span class="rule"></span><span>newgroup &middot; Islands &middot; Outstack</span></div>
+
+  <section class="feat">
+    <div class="cell">
+      <div class="num">01</div>
+      <h3>newgroup.</h3>
+      <p>An evolution of the Linux <code>group</code> primitive. A newgroup can contain human users, system services, commercial APIs, AI models, and IoT-connected physical systems. Dynamic, permanent or temporary.</p>
+      <span class="tag">humans &middot; agents &middot; services &middot; IoT</span>
+    </div>
+    <div class="cell">
+      <div class="num">02</div>
+      <h3>Islands.</h3>
+      <p>Sovereign containers. Every group belongs to an Island. Islands are the primary security boundary. Each must declare who or what is Sovereign over it. Sovereignty is hierarchical and grantable.</p>
+      <span class="tag">sovereignty &middot; security boundary</span>
+    </div>
+    <div class="cell">
+      <div class="num">03</div>
+      <h3>Three-layer architecture.</h3>
+      <p>Visible (group chat, NL query, exchange records), Submerged (daemon, sovereignty enforcer, power governor), Bedrock (LSM module, immutable audit, TPM/HSM keys, power gates).</p>
+      <span class="tag">visible &middot; submerged &middot; bedrock</span>
+    </div>
+    <div class="cell">
+      <div class="num">04</div>
+      <h3>Power as security.</h3>
+      <p>Islands receive electricity budgets. Exceeding that budget is a security event. At <code>exec()</code> time, Outstack checks whether the power budget permits the process. In EMERGENCY mode, only CRITICAL-class processes run.</p>
+      <span class="tag">power gating &middot; physics-based security</span>
+    </div>
+    <div class="cell">
+      <div class="num">05</div>
+      <h3>Transactional exchange.</h3>
+      <p>Every exchange between entities in a group is recorded before it completes. Hashed, signed, distributed to the appropriate visibility tier. The write-ahead log is the bedrock of trust.</p>
+      <span class="tag">write-ahead &middot; signed &middot; auditable</span>
+    </div>
+    <div class="cell">
+      <div class="num">06</div>
+      <h3>Non-human identity.</h3>
+      <p>AI models, IoT sensors, and automated services get first-class group membership with capabilities, power budgets, and auditable exchange records. W3C Decentralized Identifiers for all non-human members.</p>
+      <span class="tag">DIDs &middot; AI &middot; IoT &middot; first-class</span>
+    </div>
+  </section>
+
+  <div class="smark"><span class="num">&sect; 02</span><span>Architecture heritage</span><span class="rule"></span><span>three traditions, unified</span></div>
+
+  <section class="spec">
+    <div class="col">
+      <h4>Inherited from</h4>
+      <div class="row"><span class="k">Plan 9</span><span class="v">Per-process namespace isolation (Bell Labs, 1987)</span></div>
+      <div class="row"><span class="k">seL4</span><span class="v">Capability-based security (2009)</span></div>
+      <div class="row"><span class="k">CICS</span><span class="v">Transaction orchestration (IBM, 1960s)</span></div>
+      <div class="row"><span class="k">RTG</span><span class="v">Spacecraft power accounting discipline</span></div>
+    </div>
+    <div class="col">
+      <h4>Open questions</h4>
+      <div class="row"><span class="k">Accounting</span><span class="v">Notation format for exchange records</span></div>
+      <div class="row"><span class="k">AI identity</span><span class="v">Entity identity model for AI members</span></div>
+      <div class="row"><span class="k">Succession</span><span class="v">Sovereignty succession rules</span></div>
+      <div class="row"><span class="k">Federation</span><span class="v">Cross-Island protocol design</span></div>
+    </div>
+  </section>
+
+  <div class="smark"><span class="num">&sect; 03</span><span>Where to find it</span><span class="rule"></span></div>
+
+  <section class="getit" id="get">
+    <div>
+      <h3>Telux is in the research phase.</h3>
+      <p>Comprehensive design documents. Implementation probes for AOSP and open hardware. The companion project is Outstack.</p>
+      <p class="alt">
+        <a href="/updates/what-is-telux/">Overview article &rarr;</a> &middot;
+        <a href="/products/outstack/">Outstack &rarr;</a> &middot;
+        <a href="/updates/what-is-outstack/">Outstack article &rarr;</a>
+      </p>
+    </div>
+  </section>
+
+</div>

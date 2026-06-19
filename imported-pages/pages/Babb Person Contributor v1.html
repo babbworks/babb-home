@@ -1,0 +1,574 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Editor A. — Babb / People · contributor</title>
+<meta name="description" content="Editor A. — editor in chief at Babb. Editorial lead for Manufacturing and Building." />
+<style>
+  :root{
+    --paper:#faf8f3; --paper-2:#f3efe5; --card:#ffffff;
+    --ink:#1a1a1a; --ink-2:#444141; --muted:#807d75;
+    --hair:#d8d3c4; --hair-2:#e8e3d4;
+    --alt:#a14a00; --alt-soft:#f5e9d8;
+    --live:#2f7a3a;
+    --term-bg:#141312; --term-fg:#e8e3d4; --term-link:#ffd58a; --term-subj:#b7d99a;
+    --mono: ui-monospace,"SF Mono",SFMono-Regular,"JetBrains Mono",Menlo,Consolas,monospace;
+    --gutter:24px; --maxw:1240px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--paper);color:var(--ink);
+    font:14px/1.55 var(--mono);
+    -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
+    font-feature-settings:"ss01","cv11"}
+  a{color:inherit;text-decoration:none}
+  a:hover{text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px}
+  h1,h2,h3,h4{font-family:var(--mono);font-weight:600;margin:0;letter-spacing:-.01em}
+  .shell{max-width:var(--maxw);margin:0 auto;padding:0 var(--gutter)}
+
+  /* shared chrome */
+  .sysbar{border-bottom:1px solid var(--hair);background:var(--paper);font-size:11px;color:var(--muted);letter-spacing:.04em}
+  .sysbar .row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;gap:16px}
+  .dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--live);
+    box-shadow:0 0 0 0 rgba(47,122,58,.55);animation:pulse 2.6s infinite;vertical-align:middle;margin-right:6px}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(47,122,58,.55)}70%{box-shadow:0 0 0 7px rgba(47,122,58,0)}100%{box-shadow:0 0 0 0 rgba(47,122,58,0)}}
+  .sysbar .right{display:flex;gap:14px;align-items:center}
+  .sysbar a:hover{color:var(--ink)}
+
+  header.masthead{border-bottom:1px solid var(--hair);padding:22px 0 20px}
+  .masthead .row{display:flex;justify-content:space-between;align-items:flex-end;gap:24px}
+  .wordmark{font-size:34px;font-weight:700;letter-spacing:-.04em;line-height:.9}
+  .wordmark .punct{color:var(--alt)}
+  .tagline{font-size:11px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-top:8px}
+  nav.primary{display:flex;gap:22px;font-size:13px;padding-bottom:4px}
+  nav.primary a{color:var(--ink-2);position:relative;padding:2px 0}
+  nav.primary a:hover{color:var(--ink);text-decoration:none}
+  nav.primary a.here{color:var(--ink)}
+  nav.primary a.here::after{content:"";position:absolute;left:0;right:0;bottom:-4px;height:2px;background:var(--ink)}
+
+  /* crumbs */
+  .crumbs{font-size:11px;color:var(--muted);letter-spacing:.06em;margin:24px 0 6px}
+  .crumbs a{color:var(--ink-2);border-bottom:1px solid var(--hair-2)}
+  .crumbs .here{color:var(--ink)}
+
+  /* section marker */
+  .smark{display:flex;align-items:baseline;gap:12px;margin:46px 0 18px;
+    font-size:11px;color:var(--muted);letter-spacing:.16em;text-transform:uppercase}
+  .smark .num{color:var(--ink);font-weight:600}
+  .smark .rule{flex:1;height:1px;background:var(--hair);transform:translateY(-3px)}
+  .smark .meta{color:var(--muted)}
+  .smark .meta a{color:var(--ink-2);border-bottom:1px solid var(--hair)}
+
+  /* ─── HERO (contributor variant — id-card / masthead feel) ─── */
+  .hero{display:grid;grid-template-columns:280px 1fr;gap:0;
+    margin:14px 0 8px;border:1px solid var(--ink);background:var(--card);min-height:340px;
+    box-shadow:6px 6px 0 var(--hair)}
+  .hero .portrait{background:var(--ink);color:var(--paper);position:relative;border-right:1px solid var(--ink);overflow:hidden;min-height:340px}
+  .hero .portrait .silhouette{position:absolute;left:50%;top:55%;transform:translate(-50%,-50%);
+    width:64%;aspect-ratio:1/1;border-radius:50%;
+    background:radial-gradient(circle at 50% 40%, #4a463d, #1a1815 80%);
+    border:1px solid #3a3631}
+  .hero .portrait .silhouette::after{content:"";position:absolute;left:50%;top:62%;
+    width:140%;height:80%;background:radial-gradient(ellipse at 50% 0%,#4a463d,#1a1815 70%);transform:translate(-50%,0)}
+  .hero .portrait .badge{position:absolute;left:18px;top:18px;display:inline-flex;flex-direction:column;gap:5px;
+    font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;color:#cdc8b6}
+  .hero .portrait .badge b{color:var(--alt-soft);font-size:10px;font-weight:700;letter-spacing:.22em}
+  .hero .portrait .id{position:absolute;left:18px;bottom:18px;font-size:9px;color:#9a948a;letter-spacing:.06em}
+  .hero .portrait .id b{display:block;color:var(--paper);font-size:18px;font-weight:600;letter-spacing:-.015em;margin-bottom:5px}
+  .hero .portrait .punch{position:absolute;right:18px;top:18px;width:32px;height:32px;border:1px solid #4a463d;display:flex;align-items:center;justify-content:center;font-size:14px;color:#9a948a}
+
+  .hero .body{padding:28px 32px;display:flex;flex-direction:column;gap:14px}
+  .hero .body .role-tag{display:inline-flex;align-items:center;gap:8px;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+  .hero .body .role-tag .pill{display:inline-flex;align-items:center;gap:5px;font-size:10px;color:var(--paper);background:var(--ink);border:1px solid var(--ink);padding:1px 8px;letter-spacing:.14em;font-weight:600;text-transform:uppercase}
+  .hero .body .role-tag .pill::before{content:"▸";color:var(--alt-soft);font-size:8px}
+  .hero .body h1{font-size:54px;line-height:1;letter-spacing:-.035em;font-weight:700;text-wrap:balance}
+  .hero .body h1 .punct{color:var(--alt)}
+  .hero .body .role{font-size:18px;color:var(--ink-2);letter-spacing:-.005em;font-weight:500}
+  .hero .body .role .at{color:var(--ink)}
+  .hero .body .lede{font-size:14.5px;line-height:1.65;color:var(--ink-2);max-width:54ch;text-wrap:pretty;margin-top:4px}
+  .hero .body .lede a{color:var(--ink);border-bottom:1px solid var(--ink)}
+  .hero .body .lede a:hover{color:var(--alt);border-color:var(--alt);text-decoration:none}
+  .hero .body .beats{display:flex;flex-wrap:wrap;gap:6px;margin-top:auto}
+  .hero .body .beats .b{font-size:10.5px;letter-spacing:.06em;color:var(--ink-2);border:1px solid var(--hair);padding:2px 9px;background:var(--paper)}
+  .hero .body .beats .b.world{border-color:var(--alt);color:var(--alt);font-weight:600}
+  .hero .body .cta{display:flex;gap:18px;font-size:12.5px;align-items:baseline;border-top:1px dotted var(--hair-2);padding-top:14px;flex-wrap:wrap}
+  .hero .body .cta a{color:var(--ink);border-bottom:1px solid var(--ink)}
+  .hero .body .cta a:hover{color:var(--alt);border-color:var(--alt);text-decoration:none}
+  .hero .body .cta .alt{color:var(--ink-2);border-bottom:1px dotted var(--hair)}
+
+  /* ─── BODY ROW ─── */
+  .body-row{display:grid;grid-template-columns:1.55fr 1fr;gap:42px;margin-top:30px}
+
+  /* stat strip across the top */
+  .stat-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:0;
+    border-top:1px solid var(--hair);border-left:1px solid var(--hair);margin-top:14px}
+  .stat{padding:16px 20px;border-right:1px solid var(--hair);border-bottom:1px solid var(--hair);background:var(--card);
+    display:flex;flex-direction:column;gap:3px;min-height:90px}
+  .stat .k{font-size:10px;color:var(--muted);letter-spacing:.16em;text-transform:uppercase}
+  .stat .v{font-size:26px;font-weight:700;letter-spacing:-.025em;line-height:1}
+  .stat .v small{font-size:11px;color:var(--muted);font-weight:400;letter-spacing:0;text-transform:none;margin-left:5px}
+  .stat .note{font-size:10.5px;color:var(--ink-2);margin-top:auto;letter-spacing:.02em;line-height:1.45}
+
+  /* bio prose */
+  .bio{font-size:15px;line-height:1.7;color:var(--ink);max-width:62ch}
+  .bio h3{font-size:11px;color:var(--muted);letter-spacing:.16em;text-transform:uppercase;margin:24px 0 12px;font-weight:600}
+  .bio h3 .num{color:var(--alt);font-weight:700;margin-right:8px}
+  .bio p{margin:0 0 14px;text-wrap:pretty}
+  .bio p a{color:var(--ink);border-bottom:1px solid var(--ink)}
+  .bio p a:hover{color:var(--alt);border-color:var(--alt);text-decoration:none}
+  .bio em{font-style:normal;color:var(--alt);font-weight:600}
+
+  /* bylines list */
+  .bylines{margin-top:6px}
+  .byline-row{display:grid;grid-template-columns:120px 60px 1fr 110px;gap:18px;
+    padding:14px 0;border-bottom:1px dotted var(--hair-2);align-items:baseline;
+    transition:background .12s ease}
+  .byline-row:last-child{border-bottom:none}
+  .byline-row:hover{background:#fbf7e9}
+  .byline-row .when{font-size:11px;color:var(--muted);letter-spacing:.04em}
+  .byline-row .when b{display:block;color:var(--ink);font-weight:500}
+  .byline-row .kind{font-size:10px;color:var(--alt);font-weight:600;letter-spacing:.14em;text-transform:uppercase}
+  .byline-row .body h4{font-size:15.5px;font-weight:600;letter-spacing:-.015em;line-height:1.3}
+  .byline-row .body h4 a:hover{color:var(--alt);text-decoration:none}
+  .byline-row .body .desc{font-size:12.5px;color:var(--ink-2);margin-top:3px;line-height:1.55}
+  .byline-row .body .meta{font-size:10.5px;color:var(--muted);letter-spacing:.04em;margin-top:5px;display:flex;gap:10px;flex-wrap:wrap}
+  .byline-row .body .meta a{color:var(--ink-2);border-bottom:1px dotted var(--hair-2)}
+  .byline-row .right{text-align:right;font-size:11px;color:var(--muted);letter-spacing:.04em}
+  .byline-row .right .dur{color:var(--ink);font-size:13px;letter-spacing:-.01em;font-weight:500;display:block;margin-bottom:3px}
+
+  /* world coverage grid */
+  .cov-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  .cov{background:var(--card);border:1px solid var(--hair);padding:14px 16px;display:flex;flex-direction:column;gap:8px;transition:border-color .15s ease}
+  .cov:hover{border-color:var(--ink)}
+  .cov .nm{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+  .cov .nm h4{font-size:15px;font-weight:600;letter-spacing:-.015em}
+  .cov .nm .cnt{font-size:10.5px;color:var(--alt);font-weight:600;letter-spacing:.06em}
+  .cov .blurb{font-size:12px;color:var(--ink-2);line-height:1.55}
+  .cov .places{font-size:11px;color:var(--ink-2);border-top:1px dotted var(--hair-2);padding-top:8px;margin-top:auto;display:flex;flex-wrap:wrap;gap:4px 12px}
+  .cov .places a{color:var(--ink-2);border-bottom:1px dotted var(--hair)}
+
+  /* sidebar */
+  .sidebar{display:flex;flex-direction:column;gap:16px;align-self:start;position:sticky;top:20px}
+  .sb-box{border:1px solid var(--hair);background:var(--card);padding:14px 16px}
+  .sb-box h4{font-size:10px;color:var(--muted);letter-spacing:.16em;text-transform:uppercase;font-weight:600;margin-bottom:10px}
+  .sb-box .r{display:grid;grid-template-columns:90px 1fr;gap:10px;font-size:12.5px;color:var(--ink-2);padding:5px 0;border-bottom:1px dotted var(--hair-2);align-items:baseline}
+  .sb-box .r:last-child{border-bottom:none}
+  .sb-box .r .k{font-size:10px;color:var(--muted);letter-spacing:.12em;text-transform:uppercase}
+  .sb-box .r .v{color:var(--ink-2)}
+  .sb-box .r .v a{color:var(--ink);border-bottom:1px solid var(--hair-2)}
+  .sb-box ul{margin:0;padding:0;list-style:none}
+  .sb-box li{font-size:12.5px;line-height:1.5;padding:5px 0;border-bottom:1px dotted var(--hair-2);display:flex;justify-content:space-between;gap:10px}
+  .sb-box li:last-child{border-bottom:none}
+  .sb-box li a{color:var(--ink-2);flex:1}
+  .sb-box li a:hover{color:var(--alt);text-decoration:none}
+  .sb-box li .meta{font-size:10px;color:var(--muted);letter-spacing:.04em;flex-shrink:0}
+
+  /* contact card */
+  .contact-card{background:var(--ink);color:var(--paper);padding:18px 20px}
+  .contact-card h4{font-size:10px;color:#cdc8b6;letter-spacing:.16em;text-transform:uppercase;margin-bottom:14px;font-weight:600}
+  .contact-card .r{font-size:12.5px;padding:8px 0;border-bottom:1px dotted #3a3631;display:grid;grid-template-columns:80px 1fr;gap:10px;align-items:baseline}
+  .contact-card .r:last-child{border-bottom:none}
+  .contact-card .r .k{font-size:9.5px;color:#9a948a;letter-spacing:.16em;text-transform:uppercase}
+  .contact-card .r .v{color:var(--paper)}
+  .contact-card .r .v a{color:var(--term-link);border-bottom:1px dotted #b88c4d}
+  .contact-card .r .v a:hover{color:#fff}
+
+  /* footer */
+  footer.colophon{margin-top:56px;border-top:1px solid var(--hair);padding:32px 0 48px;color:var(--ink-2);font-size:12.5px}
+  .col-grid{display:grid;grid-template-columns:1.6fr 1fr 1fr 1fr;gap:30px;margin-bottom:28px}
+  .col h4{font-size:10.5px;color:var(--muted);letter-spacing:.16em;text-transform:uppercase;margin-bottom:12px;font-weight:600}
+  .col ul{list-style:none;padding:0;margin:0} .col li{padding:3px 0}
+  .col li a:hover{color:var(--alt);text-decoration:none}
+  .col .tag{font-size:10.5px;color:var(--muted);margin-left:6px;letter-spacing:.06em}
+  .col-id .mark{font-size:28px;font-weight:700;letter-spacing:-.04em;line-height:.9}
+  .col-id .mark .punct{color:var(--alt)}
+  .col-id p{margin:10px 0 14px;line-height:1.55;max-width:36ch}
+  .col-id .addr{font-size:11px;color:var(--muted);line-height:1.6}
+  .col-foot{display:flex;justify-content:space-between;align-items:center;gap:20px;padding-top:18px;border-top:1px solid var(--hair-2);font-size:11px;color:var(--muted);letter-spacing:.04em}
+  .col-foot .right{display:flex;gap:14px}
+
+  @media (max-width:1100px){
+    .hero{grid-template-columns:1fr}
+    .hero .portrait{min-height:200px;border-right:none;border-bottom:1px solid var(--ink)}
+    .body-row{grid-template-columns:1fr}
+    .sidebar{position:static}
+    .stat-strip{grid-template-columns:1fr 1fr}
+    .cov-grid{grid-template-columns:1fr 1fr}
+    .col-grid{grid-template-columns:1fr 1fr}
+  }
+  @media (max-width:640px){
+    .wordmark{font-size:28px}
+    .hero .body h1{font-size:34px}
+    .stat-strip{grid-template-columns:1fr}
+    .byline-row{grid-template-columns:1fr;gap:6px}
+    .byline-row .right{text-align:left}
+    .cov-grid{grid-template-columns:1fr}
+    nav.primary{flex-wrap:wrap;gap:14px}
+    .col-grid{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+
+<!-- sysbar -->
+<div class="sysbar">
+  <div class="shell row">
+    <div><span class="dot"></span>babb<span style="color:var(--muted)"> / people / editor-a</span></div>
+    <div class="right">
+      <span>build 2026.05.18</span><span>·</span>
+      <span id="clock">--:--:-- UTC</span><span>·</span>
+      <a href="/feed.xml?cat=people/editor-a">rss</a>
+    </div>
+  </div>
+</div>
+
+<!-- masthead -->
+<header class="masthead">
+  <div class="shell row">
+    <div>
+      <a href="Babb Homepage v1.html" style="text-decoration:none"><div class="wordmark">babb<span class="punct">.</span></div></a>
+      <div class="tagline">A media outfit · A product company</div>
+    </div>
+    <nav class="primary" aria-label="Primary">
+      <a href="Babb Worlds v1.html">Worlds</a>
+      <a href="Babb Place v1.html">Places</a>
+      <a href="Babb Products v1.html">Products</a>
+      <a href="Babb Updates v1.html">Updates</a>
+      <a href="Babb About v1.html">About</a>
+    </nav>
+  </div>
+</header>
+
+<div class="shell">
+
+  <div class="crumbs"><a href="Babb Homepage v1.html">babb</a> <span style="color:var(--hair)">/</span> <a href="/people/">people</a> <span style="color:var(--hair)">/</span> <span class="here">editor-a</span></div>
+
+  <!-- ─── HERO ─── -->
+  <section class="hero" aria-label="Contributor header">
+    <div class="portrait" aria-label="ID card">
+      <div class="badge">
+        <span><b>BABB / MASTHEAD</b></span>
+        <span>contributor · staff</span>
+      </div>
+      <div class="silhouette" aria-hidden="true"></div>
+      <span class="punch" aria-hidden="true">+</span>
+      <div class="id">
+        <b>EDITOR A.</b>
+        ID · 0001 · est. 2024-08<br/>
+        Hamilton / remote · ET (UTC-05/04)
+      </div>
+    </div>
+    <div class="body">
+      <div class="role-tag">
+        <span class="pill">Contributor</span>
+        <span>· Babb staff · since 2024-08</span>
+      </div>
+      <h1>Editor A<span class="punct">.</span></h1>
+      <div class="role">Editor in chief <span class="at">·</span> editorial lead for Manufacturing and Building</div>
+      <p class="lede">Runs the editorial side of the operation. Spent six years in trade journalism before Babb (mostly steel and rail). Reports from the floor; writes the standfirst; signs off on photographs. The voice on most of the <a href="Babb FieldNotes v1.html">field notes</a> and the byline on most of the <a href="Babb Updates v1.html">long dispatches</a>. <em style="font-style:normal;color:var(--ink);font-weight:600">If you&rsquo;d like to pitch something inside Manufacturing or Building, write directly.</em></p>
+      <div class="beats">
+        <span class="b world">Manufacturing</span>
+        <span class="b world">Building</span>
+        <span class="b">long-form</span>
+        <span class="b">field reporting</span>
+        <span class="b">interviewing</span>
+        <span class="b">editor&rsquo;s notes</span>
+      </div>
+      <div class="cta">
+        <a href="/cdn-cgi/l/email-protection#41242528352e336c2001232023236f35242d"><span class="__cf_email__" data-cfemail="7316171a071c015e1233111211115d07161f">[email&#160;protected]</span></a>
+        <a class="alt" href="#bylines">14 bylines ↓</a>
+        <a class="alt" href="Babb Updates v1.html">Read the dispatches</a>
+        <a class="alt" href="/people/contributors/">Other contributors</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── STAT STRIP ─── -->
+  <section class="stat-strip" aria-label="Contributor stats">
+    <div class="stat">
+      <span class="k">Bylines</span>
+      <span class="v">14 <small>ytd 2026</small></span>
+      <span class="note">9 dispatches &middot; 3 long-form &middot; 2 video credits</span>
+    </div>
+    <div class="stat">
+      <span class="k">Field notes</span>
+      <span class="v">9 <small>of 14</small></span>
+      <span class="note">Most on the <a href="Babb Place v1.html" style="color:var(--ink-2);border-bottom:1px solid var(--hair)">Hamilton mill</a> standing story.</span>
+    </div>
+    <div class="stat">
+      <span class="k">Place pages</span>
+      <span class="v">2 <small>opened</small></span>
+      <span class="note">Hamilton mill (2026-04) &middot; Sioux Falls feed-lot (2026-03)</span>
+    </div>
+    <div class="stat">
+      <span class="k">In rotation</span>
+      <span class="v">3 <small>active</small></span>
+      <span class="note">Hamilton, Sioux Falls, Midwest Dairy Run.</span>
+    </div>
+  </section>
+
+  <!-- ─── BODY ROW ─── -->
+  <section class="body-row">
+
+    <article class="bio">
+
+      <h3><span class="num">A.</span> Beat &amp; posture</h3>
+      <p>Editorial lead for <a href="Babb Worlds v1.html#manufacturing">Manufacturing</a> and <a href="Babb Worlds v1.html#building">Building</a>. Co-shapes the editorial slate with <a href="/people/editor-b/">Editor B.</a> and runs the field crew on rotation for both Worlds. Wrote the <a href="Babb Place v1.html">Hamilton steel mill</a> standing story from the call that opened it through the four-day shoot it&rsquo;s currently anchored on.</p>
+
+      <p>Practical posture: <em>spend the days</em>. Most of Editor A&rsquo;s pieces start with a phone call to someone they already know, get scoped on a second call, and don&rsquo;t go to press until the crew has been on site for three days at minimum. Comfortable with audio-first reporting; collaborates closely with <a href="/people/dl/">D.L.</a> (sound) and <a href="/people/bk/">B.K.</a> (photography) on every standing story.</p>
+
+      <h3><span class="num">B.</span> How to work with them</h3>
+      <p>Open to pitches from inside Manufacturing or Building &mdash; long-form, mini-doc treatments, or single Daily-format dispatches. Less open to columns or recurring beats from outside contributors (those go through Editor B.). Will take a phone call before an email any day; will not take a deck without a phone call first.</p>
+
+      <p>Editorial workflow: drafts get one accuracy pass and one register pass; <a href="Babb FieldNotes v1.html">field notes</a> stay public; glossary terms get hover-popups so the prose doesn&rsquo;t apologize for being specific. Photographs are selected with <a href="/people/bk/">B.K.</a> Subjects have right of refusal on every photograph and quote, per <a href="Babb Products v1.html#standards">BABB-FIELD 0.2</a>.</p>
+
+      <h3><span class="num">C.</span> Before Babb</h3>
+      <p>Six years on the steel + rail beat at a regional trade publication, two of those years as a contributing editor. Wrote the <em>Hamilton harbour</em> series in 2022 that essentially became the prototype for what Babb Places now look like. Came over to Babb in 2024-08 to do the same kind of work at a publication that ships its own standards and tools.</p>
+
+      <p>Earlier: copy desk at a daily, two years as a wire-service stringer, a lifelong habit of standing in places where work is happening and asking who&rsquo;s in charge. Born in Hamilton; the harbour is the room they grew up in.</p>
+
+      <!-- bylines -->
+      <h3 id="bylines"><span class="num">D.</span> Selected bylines</h3>
+      <div class="bylines">
+
+        <div class="byline-row">
+          <span class="when"><b>2026-05-12</b>17:42 ET</span>
+          <span class="kind">Dispatch</span>
+          <div class="body">
+            <h4><a href="Babb Article v1.html">Inside a Hamilton steel mill — day 4, the final pour</a></h4>
+            <div class="desc">Lead writer &middot; co-credit B.K. (photo) &middot; D.L. (sound).</div>
+            <div class="meta">
+              <a href="Babb Worlds v1.html#manufacturing">manufacturing/steel</a>
+              <a href="Babb Place v1.html">hamilton-steel-mill</a>
+            </div>
+          </div>
+          <div class="right"><span class="dur">12 min</span>Read →</div>
+        </div>
+
+        <div class="byline-row">
+          <span class="when"><b>2026-05-11</b>—</span>
+          <span class="kind">Audio &middot; interview</span>
+          <div class="body">
+            <h4><a href="Babb Audio v1.html">Tony R., foreman — 38:12 interview</a></h4>
+            <div class="desc">Interviewer + edit. Recorded in the pulpit, 06:14 local. Synced transcript.</div>
+            <div class="meta">
+              <a href="/people/tony-r/">tony r.</a>
+              <a href="Babb Place v1.html">hamilton-steel-mill</a>
+            </div>
+          </div>
+          <div class="right"><span class="dur">38:12</span>Listen →</div>
+        </div>
+
+        <div class="byline-row">
+          <span class="when"><b>2026-05-11</b>14:08 ET</span>
+          <span class="kind">Video &middot; direction</span>
+          <div class="body">
+            <h4><a href="Babb Video v1.html">The Pour — mini-doc · 12:08</a></h4>
+            <div class="desc">Directed; cinematography by B.K.; sound by D.L. Cut to the cadence of a heat.</div>
+            <div class="meta">
+              <a href="Babb Place v1.html">hamilton-steel-mill</a>
+              <a href="Babb Worlds v1.html#manufacturing">manufacturing</a>
+            </div>
+          </div>
+          <div class="right"><span class="dur">12:08</span>Watch →</div>
+        </div>
+
+        <div class="byline-row">
+          <span class="when"><b>2026-05-09</b>14:08 CT</span>
+          <span class="kind">Dispatch</span>
+          <div class="body">
+            <h4><a href="/dispatches/two-days-feedlot-sioux-falls/">Two days on a feed-lot in Sioux Falls</a></h4>
+            <div class="desc">Lead writer. Workpads field test in tow. Companion to the bit-tx whitepaper.</div>
+            <div class="meta">
+              <a href="Babb Worlds v1.html#farming">farming/livestock</a>
+              <a href="/places/sioux-falls-feed-lot/">sioux-falls-feed-lot</a>
+            </div>
+          </div>
+          <div class="right"><span class="dur">14 min</span>Read →</div>
+        </div>
+
+        <div class="byline-row">
+          <span class="when"><b>2026-04-28</b>06:00 ET</span>
+          <span class="kind">Dispatch</span>
+          <div class="body">
+            <h4><a href="/dispatches/6am-pour-bronx/">A 6am pour in the Bronx</a></h4>
+            <div class="desc">High-rise pour day with a crew of 11. Mini-doc cut available.</div>
+            <div class="meta">
+              <a href="Babb Worlds v1.html#building">building/civil</a>
+              <a href="/places/bronx-tower-job-site/">bronx-tower-job-site</a>
+            </div>
+          </div>
+          <div class="right"><span class="dur">11 min</span>Read →</div>
+        </div>
+
+        <div class="byline-row">
+          <span class="when"><b>2026-04-25</b>—</span>
+          <span class="kind">Place open</span>
+          <div class="body">
+            <h4><a href="Babb Place v1.html">Hamilton steel mill — standing story opens</a></h4>
+            <div class="desc">Opened the Place. First treatment, first portrait round, consent envelopes signed.</div>
+            <div class="meta">
+              <a href="Babb Place v1.html">place v1</a>
+            </div>
+          </div>
+          <div class="right"><span class="dur">place</span>Open →</div>
+        </div>
+
+        <div class="byline-row">
+          <span class="when"><b>2026-03-22</b>—</span>
+          <span class="kind">Dispatch</span>
+          <div class="body">
+            <h4><a href="/dispatches/co-op-governance/">Co-op governance, plainly</a></h4>
+            <div class="desc">Long-read on how three dairy co-ops in MN/WI/IL actually run.</div>
+            <div class="meta">
+              <a href="Babb Worlds v1.html#farming">farming/dairy</a>
+              <a href="/places/midwest-dairy-run/">midwest-dairy-run</a>
+            </div>
+          </div>
+          <div class="right"><span class="dur">11 min</span>Read →</div>
+        </div>
+
+        <div class="byline-row">
+          <span class="when"><b>2026-03-15</b>—</span>
+          <span class="kind">Dispatch &middot; Route</span>
+          <div class="body">
+            <h4><a href="/dispatches/midwest-dairy-run/">Route: Midwest Dairy Run, all five stops</a></h4>
+            <div class="desc">Multi-stop route piece &middot; co-credit with the driver, Marcus.</div>
+            <div class="meta">
+              <a href="/places/midwest-dairy-run/">midwest-dairy-run</a>
+            </div>
+          </div>
+          <div class="right"><span class="dur">16 min</span>Read →</div>
+        </div>
+
+      </div>
+
+      <h3 style="margin-top:32px"><span class="num">E.</span> Coverage by World</h3>
+      <div class="cov-grid">
+        <a class="cov" href="Babb Worlds v1.html#manufacturing">
+          <div class="nm"><h4>Manufacturing</h4><span class="cnt">8 bylines</span></div>
+          <p class="blurb">Lead beat. Steel sub-World is most active. The mill standing story is the anchor.</p>
+          <div class="places"><a href="Babb Place v1.html">hamilton-steel-mill</a></div>
+        </a>
+        <a class="cov" href="Babb Worlds v1.html#building">
+          <div class="nm"><h4>Building</h4><span class="cnt">3 bylines</span></div>
+          <p class="blurb">Co-lead with Editor B. Long-form pours and re-line stories.</p>
+          <div class="places"><a href="/places/bronx-tower-job-site/">bronx-tower-job-site</a></div>
+        </a>
+        <a class="cov" href="Babb Worlds v1.html#farming">
+          <div class="nm"><h4>Farming</h4><span class="cnt">3 bylines</span></div>
+          <p class="blurb">Rotation pieces only. Sioux Falls feed-lot + the dairy route.</p>
+          <div class="places"><a href="/places/sioux-falls-feed-lot/">sioux-falls-feed-lot</a> · <a href="/places/midwest-dairy-run/">midwest-dairy-run</a></div>
+        </a>
+      </div>
+
+    </article>
+
+    <aside class="sidebar" aria-label="Contributor sidebar">
+
+      <div class="contact-card" aria-label="Contact card">
+        <h4>Contact</h4>
+        <div class="r"><span class="k">Email</span><span class="v"><a href="/cdn-cgi/l/email-protection#0f6a6b667b607d226e4f6d6e6d6d217b6a63"><span class="__cf_email__" data-cfemail="7316171a071c015e1233111211115d07161f">[email&#160;protected]</span></a></span></div>
+        <div class="r"><span class="k">Signal</span><span class="v">on request</span></div>
+        <div class="r"><span class="k">Pitches</span><span class="v"><a href="/cdn-cgi/l/email-protection#0461606d706b76296544666566662a7061683b7771666e61677039746d70676c">drop a line</a></span></div>
+        <div class="r"><span class="k">Press</span><span class="v"><a href="/cdn-cgi/l/email-protection#d5a5a7b0a6a695b7b4b7b7fba1b0b9"><span class="__cf_email__" data-cfemail="4d3d3f283e3e0d2f2c2f2f63392821">[email&#160;protected]</span></a></span></div>
+        <div class="r"><span class="k">Time zone</span><span class="v">ET &middot; usually replies same day</span></div>
+        <div class="r"><span class="k">Phone</span><span class="v">on request after first contact</span></div>
+      </div>
+
+      <div class="sb-box" aria-label="At a glance">
+        <h4>At a glance</h4>
+        <div class="r"><span class="k">Role</span><span class="v">Editor in chief</span></div>
+        <div class="r"><span class="k">Joined</span><span class="v">2024-08</span></div>
+        <div class="r"><span class="k">Beat</span><span class="v">Manufacturing &middot; Building</span></div>
+        <div class="r"><span class="k">Based</span><span class="v">Hamilton, ON &middot; ET</span></div>
+        <div class="r"><span class="k">Languages</span><span class="v">English &middot; French &middot; Italian</span></div>
+        <div class="r"><span class="k">Bylines</span><span class="v">14 ytd &middot; 33 total</span></div>
+        <div class="r"><span class="k">Pronouns</span><span class="v">they/them</span></div>
+      </div>
+
+      <div class="sb-box">
+        <h4>On rotation</h4>
+        <ul>
+          <li><a href="Babb Place v1.html">Hamilton steel mill</a><span class="meta">standing</span></li>
+          <li><a href="/places/sioux-falls-feed-lot/">Sioux Falls feed-lot</a><span class="meta">active</span></li>
+          <li><a href="/places/midwest-dairy-run/">Midwest Dairy Run</a><span class="meta">route</span></li>
+        </ul>
+      </div>
+
+      <div class="sb-box">
+        <h4>Other contributors</h4>
+        <ul>
+          <li><a href="/people/editor-b/">Editor B.</a><span class="meta">deputy</span></li>
+          <li><a href="/people/editor-c/">Editor C.</a><span class="meta">contributing</span></li>
+          <li><a href="/people/bk/">B.K.</a><span class="meta">photo</span></li>
+          <li><a href="/people/dl/">D.L.</a><span class="meta">sound</span></li>
+          <li><a href="/people/">All people →</a><span class="meta">42</span></li>
+        </ul>
+      </div>
+
+    </aside>
+
+  </section>
+
+</div>
+
+<!-- footer -->
+<div class="shell">
+<footer class="colophon">
+  <div class="col-grid">
+    <div class="col col-id">
+      <div class="mark">babb<span class="punct">.</span></div>
+      <p>Tools for the frontier. A media outfit reporting from the working world and a product company building for it.</p>
+      <div class="addr">babb works · est. 2024<br/><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="741c1118181b34161516165a001118">[email&#160;protected]</a><br/>rss · twitter · github · instagram</div>
+    </div>
+    <div class="col">
+      <h4>People</h4>
+      <ul>
+        <li><a href="#">Editor A.</a><span class="tag">here</span></li>
+        <li><a href="/people/editor-b/">Editor B.</a></li>
+        <li><a href="/people/bk/">B.K.</a></li>
+        <li><a href="Babb Person Subject v1.html">Tony R. (subject)</a></li>
+        <li><a href="/people/">All people →</a></li>
+      </ul>
+    </div>
+    <div class="col">
+      <h4>Recent bylines</h4>
+      <ul>
+        <li><a href="Babb Article v1.html">Hamilton mill — day 4</a></li>
+        <li><a href="Babb Audio v1.html">Tony R. interview</a></li>
+        <li><a href="Babb Video v1.html">The Pour</a></li>
+        <li><a href="Babb Updates v1.html">All updates →</a></li>
+      </ul>
+    </div>
+    <div class="col">
+      <h4>Subscribe</h4>
+      <ul>
+        <li><a href="/feed.xml?cat=people/editor-a">This contributor</a></li>
+        <li><a href="/feed.xml?cat=dispatches">Dispatches RSS</a></li>
+        <li><a href="/updates/email/">Email digest</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="col-foot">
+    <div>© 2024–2026 Babb Works · CC BY-NC where noted</div>
+    <div class="right">
+      <a href="/colophon/">Colophon</a>
+      <a href="Babb About v1.html">About</a>
+      <a href="/cdn-cgi/l/email-protection#59313c353536193b383b3b772d3c35">Contact</a>
+      <span class="ascii">build 2026.05.18</span>
+    </div>
+  </div>
+</footer>
+</div>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+  (function(){
+    const el=document.getElementById("clock");
+    const f=n=>String(n).padStart(2,"0");
+    function tick(){const d=new Date();el.textContent=f(d.getUTCHours())+":"+f(d.getUTCMinutes())+":"+f(d.getUTCSeconds())+" UTC";}
+    tick();setInterval(tick,1000);
+  })();
+</script>
+</body>
+</html>

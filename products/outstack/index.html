@@ -1,0 +1,117 @@
+---
+layout: product
+title: Outstack
+nav_active: products
+product_id: outstack
+status: research
+status_label: Research · Architecture
+---
+
+<div class="shell">
+  <div class="crumbs">
+    <a href="/">babb</a><span class="sep">/</span>
+    <a href="/products/">products</a><span class="sep">/</span>
+    <span class="here">outstack</span>
+  </div>
+
+  <section class="ptitle">
+    <div>
+      <div class="kicker"><span class="k1">System &middot; 09 / 12</span><span>Security + Power Bedrock</span></div>
+      <h1>Outstack<span class="punct">.</span></h1>
+      <p class="deck">
+        <b>Security by physics, not by policy.</b>
+        An Alpine Linux derivative that unifies security and power management as expressions
+        of resource control. A component that cannot be power-gated is a component that cannot
+        be isolated during a security incident.
+      </p>
+    </div>
+    <div class="status" aria-label="Product status">
+      <div class="row head"><span>Outstack &middot; status</span><span class="warn">RESEARCH</span></div>
+      <div class="row"><span class="k">Base</span><span class="v">Alpine Linux derivative &middot; no fork</span></div>
+      <div class="row"><span class="k">Targets</span><span class="v">x86_64 &middot; aarch64 &middot; armv7 &middot; RISC-V</span></div>
+      <div class="row"><span class="k">Power</span><span class="v"><code>outstack-powerd</code> &middot; five operating modes</span></div>
+      <div class="row"><span class="k">Companion</span><span class="v"><a href="/products/telux/">Telux &rarr;</a></span></div>
+      <div class="cta">
+        <a href="/updates/what-is-outstack/" class="dark">Overview article &rarr;</a>
+        <a href="/products/telux/">Telux</a>
+      </div>
+    </div>
+  </section>
+
+  <div class="smark"><span class="num">&sect; 01</span><span>Four tenets</span><span class="rule"></span><span>default deny &middot; isolation &middot; verifiable &middot; graceful</span></div>
+
+  <section class="feat">
+    <div class="cell">
+      <div class="num">01</div>
+      <h3>Default deny.</h3>
+      <p>Nothing runs, nothing has power, nothing has access unless explicitly granted. The default state is off. Every capability must be earned.</p>
+      <span class="tag">nothing by default</span>
+    </div>
+    <div class="cell">
+      <div class="num">02</div>
+      <h3>Hierarchical isolation.</h3>
+      <p>CPU, memory, network, and power form independent containment boundaries. Compromise one and the others hold. Physical power isolation cannot be bypassed by software.</p>
+      <span class="tag">CPU &middot; memory &middot; network &middot; power</span>
+    </div>
+    <div class="cell">
+      <div class="num">03</div>
+      <h3>Verifiable state.</h3>
+      <p>At any moment, the system can attest exactly what is running and what is consuming power. Power state is included in attestation reports. No hidden processes.</p>
+      <span class="tag">attestation &middot; power-aware</span>
+    </div>
+    <div class="cell">
+      <div class="num">04</div>
+      <h3>Execution gating.</h3>
+      <p>At <code>exec()</code> time, Outstack checks whether the current power mode permits the new process. In EMERGENCY mode, only CRITICAL-class processes execute. A scheduling primitive, not a firewall rule.</p>
+      <span class="tag">exec-time checks &middot; 5 power modes</span>
+    </div>
+    <div class="cell">
+      <div class="num">05</div>
+      <h3>Power anomaly = security alert.</h3>
+      <p>Unexpected power draw from a subsystem may indicate compromise. A compromised peripheral can be physically power-killed &mdash; not just software-disabled. Physics, not policy.</p>
+      <span class="tag">power monitoring &middot; hardware kill</span>
+    </div>
+    <div class="cell">
+      <div class="num">06</div>
+      <h3>Aerospace heritage.</h3>
+      <p>Outstack&rsquo;s power model was inspired by RTG-powered spacecraft, where every milliwatt must be accounted across the mission lifetime. The same discipline for industrial tools, field devices, and eventually actual spacecraft.</p>
+      <span class="tag">RTG discipline &middot; mission-grade</span>
+    </div>
+  </section>
+
+  <div class="smark"><span class="num">&sect; 02</span><span>Architecture</span><span class="rule"></span><span>kernel &middot; security layers &middot; power modes</span></div>
+
+  <section class="spec">
+    <div class="col">
+      <h4>Security layers (boot to runtime)</h4>
+      <div class="row"><span class="k">Boot</span><span class="v">TPM/eFuse root of trust &middot; dm-verity kernel</span></div>
+      <div class="row"><span class="k">Runtime</span><span class="v">dm-verity root &middot; IMA/EVM &middot; encrypted /var</span></div>
+      <div class="row"><span class="k">MAC</span><span class="v">AppArmor + Landlock self-sandboxing</span></div>
+      <div class="row"><span class="k">Network</span><span class="v">nftables default-deny &middot; WireGuard only</span></div>
+      <div class="row"><span class="k">Kernel</span><span class="v">KSPP hardened &middot; no devmem/kexec</span></div>
+    </div>
+    <div class="col">
+      <h4>Five power modes</h4>
+      <div class="row"><span class="k">FULL</span><span class="v">External power / &gt;80% &middot; unrestricted</span></div>
+      <div class="row"><span class="k">NORMAL</span><span class="v">60&ndash;80% &middot; normal operation</span></div>
+      <div class="row"><span class="k">CONSERVE</span><span class="v">20&ndash;60% &middot; background limited</span></div>
+      <div class="row"><span class="k">CRITICAL</span><span class="v">5&ndash;20% &middot; critical tasks only</span></div>
+      <div class="row"><span class="k">EMERGENCY</span><span class="v">&lt;5% &middot; survival mode</span></div>
+    </div>
+  </section>
+
+  <div class="smark"><span class="num">&sect; 03</span><span>Where to find it</span><span class="rule"></span></div>
+
+  <section class="getit" id="get">
+    <div>
+      <h3>Outstack is in the design phase.</h3>
+      <p>Alpine Linux derivative. Documented architecture. The companion project is Telux.</p>
+      <p class="alt">
+        <a href="/updates/what-is-outstack/">Overview article &rarr;</a> &middot;
+        <a href="/products/telux/">Telux &rarr;</a> &middot;
+        <a href="/updates/what-is-telux/">Telux article &rarr;</a>
+      </p>
+    </div>
+  </section>
+
+</div>

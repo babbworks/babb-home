@@ -1,0 +1,119 @@
+---
+layout: product
+title: Clarkware
+nav_active: products
+product_id: clarkware
+status: active
+status_label: P1 V1 · Active
+---
+
+<div class="shell">
+  <div class="crumbs">
+    <a href="/">babb</a><span class="sep">/</span>
+    <a href="/products/">products</a><span class="sep">/</span>
+    <span class="here">clarkware</span>
+  </div>
+
+  <section class="ptitle">
+    <div>
+      <div class="kicker"><span class="k1">Software &middot; 07 / 12</span><span>Manufacturing Operations</span></div>
+      <h1>Clarkware<span class="punct">.</span></h1>
+      <p class="deck">
+        <b>Operational memory for the factory floor.</b>
+        The Clark Industrial Process Environment &mdash; a manufacturing facility operations platform.
+        Jobs, notes, real-time events, AI assistance, and artifact management.
+        Captures institutional knowledge before it walks out the door.
+      </p>
+    </div>
+    <div class="status" aria-label="Product status">
+      <div class="row head"><span>Clarkware &middot; status</span><span class="live">ACTIVE</span></div>
+      <div class="row"><span class="k">Phase</span><span class="v"><b>P1 V1</b></span></div>
+      <div class="row"><span class="k">Backend</span><span class="v">Fastify &middot; Node.js &middot; WebSocket</span></div>
+      <div class="row"><span class="k">Frontend</span><span class="v">Eclipse Theia &middot; React 18 widgets</span></div>
+      <div class="row"><span class="k">AI</span><span class="v">Claude &middot; summarize, draft, route, review</span></div>
+      <div class="row"><span class="k">Report</span><span class="v"><a href="https://clark.babb.tel">clark.babb.tel &rarr;</a></span></div>
+      <div class="cta">
+        <a href="https://clark.babb.tel" class="dark">Clark Report &rarr;</a>
+        <a href="/updates/what-is-clarkware/">Overview article</a>
+      </div>
+    </div>
+  </section>
+
+  <div class="smark"><span class="num">&sect; 01</span><span>What a technician sees</span><span class="rule"></span><span>five surfaces, one workstation</span></div>
+
+  <section class="feat">
+    <div class="cell">
+      <div class="num">01</div>
+      <h3>Jobs.</h3>
+      <p>Full lifecycle from draft through active, paused, completed, voided, and reopened. Every state transition is recorded as a domain event. The job history is the ground truth.</p>
+      <span class="tag">lifecycle &middot; state machine &middot; auditable</span>
+    </div>
+    <div class="cell">
+      <div class="num">02</div>
+      <h3>Notes.</h3>
+      <p>Append-only with revision chains. You can add to a note but you cannot silently alter what was written. The record is permanent. The institutional memory survives the shift change.</p>
+      <span class="tag">append-only &middot; revision chains</span>
+    </div>
+    <div class="cell">
+      <div class="num">03</div>
+      <h3>Real-time events.</h3>
+      <p>A live WebSocket stream shows what is happening on each job as it happens. No refresh, no polling. The floor and the office see the same state at the same time.</p>
+      <span class="tag">WebSocket &middot; live &middot; no polling</span>
+    </div>
+    <div class="cell">
+      <div class="num">04</div>
+      <h3>AI assistance.</h3>
+      <p>Summarize a job&rsquo;s history. Draft a note from bullet points. Route an alert to the right person. Review a process state. Powered by Claude, scoped to the facility&rsquo;s data.</p>
+      <span class="tag">Claude &middot; summarize &middot; draft &middot; route</span>
+    </div>
+    <div class="cell">
+      <div class="num">05</div>
+      <h3>Artifacts.</h3>
+      <p>Photos, documents, readings, attached to jobs via presigned URLs. Upload from the floor, review from the office. S3-compatible storage via MinIO.</p>
+      <span class="tag">photos &middot; documents &middot; presigned URLs</span>
+    </div>
+    <div class="cell">
+      <div class="num">06</div>
+      <h3>The middle market.</h3>
+      <p>Not SAP. Not a spreadsheet. Clarkware targets the underserved gap between heavyweight ERP systems and the disconnected tools most small-to-mid manufacturers actually use.</p>
+      <span class="tag">not ERP &middot; not spreadsheets</span>
+    </div>
+  </section>
+
+  <div class="smark"><span class="num">&sect; 02</span><span>Architecture</span><span class="rule"></span><span>Turborepo monorepo &middot; 2 apps &middot; 8 packages</span></div>
+
+  <section class="spec">
+    <div class="col">
+      <h4>Applications</h4>
+      <div class="row"><span class="k">API</span><span class="v">Fastify REST + WebSocket &middot; Node.js</span></div>
+      <div class="row"><span class="k">IPE</span><span class="v">Eclipse Theia workstation shell</span></div>
+      <div class="row"><span class="k">Auth</span><span class="v">JWT &middot; Argon2id &middot; RBAC</span></div>
+      <div class="row"><span class="k">Events</span><span class="v">Append-only domain event store</span></div>
+      <div class="row"><span class="k">AI</span><span class="v">@clark/ai &middot; Claude integration</span></div>
+    </div>
+    <div class="col">
+      <h4>Infrastructure</h4>
+      <div class="row"><span class="k">Database</span><span class="v">PostgreSQL 16</span></div>
+      <div class="row"><span class="k">Storage</span><span class="v">MinIO &middot; S3-compatible</span></div>
+      <div class="row"><span class="k">Messaging</span><span class="v">Prosody XMPP &middot; MUC rooms</span></div>
+      <div class="row"><span class="k">Search</span><span class="v">OpenSearch + Dashboards</span></div>
+      <div class="row"><span class="k">IPC</span><span class="v">RabbitMQ 3.13 &middot; IPC-CFX AMQP</span></div>
+    </div>
+  </section>
+
+  <div class="smark"><span class="num">&sect; 03</span><span>Where to find it</span><span class="rule"></span></div>
+
+  <section class="getit" id="get">
+    <div>
+      <h3>Clarkware is in active development.</h3>
+      <p>Manufacturing operations platform. Phase 1 Version 1. The Clark Report is live.</p>
+      <p class="alt">
+        <a href="https://github.com/babbworks/clarkware">Core &rarr;</a> &middot;
+        <a href="https://github.com/babbworks/clarkware-dev">Dev intelligence &rarr;</a> &middot;
+        <a href="https://github.com/babbworks/clark-chat">Clark Chat &rarr;</a> &middot;
+        <a href="https://clark.babb.tel">Clark Report &rarr;</a>
+      </p>
+    </div>
+  </section>
+
+</div>

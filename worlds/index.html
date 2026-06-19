@@ -1,0 +1,672 @@
+---
+layout: world
+title: Worlds
+nav_active: worlds
+---
+
+<div class="shell">
+
+  <div class="crumbs">
+    <a href="/">babb</a> <span class="sep">/</span>
+    <span class="here" id="crumbHere">worlds</span>
+  </div>
+
+  <div class="wsel" role="tablist" aria-label="Worlds">
+    <div class="wsel-row" id="wsel">
+      <!-- buttons injected by JS -->
+    </div>
+  </div>
+
+  <!-- ALL WORLDS MODE -->
+  <section id="allMode" class="all">
+
+    <div class="all-hero">
+      <div>
+        <h1>Seven Worlds, growing. Reported from the <span class="em">working&nbsp;floor</span>.</h1>
+        <p class="sub">
+          A <b>World</b> is both an editorial beat and an audience. Selling, Banking, Farming, Building,
+          Manufacturing, Communications, Management. Each one is reported on the ground &mdash; from feed lots,
+          mills, branch lobbies and dispatch rooms &mdash; and tied to the tools we build for it.
+          New Worlds will be added; existing ones will gain sub-Worlds as the slate matures.
+        </p>
+      </div>
+      <div class="stats" aria-label="At a glance">
+        <div class="stat"><div class="k">Worlds active</div><div class="v">7</div></div>
+        <div class="stat"><div class="k">Sub-Worlds</div><div class="v">28</div></div>
+        <div class="stat"><div class="k">Dispatches YTD</div><div class="v">62 <small>2026</small></div></div>
+        <div class="stat"><div class="k">Places covered</div><div class="v">14</div></div>
+      </div>
+    </div>
+
+    <div class="smark"><span class="num">§ 01</span><span>The slate</span>
+      <span class="rule"></span><span class="meta">density-aware · scales as content grows</span></div>
+
+    <div class="wgrid" id="wgrid"></div>
+
+    <div class="smark"><span class="num">§ 02</span><span>Most recent across all Worlds</span>
+      <span class="rule"></span><span class="meta">latest 6 · pulled from /feed.xml</span></div>
+
+    <div class="feed" id="allFeed"></div>
+
+  </section>
+
+  <!-- SINGLE WORLD MODE -->
+  <section id="singleMode" class="single">
+
+    <div class="w-title">
+      <div>
+        <h1 id="wTitle">Worlds · <span class="em">Farming</span></h1>
+        <p class="intro" id="wIntro"></p>
+        <div class="subworlds">
+          <span class="lbl">Sub-Worlds</span>
+          <span id="wSubs"></span>
+        </div>
+      </div>
+      <div class="right">
+        <div class="meta" id="wMetaCounts">— · — · —</div>
+        <div class="feed">
+          <div style="margin-bottom:5px"><span class="dot"></span><span id="wFeedName">Farming</span> feed</div>
+          <a href="#" id="wRss">RSS &rarr;</a> &nbsp;
+          <a href="#" id="wDigest">Email digest &rarr;</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="smark"><span class="num">§ 01</span><span>Featured dispatch</span>
+      <span class="rule"></span><span class="meta" id="wHeroMeta">long-form · 14 min</span></div>
+
+    <div class="w-hero">
+      <div class="bg farming" id="wHeroBg"></div>
+      <div class="frame-id" id="wFrameId">FRAME · FARMING / LIVESTOCK</div>
+      <div class="scene" id="wScene">SIOUX FALLS · FEED LOT · 05:42 LOCAL</div>
+      <div class="term" id="wTerm">
+        <div class="pad">
+          <span class="subj" id="wTermSubj">babb@tel farming/livestock</span><span class="pct">%</span>
+          <span id="wTermBody">two days on a feed-lot &mdash; <a href="#">read</a> &middot; <a href="#">photos</a></span>
+          <span class="blink"></span>
+        </div>
+      </div>
+    </div>
+    <div class="hero-caption">
+      <div class="kicker" id="wHeroKicker">dispatch · long-form</div>
+      <h2 id="wHeroTitle">Two days on a feed-lot in Sioux Falls</h2>
+      <div class="by" id="wHeroBy">By <a href="#">Reporter Name</a> · 2026-05-12</div>
+    </div>
+
+    <div class="smark"><span class="num">§ 02</span><span>Places in this World</span>
+      <span class="rule"></span><span class="meta" id="wPlacesMeta">3 places · many-to-many</span></div>
+    <div class="places" id="wPlaces"></div>
+
+    <div class="smark"><span class="num">§ 03</span><span>Dispatches</span>
+      <span class="rule"></span><span class="meta" id="wDispMeta">Jekyll category · /feed.xml?cat=farming</span></div>
+
+    <div class="twocol">
+      <div class="feed" id="wDispatches"></div>
+      <aside class="side">
+        <div class="box">
+          <h4>Pinned</h4>
+          <ul id="wPinned"></ul>
+        </div>
+        <div class="box">
+          <h4>From the editor</h4>
+          <ul id="wEditor"></ul>
+        </div>
+        <div class="box">
+          <h4>Cross-posts</h4>
+          <ul id="wCross"></ul>
+        </div>
+      </aside>
+    </div>
+
+    <div class="smark"><span class="num">§ 04</span><span>Read · Watch · Listen</span>
+      <span class="rule"></span><span class="meta">curated · one template, three modes</span></div>
+    <div class="rwl" id="wRwl"></div>
+
+    <div class="smark"><span class="num">§ 05</span><span>Products active in this World</span>
+      <span class="rule"></span><span class="meta">deployed · in field use</span></div>
+    <div class="prod-row" id="wProducts"></div>
+
+    <div class="smark"><span class="num">§ 06</span><span>People &amp; contributors</span>
+      <span class="rule"></span><span class="meta"><a href="/people/?world=farming" id="wPeopleAll">See all in this World &rarr;</a></span></div>
+    <div class="people" id="wPeople"></div>
+
+  </section>
+
+</div>
+
+<script>
+const WORLDS = {
+  selling:{
+    title:"Selling", density:2,
+    counts:{dispatches:6, places:2, contributors:3},
+    blurb:"How things get sold — from market stalls to enterprise floors. The craft of moving goods and ideas.",
+    subs:["retail","wholesale","direct","markets"],
+    latest:{kind:"dispatch", title:"A weekend at a tailgate market", when:"2026-04-22", min:"9 min"},
+    hero:{kicker:"dispatch · long-form · 9 min", title:"A weekend at a tailgate market",
+          by:'By <a href="#">Reporter Name</a> · 2026-04-22',
+          scene:"ASHEVILLE · TAILGATE MARKET · 06:10 LOCAL",
+          frameid:"FRAME · SELLING / MARKETS",
+          termSubj:"babb@tel selling/markets",
+          termBody:'a weekend at a tailgate market &mdash; <a href="#">read</a> · <a href="#">photos</a>'},
+    places:[
+      {nm:"Tailgate market · Asheville", slug:"tailgate-asheville", world:"selling/markets"},
+      {nm:"Cash-and-carry · Queens",     slug:"cnc-queens",         world:"selling/wholesale"},
+      {nm:"Route: Sunbelt sales loop",   slug:"route-sunbelt",      world:"selling/direct", route:true},
+    ],
+    dispatches:[
+      {date:"2026-04-22", kind:"Dispatch",    title:"A weekend at a tailgate market",
+       desc:"Six hours, three tents, one rain shower. What the day actually looks like for a small seller.",
+       tags:["selling/markets","workpads"], dur:"9 min"},
+      {date:"2026-03-30", kind:"Plain-English",title:"Card-network fees, plainly",
+       desc:"What a swipe actually costs, who keeps what, why every retailer mutters about it.",
+       tags:["selling/retail"], dur:"6 min"},
+      {date:"2026-03-08", kind:"Op-ed",       title:"The honest price tag",
+       desc:"A modest case against the loss-leader. Written from a back office.",
+       tags:["selling/retail","editorial"], dur:"5 min"},
+    ],
+    pinned:[ {t:"Selling on rainy days",sub:"Workpads field note"} ],
+    editor:[ {t:"Why this World is small — and why that's fine",sub:"editor's note"} ],
+    cross:[ {t:"The dispatcher's till",sub:"from communications"} ],
+    rwl:{read:[
+          {k:"long-form", t:"Tailgate diaries",         dur:"14"},
+          {k:"plain-eng", t:"Card-network fees",        dur:"6"},
+          {k:"op-ed",     t:"The return of the catalog",dur:"4"},
+        ], watch:[
+          {k:"mini-doc",  t:"A closing shift",          dur:"12"},
+          {k:"short",     t:"Market tear-down",         dur:"3"},
+        ], listen:[
+          {k:"interview", t:"A third-generation seller",dur:"38"},
+          {k:"ambient",   t:"Opening hour",             dur:"22"},
+        ]},
+    products:[ {name:"Workpads",role:"for floor staff", ver:"v2.3"},
+               {name:"Bitpads", role:"POS pucks",       ver:"rev C"},
+               {name:".tel",    role:"vendor directory", ver:"alpha"} ],
+    people:[ {nm:"Reporter A", role:"3 dispatches"},
+             {nm:"Reporter B", role:"2 dispatches"},
+             {nm:"Glenn",      role:"market manager · Asheville"},
+             {nm:"Marisol",    role:"owner's rep · steel"} ],
+  },
+  banking:{
+    title:"Banking", density:3,
+    counts:{dispatches:9, places:2, contributors:4},
+    blurb:"Money in motion — community banks, credit unions, treasury desks, and the quiet plumbing underneath.",
+    subs:["community","credit unions","treasury","payments"],
+    latest:{kind:"long read", title:"The last teller, Hudson NY", when:"2026-05-04", min:"18 min"},
+    hero:{kicker:"long read · 18 min", title:"The last teller, Hudson NY",
+          by:'By <a href="#">Reporter Name</a> · 2026-05-04',
+          scene:"HUDSON, NY · BRANCH OFFICE · LAST DAY",
+          frameid:"FRAME · BANKING / COMMUNITY",
+          termSubj:"babb@tel banking/community",
+          termBody:'the last teller &mdash; <a href="#">read</a> · <a href="#">audio</a>'},
+    places:[
+      {nm:"Community bank · Hudson",         slug:"hudson-bank",             world:"banking/community"},
+      {nm:"Credit union · Akron",            slug:"akron-cu",                world:"banking/credit-unions"},
+      {nm:"Route: Rust-Belt treasuries",     slug:"route-rustbelt-treasury", world:"banking/treasury", route:true},
+    ],
+    dispatches:[
+      {date:"2026-05-04", kind:"Long read",    title:"The last teller, Hudson NY",
+       desc:"A branch closes. The line keeps going around the block. A patient look at what a community bank is for.",
+       tags:["banking/community"], dur:"18 min"},
+      {date:"2026-04-18", kind:"Plain-English",title:"ACH timelines",
+       desc:"Why the money moves on Wednesday and not Thursday. The wires behind the wires.",
+       tags:["banking/payments"], dur:"6 min"},
+      {date:"2026-04-02", kind:"Op-ed",        title:"Small banks, real money",
+       desc:"A case for the under-$1B-asset bank, written from the inside.",
+       tags:["banking/community","editorial"], dur:"7 min"},
+      {date:"2026-03-21", kind:"Dispatch",     title:"A morning behind the teller line",
+       desc:"5:45am open. What the first hour looks like before the doors do.",
+       tags:["banking/community"], dur:"8 min"},
+    ],
+    pinned:[ {t:"What a community bank actually is",sub:"editorial"} ],
+    editor:[ {t:"Branch closings: a 2026 watch list",sub:"editor's note"} ],
+    cross:[ {t:"Workpads for branch ops",sub:"from products"} ],
+    rwl:{read:[
+          {k:"long read", t:"The last teller",     dur:"18"},
+          {k:"plain-eng", t:"ACH timelines",       dur:"6"},
+          {k:"op-ed",     t:"Small banks",         dur:"7"},
+        ], watch:[
+          {k:"mini-doc",  t:"Open-the-vault",      dur:"11"},
+          {k:"short",     t:"A board meeting",     dur:"4"},
+        ], listen:[
+          {k:"interview", t:"A CU chair",          dur:"42"},
+          {k:"ambient",   t:"Drive-through at 9am",dur:"18"},
+        ]},
+    products:[ {name:"Workpads",role:"for branch staff",ver:"v2.3"},
+               {name:"Bitpads", role:"counting aids",   ver:"rev C"},
+               {name:".tel",    role:"staff directory",  ver:"alpha"} ],
+    people:[ {nm:"Reporter A", role:"3 dispatches"},
+             {nm:"Reporter B", role:"2 dispatches"},
+             {nm:"Lou",        role:"branch manager · Hudson"},
+             {nm:"Marcus",     role:"CU contact · Akron"} ],
+  },
+  farming:{
+    title:"Farming", density:4,
+    counts:{dispatches:14, places:3, contributors:5},
+    blurb:"On the ground in the places that feed us — dairies, grain elevators, feed-lots, orchards.",
+    subs:["dairy","grain","livestock","orchards"],
+    latest:{kind:"dispatch", title:"Two days on a feed-lot in Sioux Falls", when:"2026-05-12", min:"14 min"},
+    hero:{kicker:"dispatch · long-form · 14 min", title:"Two days on a feed-lot in Sioux Falls",
+          by:'By <a href="#">Reporter Name</a> · with <a href="#">Photographer Name</a> · 2026-05-12',
+          scene:"SIOUX FALLS · FEED LOT · 05:42 LOCAL",
+          frameid:"FRAME · FARMING / LIVESTOCK",
+          termSubj:"babb@tel farming/livestock",
+          termBody:'two days on a feed-lot &mdash; <a href="#">read</a> · <a href="#">photos</a>'},
+    places:[
+      {nm:"Hamilton Dairy Co-op",      slug:"hamilton-dairy",    world:"farming/dairy"},
+      {nm:"Sioux Falls Feed-lot",       slug:"sioux-falls-feedlot",world:"farming/livestock"},
+      {nm:"Route: Midwest Dairy Run",   slug:"midwest-dairy-run", world:"farming/dairy", route:true},
+    ],
+    dispatches:[
+      {date:"2026-05-12", kind:"Dispatch",  title:"Two days on a feed-lot in Sioux Falls",
+       desc:"Workpads field crew rides the third shift with the operations lead.",
+       tags:["farming/livestock","workpads"], dur:"14 min"},
+      {date:"2026-04-29", kind:"Editorial", title:"Co-op governance, plainly",
+       desc:"How a midwestern dairy co-op actually votes — with the bylaws on the table.",
+       tags:["farming/dairy"], dur:"9 min"},
+      {date:"2026-04-11", kind:"Dispatch",  title:"Soil sensors, one season later",
+       desc:"What the data actually changed, what it didn't.",
+       tags:["farming/grain","bitpads"], dur:"7 min"},
+      {date:"2026-03-30", kind:"Plain-English",title:"USDA loan rules, plainly",
+       desc:"A short guide to the loan products most operators actually use.",
+       tags:["farming"], dur:"6 min"},
+    ],
+    pinned:[ {t:"Field test recap — Workpads",sub:"from workpads"} ],
+    editor:[ {t:"Farming, the slate going forward",sub:"editor's note"} ],
+    cross:[ {t:"Driver: Midwest dairy run",sub:"from people"} ],
+    rwl:{read:[
+          {k:"long-form", t:"Feed-lot diaries",    dur:"14"},
+          {k:"plain-eng", t:"USDA loan rules",     dur:"6"},
+          {k:"op-ed",     t:"Who owns the seed",   dur:"5"},
+        ], watch:[
+          {k:"mini-doc",  t:"Morning milking",     dur:"15"},
+          {k:"short",     t:"Grain elevator tour", dur:"4"},
+        ], listen:[
+          {k:"interview", t:"Co-op chair",         dur:"36"},
+          {k:"ambient",   t:"A barn at 5am",       dur:"24"},
+        ]},
+    products:[ {name:"Workpads",role:"for crews",    ver:"v2.3"},
+               {name:"Bitpads", role:"field sensors", ver:"rev C"},
+               {name:".tel",    role:"directory",     ver:"alpha"} ],
+    people:[ {nm:"Reporter A", role:"on the ground · 4 dispatches"},
+             {nm:"Reporter B", role:"3 dispatches"},
+             {nm:"Cal",        role:"ops · Sioux Falls feedlot"},
+             {nm:"Greta",      role:"co-op chair · dairy"} ],
+  },
+  building:{
+    title:"Building", density:2,
+    counts:{dispatches:5, places:2, contributors:3},
+    blurb:"Job sites, trades, and the people putting things up. From single-house crews to large pours.",
+    subs:["trades","job sites","renovation","civil"],
+    latest:{kind:"dispatch", title:"A 6am pour in the Bronx", when:"2026-04-26", min:"10 min"},
+    hero:{kicker:"dispatch · 10 min", title:"A 6am pour in the Bronx",
+          by:'By <a href="#">Reporter Name</a> · 2026-04-26',
+          scene:"BRONX, NY · TOWER POUR · 05:55 LOCAL",
+          frameid:"FRAME · BUILDING / CIVIL",
+          termSubj:"babb@tel building/civil",
+          termBody:'a 6am pour in the bronx &mdash; <a href="#">read</a> · <a href="#">photos</a>'},
+    places:[
+      {nm:"Brownstone reno · Brooklyn", slug:"brownstone-bk",     world:"building/renovation"},
+      {nm:"Tower job site · Austin",    slug:"tower-atx",          world:"building/civil"},
+      {nm:"Route: I-90 bridge crews",   slug:"route-i90-bridges",  world:"building/civil", route:true},
+    ],
+    dispatches:[
+      {date:"2026-04-26", kind:"Dispatch",    title:"A 6am pour in the Bronx",
+       desc:"Three trucks, one window, a foreman who's done it 400 times. The first hour of a tower pour.",
+       tags:["building/civil"], dur:"10 min"},
+      {date:"2026-04-09", kind:"Plain-English",title:"Lien waivers, plainly",
+       desc:"The piece of paper that decides who gets paid.",
+       tags:["building/trades"], dur:"5 min"},
+    ],
+    pinned:[ {t:"Punch lists that actually close",sub:"workpads"} ],
+    editor:[ {t:"What we'll cover next on job sites",sub:"editor's note"} ],
+    cross:[],
+    rwl:{read:[
+          {k:"long-form", t:"The punch list", dur:"11"},
+          {k:"plain-eng", t:"Lien waivers",   dur:"5"},
+        ], watch:[
+          {k:"mini-doc",  t:"A single pour",  dur:"9"},
+        ], listen:[
+          {k:"interview", t:"A master carpenter",dur:"31"},
+        ]},
+    products:[ {name:"Workpads",role:"for foremen",   ver:"v2.3"},
+               {name:"Bitpads", role:"site sensors",  ver:"rev C"},
+               {name:".tel",    role:"trade directory",ver:"alpha"} ],
+    people:[ {nm:"Reporter A", role:"2 dispatches"},
+             {nm:"Reporter B", role:"3 dispatches"},
+             {nm:"GC contact", role:"foreman · Bronx pour"} ],
+  },
+  manufacturing:{
+    title:"Manufacturing", density:4,
+    counts:{dispatches:12, places:2, contributors:5},
+    blurb:"Inside the factories — floor work, supply, and the long shift toward automation.",
+    subs:["steel","food","electronics","textiles"],
+    latest:{kind:"mini-doc", title:"The Pour — Hamilton steel mill", when:"2026-05-09", min:"12 min"},
+    hero:{kicker:"mini-doc · 12 min", title:"The Pour — Hamilton steel mill",
+          by:'Directed by <a href="#">Name</a> · cinematography <a href="#">Name</a> · 2026-05-09',
+          scene:"HAMILTON, ON · BLAST FURNACE · GRAVEYARD SHIFT",
+          frameid:"FRAME · MANUFACTURING / STEEL",
+          termSubj:"babb@tel manufacturing/steel",
+          termBody:'the pour, hamilton mill &mdash; <a href="#">watch</a> · <a href="#">long read</a>'},
+    places:[
+      {nm:"Hamilton steel mill",         slug:"hamilton-steel-mill",      world:"manufacturing/steel"},
+      {nm:"Food cannery · Modesto",      slug:"modesto-cannery",           world:"manufacturing/food"},
+      {nm:"Route: Carolina textile loop",slug:"route-carolina-textile",    world:"manufacturing/textiles", route:true},
+    ],
+    dispatches:[
+      {date:"2026-05-09", kind:"Mini-doc",  title:"The Pour — Hamilton steel mill",
+       desc:"Twelve minutes, four chapters, one furnace. Captions and transcript inside.",
+       tags:["manufacturing/steel"], dur:"12 min"},
+      {date:"2026-04-25", kind:"Long-form", title:"Inside a Hamilton steel mill",
+       desc:"Four Angles, one Place. The standing story we'll keep adding to.",
+       tags:["manufacturing/steel","places"], dur:"22 min"},
+      {date:"2026-04-12", kind:"Editorial", title:"Ladle metallurgy, plainly",
+       desc:"A glossary popup for one of steel's most-used phrases.",
+       tags:["manufacturing/steel"], dur:"4 min"},
+      {date:"2026-03-28", kind:"Dispatch",  title:"Shift handoff, redesigned",
+       desc:"Three plants, three handoffs, one workflow Workpads helped tighten.",
+       tags:["manufacturing","workpads"], dur:"8 min"},
+    ],
+    pinned:[ {t:"Hamilton mill — Place page going live",sub:"places"} ],
+    editor:[ {t:"More floors, fewer dashboards",sub:"editor's note"} ],
+    cross:[ {t:"Floor wearables, year one",sub:"from bitpads"} ],
+    rwl:{read:[
+          {k:"long-form", t:"The third shift",  dur:"18"},
+          {k:"plain-eng", t:"Just-in-time",     dur:"7"},
+          {k:"op-ed",     t:"Bring it back",    dur:"6"},
+        ], watch:[
+          {k:"mini-doc",  t:"The Pour",         dur:"12"},
+          {k:"short",     t:"A line restart",   dur:"4"},
+        ], listen:[
+          {k:"interview", t:"The foreman",      dur:"38"},
+          {k:"ambient",   t:"A floor at midnight",dur:"26"},
+        ]},
+    products:[ {name:"Workpads",role:"for floor crews",ver:"v2.3"},
+               {name:"Bitpads", role:"wearables",      ver:"rev C"},
+               {name:".tel",    role:"plant directory", ver:"alpha"} ],
+    people:[ {nm:"Reporter A", role:"5 dispatches"},
+             {nm:"Reporter B", role:"3 dispatches"},
+             {nm:"Tony R.",    role:"foreman · Hamilton mill"},
+             {nm:"Marisol",    role:"owner's rep · steel"} ],
+  },
+  communications:{
+    title:"Communications", density:2,
+    counts:{dispatches:4, places:1, contributors:2},
+    blurb:"How people stay in touch at work — radios, directories, schedules, and the soft skills around them.",
+    subs:["directory","presence","voice","async"],
+    latest:{kind:"dispatch", title:"What the dispatcher sees", when:"2026-04-14", min:"8 min"},
+    hero:{kicker:"dispatch · 8 min", title:"What the dispatcher sees",
+          by:'By <a href="#">Reporter Name</a> · 2026-04-14',
+          scene:"CLEVELAND · 911 DISPATCH · 02:30 LOCAL",
+          frameid:"FRAME · COMMUNICATIONS / VOICE",
+          termSubj:"babb@tel communications/voice",
+          termBody:'what the dispatcher sees &mdash; <a href="#">read</a> · <a href="#">audio</a>'},
+    places:[
+      {nm:"911 dispatch · Cleveland",    slug:"dispatch-cle",        world:"communications/voice"},
+      {nm:"Trucking yard · KC",          slug:"yard-kc",             world:"communications/voice"},
+      {nm:"Route: Long-haul night shift",slug:"route-longhaul-night",world:"communications/async", route:true},
+    ],
+    dispatches:[
+      {date:"2026-04-14", kind:"Dispatch",  title:"What the dispatcher sees",
+       desc:"Two hours behind a 911 console. The screen, the radio, the queue.",
+       tags:["communications/voice"], dur:"8 min"},
+      {date:"2026-03-19", kind:"Editorial", title:"Directory hygiene",
+       desc:"Why a clean staff directory is a leadership artifact.",
+       tags:["communications/directory",".tel"], dur:"5 min"},
+    ],
+    pinned:[ {t:"Async handoffs that work",sub:"workpads"} ],
+    editor:[ {t:"This World will grow — slowly",sub:"editor's note"} ],
+    cross:[],
+    rwl:{read:[
+          {k:"long-form", t:"The radio room",  dur:"12"},
+          {k:"plain-eng", t:"Spectrum 101",    dur:"6"},
+        ], watch:[
+          {k:"mini-doc",  t:"A dispatch shift",dur:"10"},
+        ], listen:[
+          {k:"interview", t:"A dispatcher",    dur:"34"},
+        ]},
+    products:[ {name:".tel",    role:"directory",       ver:"alpha"},
+               {name:"Workpads",role:"for dispatchers",  ver:"v2.3"},
+               {name:"Bitpads", role:"radios",           ver:"rev C"} ],
+    people:[ {nm:"Reporter A",    role:"3 dispatches"},
+             {nm:"Reporter B",    role:"2 dispatches"},
+             {nm:"Dispatch lead", role:"source · Cleveland"} ],
+  },
+  management:{
+    title:"Management", density:3,
+    counts:{dispatches:7, places:2, contributors:4},
+    blurb:"The work of organizing work — foremen, dispatchers, ops leads, and the tools they live in.",
+    subs:["foremen","dispatch","ops","governance"],
+    latest:{kind:"dispatch", title:"A week with an ops lead", when:"2026-05-01", min:"11 min"},
+    hero:{kicker:"dispatch · 11 min", title:"A week with an ops lead",
+          by:'By <a href="#">Reporter Name</a> · 2026-05-01',
+          scene:"DETROIT · OPS ROOM · MONDAY 06:00",
+          frameid:"FRAME · MANAGEMENT / OPS",
+          termSubj:"babb@tel management/ops",
+          termBody:'a week with an ops lead &mdash; <a href="#">read</a> · <a href="#">notes</a>'},
+    places:[
+      {nm:"Ops room · Detroit",       slug:"ops-det",       world:"management/ops"},
+      {nm:"Co-op HQ · St. Paul",      slug:"coop-stp",      world:"management/governance"},
+      {nm:"Route: Great Lakes ops tour",slug:"route-gl-ops", world:"management/ops", route:true},
+    ],
+    dispatches:[
+      {date:"2026-05-01", kind:"Dispatch",  title:"A week with an ops lead",
+       desc:"Monday plan to Friday recap. Five mornings, two stand-ups a day.",
+       tags:["management/ops","workpads"], dur:"11 min"},
+      {date:"2026-04-17", kind:"Editorial", title:"The shift bid",
+       desc:"How the schedule actually gets built, voted, and walked back.",
+       tags:["management/governance"], dur:"7 min"},
+      {date:"2026-03-26", kind:"Op-ed",     title:"Stop the dashboard",
+       desc:"A case for one weekly print-out instead of fifteen live tiles.",
+       tags:["management","editorial"], dur:"4 min"},
+    ],
+    pinned:[ {t:"One-on-ones, plainly",sub:"workpads"} ],
+    editor:[ {t:"Roles that hold",sub:"babb works"} ],
+    cross:[ {t:"Foreman, briefly",sub:"from building"} ],
+    rwl:{read:[
+          {k:"long-form", t:"An ops year",      dur:"16"},
+          {k:"plain-eng", t:"Shift bids",       dur:"6"},
+          {k:"op-ed",     t:"Stop the dashboard",dur:"4"},
+        ], watch:[
+          {k:"mini-doc",  t:"A Monday plan",    dur:"9"},
+          {k:"short",     t:"A hand-off",       dur:"3"},
+        ], listen:[
+          {k:"interview", t:"A shop steward",   dur:"40"},
+          {k:"ambient",   t:"An ops room",      dur:"18"},
+        ]},
+    products:[ {name:"Workpads",     role:"for leads",     ver:"v2.3"},
+               {name:".tel",         role:"staff directory",ver:"alpha"},
+               {name:"Babb Products",role:"goods · catalog",ver:"drop 02"} ],
+    people:[ {nm:"Reporter A",  role:"4 dispatches"},
+             {nm:"Reporter B",  role:"2 dispatches"},
+             {nm:"Ops lead",    role:"source · Detroit"},
+             {nm:"Co-op chair", role:"source · St. Paul"} ],
+  },
+};
+const ORDER = ["selling","banking","farming","building","manufacturing","communications","management"];
+
+(function buildSelector(){
+  const host = document.getElementById("wsel");
+  const all = document.createElement("button");
+  all.dataset.go = "all";
+  all.setAttribute("aria-pressed","true");
+  all.innerHTML =
+    '<span class="n">00 / ALL</span>'+
+    '<span class="nm">Worlds</span>'+
+    '<span class="meta">7 worlds · 28 subs · 62 dispatches</span>';
+  host.appendChild(all);
+  ORDER.forEach((k,i)=>{
+    const w = WORLDS[k];
+    const b = document.createElement("button");
+    b.dataset.go = k;
+    b.innerHTML =
+      '<span class="n">'+String(i+1).padStart(2,"0")+'</span>'+
+      '<span class="nm">'+w.title+'</span>'+
+      '<span class="meta">'+w.counts.dispatches+' dispatches · '+w.counts.places+' places</span>'+
+      '<span class="density-bar" aria-label="density '+w.density+' of 4">'+
+        [1,2,3,4].map(n=>'<i class="'+(n<=w.density?'on':'')+'"></i>').join('')+
+      '</span>';
+    host.appendChild(b);
+  });
+})();
+
+(function buildAll(){
+  const grid = document.getElementById("wgrid");
+  ORDER.forEach((k,i)=>{
+    const w = WORLDS[k];
+    const card = document.createElement("div");
+    card.className = "wcard";
+    const subs = w.subs.map(s=>`<a href="/worlds/${k}/${s}/">${s}</a>`).join("");
+    const dens = [1,2,3,4].map(n=>'<i class="'+(n<=w.density?'on':'')+'"></i>').join('');
+    const latest = w.latest
+      ? `<div class="latest">
+           <div><div class="lbl">latest · ${w.latest.kind}</div>
+                <a class="title" href="#" data-go="${k}">${w.latest.title}</a></div>
+           <div class="right">${w.latest.min}<br/>${w.latest.when}</div>
+         </div>`
+      : `<div class="empty">No dispatches yet — <a href="#">subscribe</a> to be first.</div>`;
+    card.innerHTML =
+      `<div class="kn">
+         <span>${String(i+1).padStart(2,"0")} · /worlds/${k}/</span>
+         <span class="density density-bar">${dens}</span>
+       </div>
+       <h3><a href="#" data-go="${k}">${w.title}</a></h3>
+       <div class="blurb">${w.blurb}</div>
+       <div class="subs">${subs}</div>
+       ${latest}`;
+    grid.appendChild(card);
+  });
+
+  const recent = ORDER.map(k=>{
+    const w=WORLDS[k]; const d=w.dispatches[0];
+    return {world:k,...d,worldTitle:w.title};
+  }).sort((a,b)=>a.date<b.date?1:-1).slice(0,6);
+
+  document.getElementById("allFeed").innerHTML = recent.map(r=>
+    `<div class="row">
+       <div class="date">${r.date}</div>
+       <div class="body">
+         <div class="kind">${r.kind} · <span style="color:var(--ink-2)">${r.worldTitle}</span></div>
+         <h4><a href="#" data-go="${r.world}">${r.title}</a></h4>
+         <div class="desc">${r.desc}</div>
+         <div class="tags">${r.tags.map(t=>`<a href="#">${t}</a>`).join(" · ")}</div>
+       </div>
+       <div class="right"><span class="dur">${r.dur}</span>read →</div>
+     </div>`).join("");
+})();
+
+const $ = id => document.getElementById(id);
+function fillList(host, items, empty){
+  host.innerHTML = items.length
+    ? items.map(it=>`<li><a href="#">${it.t}</a><span class="by">${it.sub}</span></li>`).join("")
+    : `<li class="by" style="font-style:italic">${empty}</li>`;
+}
+
+function renderWorld(key){
+  const w = WORLDS[key];
+  document.title = "Worlds · " + w.title + " — Babb";
+  $("crumbHere").innerHTML =
+    `<a href="#" data-go="all" style="color:var(--ink-2);border-bottom:1px solid var(--hair-2)">worlds</a> <span style="color:var(--hair)">/</span> <span class="here">${key}</span>`;
+  $("wTitle").innerHTML = 'Worlds · <span class="em">'+w.title+'</span>';
+  $("wIntro").textContent = w.blurb;
+  $("wSubs").innerHTML = w.subs.map(s=>`<a href="/worlds/${key}/${s}/">${s}</a>`).join("");
+  $("wMetaCounts").textContent = w.counts.dispatches+" dispatches · "+w.counts.places+" places · "+w.counts.contributors+" contributors";
+  $("wFeedName").textContent = w.title;
+  $("wRss").href = "/feed.xml?cat="+key;
+  $("wDigest").href = "/updates/email/?world="+key;
+  $("wHeroBg").className = "bg "+key;
+  $("wHeroMeta").textContent = w.hero.kicker;
+  $("wFrameId").textContent = w.hero.frameid;
+  $("wScene").textContent = w.hero.scene;
+  $("wHeroKicker").textContent = w.hero.kicker;
+  $("wHeroTitle").textContent = w.hero.title;
+  $("wHeroBy").innerHTML = w.hero.by;
+  const term = $("wTerm");
+  term.classList.remove("on");
+  setTimeout(()=>{
+    $("wTermSubj").textContent = w.hero.termSubj;
+    $("wTermBody").innerHTML = w.hero.termBody;
+    void term.offsetWidth;
+    term.classList.add("on");
+  }, 280);
+  $("wPlacesMeta").textContent = w.places.length+" places · many-to-many";
+  $("wPlaces").innerHTML = w.places.map(p=>
+    `<a class="place${p.route?' route':''}" href="/places/${p.slug}/">
+       <div class="plate">${p.route?'ROUTE · MULTI-STOP':'PLACE'}</div>
+       <div class="nm">${p.nm}</div>
+       <div class="meta"><span>${p.world}</span><span class="pill">${p.route?'route':'place'}</span></div>
+     </a>`).join("");
+  $("wDispMeta").textContent = "Jekyll category · /feed.xml?cat="+key;
+  $("wDispatches").innerHTML = w.dispatches.map(d=>
+    `<div class="row">
+       <div class="date">${d.date}</div>
+       <div class="body">
+         <div class="kind">${d.kind}</div>
+         <h4><a href="#">${d.title}</a></h4>
+         <div class="desc">${d.desc}</div>
+         <div class="tags">${d.tags.map(t=>`<a href="#">${t}</a>`).join(" · ")}</div>
+       </div>
+       <div class="right"><span class="dur">${d.dur}</span>read →</div>
+     </div>`).join("");
+  fillList($("wPinned"), w.pinned, "Nothing pinned yet.");
+  fillList($("wEditor"), w.editor, "No editor's note yet.");
+  fillList($("wCross"),  w.cross,  "No cross-posts yet.");
+  function rwlList(items){
+    return items.map(it=>
+      `<li><div><span class="kicker">${it.k}</span><a class="ttl" href="#">${it.t}</a></div>
+            <div class="dur">${it.dur}m</div></li>`).join("");
+  }
+  $("wRwl").innerHTML =
+    `<div class="box"><h3>Read <span class="ct">${w.rwl.read.length}</span></h3>
+       <ul>${rwlList(w.rwl.read)}</ul>
+       <div class="see"><a href="/worlds/${key}/read/">See all Read &rarr;</a></div></div>
+     <div class="box"><h3>Watch <span class="ct">${w.rwl.watch.length}</span></h3>
+       <ul>${rwlList(w.rwl.watch)}</ul>
+       <div class="see"><a href="/worlds/${key}/watch/">See all Watch &rarr;</a></div></div>
+     <div class="box"><h3>Listen <span class="ct">${w.rwl.listen.length}</span></h3>
+       <ul>${rwlList(w.rwl.listen)}</ul>
+       <div class="see"><a href="/worlds/${key}/listen/">See all Listen &rarr;</a></div></div>`;
+  $("wProducts").innerHTML = w.products.map((p,i)=>
+    `<a class="prod" href="/products/${p.name.toLowerCase().replace(/^\./,'tel').replace(/\s+/g,'-')}/">
+       <div class="num">${String(i+1).padStart(2,"0")} / ${String(w.products.length).padStart(2,"0")}</div>
+       <div class="name">${p.name}</div>
+       <div class="role">${p.role}</div>
+       <div class="ver">${p.ver} &rarr;</div>
+     </a>`).join("");
+  $("wPeopleAll").href = "/people/?world="+key;
+  $("wPeople").innerHTML = w.people.map(p=>
+    `<a class="person" href="/people/${p.nm.toLowerCase().replace(/[^\w]+/g,'-')}/">
+       <div class="av"></div>
+       <div><div class="nm">${p.nm}</div><div class="role">${p.role}</div></div>
+     </a>`).join("");
+}
+
+function setMode(key){
+  const allSec    = document.getElementById("allMode");
+  const singleSec = document.getElementById("singleMode");
+  document.querySelectorAll(".wsel button")
+    .forEach(b => b.setAttribute("aria-pressed", b.dataset.go===key ? "true":"false"));
+  if(key==="all"){
+    allSec.classList.remove("off");
+    singleSec.classList.remove("on");
+    $("crumbHere").textContent = "worlds";
+    document.title = "Worlds — Babb";
+    history.replaceState(null,"","#");
+  } else if(WORLDS[key]){
+    allSec.classList.add("off");
+    singleSec.classList.add("on");
+    renderWorld(key);
+    history.replaceState(null,"","#"+key);
+  }
+  window.scrollTo({top:0, behavior:"instant"});
+}
+
+document.body.addEventListener("click", e=>{
+  const t = e.target.closest("[data-go]");
+  if(!t) return;
+  e.preventDefault();
+  setMode(t.dataset.go);
+});
+
+const h = (location.hash||"").replace("#","");
+setMode(h && WORLDS[h] ? h : "all");
+</script>

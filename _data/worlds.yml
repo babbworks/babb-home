@@ -1,0 +1,41 @@
+- id: selling
+  num: "01"
+  name: Selling
+  url: /worlds/selling/
+  line: Commerce, trade, and the people who move things between buyer and seller.
+
+- id: banking
+  num: "02"
+  name: Banking
+  url: /worlds/banking/
+  line: Branch offices, credit unions, community lenders, and the last tellers.
+
+- id: farming
+  num: "03"
+  name: Farming
+  url: /worlds/farming/
+  line: Feed lots, dairies, grain operations, and the machinery that keeps them running.
+
+- id: building
+  num: "04"
+  name: Building
+  url: /worlds/building/
+  line: Construction, trades, job sites, and the foremen who hold them together.
+
+- id: manufacturing
+  num: "05"
+  name: Manufacturing
+  url: /worlds/manufacturing/
+  line: Mills, plants, foundries, and the shift supervisors on the floor.
+
+- id: communications
+  num: "06"
+  name: Communications
+  url: /worlds/communications/
+  line: Infrastructure, broadcast, field ops, and the people who keep signals moving.
+
+- id: management
+  num: "07"
+  name: Management
+  url: /worlds/management/
+  line: Operations, coordination, and the operators who run the whole thing.

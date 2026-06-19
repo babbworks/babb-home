@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+{%- include head.html -%}
+<body>
+
+{%- include sysbar.html -%}
+{%- include masthead.html -%}
+
+{{ content }}
+
+{%- include colophon.html -%}
+
+<script>
+(function(){
+  const el=document.getElementById("clock"),f=n=>String(n).padStart(2,"0");
+  function t(){const d=new Date();el.textContent=f(d.getUTCHours())+":"+f(d.getUTCMinutes())+":"+f(d.getUTCSeconds())+" UTC";}
+  t();setInterval(t,1000);
+})();
+
+// reading progress bar
+(function(){
+  const bar=document.getElementById("progress");
+  if(!bar)return;
+  function upd(){
+    const h=document.documentElement,b=document.body;
+    const st=h.scrollTop||b.scrollTop;
+    const sh=(h.scrollHeight||b.scrollHeight)-h.clientHeight;
+    bar.style.width=(sh>0?Math.round(st/sh*100):0)+"%";
+  }
+  document.addEventListener("scroll",upd,{passive:true});upd();
+})();
+</script>
+</body>
+</html>

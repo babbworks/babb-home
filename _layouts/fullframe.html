@@ -3,30 +3,14 @@
 
   {%- include head.html -%}
 
-  <body class="fullframe-page" style="overflow:hidden;padding-top:0!important;">
+  <body class="fullframe-page" style="margin:0;overflow:hidden;">
 
-    {%- include header.html -%}
+    {%- include sysbar.html -%}
 
-    <main style="height:calc(100vh - 44px);overflow:hidden;margin-top:44px;">
+    <main class="fullframe-main">
       {{ content }}
     </main>
 
-    <div class="footer-trigger"></div>
-    {%- include footer.html -%}
-
   </body>
-
-  <script>
-    var footer = document.querySelector('.site-footer');
-    var trigger = document.querySelector('.footer-trigger');
-    trigger.addEventListener('touchstart', function() {
-      footer.classList.add('footer-visible');
-    }, { passive: true });
-    document.addEventListener('touchstart', function(e) {
-      if (!footer.contains(e.target) && !trigger.contains(e.target)) {
-        footer.classList.remove('footer-visible');
-      }
-    }, { passive: true });
-  </script>
 
 </html>

@@ -1,0 +1,580 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Video · The Pour — Hamilton steel mill — Babb</title>
+<meta name="description" content="The Pour — a 12-minute mini-doc shot on the third shift at the Hamilton steel mill. Charging, the blow, the tap, cooling." />
+<style>
+  :root{
+    --paper:#faf8f3; --paper-2:#f3efe5; --card:#ffffff;
+    --ink:#1a1a1a; --ink-2:#444141; --muted:#807d75;
+    --hair:#d8d3c4; --hair-2:#e8e3d4;
+    --alt:#a14a00; --alt-soft:#f5e9d8;
+    --live:#2f7a3a;
+    --term-bg:#141312; --term-fg:#e8e3d4; --term-link:#ffd58a; --term-subj:#b7d99a;
+    --mono: ui-monospace,"SF Mono",SFMono-Regular,"JetBrains Mono",Menlo,Consolas,monospace;
+    --gutter:24px; --maxw:1240px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--paper);color:var(--ink);
+    font:14px/1.55 var(--mono);
+    -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
+    font-feature-settings:"ss01","cv11"}
+  a{color:inherit;text-decoration:none}
+  a:hover{text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px}
+  h1,h2,h3,h4{font-family:var(--mono);font-weight:600;margin:0;letter-spacing:-.01em}
+  .shell{max-width:var(--maxw);margin:0 auto;padding:0 var(--gutter)}
+
+  /* sysbar / masthead */
+  .sysbar{border-bottom:1px solid var(--hair);background:var(--paper);
+    font-size:11px;color:var(--muted);letter-spacing:.04em}
+  .sysbar .row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;gap:16px}
+  .dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--live);
+    box-shadow:0 0 0 0 rgba(47,122,58,.55);animation:pulse 2.6s infinite;vertical-align:middle;margin-right:6px}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(47,122,58,.55)}70%{box-shadow:0 0 0 7px rgba(47,122,58,0)}100%{box-shadow:0 0 0 0 rgba(47,122,58,0)}}
+  .sysbar .right{display:flex;gap:14px;align-items:center}
+  .sysbar a:hover{color:var(--ink)}
+
+  header.masthead{border-bottom:1px solid var(--hair);padding:22px 0 20px}
+  .masthead .row{display:flex;justify-content:space-between;align-items:flex-end;gap:24px}
+  .wordmark{font-size:34px;font-weight:700;letter-spacing:-.04em;line-height:.9}
+  .wordmark .punct{color:var(--alt)}
+  .tagline{font-size:11px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-top:8px}
+  nav.primary{display:flex;gap:22px;font-size:13px;padding-bottom:4px}
+  nav.primary a{color:var(--ink-2);position:relative;padding:2px 0}
+  nav.primary a:hover{color:var(--ink);text-decoration:none}
+  nav.primary a.here{color:var(--ink)}
+  nav.primary a.here::after{content:"";position:absolute;left:0;right:0;bottom:-4px;height:2px;background:var(--ink)}
+
+  /* place context bar */
+  .ctx{border-bottom:1px solid var(--hair);background:rgba(250,248,243,.96);font-size:12px}
+  .ctx .row{display:flex;justify-content:space-between;align-items:center;gap:18px;padding:9px 0;flex-wrap:wrap}
+  .ctx .back{display:inline-flex;align-items:center;gap:8px;color:var(--ink-2)}
+  .ctx .back .arr{color:var(--alt)}
+  .ctx .back b{color:var(--ink);font-weight:600;letter-spacing:-.02em}
+  .ctx .back:hover{color:var(--ink);text-decoration:none}
+  .ctx .here{color:var(--muted);letter-spacing:.06em;font-size:11px}
+  .ctx .here .now{color:var(--ink);font-weight:500}
+  .ctx .more{display:flex;gap:14px;font-size:11.5px;color:var(--ink-2);letter-spacing:.02em}
+  .ctx .more a{color:var(--ink-2);border-bottom:1px solid var(--hair-2)}
+  .ctx .more a.here{color:var(--ink);font-weight:600;border-bottom-color:var(--alt)}
+
+  /* section marker */
+  .smark{display:flex;align-items:baseline;gap:12px;margin:46px 0 18px;
+    font-size:11px;color:var(--muted);letter-spacing:.16em;text-transform:uppercase;scroll-margin-top:24px}
+  .smark .num{color:var(--ink);font-weight:600}
+  .smark .rule{flex:1;height:1px;background:var(--hair);transform:translateY(-3px)}
+  .smark .meta{color:var(--muted)}
+  .smark .meta a{color:var(--ink-2);border-bottom:1px solid var(--hair)}
+
+  /* ─── PLAYER ─── */
+  .player-wrap{margin-top:18px;position:relative;background:#000;border:1px solid var(--hair);overflow:hidden;
+    box-shadow:0 14px 36px rgba(20,20,20,.10)}
+  .player{position:relative;aspect-ratio:16/9;background:
+    radial-gradient(ellipse at 30% 30%, #2a2723 0, #0d0c0b 70%),
+    repeating-linear-gradient(0deg,#181613 0 8px,#1f1c18 8px 22px),
+    #0d0c0b;color:#fff;display:flex;align-items:center;justify-content:center}
+  .player .grid{position:absolute;inset:0;background:
+    repeating-linear-gradient(0deg, transparent 0 60px, rgba(255,255,255,.03) 60px 61px),
+    repeating-linear-gradient(90deg, transparent 0 60px, rgba(255,255,255,.03) 60px 61px);pointer-events:none}
+  .player .overlay-tl{position:absolute;left:18px;top:16px;font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.7)}
+  .player .overlay-tl b{color:#fff}
+  .player .overlay-tr{position:absolute;right:18px;top:16px;font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.7);text-align:right}
+  .player .overlay-tr .rec{color:#ff5a3a;font-weight:600;letter-spacing:.18em;margin-right:5px}
+  .player .overlay-tr .rec::before{content:"●";margin-right:5px;animation:blink 1.1s infinite}
+  @keyframes blink{50%{opacity:.35}}
+
+  .player .play-btn{width:88px;height:88px;border-radius:50%;border:1.5px solid rgba(255,255,255,.85);
+    background:rgba(20,20,20,.35);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;cursor:pointer;
+    transition:transform .15s ease, background .15s ease;z-index:2}
+  .player .play-btn:hover{background:rgba(255,255,255,.18);transform:scale(1.05)}
+  .player .play-btn .tri{width:0;height:0;border-style:solid;border-width:18px 0 18px 28px;border-color:transparent transparent transparent #fff;margin-left:6px}
+  .player .frame-tag{position:absolute;right:18px;bottom:62px;font-size:9.5px;color:rgba(255,255,255,.55);letter-spacing:.18em;text-transform:uppercase}
+
+  .player-bar{position:absolute;left:0;right:0;bottom:0;background:linear-gradient(180deg, rgba(0,0,0,0), rgba(0,0,0,.6));padding:34px 18px 14px;color:#fff;font-size:11.5px;display:flex;align-items:center;gap:14px}
+  .player-bar .tline{flex:1;height:3px;background:rgba(255,255,255,.18);position:relative;cursor:pointer}
+  .player-bar .tline .fill{position:absolute;left:0;top:0;height:100%;width:24%;background:var(--term-link)}
+  .player-bar .tline .chap{position:absolute;top:-3px;width:1px;height:9px;background:rgba(255,255,255,.45)}
+  .player-bar .t{font-variant-numeric:tabular-nums;letter-spacing:.04em;color:rgba(255,255,255,.85)}
+  .player-bar .btns{display:flex;gap:14px;font-size:11.5px;color:rgba(255,255,255,.75);letter-spacing:.04em}
+  .player-bar .btns span{cursor:pointer}
+  .player-bar .btns span:hover{color:#fff}
+
+  /* under-player meta row */
+  .player-meta{display:flex;justify-content:space-between;align-items:baseline;gap:18px;padding:14px 0 0;border-bottom:1px solid var(--hair-2);flex-wrap:wrap}
+  .player-meta .left{display:flex;align-items:baseline;gap:12px;font-size:11px;color:var(--muted);letter-spacing:.04em;flex-wrap:wrap}
+  .player-meta .left .kind{color:var(--alt);font-weight:600;letter-spacing:.14em;text-transform:uppercase}
+  .player-meta .left .dur{color:var(--ink);font-weight:500}
+  .player-meta .right{display:flex;gap:14px;font-size:11.5px;color:var(--ink-2)}
+  .player-meta .right a{color:var(--ink-2);border-bottom:1px solid var(--hair-2)}
+
+  /* ─── TITLE BLOCK ─── */
+  .vtitle{display:grid;grid-template-columns:1.55fr 1fr;gap:36px;
+    padding:28px 0 24px;border-bottom:1px solid var(--hair)}
+  .vtitle h1{font-size:48px;line-height:1.05;letter-spacing:-.03em;font-weight:700;max-width:18ch;text-wrap:balance}
+  .vtitle h1 .punct{color:var(--alt)}
+  .vtitle .dek{font-size:17px;line-height:1.55;color:var(--ink-2);margin-top:18px;max-width:54ch;text-wrap:pretty}
+  .vtitle .by{font-size:11.5px;color:var(--muted);letter-spacing:.04em;margin-top:18px}
+  .vtitle .by .nm{color:var(--ink-2)}
+  .vtitle .by a{color:var(--ink-2);border-bottom:1px solid var(--hair-2)}
+  .vtitle .side{display:flex;flex-direction:column;gap:14px;align-self:start}
+  .vtitle .facts{border:1px solid var(--hair);background:var(--card);font-size:12.5px}
+  .vtitle .facts .r{padding:9px 14px;border-top:1px dotted var(--hair-2);display:grid;grid-template-columns:90px 1fr;gap:10px;align-items:baseline}
+  .vtitle .facts .r:first-child{border-top:none}
+  .vtitle .facts .r .k{font-size:10px;color:var(--muted);letter-spacing:.12em;text-transform:uppercase}
+  .vtitle .facts .r .v a{color:var(--ink);border-bottom:1px solid var(--hair-2)}
+
+  /* ─── BODY ROW ─── */
+  .body-row{display:grid;grid-template-columns:1.6fr 1fr;gap:42px;margin-top:24px}
+
+  /* chapters list */
+  .chapters{border:1px solid var(--hair);background:var(--card)}
+  .chap-head{padding:13px 18px;border-bottom:1px solid var(--hair-2);font-size:10.5px;color:var(--muted);letter-spacing:.16em;text-transform:uppercase;display:flex;justify-content:space-between}
+  .chap-head .nm{color:var(--ink);font-weight:600}
+  .chap{display:grid;grid-template-columns:90px 1fr 60px;gap:18px;padding:13px 18px;
+    border-bottom:1px dotted var(--hair-2);align-items:baseline;transition:background .12s ease;cursor:pointer}
+  .chap:last-child{border-bottom:none}
+  .chap:hover,.chap.now{background:#fbf7e9}
+  .chap.now{border-left:3px solid var(--alt);padding-left:15px}
+  .chap .t{font-size:13px;color:var(--ink-2);font-variant-numeric:tabular-nums;letter-spacing:.04em}
+  .chap.now .t{color:var(--alt);font-weight:600}
+  .chap .body h4{font-size:15px;letter-spacing:-.015em;font-weight:600}
+  .chap .body .blurb{font-size:12.5px;color:var(--ink-2);margin-top:3px;line-height:1.55}
+  .chap .right{font-size:11px;color:var(--muted);text-align:right;letter-spacing:.04em}
+
+  /* notes from the director */
+  .director-notes{margin-top:24px;border:1px solid var(--hair);background:var(--card);padding:22px 26px}
+  .director-notes h3{font-size:11px;color:var(--muted);letter-spacing:.16em;text-transform:uppercase;margin-bottom:14px;font-weight:600}
+  .director-notes p{font-size:14px;line-height:1.65;color:var(--ink-2);margin:0 0 12px;max-width:62ch;text-wrap:pretty}
+  .director-notes p:last-child{margin-bottom:0}
+  .director-notes em{font-style:normal;color:var(--ink);background:var(--alt-soft);padding:0 4px}
+  .director-notes .by{font-size:11px;color:var(--muted);letter-spacing:.04em;margin-top:18px;padding-top:14px;border-top:1px dotted var(--hair-2)}
+  .director-notes .by .nm{color:var(--ink-2)}
+
+  /* transcript drawer */
+  .drawer{margin-top:24px;border:1px solid var(--hair);background:var(--card)}
+  .drawer summary{padding:14px 22px;cursor:pointer;list-style:none;
+    display:flex;justify-content:space-between;align-items:center;font-size:13px;color:var(--ink);letter-spacing:.02em;font-weight:600;letter-spacing:-.01em}
+  .drawer summary::-webkit-details-marker{display:none}
+  .drawer summary .car{font-size:10px;color:var(--muted);transition:transform .15s ease}
+  .drawer[open] summary .car{transform:rotate(90deg);color:var(--alt)}
+  .drawer summary .car::before{content:"▸"}
+  .drawer summary:hover{background:#fbf7e9}
+  .drawer summary .lbl{font-size:9.5px;color:var(--muted);letter-spacing:.16em;text-transform:uppercase;margin-right:14px;font-weight:600}
+  .drawer summary .nm{font-weight:600;letter-spacing:-.01em}
+  .tr-list{padding:8px 0 14px}
+  .tr{display:grid;grid-template-columns:80px 1fr;gap:18px;padding:7px 22px;align-items:baseline;cursor:pointer}
+  .tr:hover{background:#fbf7e9}
+  .tr .t{font-size:11.5px;color:var(--muted);font-variant-numeric:tabular-nums;letter-spacing:.04em}
+  .tr .l{font-size:13.5px;line-height:1.55;color:var(--ink)}
+  .tr .l .q{color:var(--alt);font-weight:600;margin-right:6px;letter-spacing:.06em;font-size:11px}
+
+  /* sidebar */
+  .sidebar{display:flex;flex-direction:column;gap:18px}
+  .sb-box{border:1px solid var(--hair);background:var(--card);padding:14px 16px}
+  .sb-box h4{font-size:10px;color:var(--muted);letter-spacing:.16em;text-transform:uppercase;font-weight:600;margin-bottom:10px}
+  .sb-box ul{margin:0;padding:0;list-style:none}
+  .sb-box li{font-size:12.5px;line-height:1.5;padding:5px 0;border-bottom:1px dotted var(--hair-2);
+    display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+  .sb-box li:last-child{border-bottom:none}
+  .sb-box li a{color:var(--ink-2);flex:1}
+  .sb-box li a:hover{color:var(--alt);text-decoration:none}
+  .sb-box li .meta{font-size:10px;color:var(--muted);letter-spacing:.04em;flex-shrink:0}
+
+  /* pull quote sidebar variant */
+  .pq{padding:14px 16px;background:var(--paper-2);border-left:3px solid var(--alt);font-size:14.5px;line-height:1.55;color:var(--ink);font-weight:500;letter-spacing:-.01em}
+  .pq .ts{display:block;font-size:10.5px;color:var(--muted);letter-spacing:.06em;font-weight:400;margin-top:8px;font-style:normal;letter-spacing:.04em}
+
+  /* tech meta block */
+  .tech{font-size:11.5px;color:var(--ink-2);line-height:1.7}
+  .tech .r{display:grid;grid-template-columns:90px 1fr;gap:10px;padding:4px 0;border-bottom:1px dotted var(--hair-2)}
+  .tech .r:last-child{border-bottom:none}
+  .tech .r .k{font-size:10px;color:var(--muted);letter-spacing:.12em;text-transform:uppercase}
+
+  /* related row */
+  .rel-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  .rcard{background:var(--card);border:1px solid var(--hair);padding:16px;
+    display:flex;flex-direction:column;gap:6px;min-height:170px;transition:border-color .15s ease}
+  .rcard:hover{border-color:var(--ink)}
+  .rcard .kind{font-size:10.5px;color:var(--alt);font-weight:600;letter-spacing:.12em;text-transform:uppercase}
+  .rcard h4{font-size:17px;letter-spacing:-.015em;font-weight:600;line-height:1.25}
+  .rcard .blurb{font-size:12.5px;color:var(--ink-2);line-height:1.5;margin-top:auto}
+  .rcard .meta{font-size:10.5px;color:var(--muted);letter-spacing:.06em;display:flex;justify-content:space-between;align-items:end}
+
+  /* footer */
+  footer.colophon{margin-top:56px;border-top:1px solid var(--hair);
+    padding:32px 0 48px;color:var(--ink-2);font-size:12.5px}
+  .col-grid{display:grid;grid-template-columns:1.6fr 1fr 1fr 1fr;gap:30px;margin-bottom:28px}
+  .col h4{font-size:10.5px;color:var(--muted);letter-spacing:.16em;text-transform:uppercase;margin-bottom:12px;font-weight:600}
+  .col ul{list-style:none;padding:0;margin:0} .col li{padding:3px 0}
+  .col li a:hover{color:var(--alt);text-decoration:none}
+  .col .tag{font-size:10.5px;color:var(--muted);margin-left:6px;letter-spacing:.06em}
+  .col-id .mark{font-size:28px;font-weight:700;letter-spacing:-.04em;line-height:.9}
+  .col-id .mark .punct{color:var(--alt)}
+  .col-id p{margin:10px 0 14px;line-height:1.55;max-width:36ch}
+  .col-id .addr{font-size:11px;color:var(--muted);line-height:1.6}
+  .col-foot{display:flex;justify-content:space-between;align-items:center;gap:20px;
+    padding-top:18px;border-top:1px solid var(--hair-2);font-size:11px;color:var(--muted);letter-spacing:.04em}
+  .col-foot .right{display:flex;gap:14px}
+
+  @media (max-width:1100px){
+    .vtitle,.body-row{grid-template-columns:1fr}
+    .vtitle h1{font-size:36px}
+    .rel-grid{grid-template-columns:1fr 1fr}
+    .col-grid{grid-template-columns:1fr 1fr}
+  }
+  @media (max-width:640px){
+    .wordmark{font-size:28px}
+    .vtitle h1{font-size:28px}
+    .player .play-btn{width:64px;height:64px}
+    .player .play-btn .tri{border-width:12px 0 12px 20px}
+    .chap{grid-template-columns:64px 1fr;gap:10px}
+    .chap .right{display:none}
+    .rel-grid{grid-template-columns:1fr}
+    nav.primary{flex-wrap:wrap;gap:14px}
+    .col-grid{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+
+<!-- sysbar -->
+<div class="sysbar">
+  <div class="shell row">
+    <div><span class="dot"></span>babb<span style="color:var(--muted)"> / places / hamilton-steel-mill / video / the-pour</span></div>
+    <div class="right">
+      <span>build 2026.05.18</span><span>·</span>
+      <span id="clock">--:--:-- UTC</span><span>·</span>
+      <a href="/feed.xml?cat=video">video.rss</a>
+    </div>
+  </div>
+</div>
+
+<!-- masthead -->
+<header class="masthead">
+  <div class="shell row">
+    <div>
+      <a href="Babb Homepage v1.html" style="text-decoration:none"><div class="wordmark">babb<span class="punct">.</span></div></a>
+      <div class="tagline">A media outfit · A product company</div>
+    </div>
+    <nav class="primary" aria-label="Primary">
+      <a href="Babb Worlds v1.html">Worlds</a>
+      <a class="here" href="Babb Place v1.html">Places</a>
+      <a href="Babb Products v1.html">Products</a>
+      <a href="Babb Updates v1.html">Updates</a>
+      <a href="Babb About v1.html">About</a>
+    </nav>
+  </div>
+</header>
+
+<!-- context bar -->
+<div class="ctx">
+  <div class="shell row">
+    <a class="back" href="Babb Place v1.html"><span class="arr">←</span> <span>From</span> <b>Hamilton steel mill</b></a>
+    <span class="here">Video &middot; <span class="now">The Pour · 12:08</span></span>
+    <div class="more">
+      <a href="Babb Article v1.html">Dispatch</a>
+      <a href="Babb Audio v1.html">Audio (Tony R.)</a>
+      <a class="here" href="Babb Video v1.html">Video (here)</a>
+      <a href="Babb BRoll v1.html">B-Roll</a>
+    </div>
+  </div>
+</div>
+
+<div class="shell">
+
+  <!-- ─── PLAYER ─── -->
+  <div class="player-wrap">
+    <div class="player" aria-label="Video player">
+      <div class="grid" aria-hidden="true"></div>
+      <span class="overlay-tl"><b>HAMILTON STEEL MILL</b> · POUR LINE A · DAY 4 · 06:14 LOCAL</span>
+      <span class="overlay-tr"><span class="rec">REC</span>MINI-DOC · 12:08</span>
+      <button class="play-btn" aria-label="Play"><span class="tri" aria-hidden="true"></span></button>
+      <span class="frame-tag">FRAME 142 / 17 304 · 24 fps · 4K · scope 2.39 : 1</span>
+      <div class="player-bar" aria-label="Player controls">
+        <span class="t">02:54</span>
+        <div class="tline" aria-label="Timeline">
+          <div class="fill"></div>
+          <span class="chap" style="left:0%"></span>
+          <span class="chap" style="left:18.7%"></span>
+          <span class="chap" style="left:47.4%"></span>
+          <span class="chap" style="left:78.7%"></span>
+        </div>
+        <span class="t">12:08</span>
+        <div class="btns" aria-label="Controls">
+          <span>cc</span><span>1.0×</span><span>⤢</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="player-meta">
+    <div class="left">
+      <span class="kind">Mini-doc</span>
+      <span>·</span>
+      <span class="dur">12:08</span>
+      <span>·</span>
+      <span>4K · 24 fps · 2.39 : 1</span>
+      <span>·</span>
+      <span>captions available · transcript below</span>
+    </div>
+    <div class="right">
+      <a href="#">share</a>
+      <a href="#">download</a>
+      <a href="/feed.xml?cat=video">subscribe</a>
+    </div>
+  </div>
+
+  <!-- title block -->
+  <section class="vtitle">
+    <div>
+      <h1>The Pour<span class="punct">.</span></h1>
+      <p class="dek">Twelve minutes on the third shift. A heat from charge to cast, lit by the overhead bays and the dawn coming up through the high windows. The hour the floor is most photogenic and quietest at once.</p>
+      <p class="by">Directed by <a href="/people/editor-a/"><span class="nm">Editor A</span></a> &middot; cinematography <a href="/people/bk/"><span class="nm">B.K.</span></a> &middot; sound <a href="/people/dl/"><span class="nm">D.L.</span></a> &middot; published 2026-05-11</p>
+    </div>
+    <div class="side">
+      <div class="facts" aria-label="Video facts">
+        <div class="r"><div class="k">Place</div><div class="v"><a href="Babb Place v1.html">Hamilton steel mill</a></div></div>
+        <div class="r"><div class="k">In Worlds</div><div class="v"><a href="Babb Worlds v1.html#manufacturing">Manufacturing</a> / <a href="/worlds/manufacturing/steel/">Steel</a></div></div>
+        <div class="r"><div class="k">Subject</div><div class="v"><a href="/people/tony-r/">Tony R.</a> &middot; foreman</div></div>
+        <div class="r"><div class="k">Length</div><div class="v">12:08</div></div>
+        <div class="r"><div class="k">Shot on</div><div class="v">2026-05-12 · 03:00 → 09:00 ET</div></div>
+        <div class="r"><div class="k">Filed</div><div class="v">2026-05-12 17:42 ET</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── BODY ─── -->
+  <section class="body-row">
+
+    <div>
+      <!-- chapters -->
+      <div class="chapters" aria-label="Chapters">
+        <div class="chap-head"><span><span class="nm">Chapters</span> · 4 · seekable</span><span>jump anywhere</span></div>
+
+        <div class="chap now" data-t="00:00">
+          <div class="t">00:00</div>
+          <div class="body">
+            <h4>Cold start</h4>
+            <div class="blurb">The pulpit before the heat. Console, paper schedule, third-shift handoff. Tony R. walks us in.</div>
+          </div>
+          <div class="right">02:14</div>
+        </div>
+
+        <div class="chap" data-t="02:14">
+          <div class="t">02:14</div>
+          <div class="body">
+            <h4>Charging the furnace</h4>
+            <div class="blurb">Scrap, hot metal, lime. The crane operator&rsquo;s chart that nobody has updated since 2017.</div>
+          </div>
+          <div class="right">03:28</div>
+        </div>
+
+        <div class="chap" data-t="05:42">
+          <div class="t">05:42</div>
+          <div class="body">
+            <h4>The pour</h4>
+            <div class="blurb">Oxygen on the molten bath. The blow runs about twenty minutes; you don&rsquo;t talk through any of them.</div>
+          </div>
+          <div class="right">03:48</div>
+        </div>
+
+        <div class="chap" data-t="09:30">
+          <div class="t">09:30</div>
+          <div class="body">
+            <h4>Cooling, dawn</h4>
+            <div class="blurb">Cast, slab, the high windows. The decision to lead the Place page with a dawn photograph is made on camera.</div>
+          </div>
+          <div class="right">02:38</div>
+        </div>
+      </div>
+
+      <!-- director's notes -->
+      <section class="director-notes" aria-label="Director's notes">
+        <h3>Director&rsquo;s note</h3>
+        <p>We came back three times before we could shoot. The first visit was a scout; the second was a write-around when the maintenance window didn&rsquo;t hold; the third was the shoot, which started at three in the morning and ended when the second-shift foreman walked in for the morning brief. <em>You don&rsquo;t set up around the work; you set up inside it and you turn the camera on when the work doesn&rsquo;t notice you.</em></p>
+        <p>The piece is cut to the cadence of a heat &mdash; charge, blow, tap, cast &mdash; rather than to a narrative arc. The third-shift quiet is the subject; the foreman is the voice. If you watch it with the lights down, the score is almost entirely the ambient field recording from <a href="/people/dl/">D.L.</a>&rsquo;s mics at 06:14, which is the same recording that loops on the <a href="Babb Place v1.html">Place page</a>.</p>
+        <p class="by">— <span class="nm">Editor A</span>, 2026-05-11</p>
+      </section>
+
+      <!-- transcript drawer -->
+      <details class="drawer" open aria-label="Transcript">
+        <summary>
+          <span><span class="lbl">Transcript</span><span class="nm">Full · synced · clickable timestamps</span></span>
+          <span class="car"></span>
+        </summary>
+        <div class="tr-list">
+          <div class="tr" data-t="00:14"><div class="t">00:14</div><div class="l"><span class="q">VO</span> The third shift starts at twenty-three hundred and ends when the sun is honest.</div></div>
+          <div class="tr" data-t="00:42"><div class="t">00:42</div><div class="l"><span class="q">VO</span> Tony R. has worked it since 1996. He doesn&rsquo;t talk for fun and he doesn&rsquo;t walk fast.</div></div>
+          <div class="tr" data-t="01:08"><div class="t">01:08</div><div class="l"><span class="q">TR</span> "You learn the floor when you stop expecting it to behave."</div></div>
+          <div class="tr" data-t="02:14"><div class="t">02:14</div><div class="l"><span class="q">VO</span> The charge is the heat&rsquo;s ingredients. Scrap. Hot metal from the blast furnace next door. Lime. Alloys.</div></div>
+          <div class="tr" data-t="03:42"><div class="t">03:42</div><div class="l"><span class="q">TR</span> "Drama is somebody else&rsquo;s problem. We just keep the number on the board."</div></div>
+          <div class="tr" data-t="05:42"><div class="t">05:42</div><div class="l"><span class="q">VO</span> The blow is what you came for, even if you don&rsquo;t know it yet.</div></div>
+          <div class="tr" data-t="07:08"><div class="t">07:08</div><div class="l"><span class="q">VO</span> The room is hot but the heat is not the point &mdash; the point is the sound.</div></div>
+          <div class="tr" data-t="09:30"><div class="t">09:30</div><div class="l"><span class="q">VO</span> The cast is when the steel becomes a shape. The casters have a hum. The hum is good.</div></div>
+          <div class="tr" data-t="11:14"><div class="t">11:14</div><div class="l"><span class="q">TR</span> "We&rsquo;ll do it again at noon. We&rsquo;ll do it again at midnight."</div></div>
+          <div class="tr" data-t="11:48"><div class="t">11:48</div><div class="l"><span class="q">VO</span> Dawn is honest. The third shift, it turns out, was the most photogenic.</div></div>
+        </div>
+      </details>
+    </div>
+
+    <!-- sidebar -->
+    <aside class="sidebar" aria-label="In this video">
+
+      <div class="sb-box">
+        <h4>In this video</h4>
+        <ul>
+          <li><a href="Babb Place v1.html">Hamilton steel mill</a><span class="meta">place</span></li>
+          <li><a href="Babb Worlds v1.html#manufacturing">Manufacturing</a><span class="meta">world</span></li>
+          <li><a href="/worlds/manufacturing/steel/">Steel</a><span class="meta">sub</span></li>
+          <li><a href="/people/tony-r/">Tony R.</a><span class="meta">subject</span></li>
+          <li><a href="Babb Angle v1.html">The Floor</a><span class="meta">angle</span></li>
+        </ul>
+      </div>
+
+      <div class="pq">
+        "You learn the floor when you stop expecting it to behave."
+        <span class="ts">— Tony R. · 01:08</span>
+      </div>
+
+      <div class="sb-box">
+        <h4>More from this World</h4>
+        <ul>
+          <li><a href="#">Short · a line restart</a><span class="meta">04:42</span></li>
+          <li><a href="#">Mini-doc · ladle metallurgy</a><span class="meta">08:36</span></li>
+          <li><a href="Babb Audio v1.html">Interview · the foreman</a><span class="meta">38:12</span></li>
+          <li><a href="/worlds/manufacturing/watch/">Watch index</a><span class="meta">14</span></li>
+        </ul>
+      </div>
+
+      <div class="sb-box">
+        <h4>Technical</h4>
+        <div class="tech">
+          <div class="r"><span class="k">Format</span><span>4K UHD · 24 fps</span></div>
+          <div class="r"><span class="k">Aspect</span><span>2.39 : 1 · scope</span></div>
+          <div class="r"><span class="k">Audio</span><span>Stereo · 48 kHz · CC</span></div>
+          <div class="r"><span class="k">Color</span><span>Rec.709 · neutral</span></div>
+          <div class="r"><span class="k">Size</span><span>1.4 GB · MP4</span></div>
+          <div class="r"><span class="k">License</span><span>CC BY-NC · editorial</span></div>
+        </div>
+      </div>
+
+      <div class="sb-box">
+        <h4>Subscribe</h4>
+        <ul>
+          <li><a href="/feed.xml?cat=video">Video RSS</a><span class="meta">↪</span></li>
+          <li><a href="/feed.xml?cat=places/hamilton-steel-mill">This Place</a><span class="meta">↪</span></li>
+          <li><a href="/updates/email/">Email digest</a><span class="meta">weekly</span></li>
+        </ul>
+      </div>
+
+    </aside>
+
+  </section>
+
+  <!-- related -->
+  <div class="smark"><span class="num">§ ··</span><span>Related &middot; this Place</span><span class="rule"></span></div>
+
+  <section class="rel-grid">
+    <a class="rcard" href="Babb Audio v1.html">
+      <div class="kind">Audio · 38:12</div>
+      <h4>Tony R. interview</h4>
+      <p class="blurb">The full conversation with the foreman. Thirty years on the floor, third-shift apprenticeship, the town.</p>
+      <div class="meta"><span>2026-05-11</span><span>↪</span></div>
+    </a>
+    <a class="rcard" href="Babb Angle v1.html">
+      <div class="kind">Angle · this Place</div>
+      <h4>The Floor</h4>
+      <p class="blurb">The long-form expansion of what the camera could only point at. Procedural, glossary-heavy.</p>
+      <div class="meta"><span>~8 min read</span><span>↪</span></div>
+    </a>
+    <a class="rcard" href="Babb BRoll v1.html">
+      <div class="kind">B-Roll</div>
+      <h4>Pour line archive</h4>
+      <p class="blurb">Stills, loops, ambient audio captured during the shoot. The third-shift dawn strip is here too.</p>
+      <div class="meta"><span>32 items</span><span>↪</span></div>
+    </a>
+  </section>
+
+</div>
+
+<!-- footer -->
+<div class="shell">
+<footer class="colophon">
+  <div class="col-grid">
+    <div class="col col-id">
+      <div class="mark">babb<span class="punct">.</span></div>
+      <p>Tools for the frontier. A media outfit reporting from the working world and a product company building for it.</p>
+      <div class="addr">babb works · est. 2024<br/><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="fe969b929291be9c9f9c9cd08a9b92">[email&#160;protected]</a><br/>rss · twitter · github · instagram</div>
+    </div>
+    <div class="col">
+      <h4>Worlds</h4>
+      <ul>
+        <li><a href="Babb Worlds v1.html#manufacturing">Manufacturing</a><span class="tag">here</span></li>
+        <li><a href="Babb Worlds v1.html#farming">Farming</a></li>
+        <li><a href="Babb Worlds v1.html#building">Building</a></li>
+        <li><a href="Babb Worlds v1.html">All Worlds →</a></li>
+      </ul>
+    </div>
+    <div class="col">
+      <h4>This Place</h4>
+      <ul>
+        <li><a href="Babb Place v1.html">Hamilton steel mill</a></li>
+        <li><a href="Babb Angle v1.html">↳ The Floor</a></li>
+        <li><a href="Babb BRoll v1.html">↳ B-Roll</a></li>
+        <li><a href="Babb FieldNotes v1.html">↳ Field Notes</a></li>
+        <li><a href="Babb Audio v1.html">↳ Audio · Tony R.</a></li>
+        <li><a href="#">↳ Video · The Pour</a><span class="tag">here</span></li>
+      </ul>
+    </div>
+    <div class="col">
+      <h4>Subscribe</h4>
+      <ul>
+        <li><a href="/feed.xml?cat=video">Video RSS</a></li>
+        <li><a href="/feed.xml?cat=places/hamilton-steel-mill">This Place RSS</a></li>
+        <li><a href="/updates/email/">Email digest</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="col-foot">
+    <div>© 2024–2026 Babb Works · CC BY-NC where noted</div>
+    <div class="right">
+      <a href="/colophon/">Colophon</a>
+      <a href="Babb About v1.html">About</a>
+      <a href="/cdn-cgi/l/email-protection#6c04090000032c0e0d0e0e42180900">Contact</a>
+      <span class="ascii">build 2026.05.18</span>
+    </div>
+  </div>
+</footer>
+</div>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+  (function(){
+    const el=document.getElementById("clock");
+    const f=n=>String(n).padStart(2,"0");
+    function tick(){const d=new Date();el.textContent=f(d.getUTCHours())+":"+f(d.getUTCMinutes())+":"+f(d.getUTCSeconds())+" UTC";}
+    tick();setInterval(tick,1000);
+  })();
+
+  /* chapter selection (visual only — no real video) */
+  (function(){
+    const chs = document.querySelectorAll(".chap");
+    chs.forEach(c => c.addEventListener("click", () => {
+      chs.forEach(x => x.classList.toggle("now", x === c));
+    }));
+    /* transcript click also highlights the closest chapter */
+    document.querySelectorAll(".tr").forEach(tr => tr.addEventListener("click", () => {
+      const t = tr.dataset.t || "00:00";
+      const mins = parseInt(t.split(":")[0],10);
+      let pick = chs[0];
+      chs.forEach(c => {
+        const cm = parseInt(c.dataset.t.split(":")[0],10);
+        if(cm <= mins) pick = c;
+      });
+      chs.forEach(x => x.classList.toggle("now", x === pick));
+    }));
+  })();
+</script>
+</body>
+</html>

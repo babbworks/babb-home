@@ -1,0 +1,65 @@
+- slug: hamilton-steel-mill
+  title: Hamilton steel mill
+  worlds: [Manufacturing, Building]
+  route: false
+  dailies: 14
+
+- slug: sioux-falls-feedlot
+  title: Sioux Falls feed-lot
+  worlds: [Farming, Management]
+  route: false
+  dailies: 14
+
+- slug: hudson-bank
+  title: Hudson community bank
+  worlds: [Banking, Communications]
+  route: false
+  dailies: 9
+
+- slug: tailgate-asheville
+  title: "Tailgate market · Asheville"
+  worlds: [Selling, Farming]
+  route: false
+  dailies: 6
+
+- slug: midwest-dairy-run
+  title: "Route: Midwest Dairy Run"
+  worlds: [Farming, Communications]
+  route: true
+  dailies: 11
+
+- slug: akron-cu
+  title: Akron credit union
+  worlds: [Banking]
+  route: false
+  dailies: 4
+
+- slug: bronx-tower-pour
+  title: Bronx tower pour
+  worlds: [Building]
+  route: false
+  dailies: 3
+
+- slug: cleveland-dispatch
+  title: Cleveland 911 dispatch
+  worlds: [Communications]
+  route: false
+  dailies: 5
+
+- slug: detroit-ops-room
+  title: Detroit ops room
+  worlds: [Management]
+  route: false
+  dailies: 7
+
+- slug: modesto-cannery
+  title: Modesto food cannery
+  worlds: [Manufacturing, Farming]
+  route: false
+  dailies: 2
+
+- slug: carolina-textile-loop
+  title: "Route: Carolina textile loop"
+  worlds: [Manufacturing]
+  route: true
+  dailies: 5

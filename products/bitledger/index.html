@@ -1,0 +1,105 @@
+---
+layout: product
+title: BitLedger
+nav_active: products
+product_id: bitledger
+status: active
+status_label: v3.0 · Protocol
+---
+
+<div class="shell">
+  <div class="crumbs">
+    <a href="/">babb</a><span class="sep">/</span>
+    <a href="/products/">products</a><span class="sep">/</span>
+    <span class="here">bitledger</span>
+  </div>
+
+  <section class="ptitle">
+    <div>
+      <div class="kicker"><span class="k1">Protocol &middot; 03 / 12</span><span>Financial Transmission</span></div>
+      <h1>BitLedger<span class="punct">.</span></h1>
+      <p class="deck">
+        <b>Double-entry bookkeeping at the wire level.</b>
+        A compact binary transmission protocol for financial records that encodes the balance
+        invariant &mdash; every debit has a matching credit &mdash; into the frame format itself.
+        A complete transaction in 40 bits.
+      </p>
+    </div>
+    <div class="status" aria-label="Product status">
+      <div class="row head"><span>BitLedger &middot; status</span><span class="live">ACTIVE</span></div>
+      <div class="row"><span class="k">Version</span><span class="v"><b>v3.0</b></span></div>
+      <div class="row"><span class="k">Encoding</span><span class="v">40-bit double-entry frames</span></div>
+      <div class="row"><span class="k">Parent</span><span class="v"><a href="/products/bitpads/">BitPads protocol &rarr;</a></span></div>
+      <div class="row"><span class="k">Standard</span><span class="v">BitLedger Standard (normative)</span></div>
+      <div class="cta">
+        <a href="https://bitpads.org/bitledger.html" class="dark">Read the spec &rarr;</a>
+        <a href="/updates/what-is-bitledger/">Overview article</a>
+      </div>
+    </div>
+  </section>
+
+  <div class="smark"><span class="num">&sect; 01</span><span>What it does</span><span class="rule"></span><span>the balance invariant, enforced by format</span></div>
+
+  <section class="feat">
+    <div class="cell">
+      <div class="num">01</div>
+      <h3>Balance enforced at encoding.</h3>
+      <p>A BitLedger frame that does not balance cannot be constructed. The format prevents it &mdash; the way a physical scale prevents removing weight from one side without adding it to the other. Not a validation check. A structural property.</p>
+      <span class="tag">invariant &middot; structural</span>
+    </div>
+    <div class="cell">
+      <div class="num">02</div>
+      <h3>40 bits per transaction.</h3>
+      <p>Five bytes. Account identifiers for both sides, amount, timestamp, type declaration. Small enough for SMS, satellite burst, QR code, or a device with kilobytes of memory.</p>
+      <span class="tag">5 bytes &middot; complete transaction</span>
+    </div>
+    <div class="cell">
+      <div class="num">03</div>
+      <h3>Domain-agnostic conservation.</h3>
+      <p>Designed for financial transactions but the conservation guarantee applies to any domain where quantities must balance: inventory movements, energy budgets, resource allocations, material flows.</p>
+      <span class="tag">financial &middot; inventory &middot; energy &middot; material</span>
+    </div>
+    <div class="cell">
+      <div class="num">04</div>
+      <h3>600 years of bookkeeping, encoded.</h3>
+      <p>Double-entry is the most successful information technology in human history. BitLedger is the first protocol to enforce its structural property at the wire level rather than hoping for it from application logic.</p>
+      <span class="tag">Pacioli &middot; 1494 &rarr; present</span>
+    </div>
+  </section>
+
+  <div class="smark"><span class="num">&sect; 02</span><span>Specifications</span><span class="rule"></span><span>frame structure</span></div>
+
+  <section class="spec">
+    <div class="col">
+      <h4>Frame structure</h4>
+      <div class="row"><span class="k">Size</span><span class="v"><b>40 bits</b> (5 bytes) per transaction</span></div>
+      <div class="row"><span class="k">Debit</span><span class="v">Account identifier + amount</span></div>
+      <div class="row"><span class="k">Credit</span><span class="v">Account identifier + amount</span></div>
+      <div class="row"><span class="k">Timestamp</span><span class="v">Compact &middot; ordering + audit</span></div>
+      <div class="row"><span class="k">Integrity</span><span class="v">CRC validation &middot; FEC for hostile channels</span></div>
+    </div>
+    <div class="col">
+      <h4>Design properties</h4>
+      <div class="row"><span class="k">Invariant</span><span class="v">Balance enforced at encoding</span></div>
+      <div class="row"><span class="k">Idempotent</span><span class="v">Resending causes no harm</span></div>
+      <div class="row"><span class="k">FEC</span><span class="v">Reed-Solomon / LDPC for degraded links</span></div>
+      <div class="row"><span class="k">Ordering</span><span class="v">Hash chains for latency environments</span></div>
+      <div class="row"><span class="k">Transport</span><span class="v">Channel-agnostic &middot; SMS / satellite / IP</span></div>
+    </div>
+  </section>
+
+  <div class="smark"><span class="num">&sect; 03</span><span>Where to find it</span><span class="rule"></span></div>
+
+  <section class="getit" id="get">
+    <div>
+      <h3>BitLedger is an open protocol.</h3>
+      <p>Part of the BitPads protocol family. The specification is public.</p>
+      <p class="alt">
+        <a href="https://bitpads.org/bitledger.html">Specification &rarr;</a> &middot;
+        <a href="https://github.com/babbworks/bitledger-standard">Standard &rarr;</a> &middot;
+        <a href="https://github.com/babbworks/bitledger">Core &rarr;</a>
+      </p>
+    </div>
+  </section>
+
+</div>

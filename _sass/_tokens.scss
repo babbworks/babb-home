@@ -1,0 +1,42 @@
+:root {
+  /* paper / ink */
+  --paper:     #faf8f3;
+  --paper-2:   #f3efe5;
+  --card:      #ffffff;
+  --ink:       #1a1a1a;
+  --ink-2:     #444141;
+  --muted:     #807d75;
+  --hair:      #d8d3c4;
+  --hair-2:    #e8e3d4;
+
+  /* signals */
+  --alt:       #0b3d91;
+  --alt-soft:  #dce6f5;
+  --live:      #2f7a3a;
+
+  /* product colors */
+  --c-workpads:    #2f7a3a;
+  --c-bitpads:     #8b3a62;
+  --c-bitledger:   #6b3fa0;
+  --c-workwarrior: #b85c1e;
+  --c-works:       #1a6b6b;
+  --c-basics:      #8c5a2b;
+  --c-clarkware:   #c44730;
+  --c-telux:       #0b3d91;
+  --c-outstack:    #3a6b3a;
+  --c-tel:         #556b7a;
+  --c-simba:       #7a6b3a;
+  --c-heybabb:     #3a5a8c;
+  --c-zako:        #8b4513;
+  --term-bg:   #141312;
+  --term-fg:   #e8e3d4;
+  --term-link: #ffd58a;
+  --term-subj: #b7d99a;
+
+  /* type */
+  --mono: ui-monospace, "SF Mono", SFMono-Regular, "JetBrains Mono", Menlo, Consolas, monospace;
+
+  /* rhythm */
+  --gutter: 24px;
+  --maxw:   1240px;
+}

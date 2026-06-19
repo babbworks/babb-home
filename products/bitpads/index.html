@@ -1,0 +1,142 @@
+---
+layout: product
+title: Bitpads
+nav_active: products
+product_id: bitpads
+status: active
+status_label: v0.1.0 · Protocol
+---
+
+<div class="shell">
+  <div class="crumbs">
+    <a href="/">babb</a><span class="sep">/</span>
+    <a href="/products/">products</a><span class="sep">/</span>
+    <span class="here">bitpads</span>
+  </div>
+
+  <section class="ptitle">
+    <div>
+      <div class="kicker"><span class="k1">Protocol &middot; 02 / 12</span><span>Binary Communication</span></div>
+      <h1>BitPads<span class="punct">.</span></h1>
+      <p class="deck">
+        <b>A universal binary communication protocol.</b>
+        From a single heartbeat byte to a fully identified, timestamped, valued, tasked,
+        and annotated civilisational record &mdash; in as few as one byte.
+        Not hardware. Not a device. A wire format for channels too constrained for JSON.
+      </p>
+    </div>
+    <div class="status" aria-label="Product status">
+      <div class="row head"><span>BitPads &middot; status</span><span class="live">ACTIVE</span></div>
+      <div class="row"><span class="k">Version</span><span class="v"><b>v0.1.0</b></span></div>
+      <div class="row"><span class="k">Type</span><span class="v">Protocol &middot; open spec</span></div>
+      <div class="row"><span class="k">Companion</span><span class="v"><a href="/products/bitledger/">BitLedger &rarr;</a></span></div>
+      <div class="row"><span class="k">CLI</span><span class="v">bitpads-cli &middot; decoder + validator</span></div>
+      <div class="row"><span class="k">Docs</span><span class="v"><a href="https://bitpads.org">bitpads.org &rarr;</a></span></div>
+      <div class="cta">
+        <a href="https://bitpads.org" class="dark">Read the spec &rarr;</a>
+        <a href="/updates/what-is-bitpads/">Overview article</a>
+      </div>
+    </div>
+  </section>
+
+  <div class="smark"><span class="num">&sect; 01</span><span>What it does</span><span class="rule"></span><span>six properties, in order of importance</span></div>
+
+  <section class="feat">
+    <div class="cell">
+      <div class="num">01</div>
+      <h3>Encodes structured records in minimal bits.</h3>
+      <p>A complete financial transaction in 40 bits. A heartbeat in 1 byte. A full operational record in a few hundred bits. Compact enough for SMS, satellite burst, sub-GHz radio, or QR code.</p>
+      <span class="tag">1 byte &middot; minimum frame</span>
+    </div>
+    <div class="cell">
+      <div class="num">02</div>
+      <h3>Self-describing frames.</h3>
+      <p>The first bits of a frame declare what kind of data follows. Receivers parse without prior negotiation, without schemas, without versioned APIs. The frame is the contract.</p>
+      <span class="tag">mode declarations &middot; no handshake</span>
+    </div>
+    <div class="cell">
+      <div class="num">03</div>
+      <h3>Enhancement grammar.</h3>
+      <p>Base records extend with structured annotations via a formal grammar. Enhancements chain, nest, and compose. A sensor reading gains a timestamp gains a location gains a signature &mdash; without breaking the base frame.</p>
+      <span class="tag">chainable &middot; nestable &middot; composable</span>
+    </div>
+    <div class="cell">
+      <div class="num">04</div>
+      <h3>CRC-15 integrity.</h3>
+      <p>Every frame carries integrity verification. If the bits parse, the record is structurally sound. No application-layer validation needed to confirm transmission integrity.</p>
+      <span class="tag">wire-level verification</span>
+    </div>
+    <div class="cell">
+      <div class="num">05</div>
+      <h3>Conservation guarantee.</h3>
+      <p>The same structural invariants that apply to financial double-entry &mdash; nothing created or destroyed without a balancing counterpart &mdash; apply to any domain: spatial, IoT, manufacturing, agricultural.</p>
+      <span class="tag">domain-agnostic &middot; conservation law</span>
+    </div>
+    <div class="cell">
+      <div class="num">06</div>
+      <h3>Built for hostile channels.</h3>
+      <p>Forward error correction for degraded radio links. Store-and-forward for intermittent connectivity. Idempotent records for unreliable retransmission. Hash chains for ordering across latency.</p>
+      <span class="tag">FEC &middot; store-and-forward &middot; idempotent</span>
+    </div>
+  </section>
+
+  <div class="smark"><span class="num">&sect; 02</span><span>The frame spectrum</span><span class="rule"></span><span>from heartbeat to compound document</span></div>
+
+  <section class="spec">
+    <div class="col">
+      <h4>Frame types</h4>
+      <div class="row"><span class="k">Heartbeat</span><span class="v"><b>1 byte</b> &middot; alive signal</span></div>
+      <div class="row"><span class="k">Sensor</span><span class="v"><b>4&ndash;8 bytes</b> &middot; reading + timestamp</span></div>
+      <div class="row"><span class="k">Transaction</span><span class="v"><b>5 bytes</b> &middot; double-entry (BitLedger)</span></div>
+      <div class="row"><span class="k">Task record</span><span class="v"><b>8&ndash;32 bytes</b> &middot; identified + tasked</span></div>
+      <div class="row"><span class="k">Compound</span><span class="v"><b>variable</b> &middot; enhanced + annotated</span></div>
+    </div>
+    <div class="col">
+      <h4>Protocol layers</h4>
+      <div class="row"><span class="k">Meta layer</span><span class="v">8-bit &middot; mode + type declarations</span></div>
+      <div class="row"><span class="k">Core</span><span class="v">BitLedger &middot; conserved quantities</span></div>
+      <div class="row"><span class="k">Enhancement</span><span class="v">Grammar &middot; nesting &middot; telegraph</span></div>
+      <div class="row"><span class="k">Integrity</span><span class="v">CRC-15 &middot; per-frame validation</span></div>
+      <div class="row"><span class="k">Transport</span><span class="v">Channel-agnostic &middot; SMS / radio / IP</span></div>
+    </div>
+  </section>
+
+  <div class="smark"><span class="num">&sect; 03</span><span>Documentation</span><span class="rule"></span><span>14 reference documents at bitpads.org</span></div>
+
+  <section class="spec">
+    <div class="col">
+      <h4>Core references</h4>
+      <div class="row"><span class="k">Overview</span><span class="v"><a href="https://bitpads.org">Protocol overview &rarr;</a></span></div>
+      <div class="row"><span class="k">BitLedger</span><span class="v"><a href="https://bitpads.org/bitledger.html">Financial protocol &rarr;</a></span></div>
+      <div class="row"><span class="k">BitPads v2</span><span class="v"><a href="https://bitpads.org/bitpads-v2.html">Meta layer spec &rarr;</a></span></div>
+      <div class="row"><span class="k">CLI</span><span class="v"><a href="https://bitpads.org/cli.html">Decoder reference &rarr;</a></span></div>
+      <div class="row"><span class="k">Guide</span><span class="v"><a href="https://bitpads.org/guide.html">Implementation guide &rarr;</a></span></div>
+      <div class="row"><span class="k">Reference</span><span class="v"><a href="https://bitpads.org/reference.html">Complete reference &rarr;</a></span></div>
+    </div>
+    <div class="col">
+      <h4>Enhancement system</h4>
+      <div class="row"><span class="k">Grammar</span><span class="v"><a href="https://bitpads.org/enhancement-grammar.html">Enhancement grammar &rarr;</a></span></div>
+      <div class="row"><span class="k">Nesting</span><span class="v"><a href="https://bitpads.org/enhancement-nesting.html">Nesting rules &rarr;</a></span></div>
+      <div class="row"><span class="k">Telegraph</span><span class="v"><a href="https://bitpads.org/enhancement-telegraph-1.html">Telegraph pt. 1 &rarr;</a></span></div>
+      <div class="row"><span class="k">Compound</span><span class="v"><a href="https://bitpads.org/compound-mode.html">Compound mode &rarr;</a></span></div>
+      <div class="row"><span class="k">Universal</span><span class="v"><a href="https://bitpads.org/universal-domain.html">Universal domain &rarr;</a></span></div>
+      <div class="row"><span class="k">Engineering</span><span class="v"><a href="https://bitpads.org/engineering.html">Engineering notes &rarr;</a></span></div>
+    </div>
+  </section>
+
+  <div class="smark"><span class="num">&sect; 04</span><span>Where to find it</span><span class="rule"></span></div>
+
+  <section class="getit" id="get">
+    <div>
+      <h3>BitPads is an open protocol.</h3>
+      <p>The specification is public. The CLI is open source. Implementations are welcome.</p>
+      <p class="alt">
+        <a href="https://bitpads.org">bitpads.org &rarr;</a> &middot;
+        <a href="https://github.com/babbworks/bitpads-standard">Standard &rarr;</a> &middot;
+        <a href="https://github.com/babbworks/bitpads-cli">CLI &rarr;</a> &middot;
+        <a href="https://github.com/babbworks/bitpads-tools">Tools &rarr;</a>
+      </p>
+    </div>
+  </section>
+
+</div>

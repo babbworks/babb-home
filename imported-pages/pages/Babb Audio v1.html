@@ -1,0 +1,674 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Audio · Tony R., foreman — Hamilton steel mill — Babb</title>
+<meta name="description" content="A 38-minute interview with Tony R., foreman on the third shift at the Hamilton steel mill. Recorded on the floor; synced transcript." />
+<style>
+  :root{
+    --paper:#faf8f3; --paper-2:#f3efe5; --card:#ffffff;
+    --ink:#1a1a1a; --ink-2:#444141; --muted:#807d75;
+    --hair:#d8d3c4; --hair-2:#e8e3d4;
+    --alt:#a14a00; --alt-soft:#f5e9d8;
+    --live:#2f7a3a;
+    --term-bg:#141312; --term-fg:#e8e3d4; --term-link:#ffd58a; --term-subj:#b7d99a;
+    --mono: ui-monospace,"SF Mono",SFMono-Regular,"JetBrains Mono",Menlo,Consolas,monospace;
+    --gutter:24px; --maxw:1240px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--paper);color:var(--ink);
+    font:14px/1.55 var(--mono);
+    -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
+    font-feature-settings:"ss01","cv11"}
+  a{color:inherit;text-decoration:none}
+  a:hover{text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px}
+  h1,h2,h3,h4{font-family:var(--mono);font-weight:600;margin:0;letter-spacing:-.01em}
+  .shell{max-width:var(--maxw);margin:0 auto;padding:0 var(--gutter)}
+
+  /* sysbar / masthead (shared) */
+  .sysbar{border-bottom:1px solid var(--hair);background:var(--paper);
+    font-size:11px;color:var(--muted);letter-spacing:.04em}
+  .sysbar .row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;gap:16px}
+  .dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--live);
+    box-shadow:0 0 0 0 rgba(47,122,58,.55);animation:pulse 2.6s infinite;vertical-align:middle;margin-right:6px}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(47,122,58,.55)}70%{box-shadow:0 0 0 7px rgba(47,122,58,0)}100%{box-shadow:0 0 0 0 rgba(47,122,58,0)}}
+  .sysbar .right{display:flex;gap:14px;align-items:center}
+  .sysbar a:hover{color:var(--ink)}
+
+  header.masthead{border-bottom:1px solid var(--hair);padding:22px 0 20px}
+  .masthead .row{display:flex;justify-content:space-between;align-items:flex-end;gap:24px}
+  .wordmark{font-size:34px;font-weight:700;letter-spacing:-.04em;line-height:.9}
+  .wordmark .punct{color:var(--alt)}
+  .tagline{font-size:11px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-top:8px}
+  nav.primary{display:flex;gap:22px;font-size:13px;padding-bottom:4px}
+  nav.primary a{color:var(--ink-2);position:relative;padding:2px 0}
+  nav.primary a:hover{color:var(--ink);text-decoration:none}
+  nav.primary a.here{color:var(--ink)}
+  nav.primary a.here::after{content:"";position:absolute;left:0;right:0;bottom:-4px;height:2px;background:var(--ink)}
+
+  /* context bar */
+  .ctx{border-bottom:1px solid var(--hair);background:rgba(250,248,243,.96);font-size:12px}
+  .ctx .row{display:flex;justify-content:space-between;align-items:center;gap:18px;padding:9px 0;flex-wrap:wrap}
+  .ctx .back{display:inline-flex;align-items:center;gap:8px;color:var(--ink-2)}
+  .ctx .back .arr{color:var(--alt)}
+  .ctx .back b{color:var(--ink);font-weight:600;letter-spacing:-.02em}
+  .ctx .here{color:var(--muted);letter-spacing:.06em;font-size:11px}
+  .ctx .here .now{color:var(--ink);font-weight:500}
+  .ctx .more{display:flex;gap:14px;font-size:11.5px;color:var(--ink-2);letter-spacing:.02em}
+  .ctx .more a{color:var(--ink-2);border-bottom:1px solid var(--hair-2)}
+  .ctx .more a.here{color:var(--ink);font-weight:600;border-bottom-color:var(--alt)}
+
+  /* section marker */
+  .smark{display:flex;align-items:baseline;gap:12px;margin:46px 0 18px;
+    font-size:11px;color:var(--muted);letter-spacing:.16em;text-transform:uppercase}
+  .smark .num{color:var(--ink);font-weight:600}
+  .smark .rule{flex:1;height:1px;background:var(--hair);transform:translateY(-3px)}
+  .smark .meta{color:var(--muted)}
+
+  /* ─── EPISODE HEADER (terminal-styled persistent player) ─── */
+  .eph{margin-top:18px;background:var(--term-bg);color:var(--term-fg);border:1px solid #2a2723;
+    overflow:hidden;display:grid;grid-template-columns:1.4fr 1fr;gap:0;min-height:260px}
+  .eph .left{padding:24px 28px 22px;display:flex;flex-direction:column;gap:14px;border-right:1px solid #2a2723}
+  .eph .left .topline{font-size:10px;color:#9a948a;letter-spacing:.18em;text-transform:uppercase;display:flex;justify-content:space-between;gap:10px}
+  .eph .left .topline .live{color:#a3d181;font-weight:600}
+  .eph .left .topline .live::before{content:"●";margin-right:5px;animation:blink 1.4s infinite}
+  @keyframes blink{50%{opacity:.35}}
+  .eph .left h1{font-size:36px;letter-spacing:-.028em;line-height:1.05;font-weight:700;color:#fff;text-wrap:balance;max-width:18ch}
+  .eph .left h1 .punct{color:var(--term-link)}
+  .eph .left .dek{font-size:14px;color:var(--term-fg);line-height:1.55;max-width:48ch;text-wrap:pretty}
+  .eph .left .dek em{font-style:normal;color:#fff;font-weight:600}
+  .eph .left .meta{font-size:10.5px;color:#9a948a;letter-spacing:.04em;margin-top:auto;display:flex;flex-wrap:wrap;gap:14px}
+  .eph .left .meta a{color:var(--term-link);border-bottom:1px dotted #b88c4d}
+
+  .eph .right{padding:22px 26px;display:flex;flex-direction:column;gap:14px;background:#181613}
+  .eph .right .scope{font-size:10px;color:#9a948a;letter-spacing:.18em;text-transform:uppercase;display:flex;justify-content:space-between}
+  .eph .right .scope .rec{color:#ff5a3a;font-weight:600}
+  .eph .right .scope .rec::before{content:"●";margin-right:5px;animation:blink 1.1s infinite}
+  /* waveform */
+  .wave{height:90px;position:relative;background:#0d0c0b;border:1px solid #2a2723;overflow:hidden}
+  .wave svg{display:block;width:100%;height:100%}
+  .wave .ph{position:absolute;top:0;bottom:0;left:24%;width:2px;background:var(--alt-soft);box-shadow:0 0 8px var(--alt-soft)}
+  .wave .scrub{position:absolute;top:0;bottom:0;left:0;width:24%;background:linear-gradient(90deg, rgba(255,213,138,.22), rgba(255,213,138,.05))}
+  .wave .ts{position:absolute;left:6px;bottom:5px;font-size:9.5px;color:#9a948a;letter-spacing:.06em}
+  .wave .ts-r{position:absolute;right:6px;bottom:5px;font-size:9.5px;color:#9a948a;letter-spacing:.06em}
+
+  .controls{display:flex;align-items:center;gap:14px}
+  .controls .ply{width:46px;height:46px;border-radius:50%;background:var(--alt);color:#fff;border:none;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;transition:background .15s ease}
+  .controls .ply:hover{background:#bd5a08}
+  .controls .ply .tri{width:0;height:0;border-style:solid;border-width:8px 0 8px 12px;border-color:transparent transparent transparent #fff;margin-left:3px}
+  .controls .nm{font-size:13px;color:#fff;flex:1;min-width:0}
+  .controls .nm b{font-weight:600;display:block;letter-spacing:-.01em}
+  .controls .nm .sub{display:block;font-size:10.5px;color:#9a948a;letter-spacing:.04em;margin-top:2px}
+  .controls .seek{flex:0 0 70px;display:flex;gap:5px;align-items:center;color:#9a948a;font-size:11px}
+  .controls .seek span{cursor:pointer;padding:2px 4px}
+  .controls .seek span:hover{color:#fff}
+
+  .pillrow{display:flex;flex-wrap:wrap;gap:0;font-size:10.5px;border-top:1px dotted #2a2723;padding-top:11px;color:#9a948a;letter-spacing:.04em}
+  .pillrow button{font:inherit;background:transparent;border:1px solid #2a2723;color:#9a948a;
+    padding:3px 8px;margin:-1px 0 0 -1px;cursor:pointer;letter-spacing:.04em}
+  .pillrow button[aria-pressed="true"]{background:var(--alt);color:#fff;border-color:var(--alt)}
+  .pillrow .util{font-size:10.5px;color:#9a948a;display:flex;gap:14px;margin-left:auto;align-items:center}
+  .pillrow .util a{color:var(--term-link);border-bottom:1px dotted #b88c4d}
+
+  /* ─── BODY ─── */
+  .body-row{display:grid;grid-template-columns:1.6fr 1fr;gap:42px;margin-top:30px}
+
+  /* chapter index */
+  .chapters{border:1px solid var(--hair);background:var(--card);margin-bottom:18px}
+  .chap-head{padding:13px 18px;border-bottom:1px solid var(--hair-2);font-size:10.5px;color:var(--muted);letter-spacing:.16em;text-transform:uppercase;display:flex;justify-content:space-between}
+  .chap-head .nm{color:var(--ink);font-weight:600}
+  .chap{display:grid;grid-template-columns:90px 1fr 60px;gap:18px;padding:13px 18px;
+    border-bottom:1px dotted var(--hair-2);align-items:baseline;transition:background .12s ease;cursor:pointer}
+  .chap:last-child{border-bottom:none}
+  .chap:hover,.chap.now{background:#fbf7e9}
+  .chap.now{border-left:3px solid var(--alt);padding-left:15px}
+  .chap .t{font-size:13px;color:var(--ink-2);font-variant-numeric:tabular-nums;letter-spacing:.04em}
+  .chap.now .t{color:var(--alt);font-weight:600}
+  .chap .body h4{font-size:15px;letter-spacing:-.015em;font-weight:600}
+  .chap .body .blurb{font-size:12.5px;color:var(--ink-2);margin-top:3px;line-height:1.55}
+  .chap .right{font-size:11px;color:var(--muted);text-align:right;letter-spacing:.04em}
+
+  /* transcript ---------------------------------------- */
+  .tr-head{display:flex;justify-content:space-between;align-items:baseline;
+    padding:13px 0 10px;border-bottom:1px solid var(--hair-2);margin-bottom:6px}
+  .tr-head h3{font-size:11px;color:var(--muted);letter-spacing:.16em;text-transform:uppercase;font-weight:600}
+  .tr-head h3 .nm{color:var(--ink);margin-left:6px}
+  .tr-head .util{font-size:11px;color:var(--ink-2);display:flex;gap:10px}
+  .tr-head .util input{font:inherit;font-size:11.5px;border:1px solid var(--hair);background:var(--paper);padding:4px 9px;outline:none;color:var(--ink);width:170px}
+  .tr-head .util input:focus{border-color:var(--ink)}
+
+  .transcript{font-size:14px;line-height:1.7;color:var(--ink);max-width:62ch}
+  .transcript .tr{display:grid;grid-template-columns:78px 1fr;gap:18px;padding:8px 0;align-items:baseline;cursor:pointer}
+  .transcript .tr:hover{background:#fbf7e9}
+  .transcript .tr.now{background:var(--alt-soft);border-left:2px solid var(--alt);padding-left:8px;margin-left:-10px}
+  .transcript .tr .t{font-size:11.5px;color:var(--muted);font-variant-numeric:tabular-nums;letter-spacing:.04em;padding-top:3px}
+  .transcript .tr.now .t{color:var(--alt);font-weight:600}
+  .transcript .tr .l .q{display:inline-block;font-size:10px;font-weight:700;color:var(--alt);letter-spacing:.18em;text-transform:uppercase;margin-right:8px;border:1px solid var(--alt);padding:1px 6px;vertical-align:1px}
+  .transcript .tr .l .q.a{color:var(--ink);border-color:var(--ink)}
+  .transcript .tr .l em{font-style:italic;color:var(--ink-2)}
+  .transcript .tr .l strong{font-weight:600;background:var(--alt-soft);padding:0 4px;color:var(--ink)}
+  .transcript .ch-mark{padding:18px 0 4px;margin-top:14px;border-top:1px dotted var(--hair-2);font-size:10.5px;color:var(--muted);letter-spacing:.16em;text-transform:uppercase}
+  .transcript .ch-mark b{color:var(--alt);margin-right:8px;font-weight:700}
+
+  /* sidebar */
+  .sidebar{display:flex;flex-direction:column;gap:18px;position:sticky;top:20px;align-self:start;max-height:calc(100vh - 40px);overflow:auto}
+  .sb-box{border:1px solid var(--hair);background:var(--card);padding:14px 16px}
+  .sb-box h4{font-size:10px;color:var(--muted);letter-spacing:.16em;text-transform:uppercase;font-weight:600;margin-bottom:10px}
+  .sb-box ul{margin:0;padding:0;list-style:none}
+  .sb-box li{font-size:12.5px;line-height:1.5;padding:5px 0;border-bottom:1px dotted var(--hair-2);display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+  .sb-box li:last-child{border-bottom:none}
+  .sb-box li a{color:var(--ink-2);flex:1}
+  .sb-box li a:hover{color:var(--alt);text-decoration:none}
+  .sb-box li .meta{font-size:10px;color:var(--muted);letter-spacing:.04em;flex-shrink:0}
+
+  /* pull quotes */
+  .pq{padding:14px 16px;background:var(--paper-2);border-left:3px solid var(--alt);
+    font-size:14.5px;line-height:1.55;color:var(--ink);font-weight:500;letter-spacing:-.01em;text-wrap:pretty}
+  .pq .ts{display:block;font-size:10.5px;color:var(--muted);font-weight:400;letter-spacing:.04em;margin-top:8px}
+  .pq .ts a{color:var(--ink-2);border-bottom:1px solid var(--hair-2);font-style:normal}
+
+  /* tech */
+  .tech{font-size:11.5px;color:var(--ink-2);line-height:1.7}
+  .tech .r{display:grid;grid-template-columns:90px 1fr;gap:10px;padding:4px 0;border-bottom:1px dotted var(--hair-2)}
+  .tech .r:last-child{border-bottom:none}
+  .tech .r .k{font-size:10px;color:var(--muted);letter-spacing:.12em;text-transform:uppercase}
+
+  /* related */
+  .rel-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  .rcard{background:var(--card);border:1px solid var(--hair);padding:16px;
+    display:flex;flex-direction:column;gap:6px;min-height:170px;transition:border-color .15s ease}
+  .rcard:hover{border-color:var(--ink)}
+  .rcard .kind{font-size:10.5px;color:var(--alt);font-weight:600;letter-spacing:.12em;text-transform:uppercase}
+  .rcard h4{font-size:17px;letter-spacing:-.015em;font-weight:600;line-height:1.25}
+  .rcard .blurb{font-size:12.5px;color:var(--ink-2);line-height:1.5;margin-top:auto}
+  .rcard .meta{font-size:10.5px;color:var(--muted);letter-spacing:.06em;display:flex;justify-content:space-between;align-items:end}
+
+  /* footer (shared) */
+  footer.colophon{margin-top:56px;border-top:1px solid var(--hair);
+    padding:32px 0 48px;color:var(--ink-2);font-size:12.5px}
+  .col-grid{display:grid;grid-template-columns:1.6fr 1fr 1fr 1fr;gap:30px;margin-bottom:28px}
+  .col h4{font-size:10.5px;color:var(--muted);letter-spacing:.16em;text-transform:uppercase;margin-bottom:12px;font-weight:600}
+  .col ul{list-style:none;padding:0;margin:0} .col li{padding:3px 0}
+  .col li a:hover{color:var(--alt);text-decoration:none}
+  .col .tag{font-size:10.5px;color:var(--muted);margin-left:6px;letter-spacing:.06em}
+  .col-id .mark{font-size:28px;font-weight:700;letter-spacing:-.04em;line-height:.9}
+  .col-id .mark .punct{color:var(--alt)}
+  .col-id p{margin:10px 0 14px;line-height:1.55;max-width:36ch}
+  .col-id .addr{font-size:11px;color:var(--muted);line-height:1.6}
+  .col-foot{display:flex;justify-content:space-between;align-items:center;gap:20px;
+    padding-top:18px;border-top:1px solid var(--hair-2);font-size:11px;color:var(--muted);letter-spacing:.04em}
+  .col-foot .right{display:flex;gap:14px}
+
+  @media (max-width:1100px){
+    .eph{grid-template-columns:1fr}
+    .eph .left{border-right:none;border-bottom:1px solid #2a2723}
+    .body-row{grid-template-columns:1fr}
+    .sidebar{position:static;max-height:none}
+    .rel-grid{grid-template-columns:1fr 1fr}
+    .col-grid{grid-template-columns:1fr 1fr}
+  }
+  @media (max-width:640px){
+    .wordmark{font-size:28px}
+    .eph .left h1{font-size:26px}
+    .chap{grid-template-columns:64px 1fr;gap:10px}
+    .chap .right{display:none}
+    .transcript .tr{grid-template-columns:60px 1fr;gap:10px}
+    .rel-grid{grid-template-columns:1fr}
+    nav.primary{flex-wrap:wrap;gap:14px}
+    .col-grid{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+
+<!-- sysbar -->
+<div class="sysbar">
+  <div class="shell row">
+    <div><span class="dot"></span>babb<span style="color:var(--muted)"> / places / hamilton-steel-mill / audio / tony-r</span></div>
+    <div class="right">
+      <span>build 2026.05.18</span><span>·</span>
+      <span id="clock">--:--:-- UTC</span><span>·</span>
+      <a href="/feed.xml?cat=audio">audio.rss</a>
+    </div>
+  </div>
+</div>
+
+<!-- masthead -->
+<header class="masthead">
+  <div class="shell row">
+    <div>
+      <a href="Babb Homepage v1.html" style="text-decoration:none"><div class="wordmark">babb<span class="punct">.</span></div></a>
+      <div class="tagline">A media outfit · A product company</div>
+    </div>
+    <nav class="primary" aria-label="Primary">
+      <a href="Babb Worlds v1.html">Worlds</a>
+      <a class="here" href="Babb Place v1.html">Places</a>
+      <a href="Babb Products v1.html">Products</a>
+      <a href="Babb Updates v1.html">Updates</a>
+      <a href="Babb About v1.html">About</a>
+    </nav>
+  </div>
+</header>
+
+<!-- context bar -->
+<div class="ctx">
+  <div class="shell row">
+    <a class="back" href="Babb Place v1.html"><span class="arr">←</span> <span>From</span> <b>Hamilton steel mill</b></a>
+    <span class="here">Audio &middot; <span class="now">Tony R., foreman · 38:12</span></span>
+    <div class="more">
+      <a href="Babb Article v1.html">Dispatch</a>
+      <a class="here" href="Babb Audio v1.html">Audio (here)</a>
+      <a href="Babb Video v1.html">Video</a>
+      <a href="Babb BRoll v1.html">B-Roll</a>
+    </div>
+  </div>
+</div>
+
+<div class="shell">
+
+  <!-- ─── EPISODE HEADER ─── -->
+  <section class="eph" aria-label="Episode header with player">
+    <div class="left">
+      <div class="topline">
+        <span>Episode &middot; interview &middot; 38:12</span>
+        <span class="live">LIVE LOOP &middot; AMBIENT B-SIDE</span>
+      </div>
+      <h1>Tony R., foreman<span class="punct">.</span></h1>
+      <p class="dek">Thirty years on the floor. The third shift, the apprenticeship, automation, and the town that grew up around the mill. <em>Recorded standing in the pulpit at 06:14 local; ambient mill on the B-side.</em></p>
+      <div class="meta">
+        <span>Place &middot; <a href="Babb Place v1.html">Hamilton steel mill</a></span>
+        <span>World &middot; <a href="Babb Worlds v1.html#manufacturing">Manufacturing</a> / Steel</span>
+        <span>Recorded &middot; 2026-05-11 06:14 ET</span>
+        <span>Published &middot; 2026-05-11 14:08 ET</span>
+      </div>
+    </div>
+
+    <div class="right">
+      <div class="scope">
+        <span>SCOPE · INTERVIEW + AMBIENT</span>
+        <span class="rec">REC</span>
+      </div>
+
+      <div class="wave" aria-label="Waveform">
+        <svg viewBox="0 0 600 90" preserveAspectRatio="none" aria-hidden="true">
+          <g fill="#e8e3d4">
+            <!-- generated bars -->
+            <rect x="0" y="38" width="3" height="14"/><rect x="5" y="32" width="3" height="26"/>
+            <rect x="10" y="36" width="3" height="18"/><rect x="15" y="28" width="3" height="34"/>
+            <rect x="20" y="40" width="3" height="10"/><rect x="25" y="22" width="3" height="46"/>
+            <rect x="30" y="34" width="3" height="22"/><rect x="35" y="30" width="3" height="30"/>
+            <rect x="40" y="38" width="3" height="14"/><rect x="45" y="24" width="3" height="42"/>
+            <rect x="50" y="32" width="3" height="26"/><rect x="55" y="36" width="3" height="18"/>
+            <rect x="60" y="26" width="3" height="38"/><rect x="65" y="34" width="3" height="22"/>
+            <rect x="70" y="30" width="3" height="30"/><rect x="75" y="36" width="3" height="18"/>
+            <rect x="80" y="20" width="3" height="50"/><rect x="85" y="32" width="3" height="26"/>
+            <rect x="90" y="38" width="3" height="14"/><rect x="95" y="28" width="3" height="34"/>
+            <rect x="100" y="34" width="3" height="22"/><rect x="105" y="22" width="3" height="46"/>
+            <rect x="110" y="36" width="3" height="18"/><rect x="115" y="30" width="3" height="30"/>
+            <rect x="120" y="40" width="3" height="10"/><rect x="125" y="26" width="3" height="38"/>
+            <rect x="130" y="32" width="3" height="26"/><rect x="135" y="36" width="3" height="18"/>
+            <rect x="140" y="24" width="3" height="42"/><rect x="145" y="34" width="3" height="22"/>
+            <rect x="150" y="30" width="3" height="30"/><rect x="155" y="38" width="3" height="14"/>
+            <rect x="160" y="22" width="3" height="46"/><rect x="165" y="32" width="3" height="26"/>
+            <rect x="170" y="36" width="3" height="18"/><rect x="175" y="28" width="3" height="34"/>
+            <rect x="180" y="40" width="3" height="10"/><rect x="185" y="34" width="3" height="22"/>
+            <rect x="190" y="26" width="3" height="38"/><rect x="195" y="36" width="3" height="18"/>
+            <rect x="200" y="30" width="3" height="30"/><rect x="205" y="38" width="3" height="14"/>
+            <rect x="210" y="22" width="3" height="46"/><rect x="215" y="32" width="3" height="26"/>
+            <rect x="220" y="36" width="3" height="18"/><rect x="225" y="28" width="3" height="34"/>
+            <rect x="230" y="34" width="3" height="22"/><rect x="235" y="40" width="3" height="10"/>
+            <rect x="240" y="24" width="3" height="42"/><rect x="245" y="36" width="3" height="18"/>
+            <rect x="250" y="30" width="3" height="30"/><rect x="255" y="34" width="3" height="22"/>
+            <rect x="260" y="20" width="3" height="50"/><rect x="265" y="36" width="3" height="18"/>
+            <rect x="270" y="32" width="3" height="26"/><rect x="275" y="38" width="3" height="14"/>
+            <rect x="280" y="26" width="3" height="38"/><rect x="285" y="34" width="3" height="22"/>
+            <rect x="290" y="22" width="3" height="46"/><rect x="295" y="36" width="3" height="18"/>
+            <rect x="300" y="32" width="3" height="26"/><rect x="305" y="28" width="3" height="34"/>
+            <rect x="310" y="40" width="3" height="10"/><rect x="315" y="36" width="3" height="18"/>
+            <rect x="320" y="30" width="3" height="30"/><rect x="325" y="34" width="3" height="22"/>
+            <rect x="330" y="24" width="3" height="42"/><rect x="335" y="36" width="3" height="18"/>
+            <rect x="340" y="32" width="3" height="26"/><rect x="345" y="38" width="3" height="14"/>
+            <rect x="350" y="22" width="3" height="46"/><rect x="355" y="34" width="3" height="22"/>
+            <rect x="360" y="30" width="3" height="30"/><rect x="365" y="36" width="3" height="18"/>
+            <rect x="370" y="40" width="3" height="10"/><rect x="375" y="28" width="3" height="34"/>
+            <rect x="380" y="34" width="3" height="22"/><rect x="385" y="22" width="3" height="46"/>
+            <rect x="390" y="36" width="3" height="18"/><rect x="395" y="32" width="3" height="26"/>
+            <rect x="400" y="38" width="3" height="14"/><rect x="405" y="26" width="3" height="38"/>
+            <rect x="410" y="34" width="3" height="22"/><rect x="415" y="30" width="3" height="30"/>
+            <rect x="420" y="40" width="3" height="10"/><rect x="425" y="36" width="3" height="18"/>
+            <rect x="430" y="24" width="3" height="42"/><rect x="435" y="32" width="3" height="26"/>
+            <rect x="440" y="36" width="3" height="18"/><rect x="445" y="28" width="3" height="34"/>
+            <rect x="450" y="34" width="3" height="22"/><rect x="455" y="20" width="3" height="50"/>
+            <rect x="460" y="36" width="3" height="18"/><rect x="465" y="32" width="3" height="26"/>
+            <rect x="470" y="38" width="3" height="14"/><rect x="475" y="26" width="3" height="38"/>
+            <rect x="480" y="34" width="3" height="22"/><rect x="485" y="22" width="3" height="46"/>
+            <rect x="490" y="36" width="3" height="18"/><rect x="495" y="32" width="3" height="26"/>
+            <rect x="500" y="40" width="3" height="10"/><rect x="505" y="34" width="3" height="22"/>
+            <rect x="510" y="30" width="3" height="30"/><rect x="515" y="36" width="3" height="18"/>
+            <rect x="520" y="28" width="3" height="34"/><rect x="525" y="34" width="3" height="22"/>
+            <rect x="530" y="40" width="3" height="10"/><rect x="535" y="36" width="3" height="18"/>
+            <rect x="540" y="32" width="3" height="26"/><rect x="545" y="38" width="3" height="14"/>
+            <rect x="550" y="26" width="3" height="38"/><rect x="555" y="34" width="3" height="22"/>
+            <rect x="560" y="38" width="3" height="14"/><rect x="565" y="32" width="3" height="26"/>
+            <rect x="570" y="36" width="3" height="18"/><rect x="575" y="40" width="3" height="10"/>
+            <rect x="580" y="38" width="3" height="14"/><rect x="585" y="42" width="3" height="6"/>
+            <rect x="590" y="40" width="3" height="10"/>
+          </g>
+        </svg>
+        <div class="scrub"></div>
+        <div class="ph"></div>
+        <span class="ts">00:00</span>
+        <span class="ts-r">38:12</span>
+      </div>
+
+      <div class="controls">
+        <button class="ply" aria-label="Play"><span class="tri" aria-hidden="true"></span></button>
+        <div class="nm">
+          <b>09:08 · the apprenticeship</b>
+          <span class="sub">playing &middot; current chapter</span>
+        </div>
+        <div class="seek"><span aria-label="-15s">⤺15</span><span aria-label="+15s">15⤻</span></div>
+      </div>
+
+      <div class="pillrow" aria-label="Playback rate and utility">
+        <button data-r="1">1.0×</button>
+        <button data-r="1.25" aria-pressed="true">1.25×</button>
+        <button data-r="1.5">1.5×</button>
+        <button data-r="2">2.0×</button>
+        <div class="util">
+          <a href="#">download</a>
+          <a href="#">share</a>
+          <a href="/feed.xml?cat=audio">subscribe</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── BODY ─── -->
+  <section class="body-row">
+
+    <div>
+      <!-- chapter index -->
+      <div class="chapters" aria-label="Chapters">
+        <div class="chap-head"><span><span class="nm">Chapters</span> · 4 · click to jump</span><span>38:12 total</span></div>
+
+        <div class="chap" data-t="00:00">
+          <div class="t">00:00</div>
+          <div class="body">
+            <h4>Arrival on the floor</h4>
+            <div class="blurb">Coming up through the second shift in 1996. Why the third stayed.</div>
+          </div>
+          <div class="right">06:40</div>
+        </div>
+        <div class="chap now" data-t="06:40">
+          <div class="t">06:40</div>
+          <div class="body">
+            <h4>The apprenticeship</h4>
+            <div class="blurb">What you learn the first six months. What you can&rsquo;t.</div>
+          </div>
+          <div class="right">07:40</div>
+        </div>
+        <div class="chap" data-t="14:20">
+          <div class="t">14:20</div>
+          <div class="body">
+            <h4>Automation</h4>
+            <div class="blurb">What the new console does, what it doesn&rsquo;t, and what stays in the foreman&rsquo;s head.</div>
+          </div>
+          <div class="right">12:35</div>
+        </div>
+        <div class="chap" data-t="26:55">
+          <div class="t">26:55</div>
+          <div class="body">
+            <h4>The town</h4>
+            <div class="blurb">East-end, the harbour, who&rsquo;s left, who came back. The mill as civic infrastructure.</div>
+          </div>
+          <div class="right">11:17</div>
+        </div>
+      </div>
+
+      <!-- transcript -->
+      <div class="tr-head">
+        <h3><span>Transcript</span><span class="nm">Tony R. interview &middot; synced &middot; clickable</span></h3>
+        <div class="util">
+          <input type="search" placeholder="Search transcript…" />
+        </div>
+      </div>
+
+      <div class="transcript" id="transcript" aria-label="Transcript">
+
+        <div class="ch-mark"><b>Ch 01</b> Arrival on the floor</div>
+
+        <div class="tr" data-t="00:00"><div class="t">00:00</div><div class="l"><span class="q">Q</span>How long have you been on this floor?</div></div>
+        <div class="tr" data-t="00:12"><div class="t">00:12</div><div class="l"><span class="q a">A</span>Thirty years next March. Started on the second &mdash; finishing-line scrap &mdash; moved to the first for about a year, then the third when my nephew came on as an apprentice.</div></div>
+        <div class="tr" data-t="00:38"><div class="t">00:38</div><div class="l"><span class="q">Q</span>Why move to the third?</div></div>
+        <div class="tr" data-t="00:42"><div class="t">00:42</div><div class="l"><span class="q a">A</span>The third&rsquo;s honest. Nobody&rsquo;s pretending. <em>You can teach somebody at three in the morning who you can&rsquo;t teach at three in the afternoon.</em></div></div>
+        <div class="tr" data-t="01:08"><div class="t">01:08</div><div class="l"><span class="q a">A</span>"You learn the floor when you stop expecting it to behave. <strong>The floor doesn&rsquo;t behave. The floor is fine.</strong> You have to be fine with the floor."</div></div>
+        <div class="tr" data-t="02:22"><div class="t">02:22</div><div class="l"><span class="q">Q</span>And the people you came up with &mdash; are they still here?</div></div>
+        <div class="tr" data-t="02:30"><div class="t">02:30</div><div class="l"><span class="q a">A</span>Two of them. One retired in &rsquo;19. The other&rsquo;s on first now, runs the caster end. The rest moved on or moved out.</div></div>
+
+        <div class="ch-mark"><b>Ch 02</b> The apprenticeship</div>
+
+        <div class="tr now" data-t="06:40"><div class="t">06:40</div><div class="l"><span class="q">Q</span>What do you teach somebody the first six months?</div></div>
+        <div class="tr" data-t="06:48"><div class="t">06:48</div><div class="l"><span class="q a">A</span>How to stand. Where to stand. When not to stand. Then the panels &mdash; charge, blow, tap, cast &mdash; in the same order, every time, until the order is in your hands.</div></div>
+        <div class="tr" data-t="08:14"><div class="t">08:14</div><div class="l"><span class="q a">A</span>The numbers come later. The numbers are easy. The standing is hard.</div></div>
+        <div class="tr" data-t="09:08"><div class="t">09:08</div><div class="l"><span class="q a">A</span>I tell them: <em>your first six months you&rsquo;re going to feel useless. Good. Stay useless until you&rsquo;re not.</em></div></div>
+        <div class="tr" data-t="10:22"><div class="t">10:22</div><div class="l"><span class="q">Q</span>What can&rsquo;t you teach?</div></div>
+        <div class="tr" data-t="10:30"><div class="t">10:30</div><div class="l"><span class="q a">A</span>You can&rsquo;t teach somebody when to be quiet. You can show them. They get it or they don&rsquo;t.</div></div>
+        <div class="tr" data-t="12:48"><div class="t">12:48</div><div class="l"><span class="q a">A</span>Dee, the new one &mdash; came over from the auto plant in February. Quiet. Watches everything. I&rsquo;m not worried about Dee.</div></div>
+
+        <div class="ch-mark"><b>Ch 03</b> Automation</div>
+
+        <div class="tr" data-t="14:20"><div class="t">14:20</div><div class="l"><span class="q">Q</span>What does the new console do that the old one didn&rsquo;t?</div></div>
+        <div class="tr" data-t="14:42"><div class="t">14:42</div><div class="l"><span class="q a">A</span>"The console keeps the number. We keep everything else."</div></div>
+        <div class="tr" data-t="16:18"><div class="t">16:18</div><div class="l"><span class="q a">A</span>The <strong>Workpads</strong> we&rsquo;re using now &mdash; the foreman&rsquo;s pad, the second&rsquo;s pad &mdash; those make the handoff faster. Used to take eleven minutes. Now it&rsquo;s seven, eight. The same conversation, fewer interruptions.</div></div>
+        <div class="tr" data-t="19:30"><div class="t">19:30</div><div class="l"><span class="q">Q</span>Anything you don&rsquo;t like about the new tools?</div></div>
+        <div class="tr" data-t="19:36"><div class="t">19:36</div><div class="l"><span class="q a">A</span>I don&rsquo;t like talking to the pad more than the people. We&rsquo;re still working that out.</div></div>
+        <div class="tr" data-t="22:48"><div class="t">22:48</div><div class="l"><span class="q a">A</span>The 2028 rebuild &mdash; the vessel rebuild &mdash; that&rsquo;s going to be the test. Whether all this stuff helps or whether it gets in the way.</div></div>
+
+        <div class="ch-mark"><b>Ch 04</b> The town</div>
+
+        <div class="tr" data-t="26:55"><div class="t">26:55</div><div class="l"><span class="q">Q</span>Where do you live?</div></div>
+        <div class="tr" data-t="27:00"><div class="t">27:00</div><div class="l"><span class="q a">A</span>East end. Walking distance. Half my street worked here at some point.</div></div>
+        <div class="tr" data-t="28:10"><div class="t">28:10</div><div class="l"><span class="q a">A</span>"<strong>You don&rsquo;t leave the mill at the end of a shift. You bring it home and it cooks down all night.</strong>"</div></div>
+        <div class="tr" data-t="31:42"><div class="t">31:42</div><div class="l"><span class="q a">A</span>The town isn&rsquo;t the mill, but the mill is part of how the town counts itself. When we hire, the east end knows by Sunday. When we lay off, the east end knew on Friday.</div></div>
+        <div class="tr" data-t="35:18"><div class="t">35:18</div><div class="l"><span class="q">Q</span>If the mill closed tomorrow, what would the town look like in five years?</div></div>
+        <div class="tr" data-t="35:30"><div class="t">35:30</div><div class="l"><span class="q a">A</span>Different. Not worse, necessarily. Just different. But it&rsquo;s not closing tomorrow. It&rsquo;s not closing this decade. Beyond that &mdash; ask me in 2028.</div></div>
+        <div class="tr" data-t="38:00"><div class="t">38:00</div><div class="l"><span class="q">Q</span>Anything I should have asked you that I didn&rsquo;t?</div></div>
+        <div class="tr" data-t="38:06"><div class="t">38:06</div><div class="l"><span class="q a">A</span>Get the foreman on second shift on tape. Hers is the version I learned from.</div></div>
+
+      </div>
+    </div>
+
+    <!-- sidebar -->
+    <aside class="sidebar" aria-label="In this episode">
+
+      <div class="sb-box">
+        <h4>In this episode</h4>
+        <ul>
+          <li><a href="Babb Place v1.html">Hamilton steel mill</a><span class="meta">place</span></li>
+          <li><a href="Babb Worlds v1.html#manufacturing">Manufacturing</a><span class="meta">world</span></li>
+          <li><a href="/worlds/manufacturing/steel/">Steel</a><span class="meta">sub</span></li>
+          <li><a href="/people/tony-r/">Tony R.</a><span class="meta">subject</span></li>
+          <li><a href="Babb Angle v1.html">The Floor</a><span class="meta">angle</span></li>
+        </ul>
+      </div>
+
+      <div class="pq">
+        "The console keeps the number. We keep everything else."
+        <span class="ts">— Tony R. · <a href="#" data-t="14:42">14:42</a></span>
+      </div>
+
+      <div class="pq">
+        "You don&rsquo;t leave the mill at the end of a shift. You bring it home and it cooks down all night."
+        <span class="ts">— Tony R. · <a href="#" data-t="28:10">28:10</a></span>
+      </div>
+
+      <div class="sb-box">
+        <h4>Other interviews</h4>
+        <ul>
+          <li><a href="#">Marisol — owner&rsquo;s rep</a><span class="meta">42:08</span></li>
+          <li><a href="#">Janelle — plant safety</a><span class="meta">26:14</span></li>
+          <li><a href="#">Dee — apprentice</a><span class="meta">18:42</span></li>
+          <li><a href="/worlds/manufacturing/listen/">Listen index</a><span class="meta">7</span></li>
+        </ul>
+      </div>
+
+      <div class="sb-box">
+        <h4>Technical</h4>
+        <div class="tech">
+          <div class="r"><span class="k">Format</span><span>96 kHz / 24-bit · stereo</span></div>
+          <div class="r"><span class="k">Mics</span><span>Sennheiser MKH 416 · NTG3 amb</span></div>
+          <div class="r"><span class="k">Recorded</span><span>06:14 ET · pulpit + floor</span></div>
+          <div class="r"><span class="k">Size</span><span>312 MB · WAV / MP3 / Opus</span></div>
+          <div class="r"><span class="k">License</span><span>CC BY-NC · editorial</span></div>
+          <div class="r"><span class="k">Sound</span><span><a href="/people/dl/">D.L.</a></span></div>
+        </div>
+      </div>
+
+    </aside>
+
+  </section>
+
+  <!-- related -->
+  <div class="smark"><span class="num">§ ··</span><span>Related &middot; this Place</span><span class="rule"></span></div>
+
+  <section class="rel-grid">
+    <a class="rcard" href="Babb Video v1.html">
+      <div class="kind">Video · 12:08</div>
+      <h4>The Pour</h4>
+      <p class="blurb">Mini-doc cut from the same shoot. Tony&rsquo;s voice anchors it; the field recording is the score.</p>
+      <div class="meta"><span>2026-05-12</span><span>↪</span></div>
+    </a>
+    <a class="rcard" href="Babb Angle v1.html">
+      <div class="kind">Angle · this Place</div>
+      <h4>The Floor</h4>
+      <p class="blurb">The Angle that this interview anchors. Charging, blow, tap, changeover, with prose to back up the audio.</p>
+      <div class="meta"><span>~8 min read</span><span>↪</span></div>
+    </a>
+    <a class="rcard" href="Babb FieldNotes v1.html">
+      <div class="kind">Field Notes</div>
+      <h4>Notes on Tony&rsquo;s interview</h4>
+      <p class="blurb">Editor&rsquo;s notes anchored to specific timestamps. Why we left the pad-talk question short.</p>
+      <div class="meta"><span>3 notes</span><span>↪</span></div>
+    </a>
+  </section>
+
+</div>
+
+<!-- footer -->
+<div class="shell">
+<footer class="colophon">
+  <div class="col-grid">
+    <div class="col col-id">
+      <div class="mark">babb<span class="punct">.</span></div>
+      <p>Tools for the frontier. A media outfit reporting from the working world and a product company building for it.</p>
+      <div class="addr">babb works · est. 2024<br/><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="c1a9a4adadae81a3a0a3a3efb5a4ad">[email&#160;protected]</a><br/>rss · twitter · github · instagram</div>
+    </div>
+    <div class="col">
+      <h4>Worlds</h4>
+      <ul>
+        <li><a href="Babb Worlds v1.html#manufacturing">Manufacturing</a><span class="tag">here</span></li>
+        <li><a href="Babb Worlds v1.html#farming">Farming</a></li>
+        <li><a href="Babb Worlds v1.html#building">Building</a></li>
+        <li><a href="Babb Worlds v1.html">All Worlds →</a></li>
+      </ul>
+    </div>
+    <div class="col">
+      <h4>This Place</h4>
+      <ul>
+        <li><a href="Babb Place v1.html">Hamilton steel mill</a></li>
+        <li><a href="Babb Angle v1.html">↳ The Floor</a></li>
+        <li><a href="Babb BRoll v1.html">↳ B-Roll</a></li>
+        <li><a href="Babb FieldNotes v1.html">↳ Field Notes</a></li>
+        <li><a href="#">↳ Audio · Tony R.</a><span class="tag">here</span></li>
+        <li><a href="Babb Video v1.html">↳ Video · The Pour</a></li>
+      </ul>
+    </div>
+    <div class="col">
+      <h4>Subscribe</h4>
+      <ul>
+        <li><a href="/feed.xml?cat=audio">Audio RSS</a></li>
+        <li><a href="/feed.xml?cat=places/hamilton-steel-mill">This Place RSS</a></li>
+        <li><a href="/updates/email/">Email digest</a></li>
+        <li><a href="#">Apple Podcasts</a></li>
+        <li><a href="#">Pocket Casts</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="col-foot">
+    <div>© 2024–2026 Babb Works · CC BY-NC where noted</div>
+    <div class="right">
+      <a href="/colophon/">Colophon</a>
+      <a href="Babb About v1.html">About</a>
+      <a href="/cdn-cgi/l/email-protection#b0d8d5dcdcdff0d2d1d2d29ec4d5dc">Contact</a>
+      <span class="ascii">build 2026.05.18</span>
+    </div>
+  </div>
+</footer>
+</div>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+  (function(){
+    const el=document.getElementById("clock");
+    const f=n=>String(n).padStart(2,"0");
+    function tick(){const d=new Date();el.textContent=f(d.getUTCHours())+":"+f(d.getUTCMinutes())+":"+f(d.getUTCSeconds())+" UTC";}
+    tick();setInterval(tick,1000);
+  })();
+
+  /* chapter clicks highlight + scroll to matching transcript */
+  (function(){
+    const chs = document.querySelectorAll(".chap");
+    const trs = document.querySelectorAll(".transcript .tr");
+    function setNow(t){
+      chs.forEach(c => c.classList.toggle("now", c.dataset.t === t));
+      trs.forEach(x => x.classList.toggle("now", x.dataset.t === t));
+      const m = [...trs].find(x => x.dataset.t === t);
+      if(m) m.scrollIntoView({block:"center", behavior:"smooth"});
+    }
+    chs.forEach(c => c.addEventListener("click", () => setNow(c.dataset.t)));
+    trs.forEach(tr => tr.addEventListener("click", () => {
+      trs.forEach(x => x.classList.toggle("now", x === tr));
+      const t = tr.dataset.t;
+      const mins = parseInt(t.split(":")[0],10);
+      const secs = parseInt(t.split(":")[1],10);
+      const total = mins*60 + secs;
+      let pick = chs[0];
+      chs.forEach(c => {
+        const cs = c.dataset.t.split(":");
+        const ct = parseInt(cs[0],10)*60 + parseInt(cs[1],10);
+        if(ct <= total) pick = c;
+      });
+      chs.forEach(x => x.classList.toggle("now", x === pick));
+    }));
+    /* pull-quote timestamp clicks → seek to that line */
+    document.querySelectorAll(".pq .ts a[data-t]").forEach(a => a.addEventListener("click", e => {
+      e.preventDefault();
+      setNow(a.dataset.t);
+    }));
+  })();
+
+  /* playback rate buttons */
+  (function(){
+    const btns = document.querySelectorAll(".pillrow button[data-r]");
+    btns.forEach(b => b.addEventListener("click", () => {
+      btns.forEach(x => x.setAttribute("aria-pressed", x === b));
+    }));
+  })();
+
+  /* transcript search */
+  (function(){
+    const input = document.querySelector(".tr-head input[type=search]");
+    if(!input) return;
+    input.addEventListener("input", () => {
+      const q = input.value.trim().toLowerCase();
+      document.querySelectorAll(".transcript .tr").forEach(tr => {
+        const t = tr.textContent.toLowerCase();
+        tr.style.display = !q || t.includes(q) ? "" : "none";
+      });
+    });
+  })();
+</script>
+</body>
+</html>

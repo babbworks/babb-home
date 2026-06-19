@@ -1,0 +1,43 @@
+- id: workpads
+  num: "01 / 04"
+  name: Workpads
+  url: /products/workpads/
+  line: A field notebook for the working world. Forms, photos, audio, signoffs — offline-first.
+  meta: software · mobile + web
+  ver: v2.3
+  status: active
+  glyph: |
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="4" y="3" width="16" height="18" rx="1.5"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>
+
+- id: bitpads
+  num: "02 / 04"
+  name: Bitpads
+  url: /products/bitpads/
+  line: The hardware companion. Low-power radio, e-ink display, weeks per charge.
+  meta: hardware · rev C
+  ver: fw 0.4
+  status: active
+  glyph: |
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="3" y="6" width="18" height="12" rx="1.5"/><circle cx="8" cy="12" r="1.4"/><circle cx="14" cy="12" r="1.4"/><path d="M3 10h18"/></svg>
+
+- id: tel
+  num: "03 / 04"
+  name: .tel
+  url: /products/tel/
+  line: The connective layer. Identity, routing, and channels for people who do work in the world.
+  meta: protocol · alpha
+  ver: spec
+  status: alpha
+  glyph: |
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2.6"/><path d="M12 4v3M12 17v3M4 12h3M17 12h3"/></svg>
+
+- id: goods
+  num: "04 / 04"
+  name: Babb Products
+  url: /products/
+  line: Stone goods, paper goods, small objects. Made in small runs. Catalog updates monthly.
+  meta: goods · drop 02
+  ver: shop
+  status: active
+  glyph: |
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><polygon points="12,3 21,8 21,17 12,22 3,17 3,8"/><polygon points="12,3 12,12 21,8" opacity=".5"/><polygon points="12,12 12,22 3,17" opacity=".5"/></svg>

@@ -1,34 +1,29 @@
 <!DOCTYPE html>
 <html lang="{{ page.lang | default: site.lang | default: "en" }}">
+{%- include head.html -%}
+<body>
 
-  {%- include head.html -%}
+{%- include sysbar.html -%}
+{%- include masthead.html -%}
 
-  <body>
+<main>
+  {{ content }}
+</main>
 
-    {%- include header.html -%}
+{%- include colophon.html -%}
 
-    <main class="page-content" aria-label="Content">
-      <div class="wrapper">
-        {{ content }}
-      </div>
-    </main>
+<script>
+(function(){
+  const el = document.getElementById("clock");
+  if(!el) return;
+  function tick(){
+    const d = new Date();
+    const f = n => String(n).padStart(2,"0");
+    el.textContent = f(d.getUTCHours())+":"+f(d.getUTCMinutes())+":"+f(d.getUTCSeconds())+" UTC";
+  }
+  tick(); setInterval(tick, 1000);
+})();
+</script>
 
-    <div class="footer-trigger"></div>
-    {%- include footer.html -%}
-
-  </body>
-
-  <script>
-    var footer = document.querySelector('.site-footer');
-    var trigger = document.querySelector('.footer-trigger');
-    trigger.addEventListener('touchstart', function() {
-      footer.classList.add('footer-visible');
-    }, { passive: true });
-    document.addEventListener('touchstart', function(e) {
-      if (!footer.contains(e.target) && !trigger.contains(e.target)) {
-        footer.classList.remove('footer-visible');
-      }
-    }, { passive: true });
-  </script>
-
+</body>
 </html>
