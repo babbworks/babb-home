@@ -93,6 +93,8 @@
   font-family: var(--mono); font-size: 10.5px; color: var(--lp-mute);
   letter-spacing: .05em; margin: 12px 0 0; text-align: right;
 }
+/* one clause per line, so the chain reads as three steps rather than prose */
+.lp-schemnote span { display: block; line-height: 1.75; }
 
 /* ── sections ─────────────────────────────────────────────── */
 .lp-sec { padding: 46px 0; border-top: 1px solid var(--lp-rule); }
