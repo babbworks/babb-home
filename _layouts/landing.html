@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="{{ page.lang | default: site.lang | default: "en" }}">
+{%- include head.html -%}
+<body class="lp-body">
+
+{%- comment -%}
+  Deliberately excludes sysbar, masthead and colophon: this page has no
+  navigation depth. Outbound links are inline and chosen one at a time.
+{%- endcomment -%}
+<main>
+  {{ content }}
+</main>
+
+</body>
+</html>

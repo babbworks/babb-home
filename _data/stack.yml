@@ -1,0 +1,65 @@
+# The Babb stack, as presented on the landing page.
+#
+# Ordered top-down: the concrete comes first. Standards constrain protocols,
+# protocols carry tools, tools run on systems — the layering is the argument,
+# so a new product should belong to one of these four layers or the hero
+# schematic needs rethinking.
+#
+# `url` is intentionally omitted while the page stays flat. Adding a url to an
+# item turns that row into a link; leaving it off renders the row as plain text.
+
+- id: tools
+  name: Tools
+  gloss: what people touch
+  items:
+    - name: Workpads
+      ver: v2.3
+      desc: A field notebook for the working world. Forms, photos, audio, signoffs — offline-first.
+    - name: Workwarrior
+      ver: v0.1
+      desc: Five tools, one profile, zero bleed. Tasks, time, journal, ledger, bugs — CLI and browser.
+    - name: Clarkware
+      ver: P1 V1
+      desc: Manufacturing facility operations. Jobs, notes, real-time events, AI assistance.
+    - name: heybabb
+      ver: v0.1
+      desc: CLI companion. Talk to Babb from the terminal. Offline knowledge base, optional AI mode.
+
+- id: protocols
+  name: Protocols
+  gloss: how it moves
+  items:
+    - name: BitPads
+      ver: v0.1
+      desc: Universal binary communication protocol. Self-describing frames, one byte to compound documents.
+    - name: BitLedger
+      ver: v3.0
+      desc: Double-entry bookkeeping at the wire level. Balance enforced at encoding. 40 bits per transaction.
+    - name: .tel
+      ver: alpha
+      desc: The connective layer. Identity, routing and channels for people who do work in the world.
+
+- id: standards
+  name: Standards
+  gloss: what must hold
+  items:
+    - name: BASICS
+      ver: v0.1.1
+      desc: Business tool durability standard. Testable obligations for offline, constrained, long-lifecycle tools.
+    - name: SIMBA
+      ver: early
+      desc: Standard for long-lived, interoperable business systems. Century-capable by design.
+    - name: Works
+      ver: active
+      desc: An industrial compound for business information. Protocol plus Compound Browser reference implementation.
+
+- id: systems
+  name: Systems
+  gloss: what it runs on
+  items:
+    - name: Outstack
+      ver: arch
+      desc: Security and power bedrock. Alpine Linux derivative. Security by physics, not by policy.
+    - name: Telux
+      ver: arch
+      desc: System for Group Exchange. Group identity, power management, transactional security.

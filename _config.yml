@@ -35,6 +35,7 @@ exclude:
   # planning docs
   - TRANSITION-PLAN.md
   - TELEMETRY-SHORTCUT.md
+  - docs/
   # old homepage (replaced by layout: home)
   - newindex.html
   # old pages/ subdirectories — pre-transition content, not yet migrated

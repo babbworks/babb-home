@@ -1,0 +1,195 @@
+/* ============================================================
+   LANDING — the single-page index.
+   Direction "Stack": cool and schematic, deliberately distinct
+   from the warm paper aesthetic used elsewhere on the site.
+   Everything is namespaced `lp-` and scoped under `.lp-body`
+   so it cannot leak into the rest of the site.
+   ============================================================ */
+
+.lp-body {
+  --lp-ground: #e6e9ec;
+  --lp-panel:  #f4f6f7;
+  --lp-white:  #ffffff;
+  --lp-ink:    #0f1519;
+  --lp-ink2:   #3e4a52;
+  --lp-mute:   #7e8b94;
+  --lp-rule:   #c3ccd1;
+  --lp-sig:    #1b6fa8;
+
+  /* the layers, stepped from warm at the top — where people actually
+     touch the work — down to deep blue at the bedrock */
+  --lp-l-tools:     #c2582e;
+  --lp-l-protocols: #2f86bd;
+  --lp-l-standards: #1b6fa8;
+  --lp-l-systems:   #16506f;
+
+  --lp-serif: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
+  --lp-sans: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+
+  background: var(--lp-ground);
+  color: var(--lp-ink);
+  font-family: var(--lp-sans);
+  font-size: 14px;
+  line-height: 1.62;
+}
+
+/* _base.scss underlines every link on hover; the landing page opts out
+   and signals hover per-component instead. */
+.lp a:hover { text-decoration: none; }
+
+.lp h1, .lp h2, .lp h3 { font-family: var(--lp-serif); font-weight: 400; }
+
+.lp-shell { max-width: 1000px; margin: 0 auto; padding: 0 30px; }
+
+/* ── masthead ─────────────────────────────────────────────── */
+.lp-mast {
+  display: flex; align-items: baseline; justify-content: space-between;
+  flex-wrap: wrap; gap: 12px; padding: 22px 0;
+}
+.lp-word {
+  font-family: var(--lp-serif); font-size: 25px;
+  letter-spacing: -.03em; color: var(--lp-ink);
+}
+.lp-word span { color: var(--lp-sig); }
+.lp-tag {
+  font-family: var(--mono); font-size: 10px; letter-spacing: .18em;
+  text-transform: uppercase; color: var(--lp-mute);
+}
+
+/* ── hero ─────────────────────────────────────────────────── */
+.lp-hero { padding: 40px 0 56px; display: grid; gap: 40px; align-items: center; }
+@media (min-width: 880px) { .lp-hero { grid-template-columns: 1.06fr .94fr; gap: 56px; } }
+
+.lp-hero h1 {
+  font-size: clamp(32px, 5vw, 54px); line-height: 1.02;
+  letter-spacing: -.035em; margin: 0 0 20px; text-wrap: balance;
+}
+.lp-hero h1 em { font-style: italic; color: var(--lp-sig); }
+.lp-sub { font-size: 15px; line-height: 1.72; color: var(--lp-ink2); max-width: 52ch; margin: 0; }
+.lp-sub b { color: var(--lp-ink); font-weight: 600; }
+
+/* the schematic — states the layering once, before it is used */
+.lp-schem { display: grid; gap: 5px; }
+.lp-slab {
+  display: grid; grid-template-columns: 74px 1fr auto; align-items: center; gap: 14px;
+  background: var(--lp-white); border: 1px solid var(--lp-rule);
+  border-left: 4px solid var(--lp-sig); padding: 13px 16px;
+}
+.lp-slab-tools     { border-left-color: var(--lp-l-tools); }
+.lp-slab-protocols { border-left-color: var(--lp-l-protocols); }
+.lp-slab-standards { border-left-color: var(--lp-l-standards); }
+.lp-slab-systems   { border-left-color: var(--lp-l-systems); }
+
+.lp-sn {
+  font-family: var(--mono); font-size: 9.5px; letter-spacing: .14em;
+  text-transform: uppercase; color: var(--lp-mute);
+}
+.lp-st { font-family: var(--lp-serif); font-size: 17px; letter-spacing: -.02em; }
+.lp-sc {
+  font-family: var(--mono); font-size: 11px; color: var(--lp-mute);
+  font-variant-numeric: tabular-nums;
+}
+.lp-schemnote {
+  font-family: var(--mono); font-size: 10.5px; color: var(--lp-mute);
+  letter-spacing: .05em; margin: 12px 0 0; text-align: right;
+}
+
+/* ── sections ─────────────────────────────────────────────── */
+.lp-sec { padding: 46px 0; border-top: 1px solid var(--lp-rule); }
+.lp-lbl {
+  font-family: var(--mono); font-size: 10px; font-weight: 400;
+  letter-spacing: .2em; text-transform: uppercase;
+  color: var(--lp-mute); margin: 0 0 26px;
+}
+
+/* ── the argument ─────────────────────────────────────────── */
+.lp-theses { display: grid; gap: 28px; }
+@media (min-width: 760px) { .lp-theses { grid-template-columns: repeat(3, 1fr); gap: 34px; } }
+
+.lp-thesis h3 {
+  font-size: 19px; line-height: 1.24; letter-spacing: -.02em;
+  margin: 0 0 10px; color: var(--lp-ink);
+}
+.lp-thesis p { font-size: 13.5px; line-height: 1.68; color: var(--lp-ink2); margin: 0; }
+.lp-num {
+  display: block; font-family: var(--mono); font-size: 10px;
+  letter-spacing: .16em; color: var(--lp-sig); margin-bottom: 9px;
+}
+
+/* ── reporting ────────────────────────────────────────────── */
+.lp-report { display: grid; gap: 24px; align-items: start; }
+@media (min-width: 760px) { .lp-report { grid-template-columns: 1.25fr 1fr; gap: 48px; } }
+
+.lp-pull {
+  font-family: var(--lp-serif); font-size: 22px; line-height: 1.4;
+  letter-spacing: -.02em; color: var(--lp-ink); margin: 0;
+}
+.lp-note { font-size: 13.5px; line-height: 1.72; color: var(--lp-ink2); margin: 0; }
+.lp-note a { color: var(--lp-sig); border-bottom: 1px solid rgba(27,111,168,.35); }
+.lp-note a:hover { border-bottom-color: var(--lp-sig); }
+
+/* ── the stack: the schematic, expanded ───────────────────── */
+.lp-layer {
+  border: 1px solid var(--lp-rule); background: var(--lp-white); margin-bottom: 5px;
+}
+.lp-layerhead {
+  display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap;
+  padding: 13px 18px; background: var(--lp-panel);
+  border-bottom: 1px solid var(--lp-rule); border-left: 4px solid var(--lp-sig);
+}
+.lp-layer-tools     .lp-layerhead { border-left-color: var(--lp-l-tools); }
+.lp-layer-protocols .lp-layerhead { border-left-color: var(--lp-l-protocols); }
+.lp-layer-standards .lp-layerhead { border-left-color: var(--lp-l-standards); }
+.lp-layer-systems   .lp-layerhead { border-left-color: var(--lp-l-systems); }
+
+.lp-lh { font-family: var(--lp-serif); font-size: 18px; letter-spacing: -.02em; }
+.lp-lg { font-size: 13px; color: var(--lp-mute); }
+
+.lp-rows { display: grid; }
+.lp-row {
+  display: grid; grid-template-columns: minmax(0, 1fr); gap: 3px;
+  padding: 13px 18px; border-bottom: 1px solid var(--lp-rule);
+  transition: background-color .12s ease;
+}
+@media (min-width: 700px) {
+  .lp-row { grid-template-columns: 150px minmax(0, 1fr) 92px; gap: 18px; align-items: baseline; }
+  .lp-rv { text-align: right; }
+}
+.lp-rows .lp-row:last-child { border-bottom: none; }
+a.lp-row:hover { background: var(--lp-panel); }
+
+.lp-rn { font-size: 14.5px; font-weight: 600; letter-spacing: -.01em; color: var(--lp-ink); }
+.lp-rd { font-size: 13px; line-height: 1.55; color: var(--lp-ink2); }
+.lp-rv {
+  font-family: var(--mono); font-size: 10.5px; color: var(--lp-mute);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── community assistance ─────────────────────────────────── */
+.lp-comm { display: grid; gap: 10px; }
+.lp-proj {
+  display: grid; gap: 6px; background: var(--lp-white);
+  border: 1px solid var(--lp-rule); border-left: 4px solid var(--lp-l-tools);
+  padding: 20px 22px; max-width: 620px;
+  transition: border-color .12s ease;
+}
+.lp-proj:hover { border-color: var(--lp-l-tools); }
+.lp-pn { font-family: var(--lp-serif); font-size: 22px; letter-spacing: -.02em; color: var(--lp-ink); }
+.lp-pd { font-size: 13.5px; color: var(--lp-mute); font-style: italic; }
+.lp-pu { font-family: var(--mono); font-size: 11px; color: var(--lp-sig); letter-spacing: .04em; }
+
+/* ── foot ─────────────────────────────────────────────────── */
+.lp-foot {
+  padding: 30px 0 44px; border-top: 1px solid var(--lp-rule);
+  display: flex; flex-wrap: wrap; justify-content: space-between; gap: 16px;
+  font-family: var(--mono); font-size: 11px; color: var(--lp-mute);
+}
+.lp-foot a { color: var(--lp-ink2); }
+.lp-foot a:hover { color: var(--lp-sig); }
+.lp-links { display: flex; gap: 20px; flex-wrap: wrap; }
+
+.lp a:focus-visible { outline: 2px solid var(--lp-sig); outline-offset: 2px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .lp * { transition: none !important; animation: none !important; }
+}

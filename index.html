@@ -1,5 +1,131 @@
 ---
-layout: home
+layout: landing
 title: Babb
-description: A media outfit reporting from the working world and a product company building for it.
+description: Babb builds the tools the industrial ecosystem runs on, and reports from inside it. Twelve products across four layers — tools, protocols, standards, systems.
 ---
+
+<div class="lp">
+  <div class="lp-shell">
+
+    <header class="lp-mast">
+      <div class="lp-word">babb<span>.</span></div>
+      <div class="lp-tag">Media &middot; Tools &middot; Technology &middot; Est. 2024</div>
+    </header>
+
+    <section class="lp-hero">
+      <div>
+        <h1>The bottleneck was <em>never</em> the factory.</h1>
+        <p class="lp-sub">It is the ecosystem around it &mdash; the sixty-person machine shop, the
+          twelve-person electronics assembler, the family-run processor upgrading a packaging line.
+          <b>Babb builds the tools that ecosystem runs on, and reports from inside it.</b>
+          Four layers, twelve products, one commitment: outlast the platform cycle you were made in.</p>
+      </div>
+      <div>
+        <div class="lp-schem">
+          {%- for layer in site.data.stack %}
+          <div class="lp-slab lp-slab-{{ layer.id }}">
+            <span class="lp-sn">{{ layer.name }}</span>
+            <span class="lp-st">{{ layer.gloss | capitalize }}</span>
+            {%- assign count = layer.items | size %}
+            <span class="lp-sc">{% if count < 10 %}0{% endif %}{{ count }}</span>
+          </div>
+          {%- endfor %}
+        </div>
+        <p class="lp-schemnote">Standards constrain protocols. Protocols carry tools. Tools run on systems.</p>
+      </div>
+    </section>
+
+    <section class="lp-sec">
+      <h2 class="lp-lbl">The argument</h2>
+      <div class="lp-theses">
+        <article class="lp-thesis">
+          <span class="lp-num">01</span>
+          <h3>Computerization is this century&rsquo;s electrification.</h3>
+          <p>In the 1800s, manufacturers moved from belt-drive systems to dispersed motors that powered
+            individual parts of the line. The equivalent now is putting computation where the work happens.
+            Most enterprise software fails at exactly this: it serves what already exists and chains a
+            business to its past, no differently than the machines it replaced.</p>
+        </article>
+        <article class="lp-thesis">
+          <span class="lp-num">02</span>
+          <h3>Open systems, local expertise, aligned incentives.</h3>
+          <p>Every producer will need to integrate computational intelligence within the decade. Most
+            cannot do it alone, cannot afford the consultants who serve the Fortune 500, and will be sold
+            packages that lock them into vendor dependency. We build the alternative: open specifications,
+            self-hostable nodes, open export, nothing held hostage.</p>
+        </article>
+        <article class="lp-thesis">
+          <span class="lp-num">03</span>
+          <h3>Century-capable by design.</h3>
+          <p>A tool that cannot survive a decade of intermittent connectivity, a hardware revision, or a
+            change of ownership was never infrastructure. We publish the durability standards we hold
+            ourselves to, and the assessors that test against them, so the claim can be checked rather
+            than believed.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="lp-sec">
+      <h2 class="lp-lbl">Reporting</h2>
+      <div class="lp-report">
+        <p class="lp-pull">We are not a technology company that went looking for problems. We are
+          reporters and builders who found that the tools their subjects needed did not exist.</p>
+        <p class="lp-note">Babb reports from the working world &mdash; feed lots, steel mills, branch
+          offices, job sites and launch pads. The same field that shapes the coverage shapes the
+          software.</p>
+      </div>
+    </section>
+
+    <section class="lp-sec">
+      <h2 class="lp-lbl">Community Assistance</h2>
+      <div class="lp-comm">
+        {%- for proj in site.data.community %}
+        <a class="lp-proj" href="{{ proj.url }}">
+          <span class="lp-pn">{{ proj.name }}</span>
+          <span class="lp-pd">{{ proj.desc }}</span>
+          <span class="lp-pu">{{ proj.display | default: proj.url }} &rarr;</span>
+        </a>
+        {%- endfor %}
+      </div>
+    </section>
+
+    <section class="lp-sec">
+      <h2 class="lp-lbl">The stack &mdash; twelve products</h2>
+      {%- for layer in site.data.stack %}
+      <div class="lp-layer lp-layer-{{ layer.id }}">
+        <div class="lp-layerhead">
+          <span class="lp-lh">{{ layer.name }}</span>
+          <span class="lp-lg">{{ layer.gloss }}</span>
+        </div>
+        <div class="lp-rows">
+          {%- for item in layer.items %}
+          {%- if item.url and item.url != "" %}
+          <a class="lp-row" href="{{ item.url | relative_url }}">
+            <span class="lp-rn">{{ item.name }}</span>
+            <span class="lp-rd">{{ item.desc }}</span>
+            <span class="lp-rv">{{ item.ver }}</span>
+          </a>
+          {%- else %}
+          <div class="lp-row">
+            <span class="lp-rn">{{ item.name }}</span>
+            <span class="lp-rd">{{ item.desc }}</span>
+            <span class="lp-rv">{{ item.ver }}</span>
+          </div>
+          {%- endif %}
+          {%- endfor %}
+        </div>
+      </div>
+      {%- endfor %}
+    </section>
+
+    <footer class="lp-foot">
+      <div><a href="mailto:{{ site.email }}">{{ site.email }}</a> &middot; Babb Works, est. 2024</div>
+      <div class="lp-links">
+        <a href="https://github.com/{{ site.github_username }}">GitHub</a>
+        <a href="https://twitter.com/{{ site.twitter_username }}">X</a>
+        <a href="{{ '/feed.xml' | relative_url }}">RSS</a>
+      </div>
+    </footer>
+
+  </div>
+</div>
